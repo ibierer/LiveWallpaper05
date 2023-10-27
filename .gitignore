@@ -1,7 +1,7 @@
 local.properties
 *.bin
 *.lock
-app/.cxx/*
+app/.cxx
 .idea/*
 .gradle/*
 *.swp
