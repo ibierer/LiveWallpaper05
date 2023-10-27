@@ -92,96 +92,7 @@ bool RendererES2::init() {
     glGenBuffers(1, &mVB);
     glBindBuffer(GL_ARRAY_BUFFER, mVB);
     glBufferData(GL_ARRAY_BUFFER, sizeof(QUAD), &QUAD[0], GL_STATIC_DRAW);
-<<<<<<< HEAD
-    "#version 100\n"
-    "uniform mat2 scaleRot;\n"
-    "uniform vec2 offset;\n"
-    "attribute vec2 pos;\n"
-    "attribute vec4 color;\n"
-    "varying vec4 vColor;\n"
-    "void main() {\n"
-    "    gl_Position = vec4(scaleRot*pos + offset, 0.0, 1.0);\n"
-    "    vColor = color;\n"
-    "}\n";
 
-static const char FRAGMENT_SHADER[] =
-    "#version 100\n"
-    "precision mediump float;\n"
-    "varying vec4 vColor;\n"
-    "void main() {\n"
-    "    gl_FragColor = vColor;\n"
-    "}\n";
-
-class RendererES2 : public Renderer {
- public:
-  RendererES2();
-  virtual ~RendererES2();
-  bool init();
-
- private:
-  virtual float* mapOffsetBuf();
-  virtual void unmapOffsetBuf();
-  virtual float* mapTransformBuf();
-  virtual void unmapTransformBuf();
-  virtual void draw(unsigned int numInstances);
-
-  const EGLContext mEglContext;
-  GLuint mProgram;
-  GLuint mVB;
-  GLint mPosAttrib;
-  GLint mColorAttrib;
-  GLint mScaleRotUniform;
-  GLint mOffsetUniform;
-
-  float mOffsets[2 * MAX_INSTANCES];
-  float mScaleRot[4 * MAX_INSTANCES];  // array of 2x2 column-major matrices
-};
-
-Renderer* createES2Renderer() {
-  RendererES2* renderer = new RendererES2;
-  if (!renderer->init()) {
-    delete renderer;
-    return NULL;
-  }
-  return renderer;
-}
-
-RendererES2::RendererES2()
-    : mEglContext(eglGetCurrentContext()),
-      mProgram(0),
-      mVB(0),
-      mPosAttrib(-1),
-      mColorAttrib(-1),
-      mScaleRotUniform(-1),
-      mOffsetUniform(-1) {}
-
-bool RendererES2::init() {
-  mProgram = createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
-  if (!mProgram) return false;
-  mPosAttrib = glGetAttribLocation(mProgram, "pos");
-  mColorAttrib = glGetAttribLocation(mProgram, "color");
-  mScaleRotUniform = glGetUniformLocation(mProgram, "scaleRot");
-  mOffsetUniform = glGetUniformLocation(mProgram, "offset");
-
-  glGenBuffers(1, &mVB);
-  glBindBuffer(GL_ARRAY_BUFFER, mVB);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(QUAD), &QUAD[0], GL_STATIC_DRAW);
-
-  ALOGV("Using OpenGL ES 2.0 renderer");
-  return true;
-}
-
-RendererES2::~RendererES2() {
-  /* The destructor may be called after the context has already been
-   * destroyed, in which case our objects have already been destroyed.
-   *
-   * If the context exists, it must be current. This only happens when we're
-   * cleaning up after a failed init().
-   */
-  if (eglGetCurrentContext() != mEglContext) return;
-  glDeleteBuffers(1, &mVB);
-  glDeleteProgram(mProgram);
-=======
     ALOGV("Using OpenGL ES 2.0 renderer");
     return true;
 }
@@ -196,7 +107,6 @@ RendererES2::~RendererES2() {
     if (eglGetCurrentContext() != mEglContext) return;
     glDeleteBuffers(1, &mVB);
     glDeleteProgram(mProgram);
->>>>>>> 4f1481069bcabcc89ccd8c6128b0f31bb396fd94
 }
 
 float* RendererES2::mapOffsetBuf() { return mOffsets; }
