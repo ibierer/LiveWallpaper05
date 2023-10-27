@@ -3,3 +3,4 @@ local.properties
 *.lock
 app/.cxx
 .idea/*
+.gradle/*
