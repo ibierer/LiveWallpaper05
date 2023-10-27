@@ -67,13 +67,8 @@
 // so vertices go directly from model to clip space.
 
 struct Vertex {
-<<<<<<< HEAD
-  GLfloat pos[2];
-  GLubyte rgba[4];
-=======
     GLfloat pos[2];
     GLubyte rgba[4];
->>>>>>> 4f1481069bcabcc89ccd8c6128b0f31bb396fd94
 };
 extern const Vertex QUAD[4];
 
@@ -86,36 +81,6 @@ extern GLuint createProgram(const char* vtxSrc, const char* fragSrc);
 // Interface to the ES2 and ES3 renderers, used by JNI code.
 
 class Renderer {
-<<<<<<< HEAD
- public:
-  virtual ~Renderer();
-  void resize(int w, int h);
-  void render();
-
- protected:
-  Renderer();
-
-  // return a pointer to a buffer of MAX_INSTANCES * sizeof(vec2).
-  // the buffer is filled with per-instance offsets, then unmapped.
-  virtual float* mapOffsetBuf() = 0;
-  virtual void unmapOffsetBuf() = 0;
-  // return a pointer to a buffer of MAX_INSTANCES * sizeof(vec4).
-  // the buffer is filled with per-instance scale and rotation transforms.
-  virtual float* mapTransformBuf() = 0;
-  virtual void unmapTransformBuf() = 0;
-
-  virtual void draw(unsigned int numInstances) = 0;
-
- private:
-  void calcSceneParams(unsigned int w, unsigned int h, float* offsets);
-  void step();
-
-  unsigned int mNumInstances;
-  float mScale[2];
-  float mAngularVelocity[MAX_INSTANCES];
-  uint64_t mLastFrameNs;
-  float mAngles[MAX_INSTANCES];
-=======
 public:
     virtual ~Renderer();
     void resize(int w, int h);
@@ -144,7 +109,6 @@ private:
     float mAngularVelocity[MAX_INSTANCES];
     uint64_t mLastFrameNs;
     float mAngles[MAX_INSTANCES];
->>>>>>> 4f1481069bcabcc89ccd8c6128b0f31bb396fd94
 };
 
 extern Renderer* createES2Renderer();

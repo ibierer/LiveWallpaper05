@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright 2013 The Android Open Source Project
 
@@ -24,8 +23,3 @@
     <string name="app_name">Physics In Color</string>
 
 </resources>
-=======
-<resources>
-    <string name="app_name">Physics In Color</string>
-</resources>
->>>>>>> 4f1481069bcabcc89ccd8c6128b0f31bb396fd94
