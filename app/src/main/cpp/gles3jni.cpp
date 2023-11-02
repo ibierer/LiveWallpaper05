@@ -12,12 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-<<<<<<< HEAD
  */
-=======
- *//*
-
->>>>>>> 4f1481069bcabcc89ccd8c6128b0f31bb396fd94
 
 #include "gles3jni.h"
 
@@ -27,7 +22,6 @@
 #include <time.h>
 
 const Vertex QUAD[4] = {
-<<<<<<< HEAD
     // Square with diagonal < 2 so that it fits in a [-1 .. 1]^2 square
     // regardless of rotation.
     {{-0.7f, -0.7f}, {0x00, 0xFF, 0x00}},
@@ -122,7 +116,6 @@ exit:
 static void printGlString(const char* name, GLenum s) {
   const char* v = (const char*)glGetString(s);
   ALOGV("GL %s: %s\n", name, v);
-=======
         // Square with diagonal < 2 so that it fits in a [-1 .. 1]^2 square
         // regardless of rotation.
         {{-0.7f, -0.7f}, {0x00, 0xFF, 0x00}},
@@ -217,27 +210,19 @@ GLuint createProgram(const char* vtxSrc, const char* fragSrc) {
 static void printGlString(const char* name, GLenum s) {
     const char* v = (const char*)glGetString(s);
     ALOGV("GL %s: %s\n", name, v);
->>>>>>> 4f1481069bcabcc89ccd8c6128b0f31bb396fd94
 }
 
 // ----------------------------------------------------------------------------
 
 Renderer::Renderer() : mNumInstances(0), mLastFrameNs(0) {
-<<<<<<< HEAD
   memset(mScale, 0, sizeof(mScale));
   memset(mAngularVelocity, 0, sizeof(mAngularVelocity));
   memset(mAngles, 0, sizeof(mAngles));
-=======
-    memset(mScale, 0, sizeof(mScale));
-    memset(mAngularVelocity, 0, sizeof(mAngularVelocity));
-    memset(mAngles, 0, sizeof(mAngles));
->>>>>>> 4f1481069bcabcc89ccd8c6128b0f31bb396fd94
 }
 
 Renderer::~Renderer() {}
 
 void Renderer::resize(int w, int h) {
-<<<<<<< HEAD
   auto offsets = mapOffsetBuf();
   calcSceneParams(w, h, offsets);
   unmapOffsetBuf();
@@ -330,7 +315,6 @@ void Renderer::render() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   draw(mNumInstances);
   checkGlError("Renderer::render");
-=======
     auto offsets = mapOffsetBuf();
     calcSceneParams(w, h, offsets);
     unmapOffsetBuf();
@@ -423,7 +407,6 @@ void Renderer::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     draw(mNumInstances);
     checkGlError("Renderer::render");
->>>>>>> 4f1481069bcabcc89ccd8c6128b0f31bb396fd94
 }
 
 // ----------------------------------------------------------------------------
@@ -432,19 +415,17 @@ static Renderer* g_renderer = NULL;
 
 extern "C" {
 JNIEXPORT void JNICALL Java_com_android_gles3jni_GLES3JNILib_init(JNIEnv* env,
-<<<<<<< HEAD
                                                                   jobject obj);
 JNIEXPORT void JNICALL Java_com_android_gles3jni_GLES3JNILib_resize(
     JNIEnv* env, jobject obj, jint width, jint height);
 JNIEXPORT void JNICALL Java_com_android_gles3jni_GLES3JNILib_step(JNIEnv* env,
                                                                   jobject obj);
-=======
+
 jobject obj);
 JNIEXPORT void JNICALL Java_com_android_gles3jni_GLES3JNILib_resize(
         JNIEnv* env, jobject obj, jint width, jint height);
 JNIEXPORT void JNICALL Java_com_android_gles3jni_GLES3JNILib_step(JNIEnv* env,
 jobject obj);
->>>>>>> 4f1481069bcabcc89ccd8c6128b0f31bb396fd94
 };
 
 #if !defined(DYNAMIC_ES3)
@@ -452,7 +433,6 @@ static GLboolean gl3stubInit() { return GL_TRUE; }
 #endif
 
 JNIEXPORT void JNICALL Java_com_android_gles3jni_GLES3JNILib_init(JNIEnv* env,
-<<<<<<< HEAD
                                                                   jobject obj) {
   if (g_renderer) {
     delete g_renderer;
@@ -487,40 +467,38 @@ JNIEXPORT void JNICALL Java_com_android_gles3jni_GLES3JNILib_step(JNIEnv* env,
     g_renderer->render();
   }
 }
-=======
+
 jobject obj) {
-if (g_renderer) {
-delete g_renderer;
-g_renderer = NULL;
-}
+    if (g_renderer) {
+        delete g_renderer;
+        g_renderer = NULL;
+    }
 
-printGlString("Version", GL_VERSION);
-printGlString("Vendor", GL_VENDOR);
-printGlString("Renderer", GL_RENDERER);
-printGlString("Extensions", GL_EXTENSIONS);
+    printGlString("Version", GL_VERSION);
+    printGlString("Vendor", GL_VENDOR);
+    printGlString("Renderer", GL_RENDERER);
+    printGlString("Extensions", GL_EXTENSIONS);
 
-const char* versionStr = (const char*)glGetString(GL_VERSION);
-if (strstr(versionStr, "OpenGL ES 3.") && gl3stubInit()) {
-g_renderer = createES3Renderer();
-} else if (strstr(versionStr, "OpenGL ES 2.")) {
-g_renderer = createES2Renderer();
-} else {
-ALOGE("Unsupported OpenGL ES version");
-}
+    const char* versionStr = (const char*)glGetString(GL_VERSION);
+    if (strstr(versionStr, "OpenGL ES 3.") && gl3stubInit()) {
+        g_renderer = createES3Renderer();
+    } else if (strstr(versionStr, "OpenGL ES 2.")) {
+        g_renderer = createES2Renderer();
+    } else {
+        ALOGE("Unsupported OpenGL ES version");
+    }
 }
 
 JNIEXPORT void JNICALL Java_com_android_gles3jni_GLES3JNILib_resize(
         JNIEnv* env, jobject obj, jint width, jint height) {
-if (g_renderer) {
-g_renderer->resize(width, height);
-}
+    if (g_renderer) {
+        g_renderer->resize(width, height);
+    }
 }
 
 JNIEXPORT void JNICALL Java_com_android_gles3jni_GLES3JNILib_step(JNIEnv* env,
 jobject obj) {
-if (g_renderer) {
-g_renderer->render();
+    if (g_renderer) {
+        g_renderer->render();
+    }
 }
-}
-*/
->>>>>>> 4f1481069bcabcc89ccd8c6128b0f31bb396fd94
