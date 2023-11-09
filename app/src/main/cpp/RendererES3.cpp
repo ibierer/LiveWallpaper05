@@ -28,15 +28,15 @@
 
 static const char VERTEX_SHADER[] =
         "#version 300 es\n"
-        "layout(location = " STRV(POS_ATTRIB) ") in vec2 pos;\n"
+        "layout(location = " STRV(POS_ATTRIB) ") in vec3 pos;\n"
         "layout(location=" STRV(COLOR_ATTRIB) ") in vec4 color;\n"
         "layout(location=" STRV(SCALEROT_ATTRIB) ") in vec4 scaleRot;\n"
         "layout(location=" STRV(OFFSET_ATTRIB) ") in vec2 offset;\n"
         "out vec4 vColor;\n"
         "void main() {\n"
         "    mat2 sr = mat2(scaleRot.xy, scaleRot.zw);\n"
-        "    gl_Position = vec4(sr*pos + offset, 0.0, 1.0);\n"
-        "    vColor = color;\n"
+        "    gl_Position = vec4(sr*pos.xy + offset, pos.z, 1.0);\n"
+        "    vColor = gl_Position + vec4(0.5, 0.5, 0.5, 0.0);\n"
         "}\n";
 
 static const char FRAGMENT_SHADER[] =
@@ -50,18 +50,85 @@ static const char FRAGMENT_SHADER[] =
 
 class RendererES3 : public Renderer {
 public:
-    RendererES3();
-    virtual ~RendererES3();
-    bool init();
+    RendererES3()
+            : mEglContext(eglGetCurrentContext()), mProgram(0), mVBState(0) {
+        for (int i = 0; i < VB_COUNT; i++) mVB[i] = 0;
+    }
+    ~RendererES3(){
+        /* The destructor may be called after the context has already been
+         * destroyed, in which case our objects have already been destroyed.
+         *
+         * If the context exists, it must be current. This only happens when we're
+         * cleaning up after a failed init().
+         */
+        if (eglGetCurrentContext() != mEglContext) return;
+        glDeleteVertexArrays(1, &mVBState);
+        glDeleteBuffers(VB_COUNT, mVB);
+        glDeleteProgram(mProgram);
+    };
+    bool init(){
+        mProgram = createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
+        if (!mProgram) return false;
+
+        glGenBuffers(VB_COUNT, mVB);
+        glBindBuffer(GL_ARRAY_BUFFER, mVB[VB_INSTANCE]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(QUAD), &QUAD[0], GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, mVB[VB_SCALEROT]);
+        glBufferData(GL_ARRAY_BUFFER, MAX_INSTANCES * 4 * sizeof(float), NULL,
+                     GL_DYNAMIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, mVB[VB_OFFSET]);
+        glBufferData(GL_ARRAY_BUFFER, MAX_INSTANCES * 2 * sizeof(float), NULL,
+                     GL_STATIC_DRAW);
+
+        glGenVertexArrays(1, &mVBState);
+        glBindVertexArray(mVBState);
+
+        glBindBuffer(GL_ARRAY_BUFFER, mVB[VB_INSTANCE]);
+        glVertexAttribPointer(POS_ATTRIB, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                              (const GLvoid*)offsetof(Vertex, pos));
+        glVertexAttribPointer(COLOR_ATTRIB, 4, GL_UNSIGNED_BYTE, GL_TRUE,
+                              sizeof(Vertex), (const GLvoid*)offsetof(Vertex, rgba));
+        glEnableVertexAttribArray(POS_ATTRIB);
+        glEnableVertexAttribArray(COLOR_ATTRIB);
+
+        glBindBuffer(GL_ARRAY_BUFFER, mVB[VB_SCALEROT]);
+        glVertexAttribPointer(SCALEROT_ATTRIB, 4, GL_FLOAT, GL_FALSE,
+                              4 * sizeof(float), 0);
+        glEnableVertexAttribArray(SCALEROT_ATTRIB);
+        glVertexAttribDivisor(SCALEROT_ATTRIB, 1);
+
+        glBindBuffer(GL_ARRAY_BUFFER, mVB[VB_OFFSET]);
+        glVertexAttribPointer(OFFSET_ATTRIB, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float),
+                              0);
+        glEnableVertexAttribArray(OFFSET_ATTRIB);
+        glVertexAttribDivisor(OFFSET_ATTRIB, 1);
+
+        ALOGV("Using OpenGL ES 3.0 renderer");
+        return true;
+    };
 
 private:
     enum { VB_INSTANCE, VB_SCALEROT, VB_OFFSET, VB_COUNT };
 
-    virtual float* mapOffsetBuf();
-    virtual void unmapOffsetBuf();
-    virtual float* mapTransformBuf();
-    virtual void unmapTransformBuf();
-    virtual void draw(unsigned int numInstances);
+    float* mapOffsetBuf(){
+        glBindBuffer(GL_ARRAY_BUFFER, mVB[VB_OFFSET]);
+        return (float*)glMapBufferRange(
+                GL_ARRAY_BUFFER, 0, MAX_INSTANCES * 2 * sizeof(float),
+                GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+    };
+    void unmapOffsetBuf(){ glUnmapBuffer(GL_ARRAY_BUFFER); };
+    float* mapTransformBuf(){
+        glBindBuffer(GL_ARRAY_BUFFER, mVB[VB_SCALEROT]);
+        return (float*)glMapBufferRange(
+                GL_ARRAY_BUFFER, 0, MAX_INSTANCES * 4 * sizeof(float),
+                GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+    };
+    void unmapTransformBuf(){glUnmapBuffer(GL_ARRAY_BUFFER);};
+    void draw(unsigned int numInstances){
+        glUseProgram(mProgram);
+        glBindVertexArray(mVBState);
+        glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, numInstances);
+    };
 
     const EGLContext mEglContext;
     GLuint mProgram;
@@ -76,87 +143,4 @@ Renderer* createES3Renderer() {
         return NULL;
     }
     return renderer;
-}
-
-RendererES3::RendererES3()
-        : mEglContext(eglGetCurrentContext()), mProgram(0), mVBState(0) {
-    for (int i = 0; i < VB_COUNT; i++) mVB[i] = 0;
-}
-
-bool RendererES3::init() {
-    mProgram = createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
-    if (!mProgram) return false;
-
-    glGenBuffers(VB_COUNT, mVB);
-    glBindBuffer(GL_ARRAY_BUFFER, mVB[VB_INSTANCE]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(QUAD), &QUAD[0], GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, mVB[VB_SCALEROT]);
-    glBufferData(GL_ARRAY_BUFFER, MAX_INSTANCES * 4 * sizeof(float), NULL,
-                 GL_DYNAMIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, mVB[VB_OFFSET]);
-    glBufferData(GL_ARRAY_BUFFER, MAX_INSTANCES * 2 * sizeof(float), NULL,
-                 GL_STATIC_DRAW);
-
-    glGenVertexArrays(1, &mVBState);
-    glBindVertexArray(mVBState);
-
-    glBindBuffer(GL_ARRAY_BUFFER, mVB[VB_INSTANCE]);
-    glVertexAttribPointer(POS_ATTRIB, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                          (const GLvoid*)offsetof(Vertex, pos));
-    glVertexAttribPointer(COLOR_ATTRIB, 4, GL_UNSIGNED_BYTE, GL_TRUE,
-                          sizeof(Vertex), (const GLvoid*)offsetof(Vertex, rgba));
-    glEnableVertexAttribArray(POS_ATTRIB);
-    glEnableVertexAttribArray(COLOR_ATTRIB);
-
-    glBindBuffer(GL_ARRAY_BUFFER, mVB[VB_SCALEROT]);
-    glVertexAttribPointer(SCALEROT_ATTRIB, 4, GL_FLOAT, GL_FALSE,
-                          4 * sizeof(float), 0);
-    glEnableVertexAttribArray(SCALEROT_ATTRIB);
-    glVertexAttribDivisor(SCALEROT_ATTRIB, 1);
-
-    glBindBuffer(GL_ARRAY_BUFFER, mVB[VB_OFFSET]);
-    glVertexAttribPointer(OFFSET_ATTRIB, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float),
-                          0);
-    glEnableVertexAttribArray(OFFSET_ATTRIB);
-    glVertexAttribDivisor(OFFSET_ATTRIB, 1);
-
-    ALOGV("Using OpenGL ES 3.0 renderer");
-    return true;
-}
-
-RendererES3::~RendererES3() {
-    /* The destructor may be called after the context has already been
-     * destroyed, in which case our objects have already been destroyed.
-     *
-     * If the context exists, it must be current. This only happens when we're
-     * cleaning up after a failed init().
-     */
-    if (eglGetCurrentContext() != mEglContext) return;
-    glDeleteVertexArrays(1, &mVBState);
-    glDeleteBuffers(VB_COUNT, mVB);
-    glDeleteProgram(mProgram);
-}
-
-float* RendererES3::mapOffsetBuf() {
-    glBindBuffer(GL_ARRAY_BUFFER, mVB[VB_OFFSET]);
-    return (float*)glMapBufferRange(
-            GL_ARRAY_BUFFER, 0, MAX_INSTANCES * 2 * sizeof(float),
-            GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
-}
-
-void RendererES3::unmapOffsetBuf() { glUnmapBuffer(GL_ARRAY_BUFFER); }
-
-float* RendererES3::mapTransformBuf() {
-    glBindBuffer(GL_ARRAY_BUFFER, mVB[VB_SCALEROT]);
-    return (float*)glMapBufferRange(
-            GL_ARRAY_BUFFER, 0, MAX_INSTANCES * 4 * sizeof(float),
-            GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
-}
-
-void RendererES3::unmapTransformBuf() { glUnmapBuffer(GL_ARRAY_BUFFER); }
-
-void RendererES3::draw(unsigned int numInstances) {
-    glUseProgram(mProgram);
-    glBindVertexArray(mVBState);
-    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, numInstances);
 }

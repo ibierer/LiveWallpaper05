@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include <EGL/egl.h>
+/*#include <EGL/egl.h>
 
 #include "gles3jni.h"
 
@@ -97,14 +97,14 @@ bool RendererES2::init() {
     return true;
 }
 
-RendererES2::~RendererES2() {
+RendererES2::~RendererES2() {*/
     /* The destructor may be called after the context has already been
      * destroyed, in which case our objects have already been destroyed.
      *
      * If the context exists, it must be current. This only happens when we're
      * cleaning up after a failed init().
      */
-    if (eglGetCurrentContext() != mEglContext) return;
+/*    if (eglGetCurrentContext() != mEglContext) return;
     glDeleteBuffers(1, &mVB);
     glDeleteProgram(mProgram);
 }
@@ -134,3 +134,4 @@ void RendererES2::draw(unsigned int numInstances) {
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     }
 }
+*/

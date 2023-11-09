@@ -67,7 +67,7 @@
 // so vertices go directly from model to clip space.
 
 struct Vertex {
-    GLfloat pos[2];
+    GLfloat pos[3];
     GLubyte rgba[4];
 };
 extern const Vertex QUAD[4];
@@ -111,7 +111,7 @@ private:
     float mAngles[MAX_INSTANCES];
 };
 
-extern Renderer* createES2Renderer();
+//extern Renderer* createES2Renderer();
 extern Renderer* createES3Renderer();
 
 #endif  // GLES3JNI_H
