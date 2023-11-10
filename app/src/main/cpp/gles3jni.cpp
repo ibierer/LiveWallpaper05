@@ -21,15 +21,6 @@
 #include <string.h>
 #include <time.h>
 
-const Vertex QUAD[4] = {
-    // Square with diagonal < 2 so that it fits in a [-1 .. 1]^2 square
-    // regardless of rotation.
-    {{-0.7f, -0.7f}, {0x00, 0xFF, 0x00}},
-    {{0.7f, -0.7f}, {0x00, 0x00, 0xFF}},
-    {{-0.7f, 0.7f}, {0xFF, 0x00, 0x00}},
-    {{0.7f, 0.7f}, {0xFF, 0xFF, 0xFF}},
-};
-
 bool checkGlError(const char* funcName) {
   GLint err = glGetError();
   if (err != GL_NO_ERROR) {
