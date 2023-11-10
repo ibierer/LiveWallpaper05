@@ -4,6 +4,36 @@
 #include <math.h>
 #include <string>
 
+namespace std {
+	class string {
+	public:
+		// Constructors
+		string();  // Default constructor
+		string(const char* str);  // Constructor from C-style string
+		string(const string& other);  // Copy constructor
+
+		// Destructor
+		~string();
+
+		// Assignment operators
+		string& operator=(const char* str);  // Assignment from C-style string
+		string& operator=(const string& other);  // Copy assignment
+
+		// Member functions
+		const char* c_str() const;  // Returns a pointer to the C-style string
+		size_t length() const;  // Returns the length of the string
+
+		// Other member functions would be implemented here...
+
+		template <typename T>
+		string to_string(T input);
+
+	private:
+		char* data;  // Pointer to the dynamically allocated character array
+		size_t size;  // Length of the string
+	};
+}
+
 template <class T>
 class _vec2 {
 public:

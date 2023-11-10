@@ -205,7 +205,7 @@ static void printGlString(const char* name, GLenum s) {
 
 // ----------------------------------------------------------------------------
 
-Renderer::Renderer() : mNumInstances(0), mLastFrameNs(0) {
+Renderer::Renderer() : mLastFrameNs(0) {
   memset(mScale, 0, sizeof(mScale));
   memset(mAngularVelocity, 0, sizeof(mAngularVelocity));
   memset(mAngles, 0, sizeof(mAngles));
@@ -219,7 +219,7 @@ void Renderer::resize(int w, int h) {
   unmapOffsetBuf();
 
   // Auto gives a signed int :-(
-  for (auto i = (unsigned)0; i < mNumInstances; i++) {
+  for (auto i = (unsigned)0; i < 1; i++) {
     mAngles[i] = drand48() * TWO_PI;
     mAngularVelocity[i] = MAX_ROT_SPEED * (2.0 * drand48() - 1.0);
   }
@@ -262,7 +262,6 @@ void Renderer::calcSceneParams(unsigned int w, unsigned int h, float* offsets) {
     }
   }
 
-  mNumInstances = ncells[0] * ncells[1];
   mScale[major] = 0.5f * CELL_SIZE * scene2clip[0];
   mScale[minor] = 0.5f * CELL_SIZE * scene2clip[1];
 }
@@ -275,7 +274,7 @@ void Renderer::step() {
   if (mLastFrameNs > 0) {
     float dt = float(nowNs - mLastFrameNs) * 0.000000001f;
 
-    for (unsigned int i = 0; i < mNumInstances; i++) {
+    for (unsigned int i = 0; i < 1; i++) {
       mAngles[i] += mAngularVelocity[i] * dt;
       if (mAngles[i] >= TWO_PI) {
         mAngles[i] -= TWO_PI;
@@ -285,7 +284,7 @@ void Renderer::step() {
     }
 
     float* transforms = mapTransformBuf();
-    for (unsigned int i = 0; i < mNumInstances; i++) {
+    for (unsigned int i = 0; i < 1; i++) {
       float s = sinf(mAngles[i]);
       float c = cosf(mAngles[i]);
       transforms[4 * i + 0] = c * mScale[0];
@@ -304,14 +303,14 @@ void Renderer::render() {
 
   glClearColor(0.2f, 0.2f, 0.3f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  draw(mNumInstances);
+  draw(1);
   checkGlError("Renderer::render");
     auto offsets = mapOffsetBuf();
     calcSceneParams(w, h, offsets);
     unmapOffsetBuf();
 
     // Auto gives a signed int :-(
-    for (auto i = (unsigned)0; i < mNumInstances; i++) {
+    for (auto i = (unsigned)0; i < 1; i++) {
         mAngles[i] = drand48() * TWO_PI;
         mAngularVelocity[i] = MAX_ROT_SPEED * (2.0 * drand48() - 1.0);
     }
@@ -354,7 +353,6 @@ void Renderer::calcSceneParams(unsigned int w, unsigned int h, float* offsets) {
         }
     }
 
-    mNumInstances = ncells[0] * ncells[1];
     mScale[major] = 0.5f * CELL_SIZE * scene2clip[0];
     mScale[minor] = 0.5f * CELL_SIZE * scene2clip[1];
 }
@@ -367,7 +365,7 @@ void Renderer::step() {
     if (mLastFrameNs > 0) {
         float dt = float(nowNs - mLastFrameNs) * 0.000000001f;
 
-        for (unsigned int i = 0; i < mNumInstances; i++) {
+        for (unsigned int i = 0; i < 1; i++) {
             mAngles[i] += mAngularVelocity[i] * dt;
             if (mAngles[i] >= TWO_PI) {
                 mAngles[i] -= TWO_PI;
@@ -377,7 +375,7 @@ void Renderer::step() {
         }
 
         float* transforms = mapTransformBuf();
-        for (unsigned int i = 0; i < mNumInstances; i++) {
+        for (unsigned int i = 0; i < 1; i++) {
             float s = sinf(mAngles[i]);
             float c = cosf(mAngles[i]);
             transforms[4 * i + 0] = c * mScale[0];
@@ -396,7 +394,7 @@ void Renderer::render() {
 
     glClearColor(0.2f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    draw(mNumInstances);
+    draw(1);
     checkGlError("Renderer::render");
 }
 

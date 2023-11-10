@@ -104,11 +104,10 @@ private:
     void calcSceneParams(unsigned int w, unsigned int h, float* offsets);
     void step();
 
-    unsigned int mNumInstances;
     float mScale[2];
-    float mAngularVelocity[MAX_INSTANCES];
+    float mAngularVelocity;
     uint64_t mLastFrameNs;
-    float mAngles[MAX_INSTANCES];
+    float mAngles;
 };
 
 //extern Renderer* createES2Renderer();
