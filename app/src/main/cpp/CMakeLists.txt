@@ -30,7 +30,6 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         #esutil.h
         #vectors.h
         #Shader.h
-        logger.h
         #OpenGLES10Helpers.h
         #popsoutofscreen.cpp
         )

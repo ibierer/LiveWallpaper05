@@ -25,7 +25,7 @@ class GLES3JNIView(context: Context) : GLSurfaceView(context) {
         }
 
         override fun onDrawFrame(gl: GL10) {
-            MainActivity.step()
+            MainActivity.step(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f)
         }
 
         override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {
