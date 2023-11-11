@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-#ifndef GLES3JNI_H
-#define GLES3JNI_H 1
-
+#include <jni.h>
+#include <string>
+#include <cstdlib>
+#include <string>
+#include <ctime>
+#include <stack>
 #include <android/log.h>
 #include <math.h>
 #include <EGL/egl.h>
@@ -55,78 +58,17 @@
 #define TWO_PI (2.0 * M_PI)
 #define MAX_ROT_SPEED (0.3 * TWO_PI)
 
-// This demo uses three coordinate spaces:
-// - The model (a quad) is in a [-1 .. 1]^2 space
-// - Scene space is either
-//    landscape: [-1 .. 1] x [-1/(2*w/h) .. 1/(2*w/h)]
-//    portrait:  [-1/(2*h/w) .. 1/(2*h/w)] x [-1 .. 1]
-// - Clip space in OpenGL is [-1 .. 1]^2
-//
-// Conceptually, the quads are rotated in model space, then scaled (uniformly)
-// and translated to place them in scene space. Scene space is then
-// non-uniformly scaled to clip space. In practice the transforms are combined
-// so vertices go directly from model to clip space.
-
-struct Vertex {
-    GLfloat pos[3];
-    GLubyte rgba[4];
-};
-extern const Vertex QUAD[4];
-
-// returns true if a GL error occurred
-extern bool checkGlError(const char* funcName);
-extern GLuint createShader(GLenum shaderType, const char* src);
-extern GLuint createProgram(const char* vtxSrc, const char* fragSrc);
-
-// ----------------------------------------------------------------------------
-// Interface to the ES2 and ES3 renderers, used by JNI code.
-
-class Renderer {
-public:
-    virtual ~Renderer();
-    void resize(int w, int h);
-    void render();
-
-protected:
-    Renderer();
-
-    // return a pointer to a buffer of MAX_INSTANCES * sizeof(vec2).
-    // the buffer is filled with per-instance offsets, then unmapped.
-    virtual float* mapOffsetBuf() = 0;
-    virtual void unmapOffsetBuf() = 0;
-    // return a pointer to a buffer of MAX_INSTANCES * sizeof(vec4).
-    // the buffer is filled with per-instance scale and rotation transforms.
-    virtual float* mapTransformBuf() = 0;
-    virtual void unmapTransformBuf() = 0;
-
-    virtual void draw(unsigned int numInstances) = 0;
-
-private:
-    void calcSceneParams(unsigned int w, unsigned int h, float* offsets);
-    void step();
-
-    float mScale[2];
-    float mAngularVelocity;
-    uint64_t mLastFrameNs;
-    float mAngles;
-};
-
-//extern Renderer* createES2Renderer();
-extern Renderer* createES3Renderer();
-
-#endif  // GLES3JNI_H
 #define STR(s) #s
 #define STRV(s) STR(s)
 
 #define POS_ATTRIB 0
-#define COLOR_ATTRIB 1
+//#define COLOR_ATTRIB 1
 #define SCALEROT_ATTRIB 2
 #define OFFSET_ATTRIB 3
 
 static const char VERTEX_SHADER[] =
         "#version 300 es\n"
         "layout(location = " STRV(POS_ATTRIB) ") in vec3 pos;\n"
-        "layout(location=" STRV(COLOR_ATTRIB) ") in vec4 color;\n"
         "layout(location=" STRV(SCALEROT_ATTRIB) ") in vec4 scaleRot;\n"
         "layout(location=" STRV(OFFSET_ATTRIB) ") in vec2 offset;\n"
         "out vec4 vColor;\n"
@@ -145,13 +87,48 @@ static const char FRAGMENT_SHADER[] =
         "    outColor = vColor;\n"
         "}\n";
 
-class RendererES3 : public Renderer {
+// This demo uses three coordinate spaces:
+// - The model (a quad) is in a [-1 .. 1]^2 space
+// - Scene space is either
+//    landscape: [-1 .. 1] x [-1/(2*w/h) .. 1/(2*w/h)]
+//    portrait:  [-1/(2*h/w) .. 1/(2*h/w)] x [-1 .. 1]
+// - Clip space in OpenGL is [-1 .. 1]^2
+//
+// Conceptually, the quads are rotated in model space, then scaled (uniformly)
+// and translated to place them in scene space. Scene space is then
+// non-uniformly scaled to clip space. In practice the transforms are combined
+// so vertices go directly from model to clip space.
+
+struct Vertex {
+    GLfloat pos[3];
+    GLubyte rgba[4];
+};
+const Vertex QUAD[4] = {
+        // Square with diagonal < 2 so that it fits in a [-1 .. 1]^2 square
+        // regardless of rotation.
+        {{-0.7f, -0.7f, -1.0f}, {0x00, 0xFF, 0x00}},
+        {{0.7f, -0.7f, 1.0f}, {0x00, 0x00, 0xFF}},
+        {{-0.7f, 0.7f, -1.0f}, {0xFF, 0x00, 0x00}},
+        {{0.7f, 0.7f, 1.0f}, {0xFF, 0xFF, 0xFF}},
+};
+
+// returns true if a GL error occurred
+bool checkGlError(const char* funcName);
+GLuint createShader(GLenum shaderType, const char* src);
+GLuint createProgram(const char* vtxSrc, const char* fragSrc);
+
+// ----------------------------------------------------------------------------
+// Interface to the ES2 and ES3 renderers, used by JNI code.
+
+class Renderer {
 public:
-    RendererES3()
-            : mEglContext(eglGetCurrentContext()), mProgram(0), mVBState(0) {
+    Renderer() : mEglContext(eglGetCurrentContext()), mProgram(0), mVBState(0), mLastFrameNs(0){
+        memset(mScale, 0, sizeof(mScale));
+        memset(&mAngularVelocity, 0, sizeof(float));
+        memset(&mAngles, 0, sizeof(float));
         for (int i = 0; i < VB_COUNT; i++) mVB[i] = 0;
-    }
-    ~RendererES3(){
+    };
+    ~Renderer(){
         /* The destructor may be called after the context has already been
          * destroyed, in which case our objects have already been destroyed.
          *
@@ -162,6 +139,27 @@ public:
         glDeleteVertexArrays(1, &mVBState);
         glDeleteBuffers(VB_COUNT, mVB);
         glDeleteProgram(mProgram);
+    };
+    void resize(int w, int h){
+        auto offsets = mapOffsetBuf();
+        calcSceneParams(w, h, offsets);
+        unmapOffsetBuf();
+
+        // Auto gives a signed int :-(
+        mAngles = drand48() * TWO_PI;
+        mAngularVelocity = MAX_ROT_SPEED * (2.0 * drand48() - 1.0);
+
+        mLastFrameNs = 0;
+
+        glViewport(0, 0, w, h);
+    };
+    void render(){
+        step();
+
+        glClearColor(0.2f, 0.2f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        draw(1);
+        checkGlError("Renderer::render");
     };
     bool init(){
         mProgram = createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
@@ -183,10 +181,7 @@ public:
         glBindBuffer(GL_ARRAY_BUFFER, mVB[VB_INSTANCE]);
         glVertexAttribPointer(POS_ATTRIB, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
                               (const GLvoid*)offsetof(Vertex, pos));
-        glVertexAttribPointer(COLOR_ATTRIB, 4, GL_UNSIGNED_BYTE, GL_TRUE,
-                              sizeof(Vertex), (const GLvoid*)offsetof(Vertex, rgba));
         glEnableVertexAttribArray(POS_ATTRIB);
-        glEnableVertexAttribArray(COLOR_ATTRIB);
 
         glBindBuffer(GL_ARRAY_BUFFER, mVB[VB_SCALEROT]);
         glVertexAttribPointer(SCALEROT_ATTRIB, 4, GL_FLOAT, GL_FALSE,
@@ -204,9 +199,10 @@ public:
         return true;
     };
 
-private:
-    enum { VB_INSTANCE, VB_SCALEROT, VB_OFFSET, VB_COUNT };
+protected:
 
+    // return a pointer to a buffer of MAX_INSTANCES * sizeof(vec2).
+    // the buffer is filled with per-instance offsets, then unmapped.
     float* mapOffsetBuf(){
         glBindBuffer(GL_ARRAY_BUFFER, mVB[VB_OFFSET]);
         return (float*)glMapBufferRange(
@@ -214,6 +210,8 @@ private:
                 GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
     };
     void unmapOffsetBuf(){ glUnmapBuffer(GL_ARRAY_BUFFER); };
+    // return a pointer to a buffer of MAX_INSTANCES * sizeof(vec4).
+    // the buffer is filled with per-instance scale and rotation transforms.
     float* mapTransformBuf(){
         glBindBuffer(GL_ARRAY_BUFFER, mVB[VB_SCALEROT]);
         return (float*)glMapBufferRange(
@@ -221,6 +219,7 @@ private:
                 GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
     };
     void unmapTransformBuf(){glUnmapBuffer(GL_ARRAY_BUFFER);};
+
     void draw(unsigned int numInstances){
         glUseProgram(mProgram);
         glBindVertexArray(mVBState);
@@ -228,27 +227,83 @@ private:
     };
 
     const EGLContext mEglContext;
+    enum { VB_INSTANCE, VB_SCALEROT, VB_OFFSET, VB_COUNT };
     GLuint mProgram;
     GLuint mVB[VB_COUNT];
     GLuint mVBState;
+
+private:
+    void calcSceneParams(unsigned int w, unsigned int h, float* offsets){
+        // Calculations are done in "landscape", i.e. assuming dim[0] >= dim[1].
+        // Only at the end are values put in the opposite order if h > w.
+        const float dim[2] = {fmaxf(w, h), fminf(w, h)};
+        const float aspect[2] = {dim[0] / dim[1], dim[1] / dim[0]};
+        const float scene2clip[2] = {1.0f, aspect[0]};
+        const int ncells[2] = {static_cast<int>(1),
+                               (int)floorf(aspect[1])};
+
+        float centers[2][MAX_INSTANCES_PER_SIDE];
+        for (int d = 0; d < 2; d++) {
+            auto offset = -ncells[d] / 1;  // -1.0 for d=0
+            for (auto i = 0; i < ncells[d]; i++) {
+                centers[d][i] = scene2clip[d] * (2.0f * (i + 0.5f) + offset);
+            }
+        }
+
+        int major = w >= h ? 0 : 1;
+        int minor = w >= h ? 1 : 0;
+        offsets[major] = centers[0][0];
+        offsets[minor] = centers[1][0];
+
+        mScale[major] = 0.5f * 2.0f * scene2clip[0];
+        mScale[minor] = 0.5f * 2.0f * scene2clip[1];
+    };
+    void step(){
+        timespec now;
+        clock_gettime(CLOCK_MONOTONIC, &now);
+        auto nowNs = now.tv_sec * 1000000000ull + now.tv_nsec;
+
+        if (mLastFrameNs > 0) {
+            float dt = float(nowNs - mLastFrameNs) * 0.000000001f;
+
+            mAngles += mAngularVelocity * dt;
+            if (mAngles >= TWO_PI) {
+                mAngles -= TWO_PI;
+            } else if (mAngles <= -TWO_PI) {
+                mAngles += TWO_PI;
+            }
+
+            float* transforms = mapTransformBuf();
+            float s = sinf(mAngles);
+            float c = cosf(mAngles);
+            transforms[0] = c * mScale[0];
+            transforms[1] = s * mScale[1];
+            transforms[2] = -s * mScale[0];
+            transforms[3] = c * mScale[1];
+            unmapTransformBuf();
+        }
+
+        mLastFrameNs = nowNs;
+    };
+
+    float mScale[2];
+    float mAngularVelocity;
+    uint64_t mLastFrameNs;
+    float mAngles;
 };
 
+// ----------------------------------------------------------------------------
+
+static Renderer* g_renderer = NULL;
+
 Renderer* createES3Renderer() {
-    RendererES3* renderer = new RendererES3;
+    Renderer* renderer = new Renderer;
     if (!renderer->init()) {
         delete renderer;
         return NULL;
     }
     return renderer;
 }
-
-
-#include <jni.h>
-#include <string>
-#include <cstdlib>
-#include <string>
-#include <ctime>
-#include <stack>
 
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_example_livewallpaper05_MainActivity_stringFromJNI(
@@ -257,15 +312,6 @@ Java_com_example_livewallpaper05_MainActivity_stringFromJNI(
     std::string hello = "Hello from C++";
     return env->NewStringUTF(hello.c_str());
 }
-
-const Vertex QUAD[4] = {
-        // Square with diagonal < 2 so that it fits in a [-1 .. 1]^2 square
-        // regardless of rotation.
-        {{-0.7f, -0.7f, -1.0f}, {0x00, 0xFF, 0x00}},
-        {{0.7f, -0.7f, 1.0f}, {0x00, 0x00, 0xFF}},
-        {{-0.7f, 0.7f, -1.0f}, {0xFF, 0x00, 0x00}},
-        {{0.7f, 0.7f, 1.0f}, {0xFF, 0xFF, 0xFF}},
-};
 
 bool checkGlError(const char* funcName) {
     GLint err = glGetError();
@@ -356,95 +402,6 @@ static void printGlString(const char* name, GLenum s) {
 }
 
 // ----------------------------------------------------------------------------
-
-Renderer::Renderer() : mLastFrameNs(0) {
-    memset(mScale, 0, sizeof(mScale));
-    memset(&mAngularVelocity, 0, sizeof(float));
-    memset(&mAngles, 0, sizeof(float));
-}
-
-Renderer::~Renderer() {}
-
-void Renderer::resize(int w, int h) {
-    auto offsets = mapOffsetBuf();
-    calcSceneParams(w, h, offsets);
-    unmapOffsetBuf();
-
-    // Auto gives a signed int :-(
-    mAngles = drand48() * TWO_PI;
-    mAngularVelocity = MAX_ROT_SPEED * (2.0 * drand48() - 1.0);
-
-    mLastFrameNs = 0;
-
-    glViewport(0, 0, w, h);
-}
-
-void Renderer::calcSceneParams(unsigned int w, unsigned int h, float* offsets) {
-    // Calculations are done in "landscape", i.e. assuming dim[0] >= dim[1].
-    // Only at the end are values put in the opposite order if h > w.
-    const float dim[2] = {fmaxf(w, h), fminf(w, h)};
-    const float aspect[2] = {dim[0] / dim[1], dim[1] / dim[0]};
-    const float scene2clip[2] = {1.0f, aspect[0]};
-    const int ncells[2] = {static_cast<int>(1),
-                           (int)floorf(aspect[1])};
-
-    float centers[2][MAX_INSTANCES_PER_SIDE];
-    for (int d = 0; d < 2; d++) {
-        auto offset = -ncells[d] / 1;  // -1.0 for d=0
-        for (auto i = 0; i < ncells[d]; i++) {
-            centers[d][i] = scene2clip[d] * (2.0f * (i + 0.5f) + offset);
-        }
-    }
-
-    int major = w >= h ? 0 : 1;
-    int minor = w >= h ? 1 : 0;
-    offsets[major] = centers[0][0];
-    offsets[minor] = centers[1][0];
-
-    mScale[major] = 0.5f * 2.0f * scene2clip[0];
-    mScale[minor] = 0.5f * 2.0f * scene2clip[1];
-}
-
-void Renderer::step() {
-    timespec now;
-    clock_gettime(CLOCK_MONOTONIC, &now);
-    auto nowNs = now.tv_sec * 1000000000ull + now.tv_nsec;
-
-    if (mLastFrameNs > 0) {
-        float dt = float(nowNs - mLastFrameNs) * 0.000000001f;
-
-        mAngles += mAngularVelocity * dt;
-        if (mAngles >= TWO_PI) {
-            mAngles -= TWO_PI;
-        } else if (mAngles <= -TWO_PI) {
-            mAngles += TWO_PI;
-        }
-
-        float* transforms = mapTransformBuf();
-        float s = sinf(mAngles);
-        float c = cosf(mAngles);
-        transforms[0] = c * mScale[0];
-        transforms[1] = s * mScale[1];
-        transforms[2] = -s * mScale[0];
-        transforms[3] = c * mScale[1];
-        unmapTransformBuf();
-    }
-
-    mLastFrameNs = nowNs;
-}
-
-void Renderer::render() {
-    step();
-
-    glClearColor(0.2f, 0.2f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    draw(1);
-    checkGlError("Renderer::render");
-}
-
-// ----------------------------------------------------------------------------
-
-static Renderer* g_renderer = NULL;
 
 extern "C" {
 JNIEXPORT void JNICALL Java_com_example_livewallpaper05_MainActivity_00024Companion_init(JNIEnv* env,
