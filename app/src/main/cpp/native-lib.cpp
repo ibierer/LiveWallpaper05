@@ -1,4 +1,247 @@
-#include "gles3jni.h"
+/*
+ * Copyright 2013 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#ifndef GLES3JNI_H
+#define GLES3JNI_H 1
+
+#include <android/log.h>
+#include <math.h>
+#include <EGL/egl.h>
+
+#if DYNAMIC_ES3
+#include "gl3stub.h"
+#else
+// Include the latest possible header file( GL version header )
+#if __ANDROID_API__ >= 24
+#include <GLES3/gl32.h>
+#elif __ANDROID_API__ >= 21
+#include <GLES3/gl31.h>
+#else
+#include <GLES3/gl3.h>
+#endif
+
+#endif
+
+#define DEBUG 1
+
+#define LOG_TAG "GLES3JNI"
+#define ALOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#if DEBUG
+#define ALOGV(...) \
+  __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__)
+#else
+#define ALOGV(...)
+#endif
+
+// ----------------------------------------------------------------------------
+// Types, functions, and data used by both ES2 and ES3 renderers.
+// Defined in gles3jni.cpp.
+
+#define MAX_INSTANCES_PER_SIDE 16
+#define MAX_INSTANCES (MAX_INSTANCES_PER_SIDE * MAX_INSTANCES_PER_SIDE)
+#define TWO_PI (2.0 * M_PI)
+#define MAX_ROT_SPEED (0.3 * TWO_PI)
+
+// This demo uses three coordinate spaces:
+// - The model (a quad) is in a [-1 .. 1]^2 space
+// - Scene space is either
+//    landscape: [-1 .. 1] x [-1/(2*w/h) .. 1/(2*w/h)]
+//    portrait:  [-1/(2*h/w) .. 1/(2*h/w)] x [-1 .. 1]
+// - Clip space in OpenGL is [-1 .. 1]^2
+//
+// Conceptually, the quads are rotated in model space, then scaled (uniformly)
+// and translated to place them in scene space. Scene space is then
+// non-uniformly scaled to clip space. In practice the transforms are combined
+// so vertices go directly from model to clip space.
+
+struct Vertex {
+    GLfloat pos[3];
+    GLubyte rgba[4];
+};
+extern const Vertex QUAD[4];
+
+// returns true if a GL error occurred
+extern bool checkGlError(const char* funcName);
+extern GLuint createShader(GLenum shaderType, const char* src);
+extern GLuint createProgram(const char* vtxSrc, const char* fragSrc);
+
+// ----------------------------------------------------------------------------
+// Interface to the ES2 and ES3 renderers, used by JNI code.
+
+class Renderer {
+public:
+    virtual ~Renderer();
+    void resize(int w, int h);
+    void render();
+
+protected:
+    Renderer();
+
+    // return a pointer to a buffer of MAX_INSTANCES * sizeof(vec2).
+    // the buffer is filled with per-instance offsets, then unmapped.
+    virtual float* mapOffsetBuf() = 0;
+    virtual void unmapOffsetBuf() = 0;
+    // return a pointer to a buffer of MAX_INSTANCES * sizeof(vec4).
+    // the buffer is filled with per-instance scale and rotation transforms.
+    virtual float* mapTransformBuf() = 0;
+    virtual void unmapTransformBuf() = 0;
+
+    virtual void draw(unsigned int numInstances) = 0;
+
+private:
+    void calcSceneParams(unsigned int w, unsigned int h, float* offsets);
+    void step();
+
+    float mScale[2];
+    float mAngularVelocity;
+    uint64_t mLastFrameNs;
+    float mAngles;
+};
+
+//extern Renderer* createES2Renderer();
+extern Renderer* createES3Renderer();
+
+#endif  // GLES3JNI_H
+#define STR(s) #s
+#define STRV(s) STR(s)
+
+#define POS_ATTRIB 0
+#define COLOR_ATTRIB 1
+#define SCALEROT_ATTRIB 2
+#define OFFSET_ATTRIB 3
+
+static const char VERTEX_SHADER[] =
+        "#version 300 es\n"
+        "layout(location = " STRV(POS_ATTRIB) ") in vec3 pos;\n"
+        "layout(location=" STRV(COLOR_ATTRIB) ") in vec4 color;\n"
+        "layout(location=" STRV(SCALEROT_ATTRIB) ") in vec4 scaleRot;\n"
+        "layout(location=" STRV(OFFSET_ATTRIB) ") in vec2 offset;\n"
+        "out vec4 vColor;\n"
+        "void main() {\n"
+        "    mat2 sr = mat2(scaleRot.xy, scaleRot.zw);\n"
+        "    gl_Position = vec4(sr*pos.xy + offset, pos.z, 1.0);\n"
+        "    vColor = gl_Position + vec4(0.5, 0.5, 0.5, 0.0);\n"
+        "}\n";
+
+static const char FRAGMENT_SHADER[] =
+        "#version 300 es\n"
+        "precision mediump float;\n"
+        "in vec4 vColor;\n"
+        "out vec4 outColor;\n"
+        "void main() {\n"
+        "    outColor = vColor;\n"
+        "}\n";
+
+class RendererES3 : public Renderer {
+public:
+    RendererES3()
+            : mEglContext(eglGetCurrentContext()), mProgram(0), mVBState(0) {
+        for (int i = 0; i < VB_COUNT; i++) mVB[i] = 0;
+    }
+    ~RendererES3(){
+        /* The destructor may be called after the context has already been
+         * destroyed, in which case our objects have already been destroyed.
+         *
+         * If the context exists, it must be current. This only happens when we're
+         * cleaning up after a failed init().
+         */
+        if (eglGetCurrentContext() != mEglContext) return;
+        glDeleteVertexArrays(1, &mVBState);
+        glDeleteBuffers(VB_COUNT, mVB);
+        glDeleteProgram(mProgram);
+    };
+    bool init(){
+        mProgram = createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
+        if (!mProgram) return false;
+
+        glGenBuffers(VB_COUNT, mVB);
+        glBindBuffer(GL_ARRAY_BUFFER, mVB[VB_INSTANCE]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(QUAD), &QUAD[0], GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, mVB[VB_SCALEROT]);
+        glBufferData(GL_ARRAY_BUFFER, MAX_INSTANCES * 4 * sizeof(float), NULL,
+                     GL_DYNAMIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, mVB[VB_OFFSET]);
+        glBufferData(GL_ARRAY_BUFFER, MAX_INSTANCES * 2 * sizeof(float), NULL,
+                     GL_STATIC_DRAW);
+
+        glGenVertexArrays(1, &mVBState);
+        glBindVertexArray(mVBState);
+
+        glBindBuffer(GL_ARRAY_BUFFER, mVB[VB_INSTANCE]);
+        glVertexAttribPointer(POS_ATTRIB, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                              (const GLvoid*)offsetof(Vertex, pos));
+        glVertexAttribPointer(COLOR_ATTRIB, 4, GL_UNSIGNED_BYTE, GL_TRUE,
+                              sizeof(Vertex), (const GLvoid*)offsetof(Vertex, rgba));
+        glEnableVertexAttribArray(POS_ATTRIB);
+        glEnableVertexAttribArray(COLOR_ATTRIB);
+
+        glBindBuffer(GL_ARRAY_BUFFER, mVB[VB_SCALEROT]);
+        glVertexAttribPointer(SCALEROT_ATTRIB, 4, GL_FLOAT, GL_FALSE,
+                              4 * sizeof(float), 0);
+        glEnableVertexAttribArray(SCALEROT_ATTRIB);
+        glVertexAttribDivisor(SCALEROT_ATTRIB, 1);
+
+        glBindBuffer(GL_ARRAY_BUFFER, mVB[VB_OFFSET]);
+        glVertexAttribPointer(OFFSET_ATTRIB, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float),
+                              0);
+        glEnableVertexAttribArray(OFFSET_ATTRIB);
+        glVertexAttribDivisor(OFFSET_ATTRIB, 1);
+
+        ALOGV("Using OpenGL ES 3.0 renderer");
+        return true;
+    };
+
+private:
+    enum { VB_INSTANCE, VB_SCALEROT, VB_OFFSET, VB_COUNT };
+
+    float* mapOffsetBuf(){
+        glBindBuffer(GL_ARRAY_BUFFER, mVB[VB_OFFSET]);
+        return (float*)glMapBufferRange(
+                GL_ARRAY_BUFFER, 0, MAX_INSTANCES * 2 * sizeof(float),
+                GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+    };
+    void unmapOffsetBuf(){ glUnmapBuffer(GL_ARRAY_BUFFER); };
+    float* mapTransformBuf(){
+        glBindBuffer(GL_ARRAY_BUFFER, mVB[VB_SCALEROT]);
+        return (float*)glMapBufferRange(
+                GL_ARRAY_BUFFER, 0, MAX_INSTANCES * 4 * sizeof(float),
+                GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+    };
+    void unmapTransformBuf(){glUnmapBuffer(GL_ARRAY_BUFFER);};
+    void draw(unsigned int numInstances){
+        glUseProgram(mProgram);
+        glBindVertexArray(mVBState);
+        glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, numInstances);
+    };
+
+    const EGLContext mEglContext;
+    GLuint mProgram;
+    GLuint mVB[VB_COUNT];
+    GLuint mVBState;
+};
+
+Renderer* createES3Renderer() {
+    RendererES3* renderer = new RendererES3;
+    if (!renderer->init()) {
+        delete renderer;
+        return NULL;
+    }
+    return renderer;
+}
+
 
 #include <jni.h>
 #include <string>
@@ -2178,6 +2421,10 @@ private:
     }
 } gl;
 
+vec3 accelerometerVectorInput;
+vec4 rotationVectorInput;
+int framesDrawn = 0;
+
 // Our saved state data.
 struct saved_state {
     float angle;
@@ -2204,16 +2451,16 @@ struct engine
     EGLContext context;*/
     //EGLint width;
     //EGLint height;
-    vec3 accelerometerVectorInput;
-    vec4 rotationVectorInput;
-    int framesDrawn = 0;
+    //vec3 accelerometerVectorInput;
+    //vec4 rotationVectorInput;
+    //int framesDrawn = 0;
     struct saved_state state;
 };
 struct engine* engine;
 
 void onDrawFrame(float acc_x, float acc_y, float acc_z, float rot_x, float rot_y, float rot_z, float rot_w){
-    //engine->accelerometerVectorInput = vec3(acc_x, acc_y, acc_z);
-    //engine->rotationVectorInput = vec4(rot_x, rot_y, rot_z, rot_w);
+    accelerometerVectorInput = vec3(acc_x, acc_y, acc_z);
+    rotationVectorInput = vec4(rot_x, rot_y, rot_z, rot_w);
     if(initiated) {
         //if (engine->display == NULL)
         {
@@ -2239,14 +2486,14 @@ void onDrawFrame(float acc_x, float acc_y, float acc_z, float rot_x, float rot_y
         gl.glLoadIdentity();
 
         vec3 cameraPosition =
-                quaternionTo3x3(engine->rotationVectorInput) * vec3(0.0f, 0.0f, 10.0f);
-        /*gl.rotateTransformationMatrix(engine->rotationVectorInput);
+                quaternionTo3x3(rotationVectorInput) * vec3(0.0f, 0.0f, 10.0f);
+        gl.rotateTransformationMatrix(rotationVectorInput);
         gl.glTranslatef(-cameraPosition.x, -cameraPosition.y, -cameraPosition.z);
 
         gl.drawCube(vec3(0.0f, 0.0f, 0.0f));
         gl.drawCube(vec3(0.0f, 0.0f, 2.0f));
 
-        engine->framesDrawn++;*/
+        framesDrawn++;
     }
 }
 void onSurfaceChanged(int width, int height){
