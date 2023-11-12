@@ -25,14 +25,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -lGLESv3 -lEGL -O3 -fno-rtti 
 add_library(${CMAKE_PROJECT_NAME} SHARED
         # List C/C++ source files with relative paths to this CMakeLists.txt.
         native-lib.cpp
-        #RendererES2.cpp
-        RendererES3.cpp
-        #esutil.h
-        #vectors.h
-        #Shader.h
-        logger.h
-        #OpenGLES10Helpers.h
-        #popsoutofscreen.cpp
         )
 
 # Specifies libraries CMake should link to your target library. You

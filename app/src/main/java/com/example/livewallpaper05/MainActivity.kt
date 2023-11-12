@@ -46,6 +46,6 @@ class MainActivity : Activity() {
 
         external fun init()
         external fun resize(width: Int, height: Int)
-        external fun step()
+        external fun step(acc_x: Float, acc_y: Float, acc_z: Float, rot_x: Float, rot_y: Float, rot_z: Float, rot_w: Float)
     }
 }

@@ -1,28 +1,134 @@
-#include "gles3jni.h"
+/*
+ * Copyright 2013 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #include <jni.h>
 #include <string>
 #include <cstdlib>
 #include <string>
 #include <ctime>
+#include <stack>
+#include <android/log.h>
+#include <cmath>
+#include <EGL/egl.h>
+#include "cyCodeBase-master/cyMatrix.h"
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_com_example_livewallpaper05_MainActivity_stringFromJNI(
-        JNIEnv* env,
-        jobject /* this */) {
-    std::string hello = "Hello from C++";
-    return env->NewStringUTF(hello.c_str());
-}
+using cy::Matrix4;
+using cy::Vec3;
 
-const Vertex QUAD[4] = {
+#if DYNAMIC_ES3
+#include "gl3stub.h"
+#else
+// Include the latest possible header file( GL version header )
+#if __ANDROID_API__ >= 24
+#include <GLES3/gl32.h>
+#elif __ANDROID_API__ >= 21
+#include <GLES3/gl31.h>
+#else
+#include <GLES3/gl3.h>
+#endif
+
+#endif
+
+#define DEBUG 1
+
+#define LOG_TAG "GLES3JNI"
+#define ALOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#if DEBUG
+#define ALOGV(...) \
+  __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__)
+#else
+#define ALOGV(...)
+#endif
+
+#define STR(s) #s
+#define STRV(s) STR(s)
+
+#define POS_ATTRIB 0
+
+static const char VERTEX_SHADER[] =
+        "#version 310 es\n"
+        "layout(location = " STRV(POS_ATTRIB) ") in vec3 pos;\n"
+        "uniform mat4 mvp;\n"
+        "uniform vec4 color;\n"
+        "out vec4 vColor;\n"
+        "void main() {\n"
+        "    gl_Position = mvp * vec4(pos, 1.0);\n"
+        "    vColor = color;\n"
+        "}\n";
+
+static const char FRAGMENT_SHADER[] =
+        "#version 310 es\n"
+        "precision mediump float;\n"
+        "in vec4 vColor;\n"
+        "out vec4 outColor;\n"
+        "void main() {\n"
+        "    outColor = vColor;\n"
+        "}\n";
+
+// This demo uses three coordinate spaces:
+// - The model (a quad) is in a [-1 .. 1]^2 space
+// - Scene space is either
+//    landscape: [-1 .. 1] x [-1/(2*w/h) .. 1/(2*w/h)]
+//    portrait:  [-1/(2*h/w) .. 1/(2*h/w)] x [-1 .. 1]
+// - Clip space in OpenGL is [-1 .. 1]^2
+//
+// Conceptually, the quads are rotated in model space, then scaled (uniformly)
+// and translated to place them in scene space. Scene space is then
+// non-uniformly scaled to clip space. In practice the transforms are combined
+// so vertices go directly from model to clip space.
+
+struct Vertex {
+    GLfloat pos[3];
+};
+const Vertex BOX[] = {
         // Square with diagonal < 2 so that it fits in a [-1 .. 1]^2 square
         // regardless of rotation.
-        {{-0.7f, -0.7f, 2.0f}, {0x00, 0xFF, 0x00}},
-        {{0.7f, -0.7f, -2.0f}, {0x00, 0x00, 0xFF}},
-        {{-0.7f, 0.7f, 2.0f}, {0xFF, 0x00, 0x00}},
-        {{0.7f, 0.7f, -2.0f}, {0xFF, 0xFF, 0xFF}},
+        // FRONT
+        {{-0.5f, -0.5f,  0.5f}},
+        {{ 0.5f, -0.5f,  0.5f}},
+        {{-0.5f,  0.5f,  0.5f}},
+        {{ 0.5f,  0.5f,  0.5f}},
+        // BACK
+        {{-0.5f, -0.5f, -0.5f}},
+        {{-0.5f,  0.5f, -0.5f}},
+        {{ 0.5f, -0.5f, -0.5f}},
+        {{ 0.5f,  0.5f, -0.5f}},
+        // LEFT
+        {{-0.5f, -0.5f,  0.5f}},
+        {{-0.5f,  0.5f,  0.5f}},
+        {{-0.5f, -0.5f, -0.5f}},
+        {{-0.5f,  0.5f, -0.5f}},
+        // RIGHT
+        {{ 0.5f, -0.5f, -0.5f}},
+        {{ 0.5f,  0.5f, -0.5f}},
+        {{ 0.5f, -0.5f,  0.5f}},
+        {{ 0.5f,  0.5f,  0.5f}},
+        // TOP
+        {{-0.5f,  0.5f,  0.5f}},
+        {{ 0.5f,  0.5f,  0.5f}},
+        {{-0.5f,  0.5f, -0.5f}},
+        {{ 0.5f,  0.5f, -0.5f}},
+        // BOTTOM
+        {{-0.5f, -0.5f,  0.5f}},
+        {{-0.5f, -0.5f, -0.5f}},
+        {{ 0.5f, -0.5f,  0.5f}},
+        {{ 0.5f, -0.5f, -0.5f}}
 };
 
+// returns true if a GL error occurred
 bool checkGlError(const char* funcName) {
     GLint err = glGetError();
     if (err != GL_NO_ERROR) {
@@ -111,114 +217,115 @@ static void printGlString(const char* name, GLenum s) {
     ALOGV("GL %s: %s\n", name, v);
 }
 
-// ----------------------------------------------------------------------------
-
-Renderer::Renderer() : mNumInstances(0), mLastFrameNs(0) {
-    memset(mScale, 0, sizeof(mScale));
-    memset(mAngularVelocity, 0, sizeof(mAngularVelocity));
-    memset(mAngles, 0, sizeof(mAngles));
+Matrix4<float> transformation;
+std::stack <Matrix4<float>> transformationStack;
+GLuint mProgram;
+void glColor4f(float r, float g, float b, float a){
+    glUniform4f(glGetUniformLocation(mProgram, "color"), r, g, b, a);
 }
 
-Renderer::~Renderer() {}
+class Renderer {
 
-void Renderer::resize(int w, int h) {
-    auto offsets = mapOffsetBuf();
-    calcSceneParams(w, h, offsets);
-    unmapOffsetBuf();
+public:
 
-    // Auto gives a signed int :-(
-    for (auto i = (unsigned)0; i < mNumInstances; i++) {
-        mAngles[i] = drand48() * TWO_PI;
-        mAngularVelocity[i] = MAX_ROT_SPEED * (2.0 * drand48() - 1.0);
-    }
+    Renderer() : mEglContext(eglGetCurrentContext()), mVBState(0), framesRendered(0){
+        mProgram = 0;
+    };
 
-    mLastFrameNs = 0;
+    ~Renderer(){
+        /* The destructor may be called after the context has already been
+         * destroyed, in which case our objects have already been destroyed.
+         *
+         * If the context exists, it must be current. This only happens when we're
+         * cleaning up after a failed init().
+         */
+        if (eglGetCurrentContext() != mEglContext) return;
+        glDeleteVertexArrays(1, &mVBState);
+        glDeleteBuffers(1, mVB);
+        glDeleteProgram(mProgram);
+    };
 
-    glViewport(0, 0, w, h);
-}
+    void resize(int w, int h){
+        screenWidth = w;
+        screenHeight = h;
+        glViewport(0, 0, w, h);
+    };
 
-void Renderer::calcSceneParams(unsigned int w, unsigned int h, float* offsets) {
-    // number of cells along the larger screen dimension
-    const float NCELLS_MAJOR = MAX_INSTANCES_PER_SIDE;
-    // cell size in scene space
-    const float CELL_SIZE = 2.0f / NCELLS_MAJOR;
+    void render(){
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
+        glEnableVertexAttribArray(POS_ATTRIB);
+        glClearColor(0.2f, 0.2f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glUseProgram(mProgram);
+        Matrix4<float> perspective;
+        perspective.SetPerspective(45.0f, (float)screenWidth / (float)screenHeight, 0.1f, 1000.0f);
+        Matrix4<float> translation;
+        translation = translation.Translation(Vec3<float>(Vec3<float>(0.0f, 0.0f, sinf(framesRendered / 10.0f) - 3.0f)));
+        Matrix4<float> rotation;
+        rotation = rotation.RotationY((float)framesRendered / 10.0f);
+        Matrix4<float> MVP = perspective * translation * rotation;
+        glUniformMatrix4fv(
+                glGetUniformLocation(mProgram, "mvp"),
+                1,
+                GL_FALSE,
+                (GLfloat*)&MVP.cell);
+        glBindVertexArray(mVBState);
+        glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        glDrawArrays(GL_TRIANGLE_STRIP, 4, 4);
+        glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
+        glDrawArrays(GL_TRIANGLE_STRIP, 8, 4);
+        glDrawArrays(GL_TRIANGLE_STRIP, 12, 4);
+        glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
+        glDrawArrays(GL_TRIANGLE_STRIP, 16, 4);
+        glDrawArrays(GL_TRIANGLE_STRIP, 20, 4);
 
-    // Calculations are done in "landscape", i.e. assuming dim[0] >= dim[1].
-    // Only at the end are values put in the opposite order if h > w.
-    const float dim[2] = {fmaxf(w, h), fminf(w, h)};
-    const float aspect[2] = {dim[0] / dim[1], dim[1] / dim[0]};
-    const float scene2clip[2] = {1.0f, aspect[0]};
-    const int ncells[2] = {static_cast<int>(NCELLS_MAJOR),
-                           (int)floorf(NCELLS_MAJOR * aspect[1])};
+        glDisableVertexAttribArray(POS_ATTRIB);
 
-    float centers[2][MAX_INSTANCES_PER_SIDE];
-    for (int d = 0; d < 2; d++) {
-        auto offset = -ncells[d] / NCELLS_MAJOR;  // -1.0 for d=0
-        for (auto i = 0; i < ncells[d]; i++) {
-            centers[d][i] = scene2clip[d] * (CELL_SIZE * (i + 0.5f) + offset);
-        }
-    }
+        checkGlError("Renderer::render");
+        framesRendered++;
+    };
 
-    int major = w >= h ? 0 : 1;
-    int minor = w >= h ? 1 : 0;
-    // outer product of centers[0] and centers[1]
-    for (int i = 0; i < ncells[0]; i++) {
-        for (int j = 0; j < ncells[1]; j++) {
-            int idx = i * ncells[1] + j;
-            offsets[2 * idx + major] = centers[0][i];
-            offsets[2 * idx + minor] = centers[1][j];
-        }
-    }
+    bool init(){
+        mProgram = createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
+        if (!mProgram) return false;
 
-    mNumInstances = ncells[0] * ncells[1];
-    mScale[major] = 0.5f * CELL_SIZE * scene2clip[0];
-    mScale[minor] = 0.5f * CELL_SIZE * scene2clip[1];
-}
+        glGenBuffers(1, mVB);
+        glBindBuffer(GL_ARRAY_BUFFER, mVB[0]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(BOX), &BOX[0], GL_STATIC_DRAW);
 
-void Renderer::step() {
-    timespec now;
-    clock_gettime(CLOCK_MONOTONIC, &now);
-    auto nowNs = now.tv_sec * 1000000000ull + now.tv_nsec;
+        glGenVertexArrays(1, &mVBState);
+        glBindVertexArray(mVBState);
 
-    if (mLastFrameNs > 0) {
-        float dt = float(nowNs - mLastFrameNs) * 0.000000001f;
+        glVertexAttribPointer(POS_ATTRIB, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                              (const GLvoid*)offsetof(Vertex, pos));
 
-        for (unsigned int i = 0; i < mNumInstances; i++) {
-            mAngles[i] += mAngularVelocity[i] * dt;
-            if (mAngles[i] >= TWO_PI) {
-                mAngles[i] -= TWO_PI;
-            } else if (mAngles[i] <= -TWO_PI) {
-                mAngles[i] += TWO_PI;
-            }
-        }
+        ALOGV("Using OpenGL ES 3.0 renderer");
+        return true;
+    };
 
-        float* transforms = mapTransformBuf();
-        for (unsigned int i = 0; i < mNumInstances; i++) {
-            float s = sinf(mAngles[i]);
-            float c = cosf(mAngles[i]);
-            transforms[4 * i + 0] = c * mScale[0];
-            transforms[4 * i + 1] = s * mScale[1];
-            transforms[4 * i + 2] = -s * mScale[0];
-            transforms[4 * i + 3] = c * mScale[1];
-        }
-        unmapTransformBuf();
-    }
-
-    mLastFrameNs = nowNs;
-}
-
-void Renderer::render() {
-    step();
-
-    glClearColor(0.2f, 0.2f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    draw(mNumInstances);
-    checkGlError("Renderer::render");
-}
+    const EGLContext mEglContext;
+    GLuint mVB[1];
+    GLuint mVBState;
+    int framesRendered = 0;
+    int screenWidth = 0;
+    int screenHeight = 0;
+};
 
 // ----------------------------------------------------------------------------
 
 static Renderer* g_renderer = NULL;
+
+extern "C" JNIEXPORT jstring JNICALL
+Java_com_example_livewallpaper05_MainActivity_stringFromJNI(
+        JNIEnv* env,
+        jobject /* this */) {
+    std::string hello = "Hello from C++";
+    return env->NewStringUTF(hello.c_str());
+}
+
+// ----------------------------------------------------------------------------
 
 extern "C" {
 JNIEXPORT void JNICALL Java_com_example_livewallpaper05_MainActivity_00024Companion_init(JNIEnv* env,
@@ -226,7 +333,7 @@ JNIEXPORT void JNICALL Java_com_example_livewallpaper05_MainActivity_00024Compan
 JNIEXPORT void JNICALL Java_com_example_livewallpaper05_MainActivity_00024Companion_resize(
         JNIEnv* env, jobject obj, jint width, jint height);
 JNIEXPORT void JNICALL Java_com_example_livewallpaper05_MainActivity_00024Companion_step(JNIEnv* env,
-                                                                  jobject obj);
+                                                                  jobject obj, jfloat acc_x, jfloat acc_y, jfloat acc_z, jfloat rot_x, jfloat rot_y, jfloat rot_z, jfloat rot_w);
 };
 
 #if !defined(DYNAMIC_ES3)
@@ -248,7 +355,13 @@ Java_com_example_livewallpaper05_MainActivity_00024Companion_init(JNIEnv *env, j
 
     const char* versionStr = (const char*)glGetString(GL_VERSION);
     if (strstr(versionStr, "OpenGL ES 3.") && gl3stubInit()) {
-        g_renderer = createES3Renderer();
+        Renderer* renderer = new Renderer;
+        if (!renderer->init()) {
+            delete renderer;
+            g_renderer = NULL;
+        } else {
+            g_renderer = renderer;
+        }
     } else if (strstr(versionStr, "OpenGL ES 2.")) {
         //g_renderer = createES2Renderer();
     } else {
@@ -267,7 +380,7 @@ Java_com_example_livewallpaper05_MainActivity_00024Companion_resize(JNIEnv *env,
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_livewallpaper05_MainActivity_00024Companion_step(JNIEnv *env, jobject thiz) {
+Java_com_example_livewallpaper05_MainActivity_00024Companion_step(JNIEnv *env, jobject thiz, jfloat acc_x, jfloat acc_y, jfloat acc_z, jfloat rot_x, jfloat rot_y, jfloat rot_z, jfloat rot_w) {
     if (g_renderer) {
         g_renderer->render();
     }
