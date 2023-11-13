@@ -1,19 +1,3 @@
-/*
- * Copyright 2013 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 #include <jni.h>
 #include <string>
 #include <cstdlib>
@@ -28,6 +12,7 @@
 using cy::Matrix4;
 using cy::Vec3;
 
+//#define DYNAMIC_ES3 true
 #if DYNAMIC_ES3
 #include "gl3stub.h"
 #else
@@ -62,40 +47,24 @@ static const char VERTEX_SHADER[] =
         "#version 310 es\n"
         "layout(location = " STRV(POS_ATTRIB) ") in vec3 pos;\n"
         "uniform mat4 mvp;\n"
-        "uniform vec4 color;\n"
         "out vec4 vColor;\n"
         "void main() {\n"
         "    gl_Position = mvp * vec4(pos, 1.0);\n"
-        "    vColor = color;\n"
         "}\n";
 
 static const char FRAGMENT_SHADER[] =
         "#version 310 es\n"
         "precision mediump float;\n"
-        "in vec4 vColor;\n"
+        "uniform vec4 color;\n"
         "out vec4 outColor;\n"
         "void main() {\n"
-        "    outColor = vColor;\n"
+        "    outColor = color;\n"
         "}\n";
-
-// This demo uses three coordinate spaces:
-// - The model (a quad) is in a [-1 .. 1]^2 space
-// - Scene space is either
-//    landscape: [-1 .. 1] x [-1/(2*w/h) .. 1/(2*w/h)]
-//    portrait:  [-1/(2*h/w) .. 1/(2*h/w)] x [-1 .. 1]
-// - Clip space in OpenGL is [-1 .. 1]^2
-//
-// Conceptually, the quads are rotated in model space, then scaled (uniformly)
-// and translated to place them in scene space. Scene space is then
-// non-uniformly scaled to clip space. In practice the transforms are combined
-// so vertices go directly from model to clip space.
 
 struct Vertex {
     GLfloat pos[3];
 };
 const Vertex BOX[] = {
-        // Square with diagonal < 2 so that it fits in a [-1 .. 1]^2 square
-        // regardless of rotation.
         // FRONT
         {{-0.5f, -0.5f,  0.5f}},
         {{ 0.5f, -0.5f,  0.5f}},
@@ -217,19 +186,19 @@ static void printGlString(const char* name, GLenum s) {
     ALOGV("GL %s: %s\n", name, v);
 }
 
-Matrix4<float> transformation;
-std::stack <Matrix4<float>> transformationStack;
 GLuint mProgram;
-void glColor4f(float r, float g, float b, float a){
-    glUniform4f(glGetUniformLocation(mProgram, "color"), r, g, b, a);
-}
+GLuint mVB[1];
+GLuint mVBState;
+int framesRendered = 0;
+int screenWidth = 0;
+int screenHeight = 0;
+EGLContext mEglContext;
 
 class Renderer {
 
 public:
 
-    Renderer() : mEglContext(eglGetCurrentContext()), mVBState(0), framesRendered(0){
-        mProgram = 0;
+    Renderer(){
     };
 
     ~Renderer(){
@@ -244,73 +213,68 @@ public:
         glDeleteBuffers(1, mVB);
         glDeleteProgram(mProgram);
     };
+};
 
-    void resize(int w, int h){
-        screenWidth = w;
-        screenHeight = h;
-        glViewport(0, 0, w, h);
-    };
+void resize(int w, int h){
+    screenWidth = w;
+    screenHeight = h;
+    glViewport(0, 0, w, h);
+};
 
-    void render(){
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_CULL_FACE);
-        glEnableVertexAttribArray(POS_ATTRIB);
-        glClearColor(0.2f, 0.2f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glUseProgram(mProgram);
-        Matrix4<float> perspective;
-        perspective.SetPerspective(45.0f, (float)screenWidth / (float)screenHeight, 0.1f, 1000.0f);
-        Matrix4<float> translation;
-        translation = translation.Translation(Vec3<float>(Vec3<float>(0.0f, 0.0f, sinf(framesRendered / 10.0f) - 3.0f)));
-        Matrix4<float> rotation;
-        rotation = rotation.RotationY((float)framesRendered / 10.0f);
-        Matrix4<float> MVP = perspective * translation * rotation;
-        glUniformMatrix4fv(
-                glGetUniformLocation(mProgram, "mvp"),
-                1,
-                GL_FALSE,
-                (GLfloat*)&MVP.cell);
-        glBindVertexArray(mVBState);
-        glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-        glDrawArrays(GL_TRIANGLE_STRIP, 4, 4);
-        glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
-        glDrawArrays(GL_TRIANGLE_STRIP, 8, 4);
-        glDrawArrays(GL_TRIANGLE_STRIP, 12, 4);
-        glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
-        glDrawArrays(GL_TRIANGLE_STRIP, 16, 4);
-        glDrawArrays(GL_TRIANGLE_STRIP, 20, 4);
+void render(){
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glEnableVertexAttribArray(POS_ATTRIB);
+    glClearColor(0.2f, 0.2f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glUseProgram(mProgram);
+    Matrix4<float> perspective;
+    perspective.SetPerspective(45.0f, (float)screenWidth / (float)screenHeight, 0.1f, 1000.0f);
+    Matrix4<float> translation;
+    translation = translation.Translation(Vec3<float>(Vec3<float>(0.0f, 0.0f, sinf(framesRendered / 10.0f) - 3.0f)));
+    Matrix4<float> rotation;
+    rotation = rotation.RotationY((float)framesRendered / 10.0f);
+    Matrix4<float> rotation2;
+    rotation2 = rotation2.RotationX((float)framesRendered / 10.0f);
+    Matrix4<float> MVP = perspective * translation * rotation * rotation2;
+    glUniformMatrix4fv(
+            glGetUniformLocation(mProgram, "mvp"),
+            1,
+            GL_FALSE,
+            (GLfloat*)&MVP.cell);
+    glBindVertexArray(mVBState);
+    glUniform4f(glGetUniformLocation(mProgram, "color"), 1.0f, 0.0f, 0.0f, 1.0f);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glDrawArrays(GL_TRIANGLE_STRIP, 4, 4);
+    glUniform4f(glGetUniformLocation(mProgram, "color"), 0.0f, 1.0f, 0.0f, 1.0f);
+    glDrawArrays(GL_TRIANGLE_STRIP, 8, 4);
+    glDrawArrays(GL_TRIANGLE_STRIP, 12, 4);
+    glUniform4f(glGetUniformLocation(mProgram, "color"), 0.0f, 0.0f, 1.0f, 1.0f);
+    glDrawArrays(GL_TRIANGLE_STRIP, 16, 4);
+    glDrawArrays(GL_TRIANGLE_STRIP, 20, 4);
 
-        glDisableVertexAttribArray(POS_ATTRIB);
+    glDisableVertexAttribArray(POS_ATTRIB);
 
-        checkGlError("Renderer::render");
-        framesRendered++;
-    };
+    checkGlError("Renderer::render");
+    framesRendered++;
+};
 
-    bool init(){
-        mProgram = createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
-        if (!mProgram) return false;
+bool init(){
+    mProgram = createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
+    if (!mProgram) return false;
 
-        glGenBuffers(1, mVB);
-        glBindBuffer(GL_ARRAY_BUFFER, mVB[0]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(BOX), &BOX[0], GL_STATIC_DRAW);
+    glGenBuffers(1, mVB);
+    glBindBuffer(GL_ARRAY_BUFFER, mVB[0]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(BOX), &BOX[0], GL_STATIC_DRAW);
 
-        glGenVertexArrays(1, &mVBState);
-        glBindVertexArray(mVBState);
+    glGenVertexArrays(1, &mVBState);
+    glBindVertexArray(mVBState);
 
-        glVertexAttribPointer(POS_ATTRIB, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                              (const GLvoid*)offsetof(Vertex, pos));
+    glVertexAttribPointer(POS_ATTRIB, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                          (const GLvoid*)offsetof(Vertex, pos));
 
-        ALOGV("Using OpenGL ES 3.0 renderer");
-        return true;
-    };
-
-    const EGLContext mEglContext;
-    GLuint mVB[1];
-    GLuint mVBState;
-    int framesRendered = 0;
-    int screenWidth = 0;
-    int screenHeight = 0;
+    ALOGV("Using OpenGL ES 3.0 renderer");
+    return true;
 };
 
 // ----------------------------------------------------------------------------
@@ -326,15 +290,6 @@ Java_com_example_livewallpaper05_MainActivity_stringFromJNI(
 }
 
 // ----------------------------------------------------------------------------
-
-extern "C" {
-JNIEXPORT void JNICALL Java_com_example_livewallpaper05_MainActivity_00024Companion_init(JNIEnv* env,
-                                                                  jobject obj);
-JNIEXPORT void JNICALL Java_com_example_livewallpaper05_MainActivity_00024Companion_resize(
-        JNIEnv* env, jobject obj, jint width, jint height);
-JNIEXPORT void JNICALL Java_com_example_livewallpaper05_MainActivity_00024Companion_step(JNIEnv* env,
-                                                                  jobject obj, jfloat acc_x, jfloat acc_y, jfloat acc_z, jfloat rot_x, jfloat rot_y, jfloat rot_z, jfloat rot_w);
-};
 
 #if !defined(DYNAMIC_ES3)
 static GLboolean gl3stubInit() { return GL_TRUE; }
@@ -356,7 +311,11 @@ Java_com_example_livewallpaper05_MainActivity_00024Companion_init(JNIEnv *env, j
     const char* versionStr = (const char*)glGetString(GL_VERSION);
     if (strstr(versionStr, "OpenGL ES 3.") && gl3stubInit()) {
         Renderer* renderer = new Renderer;
-        if (!renderer->init()) {
+        mEglContext = eglGetCurrentContext();
+        mProgram = 0;
+        mVBState = 0;
+        framesRendered = 0;
+        if (!init()) {
             delete renderer;
             g_renderer = NULL;
         } else {
@@ -374,7 +333,7 @@ JNIEXPORT void JNICALL
 Java_com_example_livewallpaper05_MainActivity_00024Companion_resize(JNIEnv *env, jobject thiz,
                                                                     jint width, jint height) {
     if (g_renderer) {
-        g_renderer->resize(width, height);
+        resize(width, height);
     }
 }
 
@@ -382,6 +341,6 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_livewallpaper05_MainActivity_00024Companion_step(JNIEnv *env, jobject thiz, jfloat acc_x, jfloat acc_y, jfloat acc_z, jfloat rot_x, jfloat rot_y, jfloat rot_z, jfloat rot_w) {
     if (g_renderer) {
-        g_renderer->render();
+        render();
     }
 }
