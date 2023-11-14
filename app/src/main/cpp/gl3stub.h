@@ -399,7 +399,6 @@ typedef struct __GLsync* GLsync;
 
 extern GL_APICALL void (*GL_APIENTRY glReadBuffer)(GLenum mode);
 extern GL_APICALL void (*GL_APIENTRY glDrawRangeElements)(
-<<<<<<< HEAD
     GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type,
     const GLvoid* indices);
 extern GL_APICALL void (*GL_APIENTRY glTexImage3D)(
@@ -424,7 +423,6 @@ extern GL_APICALL void (*GL_APIENTRY glCompressedTexSubImage3D)(
 extern GL_APICALL void (*GL_APIENTRY glGenQueries)(GLsizei n, GLuint* ids);
 extern GL_APICALL void (*GL_APIENTRY glDeleteQueries)(GLsizei n,
                                                       const GLuint* ids);
-=======
 GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type,
 const GLvoid* indices);
 extern GL_APICALL void (*GL_APIENTRY glTexImage3D)(
@@ -449,12 +447,10 @@ GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset,
 extern GL_APICALL void (*GL_APIENTRY glGenQueries)(GLsizei n, GLuint* ids);
 extern GL_APICALL void (*GL_APIENTRY glDeleteQueries)(GLsizei n,
 const GLuint* ids);
->>>>>>> 4f1481069bcabcc89ccd8c6128b0f31bb396fd94
 extern GL_APICALL GLboolean (*GL_APIENTRY glIsQuery)(GLuint id);
 extern GL_APICALL void (*GL_APIENTRY glBeginQuery)(GLenum target, GLuint id);
 extern GL_APICALL void (*GL_APIENTRY glEndQuery)(GLenum target);
 extern GL_APICALL void (*GL_APIENTRY glGetQueryiv)(GLenum target, GLenum pname,
-<<<<<<< HEAD
                                                    GLint* params);
 extern GL_APICALL void (*GL_APIENTRY glGetQueryObjectuiv)(GLuint id,
                                                           GLenum pname,
@@ -653,8 +649,7 @@ extern GL_APICALL void (*GL_APIENTRY glBindTransformFeedback)(GLenum target,
 extern GL_APICALL void (*GL_APIENTRY glDeleteTransformFeedbacks)(
     GLsizei n, const GLuint* ids);
 extern GL_APICALL void (*GL_APIENTRY glGenTransformFeedbacks)(GLsizei n,
-                                                              GLuint* ids);
-=======
+
 GLint* params);
 extern GL_APICALL void (*GL_APIENTRY glGetQueryObjectuiv)(GLuint id,
         GLenum pname,
@@ -853,13 +848,11 @@ extern GL_APICALL void (*GL_APIENTRY glBindTransformFeedback)(GLenum target,
 extern GL_APICALL void (*GL_APIENTRY glDeleteTransformFeedbacks)(
 GLsizei n, const GLuint* ids);
 extern GL_APICALL void (*GL_APIENTRY glGenTransformFeedbacks)(GLsizei n,
-        GLuint* ids);
->>>>>>> 4f1481069bcabcc89ccd8c6128b0f31bb396fd94
+        GLuint* ids)
 extern GL_APICALL GLboolean (*GL_APIENTRY glIsTransformFeedback)(GLuint id);
 extern GL_APICALL void (*GL_APIENTRY glPauseTransformFeedback)(void);
 extern GL_APICALL void (*GL_APIENTRY glResumeTransformFeedback)(void);
 extern GL_APICALL void (*GL_APIENTRY glGetProgramBinary)(GLuint program,
-<<<<<<< HEAD
                                                          GLsizei bufSize,
                                                          GLsizei* length,
                                                          GLenum* binaryFormat,
@@ -887,7 +880,6 @@ extern GL_APICALL void (*GL_APIENTRY glTexStorage3D)(
 extern GL_APICALL void (*GL_APIENTRY glGetInternalformativ)(
     GLenum target, GLenum internalformat, GLenum pname, GLsizei bufSize,
     GLint* params);
-=======
         GLsizei bufSize,
 GLsizei* length,
         GLenum* binaryFormat,
@@ -915,7 +907,6 @@ GLsizei height, GLsizei depth);
 extern GL_APICALL void (*GL_APIENTRY glGetInternalformativ)(
 GLenum target, GLenum internalformat, GLenum pname, GLsizei bufSize,
 GLint* params);
->>>>>>> 4f1481069bcabcc89ccd8c6128b0f31bb396fd94
 
 #ifdef __cplusplus
 }
