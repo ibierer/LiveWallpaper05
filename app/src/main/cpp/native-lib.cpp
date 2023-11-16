@@ -221,7 +221,7 @@ void resize(int w, int h){
     glViewport(0, 0, w, h);
 };
 
-void render(){
+void render(float x_rot){
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glEnableVertexAttribArray(POS_ATTRIB);
@@ -233,9 +233,11 @@ void render(){
     Matrix4<float> translation;
     translation = translation.Translation(Vec3<float>(Vec3<float>(0.0f, 0.0f, sinf(framesRendered / 10.0f) - 3.0f)));
     Matrix4<float> rotation;
-    rotation = rotation.RotationY((float)framesRendered / 10.0f);
+    //rotation = rotation.RotationY((float)framesRendered / 10.0f);
+    rotation = rotation.RotationY(0.0f);
     Matrix4<float> rotation2;
-    rotation2 = rotation2.RotationX((float)framesRendered / 10.0f);
+    rotation2 = rotation2.RotationX(((float)framesRendered / 10.0f)*x_rot);
+    //rotation2 = rotation2.RotationX(x_rot);
     Matrix4<float> MVP = perspective * translation * rotation * rotation2;
     glUniformMatrix4fv(
             glGetUniformLocation(mProgram, "mvp"),
@@ -340,7 +342,8 @@ Java_com_example_livewallpaper05_MainActivity_00024Companion_resize(JNIEnv *env,
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_livewallpaper05_MainActivity_00024Companion_step(JNIEnv *env, jobject thiz, jfloat acc_x, jfloat acc_y, jfloat acc_z, jfloat rot_x, jfloat rot_y, jfloat rot_z, jfloat rot_w) {
+    float& x_rot = *(float*)(&rot_x);
     if (g_renderer) {
-        render();
+        render(x_rot);
     }
 }
