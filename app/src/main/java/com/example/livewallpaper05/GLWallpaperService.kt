@@ -7,7 +7,8 @@ import android.service.wallpaper.WallpaperService
 import android.view.SurfaceHolder
 import android.widget.Toast
 
-class GLWallpaperService : WallpaperService() {
+class GLWallpaperService() : WallpaperService() {
+
     override fun onCreateEngine(): Engine {
         return GLEngine()
     }

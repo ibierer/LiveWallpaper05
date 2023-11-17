@@ -1,21 +1,21 @@
 package com.example.livewallpaper05
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.widget.LinearLayout
 import android.util.Log
 import android.widget.SeekBar
+import android.widget.TextView
 import com.example.livewallpaper05.WallpaperRepo
 
 class MainActivity : Activity() {
 
     var mView: GLES3JNIView? = null
     private var mRepo: WallpaperRepo? = null
+    private var mRotLabel: TextView? = null
 
     override fun onCreate(icicle: Bundle?) {
-        /*super.onCreate(savedInstanceState)
-        // Example of a call to a native method
-        binding.sampleText.text = stringFromJNI()*/
         super.onCreate(icicle)
         setContentView(R.layout.activity_main)
 
@@ -31,19 +31,17 @@ class MainActivity : Activity() {
 
         scroller.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean){
-                mRepo!!.rotationRate = progress.toFloat()
-                Log.d("Livewallpaper", "rotationRate: " + mRepo!!.rotationRate.toString())
+
             }
             override fun onStartTrackingTouch(seekBar: SeekBar) {
                 // Do nothing
             }
             override fun onStopTrackingTouch(seekBar: SeekBar) {
                 // Do nothing
-                mRepo!!.rotationRate = seekBar.progress.toFloat()
+                mRepo!!.rotationRate = seekBar.progress.toFloat() / 100.0f
                 Log.d("Livewallpaper", "rotationRate: " + mRepo!!.rotationRate.toString())
             }
         })
-
     }
 
     override fun onPause() {

@@ -3,9 +3,9 @@ package com.example.livewallpaper05
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 
-class Editor : AppCompatActivity() {
+class ProfileActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_editor)
+        setContentView(R.layout.activity_profile)
     }
 }

@@ -26,8 +26,8 @@
         android:layout_marginTop="10dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/rotation_rate_text"
-        android:min="-1"
-        android:max="1"/>
+        android:min="-100"
+        android:max="100"/>
 
     <TextView
         android:id="@+id/rotation_rate_text"
@@ -37,6 +37,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/rotation_rate_seekbar"
-        android:text="Hello World"/>
+        android:text="@string/rotation_rate"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

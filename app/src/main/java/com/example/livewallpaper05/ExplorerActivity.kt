@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 
-class Explorer : AppCompatActivity() {
+class ExplorerActivity : AppCompatActivity() {
 
     private var mPreviewButton: Button? = null
 

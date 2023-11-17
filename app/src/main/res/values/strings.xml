@@ -20,5 +20,9 @@
     <!-- Simple strings. -->
     <string name="gles3jni_activity">GLES3JNI</string>
     <string name="app_name">Physics In Color</string>
+    <string name="rotation_rate">Rotation Rate: </string>
+    <string name="img_description">Profile Image</string>
+    <string name="username">Username</string>
+    <string name="biography">Hello! Aspiring physicist and mathmatition here to show off my mad skillz!</string>
 
 </resources>
