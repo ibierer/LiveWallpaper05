@@ -342,8 +342,7 @@ Java_com_example_livewallpaper05_MainActivity_00024Companion_resize(JNIEnv *env,
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_livewallpaper05_MainActivity_00024Companion_step(JNIEnv *env, jobject thiz, jfloat acc_x, jfloat acc_y, jfloat acc_z, jfloat rot_x, jfloat rot_y, jfloat rot_z, jfloat rot_w) {
-    float& x_rot = *(float*)(&rot_x);
     if (g_renderer) {
-        render(x_rot);
+        render(rot_x);
     }
 }

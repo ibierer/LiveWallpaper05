@@ -27,13 +27,13 @@
             android:id="@+id/b_editor_toolbar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_wallpaper" />
+            android:src="@android:drawable/btn_star_big_off" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/b_explore_toolbar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_wallpaper" />
+            android:src="@android:drawable/ic_menu_search" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/b_other_toolbar"
