@@ -44,60 +44,6 @@ using cy::Vec3;
 
 #define POS_ATTRIB 0
 
-static const char VERTEX_SHADER[] =
-        "#version 310 es\n"
-        "layout(location = " STRV(POS_ATTRIB) ") in vec3 pos;\n"
-        "uniform mat4 mvp;\n"
-        "out vec4 vColor;\n"
-        "void main() {\n"
-        "    gl_Position = mvp * vec4(pos, 1.0);\n"
-        "}\n";
-
-static const char FRAGMENT_SHADER[] =
-        "#version 310 es\n"
-        "precision mediump float;\n"
-        "uniform vec4 color;\n"
-        "out vec4 outColor;\n"
-        "void main() {\n"
-        "    outColor = color;\n"
-        "}\n";
-
-struct Vertex {
-    GLfloat pos[3];
-};
-const Vertex BOX[] = {
-        // FRONT
-        {{-0.5f, -0.5f,  0.5f}},
-        {{ 0.5f, -0.5f,  0.5f}},
-        {{-0.5f,  0.5f,  0.5f}},
-        {{ 0.5f,  0.5f,  0.5f}},
-        // BACK
-        {{-0.5f, -0.5f, -0.5f}},
-        {{-0.5f,  0.5f, -0.5f}},
-        {{ 0.5f, -0.5f, -0.5f}},
-        {{ 0.5f,  0.5f, -0.5f}},
-        // LEFT
-        {{-0.5f, -0.5f,  0.5f}},
-        {{-0.5f,  0.5f,  0.5f}},
-        {{-0.5f, -0.5f, -0.5f}},
-        {{-0.5f,  0.5f, -0.5f}},
-        // RIGHT
-        {{ 0.5f, -0.5f, -0.5f}},
-        {{ 0.5f,  0.5f, -0.5f}},
-        {{ 0.5f, -0.5f,  0.5f}},
-        {{ 0.5f,  0.5f,  0.5f}},
-        // TOP
-        {{-0.5f,  0.5f,  0.5f}},
-        {{ 0.5f,  0.5f,  0.5f}},
-        {{-0.5f,  0.5f, -0.5f}},
-        {{ 0.5f,  0.5f, -0.5f}},
-        // BOTTOM
-        {{-0.5f, -0.5f,  0.5f}},
-        {{-0.5f, -0.5f, -0.5f}},
-        {{ 0.5f, -0.5f,  0.5f}},
-        {{ 0.5f, -0.5f, -0.5f}}
-};
-
 // returns true if a GL error occurred
 bool checkGlError(const char* funcName) {
     GLint err = glGetError();
@@ -187,75 +133,158 @@ static void printGlString(const char* name, GLenum s) {
     ALOGV("GL %s: %s\n", name, v);
 }
 
-// Our saved state data.
-struct saved_state {
-    float angle;
-    int32_t x;
-    int32_t y;
+struct Vertex {
+    GLfloat pos[3];
 };
 
-/**
- * Shared state for our app.
- */
-struct engine
-{
-    struct android_app* app;
+static const char VERTEX_SHADER[] =
+        "#version 310 es\n"
+        "layout(location = " STRV(POS_ATTRIB) ") in vec3 pos;\n"
+        "uniform mat4 mvp;\n"
+        "out vec4 vColor;\n"
+        "void main() {\n"
+        "    gl_Position = mvp * vec4(pos, 1.0);\n"
+        "}\n";
 
-    /*ASensorManager* sensorManager;
-    const ASensor* accelerometerSensor;
-    const ASensor* rotationVectorSensor;
-    ASensorEventQueue* accelerometerSensorEventQueue;
-    ASensorEventQueue* rotationVectorSensorEventQueue;*/
+static const char FRAGMENT_SHADER[] =
+        "#version 310 es\n"
+        "precision mediump float;\n"
+        "uniform vec4 color;\n"
+        "out vec4 outColor;\n"
+        "void main() {\n"
+        "    outColor = color;\n"
+        "}\n";
 
-    /*int animating = 1;
-    EGLDisplay display;
-    EGLSurface surface;
-    EGLContext context;
-    EGLint width;
-    EGLint height;*/
-    vec3 accelerometerVectorInput;
-    vec4 rotationVectorInput;
-    //int framesDrawn = 0;
-    //struct saved_state state;
-};
-struct engine engine;
-GLuint mProgram;
-GLuint mVB[1];
-GLuint mVBState;
-int framesRendered = 0;
-int screenWidth = 0;
-int screenHeight = 0;
-EGLContext mEglContext;
-float val = 0.0f;
-
-class Renderer {
-
+class Wallpaper{
 public:
 
-    Renderer(){
-    };
+    int framesRendered = 0;
+    EGLContext mEglContext;
+    float val = 0.0f;
+    EGLint width;
+    EGLint height;
+    vec3 accelerometerVector;
+    vec4 rotationVector;
 
-    ~Renderer(){
-        /* The destructor may be called after the context has already been
-         * destroyed, in which case our objects have already been destroyed.
-         *
-         * If the context exists, it must be current. This only happens when we're
-         * cleaning up after a failed init().
-         */
-        if (eglGetCurrentContext() != mEglContext) return;
-        glDeleteVertexArrays(1, &mVBState);
-        glDeleteBuffers(1, mVB);
-        glDeleteProgram(mProgram);
-    };
+    Wallpaper();
+
+    ~Wallpaper();
+
+    virtual bool initialize();
+
+    virtual void render();
+
+private:
+
 };
 
-void resize(int w, int h){
-    screenWidth = w;
-    screenHeight = h;
-    glViewport(0, 0, w, h);
+Wallpaper::Wallpaper(){
+
+}
+
+Wallpaper::~Wallpaper(){
+
+}
+
+bool Wallpaper::initialize(){
+
 };
 
-void render(){
+void Wallpaper::render(){
+
+};
+
+class Box : public Wallpaper{
+public:
+
+    GLuint mProgram;
+    GLuint mVB[1];
+    GLuint mVBState;
+
+    const Vertex BOX[24] = {
+            // FRONT
+            {{-0.5f, -0.5f,  0.5f}},
+            {{ 0.5f, -0.5f,  0.5f}},
+            {{-0.5f,  0.5f,  0.5f}},
+            {{ 0.5f,  0.5f,  0.5f}},
+            // BACK
+            {{-0.5f, -0.5f, -0.5f}},
+            {{-0.5f,  0.5f, -0.5f}},
+            {{ 0.5f, -0.5f, -0.5f}},
+            {{ 0.5f,  0.5f, -0.5f}},
+            // LEFT
+            {{-0.5f, -0.5f,  0.5f}},
+            {{-0.5f,  0.5f,  0.5f}},
+            {{-0.5f, -0.5f, -0.5f}},
+            {{-0.5f,  0.5f, -0.5f}},
+            // RIGHT
+            {{ 0.5f, -0.5f, -0.5f}},
+            {{ 0.5f,  0.5f, -0.5f}},
+            {{ 0.5f, -0.5f,  0.5f}},
+            {{ 0.5f,  0.5f,  0.5f}},
+            // TOP
+            {{-0.5f,  0.5f,  0.5f}},
+            {{ 0.5f,  0.5f,  0.5f}},
+            {{-0.5f,  0.5f, -0.5f}},
+            {{ 0.5f,  0.5f, -0.5f}},
+            // BOTTOM
+            {{-0.5f, -0.5f,  0.5f}},
+            {{-0.5f, -0.5f, -0.5f}},
+            {{ 0.5f, -0.5f,  0.5f}},
+            {{ 0.5f, -0.5f, -0.5f}}
+    };
+
+    Box();
+
+    ~Box();
+
+    bool initialize();
+
+    void render();
+
+private:
+};
+
+Box::Box(){
+    initialize();
+}
+
+Box::~Box(){
+    /* The destructor may be called after the context has already been
+     * destroyed, in which case our objects have already been destroyed.
+     *
+     * If the context exists, it must be current. This only happens when we're
+     * cleaning up after a failed init().
+     */
+    glDeleteProgram(mProgram);
+    if (eglGetCurrentContext() != mEglContext) return;
+    glDeleteVertexArrays(1, &mVBState);
+    glDeleteBuffers(1, mVB);
+}
+
+bool Box::initialize() {
+    mEglContext = eglGetCurrentContext();
+    mProgram = 0;
+    mVBState = 0;
+    framesRendered = 0;
+    mProgram = createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
+    if (!mProgram) return false;
+
+    glGenBuffers(1, mVB);
+    glBindBuffer(GL_ARRAY_BUFFER, mVB[0]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(BOX), &BOX[0], GL_STATIC_DRAW);
+
+    glGenVertexArrays(1, &mVBState);
+    glBindVertexArray(mVBState);
+
+    glVertexAttribPointer(POS_ATTRIB, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                          (const GLvoid*)offsetof(Vertex, pos));
+
+    ALOGV("Using OpenGL ES 3.0 renderer");
+    return true;
+}
+
+void Box::render(){
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glEnableVertexAttribArray(POS_ATTRIB);
@@ -263,10 +292,10 @@ void render(){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(mProgram);
     Matrix4<float> perspective;
-    perspective.SetPerspective(45.0f, (float)screenWidth / (float)screenHeight, 0.1f, 1000.0f);
+    perspective.SetPerspective(45.0f, (float)width / (float)height, 0.1f, 1000.0f);
     Matrix4<float> translation;
     translation = translation.Translation(Vec3<float>(Vec3<float>(0.0f, 0.0f, val * 1.0f - 3.0f)));
-    Matrix4<float> rotation = Matrix4<float>(quaternionTo3x3(engine.rotationVectorInput));
+    Matrix4<float> rotation = Matrix4<float>(quaternionTo3x3(rotationVector));
     Matrix4<float> MVP = perspective * translation * rotation;
     glUniformMatrix4fv(
             glGetUniformLocation(mProgram, "mvp"),
@@ -288,29 +317,35 @@ void render(){
 
     checkGlError("Renderer::render");
     framesRendered++;
+}
+
+class Graph : Wallpaper{
+
 };
 
-bool init(){
-    mProgram = createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
-    if (!mProgram) return false;
+class Simulation : Wallpaper{
 
-    glGenBuffers(1, mVB);
-    glBindBuffer(GL_ARRAY_BUFFER, mVB[0]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(BOX), &BOX[0], GL_STATIC_DRAW);
-
-    glGenVertexArrays(1, &mVBState);
-    glBindVertexArray(mVBState);
-
-    glVertexAttribPointer(POS_ATTRIB, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                          (const GLvoid*)offsetof(Vertex, pos));
-
-    ALOGV("Using OpenGL ES 3.0 renderer");
-    return true;
 };
+
+class BarnesHut : Simulation{
+
+};
+
+class BruteForce : Simulation{
+
+};
+
+class Naive : Simulation{
+
+};
+
+class PicFlip : Simulation{
+
+};
+
+Wallpaper* wallpaper = nullptr;
 
 // ----------------------------------------------------------------------------
-
-static Renderer* g_renderer = NULL;
 
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_example_livewallpaper05_MainActivity_stringFromJNI(
@@ -329,11 +364,6 @@ static GLboolean gl3stubInit() { return GL_TRUE; }
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_livewallpaper05_MainActivity_00024Companion_init(JNIEnv *env, jobject thiz) {
-    if (g_renderer) {
-        delete g_renderer;
-        g_renderer = NULL;
-    }
-
     printGlString("Version", GL_VERSION);
     printGlString("Vendor", GL_VENDOR);
     printGlString("Renderer", GL_RENDERER);
@@ -341,17 +371,7 @@ Java_com_example_livewallpaper05_MainActivity_00024Companion_init(JNIEnv *env, j
 
     const char* versionStr = (const char*)glGetString(GL_VERSION);
     if (strstr(versionStr, "OpenGL ES 3.") && gl3stubInit()) {
-        Renderer* renderer = new Renderer;
-        mEglContext = eglGetCurrentContext();
-        mProgram = 0;
-        mVBState = 0;
-        framesRendered = 0;
-        if (!init()) {
-            delete renderer;
-            g_renderer = NULL;
-        } else {
-            g_renderer = renderer;
-        }
+        wallpaper = new Box();
     } else if (strstr(versionStr, "OpenGL ES 2.")) {
         //g_renderer = createES2Renderer();
     } else {
@@ -363,23 +383,25 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_livewallpaper05_MainActivity_00024Companion_resize(JNIEnv *env, jobject thiz,
                                                                     jint width, jint height) {
-    if (g_renderer) {
-        resize(width, height);
+    if (wallpaper) {
+        wallpaper->width = width;
+        wallpaper->height = height;
+        glViewport(0, 0, width, height);
     }
 }
 
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_livewallpaper05_MainActivity_00024Companion_step(JNIEnv *env, jobject thiz, jfloat acc_x, jfloat acc_y, jfloat acc_z, jfloat rot_x, jfloat rot_y, jfloat rot_z, jfloat rot_w) {
-    if (g_renderer) {
-        engine.accelerometerVectorInput = vec3(acc_x, acc_y, acc_z);
-        engine.rotationVectorInput = vec4(rot_x, rot_y, rot_z, rot_w);
-        render();
+    if (wallpaper) {
+        wallpaper->accelerometerVector = vec3(acc_x, acc_y, acc_z);
+        wallpaper->rotationVector = vec4(rot_x, rot_y, rot_z, rot_w);
+        wallpaper->render();
     }
 }
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_livewallpaper05_MainActivity_00024Companion_sendData(JNIEnv *env, jobject thiz,
                                                                       jfloat value) {
-    val = value;
+    ((Box*)wallpaper)->val = value;
 }
