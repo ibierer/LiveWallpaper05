@@ -1,7 +1,9 @@
 package com.example.livewallpaper05
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.hardware.SensorManager
 import android.os.Bundle
 import android.widget.LinearLayout
 import android.util.Log
@@ -24,6 +26,9 @@ class MainActivity : Activity() {
 
         val layout = findViewById<LinearLayout>(R.id.render_layout)
         val scroller = findViewById<SeekBar>(R.id.rotation_rate_seekbar)
+
+        // register senser event listeners
+        mRepo!!.registerSensors(getSystemService(Context.SENSOR_SERVICE) as SensorManager)
 
         layout.addView(mView)
 

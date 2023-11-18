@@ -28,11 +28,18 @@ class GLES3JNIView(context: Context, repo: WallpaperRepo) : GLSurfaceView(contex
 
         override fun onDrawFrame(gl: GL10) {
             // change to repo data
-            var x_rot = 0.0f
             if(mRepo != null){
-                x_rot = mRepo!!.rotationRate
+                //x_rot = mRepo!!.rotationRate
+                MainActivity.step(mRepo!!.accelerationData[0],
+                    mRepo!!.accelerationData[1],
+                    mRepo!!.accelerationData[2],
+                    mRepo!!.rotationData[0],
+                    mRepo!!.rotationData[1],
+                    mRepo!!.rotationData[2],
+                    mRepo!!.rotationData[3])
+            } else {
+                MainActivity.step(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f)
             }
-            MainActivity.step(0.0f, 0.0f, 0.0f, x_rot, 0.0f, 0.0f, 0.0f)
         }
 
         override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {
