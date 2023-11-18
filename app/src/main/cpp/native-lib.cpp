@@ -402,5 +402,5 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_livewallpaper05_MainActivity_00024Companion_sendData(JNIEnv *env, jobject thiz,
                                                                       jfloat value) {
-    ((Box*)wallpaper)->val = value;
+    wallpaper->val = value;
 }
