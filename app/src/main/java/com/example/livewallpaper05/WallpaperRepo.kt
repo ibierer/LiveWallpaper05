@@ -6,7 +6,6 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Parcel
 import android.os.Parcelable
-import java.util.Vector
 
 class WallpaperRepo() : Parcelable, SensorEventListener  {
     var rotationRate: Float = 0.0f

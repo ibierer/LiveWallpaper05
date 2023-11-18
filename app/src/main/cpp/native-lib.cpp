@@ -226,6 +226,7 @@ int framesRendered = 0;
 int screenWidth = 0;
 int screenHeight = 0;
 EGLContext mEglContext;
+float val = 0.0f;
 
 class Renderer {
 
@@ -254,7 +255,7 @@ void resize(int w, int h){
     glViewport(0, 0, w, h);
 };
 
-void render(float x_rot){
+void render(){
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glEnableVertexAttribArray(POS_ATTRIB);
@@ -264,12 +265,9 @@ void render(float x_rot){
     Matrix4<float> perspective;
     perspective.SetPerspective(45.0f, (float)screenWidth / (float)screenHeight, 0.1f, 1000.0f);
     Matrix4<float> translation;
-    translation = translation.Translation(Vec3<float>(Vec3<float>(0.0f, 0.0f, sinf(framesRendered / 10.0f) - 3.0f)));
-    Matrix4<float> rotation;
-    rotation = rotation.RotationY(0.0f);
-    Matrix4<float> rotation2;
-    rotation2 = Matrix4<float>(quaternionTo3x3(engine.rotationVectorInput));
-    Matrix4<float> MVP = perspective * translation * rotation * rotation2;
+    translation = translation.Translation(Vec3<float>(Vec3<float>(0.0f, 0.0f, val * 1.0f - 3.0f)));
+    Matrix4<float> rotation = Matrix4<float>(quaternionTo3x3(engine.rotationVectorInput));
+    Matrix4<float> MVP = perspective * translation * rotation;
     glUniformMatrix4fv(
             glGetUniformLocation(mProgram, "mvp"),
             1,
@@ -376,6 +374,12 @@ Java_com_example_livewallpaper05_MainActivity_00024Companion_step(JNIEnv *env, j
     if (g_renderer) {
         engine.accelerometerVectorInput = vec3(acc_x, acc_y, acc_z);
         engine.rotationVectorInput = vec4(rot_x, rot_y, rot_z, rot_w);
-        render(rot_x);
+        render();
     }
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_livewallpaper05_MainActivity_00024Companion_sendData(JNIEnv *env, jobject thiz,
+                                                                      jfloat value) {
+    val = value;
 }
