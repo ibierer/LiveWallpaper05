@@ -44,8 +44,65 @@ using cy::Vec3;
 
 #define POS_ATTRIB 0
 
+class Wallpaper{
+public:
+
+    int framesRendered;
+
+    EGLContext mEglContext;
+
+    float val;
+
+    EGLint width;
+
+    EGLint height;
+
+    vec3 accelerometerVector;
+
+    vec4 rotationVector;
+
+    Wallpaper();
+
+    ~Wallpaper();
+
+    virtual bool initialize();
+
+    virtual void render();
+
+    static bool checkGlError(const char* funcName);
+
+    static GLuint createShader(GLenum shaderType, const char* src);
+
+    static GLuint createProgram(const char* vtxSrc, const char* fragSrc);
+
+    static void printGlString(const char* name, GLenum s);
+
+    struct Vertex {
+        GLfloat pos[3];
+    };
+
+private:
+
+};
+
+Wallpaper::Wallpaper() : framesRendered(0), val(0), mEglContext(eglGetCurrentContext()){
+
+}
+
+Wallpaper::~Wallpaper(){
+    if (eglGetCurrentContext() != mEglContext) return;
+}
+
+bool Wallpaper::initialize(){
+
+};
+
+void Wallpaper::render(){
+
+};
+
 // returns true if a GL error occurred
-bool checkGlError(const char* funcName) {
+bool Wallpaper::checkGlError(const char* funcName) {
     GLint err = glGetError();
     if (err != GL_NO_ERROR) {
         ALOGE("GL error after %s(): 0x%08x\n", funcName, err);
@@ -54,7 +111,7 @@ bool checkGlError(const char* funcName) {
     return false;
 }
 
-GLuint createShader(GLenum shaderType, const char* src) {
+GLuint Wallpaper::createShader(GLenum shaderType, const char* src) {
     GLuint shader = glCreateShader(shaderType);
     if (!shader) {
         checkGlError("glCreateShader");
@@ -84,7 +141,7 @@ GLuint createShader(GLenum shaderType, const char* src) {
     return shader;
 }
 
-GLuint createProgram(const char* vtxSrc, const char* fragSrc) {
+GLuint Wallpaper::createProgram(const char* vtxSrc, const char* fragSrc) {
     GLuint vtxShader = 0;
     GLuint fragShader = 0;
     GLuint program = 0;
@@ -128,59 +185,10 @@ GLuint createProgram(const char* vtxSrc, const char* fragSrc) {
     return program;
 }
 
-static void printGlString(const char* name, GLenum s) {
+void Wallpaper::printGlString(const char* name, GLenum s) {
     const char* v = (const char*)glGetString(s);
     ALOGV("GL %s: %s\n", name, v);
 }
-
-struct Vertex {
-    GLfloat pos[3];
-};
-
-class Wallpaper{
-public:
-
-    int framesRendered = 0;
-
-    EGLContext mEglContext;
-
-    float val = 0.0f;
-
-    EGLint width;
-
-    EGLint height;
-
-    vec3 accelerometerVector;
-
-    vec4 rotationVector;
-
-    Wallpaper();
-
-    ~Wallpaper();
-
-    virtual bool initialize();
-
-    virtual void render();
-
-private:
-
-};
-
-Wallpaper::Wallpaper() : framesRendered(0), mEglContext(eglGetCurrentContext()){
-
-}
-
-Wallpaper::~Wallpaper(){
-    if (eglGetCurrentContext() != mEglContext) return;
-}
-
-bool Wallpaper::initialize(){
-
-};
-
-void Wallpaper::render(){
-
-};
 
 class Box : public Wallpaper{
 public:
@@ -362,10 +370,10 @@ static GLboolean gl3stubInit() { return GL_TRUE; }
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_livewallpaper05_MainActivity_00024Companion_init(JNIEnv *env, jobject thiz) {
-    printGlString("Version", GL_VERSION);
-    printGlString("Vendor", GL_VENDOR);
-    printGlString("Renderer", GL_RENDERER);
-    printGlString("Extensions", GL_EXTENSIONS);
+    Wallpaper::printGlString("Version", GL_VERSION);
+    Wallpaper::printGlString("Vendor", GL_VENDOR);
+    Wallpaper::printGlString("Renderer", GL_RENDERER);
+    Wallpaper::printGlString("Extensions", GL_EXTENSIONS);
 
     const char* versionStr = (const char*)glGetString(GL_VERSION);
     if (strstr(versionStr, "OpenGL ES 3.") && gl3stubInit()) {
