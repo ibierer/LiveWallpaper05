@@ -393,7 +393,9 @@ public:
     };
 
     Molecule* molecules;
+
     bool seed(float radius);
+
     void simulate(vec3 gravity);
 
     Naive();
@@ -511,13 +513,17 @@ void Naive::render(){
                 GL_FALSE,
                 (GLfloat *) &MVP.cell);
         glBindVertexArray(mVBState);
-        glUniform4f(glGetUniformLocation(mProgram, "color"), 1.0f, 0.0f, 0.0f, 1.0f);
+        vec4 color = vec4(
+                0.06125f * molecules[i].velocity.x + 0.5f,
+                -0.06125f * molecules[i].velocity.y + 0.5f,
+                -0.06125f * molecules[i].velocity.z + 0.5f,
+                1.0f
+        );
+        glUniform4fv(glGetUniformLocation(mProgram, "color"), 1, color.v);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         glDrawArrays(GL_TRIANGLE_STRIP, 4, 4);
-        glUniform4f(glGetUniformLocation(mProgram, "color"), 0.0f, 1.0f, 0.0f, 1.0f);
         glDrawArrays(GL_TRIANGLE_STRIP, 8, 4);
         glDrawArrays(GL_TRIANGLE_STRIP, 12, 4);
-        glUniform4f(glGetUniformLocation(mProgram, "color"), 0.0f, 0.0f, 1.0f, 1.0f);
         glDrawArrays(GL_TRIANGLE_STRIP, 16, 4);
         glDrawArrays(GL_TRIANGLE_STRIP, 20, 4);
     }
