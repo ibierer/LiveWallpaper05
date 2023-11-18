@@ -7,6 +7,7 @@
 #include <android/log.h>
 #include <cmath>
 #include <EGL/egl.h>
+#include "vectors.h"
 #include "cyCodeBase-master/cyMatrix.h"
 
 using cy::Matrix4;
@@ -186,6 +187,38 @@ static void printGlString(const char* name, GLenum s) {
     ALOGV("GL %s: %s\n", name, v);
 }
 
+// Our saved state data.
+struct saved_state {
+    float angle;
+    int32_t x;
+    int32_t y;
+};
+
+/**
+ * Shared state for our app.
+ */
+struct engine
+{
+    struct android_app* app;
+
+    /*ASensorManager* sensorManager;
+    const ASensor* accelerometerSensor;
+    const ASensor* rotationVectorSensor;
+    ASensorEventQueue* accelerometerSensorEventQueue;
+    ASensorEventQueue* rotationVectorSensorEventQueue;*/
+
+    /*int animating = 1;
+    EGLDisplay display;
+    EGLSurface surface;
+    EGLContext context;
+    EGLint width;
+    EGLint height;*/
+    vec3 accelerometerVectorInput;
+    vec4 rotationVectorInput;
+    //int framesDrawn = 0;
+    //struct saved_state state;
+};
+struct engine engine;
 GLuint mProgram;
 GLuint mVB[1];
 GLuint mVBState;
@@ -233,11 +266,9 @@ void render(float x_rot){
     Matrix4<float> translation;
     translation = translation.Translation(Vec3<float>(Vec3<float>(0.0f, 0.0f, sinf(framesRendered / 10.0f) - 3.0f)));
     Matrix4<float> rotation;
-    //rotation = rotation.RotationY((float)framesRendered / 10.0f);
     rotation = rotation.RotationY(0.0f);
     Matrix4<float> rotation2;
-    rotation2 = rotation2.RotationX(((float)framesRendered / 10.0f)*x_rot);
-    //rotation2 = rotation2.RotationX(x_rot);
+    rotation2 = Matrix4<float>(quaternionTo3x3(engine.rotationVectorInput));
     Matrix4<float> MVP = perspective * translation * rotation * rotation2;
     glUniformMatrix4fv(
             glGetUniformLocation(mProgram, "mvp"),
@@ -343,6 +374,8 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_livewallpaper05_MainActivity_00024Companion_step(JNIEnv *env, jobject thiz, jfloat acc_x, jfloat acc_y, jfloat acc_z, jfloat rot_x, jfloat rot_y, jfloat rot_z, jfloat rot_w) {
     if (g_renderer) {
+        engine.accelerometerVectorInput = vec3(acc_x, acc_y, acc_z);
+        engine.rotationVectorInput = vec4(rot_x, rot_y, rot_z, rot_w);
         render(rot_x);
     }
 }
