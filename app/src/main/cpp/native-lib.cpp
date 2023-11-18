@@ -137,33 +137,21 @@ struct Vertex {
     GLfloat pos[3];
 };
 
-static const char VERTEX_SHADER[] =
-        "#version 310 es\n"
-        "layout(location = " STRV(POS_ATTRIB) ") in vec3 pos;\n"
-        "uniform mat4 mvp;\n"
-        "out vec4 vColor;\n"
-        "void main() {\n"
-        "    gl_Position = mvp * vec4(pos, 1.0);\n"
-        "}\n";
-
-static const char FRAGMENT_SHADER[] =
-        "#version 310 es\n"
-        "precision mediump float;\n"
-        "uniform vec4 color;\n"
-        "out vec4 outColor;\n"
-        "void main() {\n"
-        "    outColor = color;\n"
-        "}\n";
-
 class Wallpaper{
 public:
 
     int framesRendered = 0;
+
     EGLContext mEglContext;
+
     float val = 0.0f;
+
     EGLint width;
+
     EGLint height;
+
     vec3 accelerometerVector;
+
     vec4 rotationVector;
 
     Wallpaper();
@@ -178,12 +166,12 @@ private:
 
 };
 
-Wallpaper::Wallpaper(){
+Wallpaper::Wallpaper() : framesRendered(0), mEglContext(eglGetCurrentContext()){
 
 }
 
 Wallpaper::~Wallpaper(){
-
+    if (eglGetCurrentContext() != mEglContext) return;
 }
 
 bool Wallpaper::initialize(){
@@ -198,8 +186,28 @@ class Box : public Wallpaper{
 public:
 
     GLuint mProgram;
+
     GLuint mVB[1];
+
     GLuint mVBState;
+
+    const char* VERTEX_SHADER =
+            "#version 310 es\n"
+            "layout(location = " STRV(POS_ATTRIB) ") in vec3 pos;\n"
+            "uniform mat4 mvp;\n"
+            "out vec4 vColor;\n"
+            "void main() {\n"
+            "    gl_Position = mvp * vec4(pos, 1.0);\n"
+            "}\n";
+
+    const char* FRAGMENT_SHADER =
+            "#version 310 es\n"
+            "precision mediump float;\n"
+            "uniform vec4 color;\n"
+            "out vec4 outColor;\n"
+            "void main() {\n"
+            "    outColor = color;\n"
+            "}\n";
 
     const Vertex BOX[24] = {
             // FRONT
@@ -245,28 +253,19 @@ public:
 private:
 };
 
-Box::Box(){
+Box::Box() : Wallpaper(){
     initialize();
 }
 
 Box::~Box(){
-    /* The destructor may be called after the context has already been
-     * destroyed, in which case our objects have already been destroyed.
-     *
-     * If the context exists, it must be current. This only happens when we're
-     * cleaning up after a failed init().
-     */
     glDeleteProgram(mProgram);
-    if (eglGetCurrentContext() != mEglContext) return;
     glDeleteVertexArrays(1, &mVBState);
     glDeleteBuffers(1, mVB);
 }
 
 bool Box::initialize() {
-    mEglContext = eglGetCurrentContext();
     mProgram = 0;
     mVBState = 0;
-    framesRendered = 0;
     mProgram = createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
     if (!mProgram) return false;
 
@@ -280,7 +279,6 @@ bool Box::initialize() {
     glVertexAttribPointer(POS_ATTRIB, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
                           (const GLvoid*)offsetof(Vertex, pos));
 
-    ALOGV("Using OpenGL ES 3.0 renderer");
     return true;
 }
 
@@ -372,6 +370,7 @@ Java_com_example_livewallpaper05_MainActivity_00024Companion_init(JNIEnv *env, j
     const char* versionStr = (const char*)glGetString(GL_VERSION);
     if (strstr(versionStr, "OpenGL ES 3.") && gl3stubInit()) {
         wallpaper = new Box();
+        ALOGV("Using OpenGL ES 3.0 renderer");
     } else if (strstr(versionStr, "OpenGL ES 2.")) {
         //g_renderer = createES2Renderer();
     } else {
