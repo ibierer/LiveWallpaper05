@@ -12,6 +12,8 @@
 
 using cy::Matrix4;
 using cy::Vec3;
+using std::min;
+using std::max;
 
 //#define DYNAMIC_ES3 true
 #if DYNAMIC_ES3
@@ -61,6 +63,45 @@ public:
 
     vec4 rotationVector;
 
+    Matrix4<float> perspective;
+
+    struct Vertex {
+        GLfloat pos[3];
+    };
+
+    const Vertex BOX[24] = {
+            // FRONT
+            {{-0.5f, -0.5f,  0.5f}},
+            {{ 0.5f, -0.5f,  0.5f}},
+            {{-0.5f,  0.5f,  0.5f}},
+            {{ 0.5f,  0.5f,  0.5f}},
+            // BACK
+            {{-0.5f, -0.5f, -0.5f}},
+            {{-0.5f,  0.5f, -0.5f}},
+            {{ 0.5f, -0.5f, -0.5f}},
+            {{ 0.5f,  0.5f, -0.5f}},
+            // LEFT
+            {{-0.5f, -0.5f,  0.5f}},
+            {{-0.5f,  0.5f,  0.5f}},
+            {{-0.5f, -0.5f, -0.5f}},
+            {{-0.5f,  0.5f, -0.5f}},
+            // RIGHT
+            {{ 0.5f, -0.5f, -0.5f}},
+            {{ 0.5f,  0.5f, -0.5f}},
+            {{ 0.5f, -0.5f,  0.5f}},
+            {{ 0.5f,  0.5f,  0.5f}},
+            // TOP
+            {{-0.5f,  0.5f,  0.5f}},
+            {{ 0.5f,  0.5f,  0.5f}},
+            {{-0.5f,  0.5f, -0.5f}},
+            {{ 0.5f,  0.5f, -0.5f}},
+            // BOTTOM
+            {{-0.5f, -0.5f,  0.5f}},
+            {{-0.5f, -0.5f, -0.5f}},
+            {{ 0.5f, -0.5f,  0.5f}},
+            {{ 0.5f, -0.5f, -0.5f}}
+    };
+
     Wallpaper();
 
     ~Wallpaper();
@@ -77,9 +118,7 @@ public:
 
     static void printGlString(const char* name, GLenum s);
 
-    struct Vertex {
-        GLfloat pos[3];
-    };
+    void calculatePerspective();
 
 private:
 
@@ -95,11 +134,15 @@ Wallpaper::~Wallpaper(){
 
 bool Wallpaper::initialize(){
 
-};
+}
 
 void Wallpaper::render(){
 
-};
+}
+
+void Wallpaper::calculatePerspective() {
+    perspective.SetPerspective(45.0f, (float) width / (float) height, 0.1f, 1000.0f);
+}
 
 // returns true if a GL error occurred
 bool Wallpaper::checkGlError(const char* funcName) {
@@ -199,7 +242,7 @@ public:
 
     GLuint mVBState;
 
-    const char* VERTEX_SHADER =
+    char* VERTEX_SHADER =
             "#version 310 es\n"
             "layout(location = " STRV(POS_ATTRIB) ") in vec3 pos;\n"
             "uniform mat4 mvp;\n"
@@ -208,7 +251,7 @@ public:
             "    gl_Position = mvp * vec4(pos, 1.0);\n"
             "}\n";
 
-    const char* FRAGMENT_SHADER =
+    char* FRAGMENT_SHADER =
             "#version 310 es\n"
             "precision mediump float;\n"
             "uniform vec4 color;\n"
@@ -216,39 +259,6 @@ public:
             "void main() {\n"
             "    outColor = color;\n"
             "}\n";
-
-    const Vertex BOX[24] = {
-            // FRONT
-            {{-0.5f, -0.5f,  0.5f}},
-            {{ 0.5f, -0.5f,  0.5f}},
-            {{-0.5f,  0.5f,  0.5f}},
-            {{ 0.5f,  0.5f,  0.5f}},
-            // BACK
-            {{-0.5f, -0.5f, -0.5f}},
-            {{-0.5f,  0.5f, -0.5f}},
-            {{ 0.5f, -0.5f, -0.5f}},
-            {{ 0.5f,  0.5f, -0.5f}},
-            // LEFT
-            {{-0.5f, -0.5f,  0.5f}},
-            {{-0.5f,  0.5f,  0.5f}},
-            {{-0.5f, -0.5f, -0.5f}},
-            {{-0.5f,  0.5f, -0.5f}},
-            // RIGHT
-            {{ 0.5f, -0.5f, -0.5f}},
-            {{ 0.5f,  0.5f, -0.5f}},
-            {{ 0.5f, -0.5f,  0.5f}},
-            {{ 0.5f,  0.5f,  0.5f}},
-            // TOP
-            {{-0.5f,  0.5f,  0.5f}},
-            {{ 0.5f,  0.5f,  0.5f}},
-            {{-0.5f,  0.5f, -0.5f}},
-            {{ 0.5f,  0.5f, -0.5f}},
-            // BOTTOM
-            {{-0.5f, -0.5f,  0.5f}},
-            {{-0.5f, -0.5f, -0.5f}},
-            {{ 0.5f, -0.5f,  0.5f}},
-            {{ 0.5f, -0.5f, -0.5f}}
-    };
 
     Box();
 
@@ -297,10 +307,8 @@ void Box::render(){
     glClearColor(0.2f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(mProgram);
-    Matrix4<float> perspective;
-    perspective.SetPerspective(45.0f, (float)width / (float)height, 0.1f, 1000.0f);
     Matrix4<float> translation;
-    translation = translation.Translation(Vec3<float>(Vec3<float>(0.0f, 0.0f, val * 1.0f - 3.0f)));
+    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, val * 1.0f - 3.0f));
     Matrix4<float> rotation = Matrix4<float>(quaternionTo3x3(rotationVector));
     Matrix4<float> MVP = perspective * translation * rotation;
     glUniformMatrix4fv(
@@ -329,9 +337,17 @@ class Graph : Wallpaper{
 
 };
 
-class Simulation : Wallpaper{
-
+class Simulation : public Wallpaper{
+public:
+    int moleculeCount;
+    int cbrtMoleculeCount;
+    void setMoleculeCount(int n);
 };
+
+void Simulation::setMoleculeCount(int n){
+    moleculeCount = n;
+    cbrtMoleculeCount = cbrt(moleculeCount);
+}
 
 class BarnesHut : Simulation{
 
@@ -341,9 +357,361 @@ class BruteForce : Simulation{
 
 };
 
-class Naive : Simulation{
+class Naive : public Simulation{
+public:
 
+    GLuint mProgram;
+
+    GLuint mVB[1];
+
+    GLuint mVBState;
+
+    char* VERTEX_SHADER =
+            "#version 310 es\n"
+            "layout(location = " STRV(POS_ATTRIB) ") in vec3 pos;\n"
+            "uniform mat4 mvp;\n"
+            "out vec4 vColor;\n"
+            "void main() {\n"
+            "    gl_Position = mvp * vec4(pos, 1.0);\n"
+            "}\n";
+
+    char* FRAGMENT_SHADER =
+            "#version 310 es\n"
+            "precision mediump float;\n"
+            "uniform vec4 color;\n"
+            "out vec4 outColor;\n"
+            "void main() {\n"
+            "    outColor = color;\n"
+            "}\n";
+
+    struct Molecule {
+        vec3 position;
+        vec3 velocity;
+        vec3 positionFinal;
+        vec3 sumForceInitial;
+        vec3 sumForceFinal;
+    };
+
+    Molecule* molecules;
+    bool seed(float radius);
+    void simulate(vec3 gravity);
+
+    Naive();
+
+    ~Naive();
+
+    bool initialize();
+
+    void render();
+
+private:
+
+    const float deltaTime = 0.02f;
+
+    const float surfaceTension = 0.05f;
+
+    float sphereRadius;
+
+    float sphereRadiusSquared;
+
+    float sphereRadiusPlusPointFive;
+
+    float sphereRadiusPlusPointFiveSquared;
+
+    const float efficiency = 1.0f;//0.995f;
+
+    const float maxForce = 100000000.0f;
+
+    const float maxForceSquared = maxForce * maxForce;
+
+    const double maxForceDistance = 2.0;
+
+    const double maxForceDistanceSquared = maxForceDistance * maxForceDistance;
+
+    float particleRadius;
+
+    int* numCellParticles;
+
+    int* firstCellParticle;
+
+    int* cellParticleIds;
+
+    float pInvSpacing;
+
+    int pNumX;
+
+    int pNumY;
+
+    int pNumZ;
+
+    int pNumCells;
+
+    void populateGrid(int dataIndex);
+
+    void useGrid(int i, int dataIndex, int* ids, int& count);
+
+    float noPullBarrier(float x);
+
+    float f(float x);
+
+    inline void calculateForce(int i, vec3& gravity, vec3& force, vec3& position, int dataIndex);
 };
+
+Naive::Naive() : Simulation(){
+
+}
+
+Naive::~Naive(){
+    glDeleteProgram(mProgram);
+    glDeleteVertexArrays(1, &mVBState);
+    glDeleteBuffers(1, mVB);
+    delete molecules;
+}
+
+bool Naive::initialize() {
+    mProgram = 0;
+    mVBState = 0;
+    mProgram = createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
+    if (!mProgram) return false;
+
+    glGenBuffers(1, mVB);
+    glBindBuffer(GL_ARRAY_BUFFER, mVB[0]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(BOX), &BOX[0], GL_STATIC_DRAW);
+
+    glGenVertexArrays(1, &mVBState);
+    glBindVertexArray(mVBState);
+
+    glVertexAttribPointer(POS_ATTRIB, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                          (const GLvoid*)offsetof(Vertex, pos));
+
+    seed(15.0f);
+
+    return true;
+}
+
+void Naive::render(){
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glEnableVertexAttribArray(POS_ATTRIB);
+    glClearColor(0.2f, 0.2f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glUseProgram(mProgram);
+    Matrix4<float> translation;
+    Matrix4<float> translation2;
+    for(int i = 0; i < moleculeCount; i++) {
+        translation = translation.Translation(
+                Vec3<float>(0.0f, 0.0f, val * 10.0f - 30.0f));
+        translation2 = translation2.Translation(
+                Vec3<float>(molecules[i].position[0], molecules[i].position[1], molecules[i].position[2]));
+        Matrix4<float> rotation = Matrix4<float>(quaternionTo3x3(rotationVector));
+        Matrix4<float> MVP = perspective * translation * rotation * translation2;
+        glUniformMatrix4fv(
+                glGetUniformLocation(mProgram, "mvp"),
+                1,
+                GL_FALSE,
+                (GLfloat *) &MVP.cell);
+        glBindVertexArray(mVBState);
+        glUniform4f(glGetUniformLocation(mProgram, "color"), 1.0f, 0.0f, 0.0f, 1.0f);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        glDrawArrays(GL_TRIANGLE_STRIP, 4, 4);
+        glUniform4f(glGetUniformLocation(mProgram, "color"), 0.0f, 1.0f, 0.0f, 1.0f);
+        glDrawArrays(GL_TRIANGLE_STRIP, 8, 4);
+        glDrawArrays(GL_TRIANGLE_STRIP, 12, 4);
+        glUniform4f(glGetUniformLocation(mProgram, "color"), 0.0f, 0.0f, 1.0f, 1.0f);
+        glDrawArrays(GL_TRIANGLE_STRIP, 16, 4);
+        glDrawArrays(GL_TRIANGLE_STRIP, 20, 4);
+    }
+
+    glDisableVertexAttribArray(POS_ATTRIB);
+
+    for(int i = 0; i < 5; i++){
+        simulate(accelerometerVector);
+    }
+
+    checkGlError("Renderer::render");
+    framesRendered++;
+}
+
+void Naive::populateGrid(int dataIndex){
+    for (int i = 0; i < pNumCells; i++)
+        numCellParticles[i] = 0;
+
+    for (int i = 0; i < moleculeCount; i++) {
+        float x = ((vec3*)&molecules[i])[dataIndex].x + sphereRadiusPlusPointFive;
+        float y = ((vec3*)&molecules[i])[dataIndex].y + sphereRadiusPlusPointFive;
+        float z = ((vec3*)&molecules[i])[dataIndex].z + sphereRadiusPlusPointFive;
+
+        int xi = clamp(floor(x * pInvSpacing), 0, pNumX - 1);
+        int yi = clamp(floor(y * pInvSpacing), 0, pNumY - 1);
+        int zi = clamp(floor(z * pInvSpacing), 0, pNumZ - 1);
+        int cellNr = xi * pNumY * pNumZ + yi * pNumZ + zi;
+        numCellParticles[cellNr]++;
+    }
+
+    // partial sums
+
+    int first = 0;
+
+    for (int i = 0; i < pNumCells; i++) {
+        first += numCellParticles[i];
+        firstCellParticle[i] = first;
+    }
+    firstCellParticle[pNumCells] = first; // guard
+
+    // fill particles into cells
+
+    for (int i = 0; i < moleculeCount; i++) {
+        float x = ((vec3*)&molecules[i])[dataIndex].x + sphereRadiusPlusPointFive;
+        float y = ((vec3*)&molecules[i])[dataIndex].y + sphereRadiusPlusPointFive;
+        float z = ((vec3*)&molecules[i])[dataIndex].z + sphereRadiusPlusPointFive;
+
+        int xi = clamp(floor(x * pInvSpacing), 0, pNumX - 1);
+        int yi = clamp(floor(y * pInvSpacing), 0, pNumY - 1);
+        int zi = clamp(floor(z * pInvSpacing), 0, pNumZ - 1);
+        int cellNr = xi * pNumY * pNumZ + yi * pNumZ + zi;
+        firstCellParticle[cellNr]--;
+        cellParticleIds[firstCellParticle[cellNr]] = i;
+    }
+}
+
+void Naive::useGrid(int i, int dataIndex, int* ids, int& count){
+    count = 0;
+    float px = ((vec3*)&molecules[i])[dataIndex].x + sphereRadiusPlusPointFive;
+    float py = ((vec3*)&molecules[i])[dataIndex].y + sphereRadiusPlusPointFive;
+    float pz = ((vec3*)&molecules[i])[dataIndex].z + sphereRadiusPlusPointFive;
+
+    int pxi = floor(px * pInvSpacing);
+    int pyi = floor(py * pInvSpacing);
+    int pzi = floor(pz * pInvSpacing);
+    int x0 = max(pxi - 1, 0);
+    int y0 = max(pyi - 1, 0);
+    int z0 = max(pzi - 1, 0);
+    int x1 = min(pxi + 1, pNumX - 1);
+    int y1 = min(pyi + 1, pNumY - 1);
+    int z1 = min(pzi + 1, pNumZ - 1);
+
+    for (int xi = x0; xi <= x1; xi++) {
+        for (int yi = y0; yi <= y1; yi++) {
+            for (int zi = z0; zi <= z1; zi++) {
+                int cellNr = xi * pNumY * pNumZ + yi * pNumZ + zi;
+                int first = firstCellParticle[cellNr];
+                int last = firstCellParticle[cellNr + 1];
+                for (int j = first; j < last; j++) {
+                    int id = cellParticleIds[j];
+                    if (id == i)
+                        continue;
+                    ids[count++] = id;
+                }
+            }
+        }
+    }
+}
+
+bool Naive::seed(float radius) {
+    setMoleculeCount(125);
+    molecules = new Molecule[moleculeCount];
+    sphereRadius = radius;
+    sphereRadiusSquared = sphereRadius * sphereRadius;
+    sphereRadiusPlusPointFive = sphereRadius + 0.5f;
+    sphereRadiusPlusPointFiveSquared = sphereRadiusPlusPointFive * sphereRadiusPlusPointFive;
+    for (int i = 0; i < moleculeCount; i++) {
+        int first = i - (i % (cbrtMoleculeCount * cbrtMoleculeCount));
+        molecules[i].position.x = first / (cbrtMoleculeCount * cbrtMoleculeCount) - (cbrtMoleculeCount - 1) / 2.0f;
+        first = i - first;
+        molecules[i].position.y = (first - (first % cbrtMoleculeCount)) / cbrtMoleculeCount - (cbrtMoleculeCount - 1) / 2.0f;
+        molecules[i].position.z = first % cbrtMoleculeCount - (cbrtMoleculeCount - 1) / 2.0f;
+        molecules[i].velocity = vec3(0.0f, 0.000001f, 0.0f);
+        molecules[i].positionFinal = molecules[i].position;
+    }
+
+    particleRadius = 0.5f;
+    pInvSpacing = 1.0 / (maxForceDistance * 2.0 * particleRadius);//4.0 correlates to max distance of 2.0, 3.0 correlates to max distance of 1.5
+    float width = 2.0f * sphereRadiusPlusPointFive;
+    float height = 2.0f * sphereRadiusPlusPointFive;
+    float depth = 2.0f * sphereRadiusPlusPointFive;
+    pNumX = floor(width * pInvSpacing) + 1;
+    pNumY = floor(height * pInvSpacing) + 1;
+    pNumZ = floor(depth * pInvSpacing) + 1;
+    pNumCells = pNumX * pNumY * pNumZ;
+    numCellParticles = (int*)calloc(pNumCells, sizeof(int));              // Initialize the number of particles in each cell
+    firstCellParticle = (int*)calloc((pNumCells + 1), sizeof(int));       // Initialize the index of the first particle in each cell
+    cellParticleIds = (int*)calloc(moleculeCount, sizeof(int));
+
+    populateGrid(0);
+
+    return true;
+}
+
+float Naive::noPullBarrier(float x) {
+    if (x > 1.0f) {
+        return 0.0f;
+    }
+    return 1000.0f * (x - 1.0f) * pow(x - 2.0f, 2.0f) / (x + 0.75f);
+}
+
+float Naive::f(float x) {
+    if (x > maxForceDistance) {
+        return 0.0f;
+    }
+    float _return = 500.0f * (x - 1.0f) * pow(x - 2.0f, 2.0f) / (x + 0.75f);
+    if (x > 1.0f) {
+        return surfaceTension * _return;
+    } else {
+        return _return;
+    }
+}
+
+inline void Naive::calculateForce(int i, vec3& gravity, vec3& force, vec3& position, int dataIndex){
+    force = gravity;
+    int ids[1000]; // 700 may be high enough
+    int count = 0;
+    useGrid(i, dataIndex, ids, count);
+    for (int j = 0; j < count; j++) {
+        if (i == j) {
+            continue;
+        }
+        vec3 difference = ((vec3*)&molecules[ids[j]])[dataIndex] - position;
+        float r = distance(difference);
+        float fOverR = f(r) / r;
+        force += fOverR * difference;
+    }
+    float distanceFromOrigin = distance(position);
+    if (distanceFromOrigin != 0.0f) {
+        float forceAtPoint = noPullBarrier(-distanceFromOrigin + sphereRadiusPlusPointFive) / distanceFromOrigin;//if distanceFromOrigin = 0, then we plug in a value of 3.5, if distanceFromOrigin = 2.5, then we plug in a value of 1
+        force += forceAtPoint * position;
+    }
+}
+
+void Naive::simulate(vec3 gravity) {
+    for (int i = 0; i < moleculeCount; i++) {
+        calculateForce(i, gravity, molecules[i].sumForceInitial, molecules[i].position, 0);
+        molecules[i].positionFinal = molecules[i].position + deltaTime * (molecules[i].sumForceInitial * 0.5f * deltaTime + molecules[i].velocity);
+        // Bug fix: Stop runaway particles
+        float squaredDistance = dot(molecules[i].positionFinal, molecules[i].positionFinal);
+        if(squaredDistance > sphereRadiusPlusPointFive * sphereRadiusPlusPointFive){
+            molecules[i].positionFinal *= sqrt(sphereRadius * sphereRadius / squaredDistance);
+        }
+    }
+    populateGrid(2);
+    for (int i = 0; i < moleculeCount; i++) {
+        calculateForce(i, gravity, molecules[i].sumForceFinal, molecules[i].positionFinal, 2);
+        vec3 sumForceAverage = 0.5f * (molecules[i].sumForceInitial + molecules[i].sumForceFinal);
+        molecules[i].position += deltaTime * (sumForceAverage * 0.5f * deltaTime + molecules[i].velocity);
+        molecules[i].velocity += sumForceAverage * deltaTime;
+        // Efficiency control
+        if (efficiency != 1.0f) {
+            vec3 product = molecules[i].velocity * efficiency;
+            molecules[i].velocity = product;
+        }
+        //  Bug fix: stop runaway particles
+        float squaredDistance = dot(molecules[i].position, molecules[i].position);
+        if(squaredDistance > sphereRadiusSquared){
+            molecules[i].position *= sqrt(sphereRadiusSquared / squaredDistance);
+            molecules[i].velocity = 0.1f * molecules[i].position;
+        }
+    }
+    populateGrid(0);
+}
 
 class PicFlip : Simulation{
 
@@ -377,7 +745,8 @@ Java_com_example_livewallpaper05_MainActivity_00024Companion_init(JNIEnv *env, j
 
     const char* versionStr = (const char*)glGetString(GL_VERSION);
     if (strstr(versionStr, "OpenGL ES 3.") && gl3stubInit()) {
-        wallpaper = new Box();
+        wallpaper = new Naive();
+        wallpaper->initialize();
         ALOGV("Using OpenGL ES 3.0 renderer");
     } else if (strstr(versionStr, "OpenGL ES 2.")) {
         //g_renderer = createES2Renderer();
@@ -394,6 +763,7 @@ Java_com_example_livewallpaper05_MainActivity_00024Companion_resize(JNIEnv *env,
         wallpaper->width = width;
         wallpaper->height = height;
         glViewport(0, 0, width, height);
+        wallpaper->calculatePerspective();
     }
 }
 
