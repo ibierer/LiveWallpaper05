@@ -1602,9 +1602,9 @@ Java_com_example_livewallpaper05_MainActivity_00024Companion_init(JNIEnv *env, j
 
     const char* versionStr = (const char*)glGetString(GL_VERSION);
     if (strstr(versionStr, "OpenGL ES 3.") && gl3stubInit()) {
-        //wallpaper = new Box();
+        wallpaper = new Box();
         //wallpaper = new Naive();
-        wallpaper = new PicFlip();
+        //wallpaper = new PicFlip();
         wallpaper->initialize();
         ALOGV("Using OpenGL ES 3.0 renderer");
     } else if (strstr(versionStr, "OpenGL ES 2.")) {
@@ -1635,6 +1635,7 @@ Java_com_example_livewallpaper05_MainActivity_00024Companion_step(JNIEnv *env, j
         wallpaper->render();
     }
 }
+
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_livewallpaper05_MainActivity_00024Companion_sendData(JNIEnv *env, jobject thiz,
