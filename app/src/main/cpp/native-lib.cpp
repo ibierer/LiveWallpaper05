@@ -601,7 +601,7 @@ class ImplicitGrapher {
 
     ivec3* xyzLineIndex;
 
-    ivec3* gS;
+    ivec3* groupSegments;
 
     int constant[maxNumOfEquations][maxEquationLength];
 
@@ -639,9 +639,9 @@ class ImplicitGrapher {
 
     int node3(int i, int j, int k, int l);
 
-    int sC;
+    int solutionCount;
 
-    int gSC;
+    int groupSegmentCounter;
 
     static const int NAME = 0;
 
@@ -686,13 +686,68 @@ public:
     static float fOfXYZ(ImplicitGrapher& graph, vec3 _, const float& t, const vec3& offset, const float& zoom);
 
     void calculateSurfaceOnCPU(float (*fOfXYZ)(ImplicitGrapher& graph, vec3, const float&, const vec3&, const float&), float timeVariable, uint iterations, vec3 offset, const float& zoom, bool vectorPointsPositive, bool clipEdges, VertexNormal* vertices, uvec3* _indices, GLuint& numIndices);
+
+    // Assignment Constructor
+    /*ImplicitGrapher(const ImplicitGrapher& other) {
+        // Copy primitive types
+        debug_string = other.debug_string;
+        t = other.t;
+        maxSolutionCount = other.maxSolutionCount;
+        surfaceEquation = other.surfaceEquation;
+        solutionCount = other.solutionCount;
+        groupSegmentCounter = other.groupSegmentCounter;
+        numOfEquationsInMemory = other.numOfEquationsInMemory;
+
+        // Copy arrays
+        memcpy(plusMinus, other.plusMinus, maxNumOfEquations * sizeof(bool));
+        memcpy(withinGraphRadius, other.withinGraphRadius, maxNumOfEquations * sizeof(bool));
+        memcpy(xyzLineIndex, other.xyzLineIndex, maxNumOfEquations * sizeof(ivec3));
+        memcpy(groupSegments, other.groupSegments, maxNumOfEquations * sizeof(ivec3));
+
+        for (int i = 0; i < maxNumOfEquations; ++i) {
+            memcpy(constant[i], other.constant[i], maxEquationLength * sizeof(int));
+            valuesCounter[i] = other.valuesCounter[i];
+            memcpy(values, other.values, maxEquationLength * sizeof(float));
+            memcpy(equationValues[i], other.equationValues[i], maxEquationLength * sizeof(float));
+            memcpy(sequences[i], other.sequences[i], maxEquationLength * 3 * sizeof(int));
+            sequenceLengths[i] = other.sequenceLengths[i];
+        }
+
+        // Copy ivec3 and vec3 types
+        radius = other.radius;
+        radiusPlusOne = other.radiusPlusOne;
+        size = other.size;
+        sizePlus2 = other.sizePlus2;
+        sizePlus3 = other.sizePlus3;
+        defaultOffset = other.defaultOffset;
+        currentOffset = other.currentOffset;
+
+        // Copy dynamic arrays (if any) - adjust as needed
+        vertices = new VertexNormal[maxSolutionCount];
+        memcpy(vertices, other.vertices, maxSolutionCount * sizeof(VertexNormal));
+
+        indices = new uvec3[maxSolutionCount];
+        memcpy(indices, other.indices, maxSolutionCount * sizeof(uvec3));
+    }
+
+    // Copy Constructor
+    ImplicitGrapher& operator=(const ImplicitGrapher& other) {
+        if (this != &other) {
+            // Release existing resources if any
+
+            // Copy-and-swap idiom for assignment operator
+            ImplicitGrapher temp(other);
+            std::swap(*this, temp);
+        }
+        return *this;
+    }*/
 };
 
 ImplicitGrapher::ImplicitGrapher(ivec3 radius) {
     refactor(radius);
     plusMinus = (bool*)malloc(sizePlus3.x * sizePlus3.y * sizePlus3.z * sizeof(bool));
     xyzLineIndex = (ivec3*)malloc(sizePlus3.x * sizePlus3.y * sizePlus3.z * sizeof(ivec3));
-    gS = (ivec3*)malloc(maxSolutionCount * sizeof(ivec3));
+    groupSegments = (ivec3*)malloc(maxSolutionCount * sizeof(ivec3));
     withinGraphRadius = (bool*)malloc(maxSolutionCount * sizeof(bool));
     vertices = (VertexNormal*)malloc(maxSolutionCount * sizeof(VertexNormal));
     indices = (uvec3*)malloc(3 * maxSolutionCount * sizeof(uvec3));
@@ -706,7 +761,7 @@ ImplicitGrapher::ImplicitGrapher(ivec3 radius) {
 ImplicitGrapher::~ImplicitGrapher(){
     free(plusMinus);
     free(xyzLineIndex);
-    free(gS);
+    free(groupSegments);
     free(withinGraphRadius);
     free(vertices);
     free(indices);
@@ -1470,151 +1525,220 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(ImplicitGrapher &gra
     t = timeVariable;
     currentOffset = defaultOffset + offset;
     // Erase normals
-    for (int i = 0; i < sC; i++) {
+    for (int i = 0; i < solutionCount; i++) {
         verts[i].n = vec3(0.0f);
     }
     // Reset solution count
-    sC = 0;
+    solutionCount = 0;
     // Reset group segment counter
-    gSC = 0;
+    groupSegmentCounter = 0;
     // Calculate plusMinusAmounts and approximate solutions
-    for (int _i = 0; _i < sizePlus3.x; _i++) {
-        for (int _j = 0; _j < sizePlus3.y; _j++) {
-            for (int _k = 0; _k < sizePlus3.z; _k++) {
-                plusMinus[(_i * sizePlus3.y + _j) * sizePlus3.z + _k] = fOfXYZ(*this, vec3(_i, _j, _k), t, currentOffset, zoom) > 0.0f;
-                uvec3 ijk(_i, _j, _k);
-                for (int _l = 0; _l < 3; _l++) {
-                    if (ijk[_l] == 0) {
+    for (int i = 0; i < sizePlus3.x; i++) {
+        for (int j = 0; j < sizePlus3.y; j++) {
+            for (int k = 0; k < sizePlus3.z; k++) {
+                plusMinus[(i * sizePlus3.y + j) * sizePlus3.z + k] = fOfXYZ(*this, vec3(i, j, k), t, currentOffset, zoom) > 0.0f;
+                uvec3 ijk(i, j, k);
+                for (int l = 0; l < 3; l++) {
+                    if (ijk[l] == 0) {
                         continue;
                     }
                     uvec3 iCursor = ijk;
-                    iCursor[_l] -= 1;
+                    iCursor[l] -= 1;
                     bool firstSample = plusMinus[(iCursor.x * sizePlus3.y + iCursor.y) * sizePlus3.z + iCursor.z];
                     bool secondSample = plusMinus[(ijk.x * sizePlus3.y + ijk.y) * sizePlus3.z + ijk.z];
                     // If no solution is detected jump to next iteration of loop.
                     if (!(firstSample ^ secondSample)) {
                         continue;
                     }
-                    xyzLineIndex[(iCursor.x * sizePlus3.y + iCursor.y) * sizePlus3.z + iCursor.z][_l] = sC;
+                    xyzLineIndex[(iCursor.x * sizePlus3.y + iCursor.y) * sizePlus3.z + iCursor.z][l] = solutionCount;
                     const int POSITIVE = 1;
                     const int NEGATIVE = -1;
                     int sign = secondSample ? POSITIVE : NEGATIVE;
                     for (int m = 0; m < 3; m++) {
-                        verts[sC].v[m] = iCursor[m];
+                        verts[solutionCount].v[m] = iCursor[m];
                     }
                     float scan = 0.5f;
                     for (int m = 0; m < iterations; m++) {// Maybe use a do-while loop here to reduce the scan operations by 1.
-                        verts[sC].v[_l] += scan;
-                        if (sign == POSITIVE ^ fOfXYZ(*this, verts[sC].v, t, currentOffset, zoom) > 0.0f) {
+                        verts[solutionCount].v[l] += scan;
+                        if (sign == POSITIVE ^ fOfXYZ(*this, verts[solutionCount].v, t, currentOffset, zoom) > 0.0f) {
                             scan *= 0.5f;
                         }else{
                             sign *= -1;
                             scan *= -0.5f;
                         }
                     }
-                    sC++;
+                    solutionCount++;
                 }
-                if (_i == 0 || _j == 0 || _k == 0) {
+                if (i == 0 || j == 0 || k == 0) {
                     continue;
                 }
-                int groupSegmentStartIndex = gSC;
-                bool _xyz = getPlusMinus(_i - 1, _j - 1, _k - 1);
-                bool _xyZ = getPlusMinus(_i - 1, _j - 1, _k);
-                bool _xYz = getPlusMinus(_i - 1, _j, _k - 1);
-                bool _xYZ = getPlusMinus(_i - 1, _j, _k);
-                bool _Xyz = getPlusMinus(_i, _j - 1, _k - 1);
-                bool _XyZ = getPlusMinus(_i, _j - 1, _k);
-                bool _XYz = getPlusMinus(_i, _j, _k - 1);
-                bool _XYZ = getPlusMinus(_i, _j, _k);
-                for (int _l = 0; _l < 6; _l++) {
+                int groupSegmentStartIndex = groupSegmentCounter;
+                bool xyz = getPlusMinus(i - 1, j - 1, k - 1);
+                bool xyZ = getPlusMinus(i - 1, j - 1, k);
+                bool xYz = getPlusMinus(i - 1, j, k - 1);
+                bool xYZ = getPlusMinus(i - 1, j, k);
+                bool Xyz = getPlusMinus(i, j - 1, k - 1);
+                bool XyZ = getPlusMinus(i, j - 1, k);
+                bool XYz = getPlusMinus(i, j, k - 1);
+                bool XYZ = getPlusMinus(i, j, k);
+                for (int l = 0; l < 6; l++) {
                     int combo = 0;
-                    switch (_l) {
+                    switch (l) {
                         case 0://XY
-                            combo += _xYz * 8;
-                            combo += _XYz * 4;
-                            combo += _xyz * 2;
-                            combo += _Xyz * 1;
+                            combo += xYz * 8;
+                            combo += XYz * 4;
+                            combo += xyz * 2;
+                            combo += Xyz * 1;
                             break;
                         case 1://XY
-                            combo += _xYZ * 8;
-                            combo += _XYZ * 4;
-                            combo += _xyZ * 2;
-                            combo += _XyZ * 1;
+                            combo += xYZ * 8;
+                            combo += XYZ * 4;
+                            combo += xyZ * 2;
+                            combo += XyZ * 1;
                             break;
                         case 2://YZ
-                            combo += _xyZ * 8;
-                            combo += _xYZ * 4;
-                            combo += _xyz * 2;
-                            combo += _xYz * 1;
+                            combo += xyZ * 8;
+                            combo += xYZ * 4;
+                            combo += xyz * 2;
+                            combo += xYz * 1;
                             break;
                         case 3://YZ
-                            combo += _XyZ * 8;
-                            combo += _XYZ * 4;
-                            combo += _Xyz * 2;
-                            combo += _XYz * 1;
+                            combo += XyZ * 8;
+                            combo += XYZ * 4;
+                            combo += Xyz * 2;
+                            combo += XYz * 1;
                             break;
                         case 4://ZX
-                            combo += _Xyz * 8;
-                            combo += _XyZ * 4;
-                            combo += _xyz * 2;
-                            combo += _xyZ * 1;
+                            combo += Xyz * 8;
+                            combo += XyZ * 4;
+                            combo += xyz * 2;
+                            combo += xyZ * 1;
                             break;
                         case 5://ZX
-                            combo += _XYz * 8;
-                            combo += _XYZ * 4;
-                            combo += _xYz * 2;
-                            combo += _xYZ * 1;
+                            combo += XYz * 8;
+                            combo += XYZ * 4;
+                            combo += xYz * 2;
+                            combo += xYZ * 1;
                             break;
                     }
                     switch (combo) {
                         case 0: break;//0000
-                        case 1: if (_l % 2 != vectorPointsPositive) gS[gSC++] = ivec3(node3(_i, _j, _k, _l), node2(_i, _j, _k, _l), -1);
-                            else gS[gSC++] = ivec3(node2(_i, _j, _k, _l), node3(_i, _j, _k, _l), -1); break;//0001
-                        case 2: if (_l % 2 != vectorPointsPositive) gS[gSC++] = ivec3(node1(_i, _j, _k, _l), node3(_i, _j, _k, _l), -1);
-                            else gS[gSC++] = ivec3(node3(_i, _j, _k, _l), node1(_i, _j, _k, _l), -1); break;//0010
-                        case 3: if (_l % 2 != vectorPointsPositive) gS[gSC++] = ivec3(node1(_i, _j, _k, _l), node2(_i, _j, _k, _l), -1);
-                            else gS[gSC++] = ivec3(node2(_i, _j, _k, _l), node1(_i, _j, _k, _l), -1); break;//0011
-                        case 4: if (_l % 2 != vectorPointsPositive) gS[gSC++] = ivec3(node2(_i, _j, _k, _l), node0(_i, _j, _k, _l), -1);
-                            else gS[gSC++] = ivec3(node0(_i, _j, _k, _l), node2(_i, _j, _k, _l), -1); break;//0100
-                        case 5: if (_l % 2 != vectorPointsPositive) gS[gSC++] = ivec3(node3(_i, _j, _k, _l), node0(_i, _j, _k, _l), -1);
-                            else gS[gSC++] = ivec3(node0(_i, _j, _k, _l), node3(_i, _j, _k, _l), -1); break;//0101
+                        case 1:
+                            if (l % 2 != vectorPointsPositive)
+                                groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node2(i, j, k, l), -1);
+                            else
+                                groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node3(i, j, k, l), -1);
+                            break;//0001
+                        case 2:
+                            if (l % 2 != vectorPointsPositive)
+                                groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node3(i, j, k, l), -1);
+                            else
+                                groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node1(i, j, k, l), -1);
+                            break;//0010
+                        case 3:
+                            if (l % 2 != vectorPointsPositive)
+                                groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node2(i, j, k, l), -1);
+                            else
+                                groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node1(i, j, k, l), -1); break;//0011
+                        case 4:
+                            if (l % 2 != vectorPointsPositive)
+                                groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node0(i, j, k, l), -1);
+                            else
+                                groupSegments[groupSegmentCounter++] = ivec3(node0(i, j, k, l), node2(i, j, k, l), -1);
+                            break;//0100
+                        case 5:
+                            if(l % 2 != vectorPointsPositive)
+                                groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node0(i, j, k, l), -1);
+                            else
+                                groupSegments[groupSegmentCounter++] = ivec3(node0(i, j, k, l), node3(i, j, k, l), -1);
+                            break;//0101
                         case 6: {//0110
-                            int _node0 = node0(_i, _j, _k, _l), _node1 = node1(_i, _j, _k, _l), _node2 = node2(_i, _j, _k, _l), _node3 = node3(_i, _j, _k, _l);
+                            int _node0 = node0(i, j, k, l);
+                            int _node1 = node1(i, j, k, l);
+                            int _node2 = node2(i, j, k, l);
+                            int _node3 = node3(i, j, k, l);
                             if (fOfXYZ(*this, (verts[_node0].v + verts[_node1].v + verts[_node2].v + verts[_node3].v) * 0.25f, t, currentOffset, zoom) > 0.0f) {
-                                if (_l % 2 != vectorPointsPositive) { gS[gSC++] = ivec3(_node1, _node0, -1); gS[gSC++] = ivec3(_node2, _node3, -1); }
-                                else { gS[gSC++] = ivec3(_node0, _node1, -1); gS[gSC++] = ivec3(_node3, _node2, -1); }
+                                if (l % 2 != vectorPointsPositive){
+                                    groupSegments[groupSegmentCounter++] = ivec3(_node1, _node0, -1);
+                                    groupSegments[groupSegmentCounter++] = ivec3(_node2, _node3, -1);
+                                } else {
+                                    groupSegments[groupSegmentCounter++] = ivec3(_node0, _node1, -1);
+                                    groupSegments[groupSegmentCounter++] = ivec3(_node3, _node2, -1);
+                                }
+                            } else {
+                                if (l % 2 != vectorPointsPositive) {
+                                    groupSegments[groupSegmentCounter++] = ivec3(_node2, _node0, -1);
+                                    groupSegments[groupSegmentCounter++] = ivec3(_node1, _node3, -1);
+                                } else {
+                                    groupSegments[groupSegmentCounter++] = ivec3(_node0, _node2, -1);
+                                    groupSegments[groupSegmentCounter++] = ivec3(_node3, _node1, -1);
+                                }
                             }
-                            else {
-                                if (_l % 2 != vectorPointsPositive) { gS[gSC++] = ivec3(_node2, _node0, -1); gS[gSC++] = ivec3(_node1, _node3, -1); }
-                                else { gS[gSC++] = ivec3(_node0, _node2, -1); gS[gSC++] = ivec3(_node3, _node1, -1); }
-                            }
-                            break; }
-                        case 7: if (_l % 2 != vectorPointsPositive) gS[gSC++] = ivec3(node1(_i, _j, _k, _l), node0(_i, _j, _k, _l), -1);
-                            else gS[gSC++] = ivec3(node0(_i, _j, _k, _l), node1(_i, _j, _k, _l), -1); break;//0111
-                        case 8: if (_l % 2 != vectorPointsPositive) gS[gSC++] = ivec3(node0(_i, _j, _k, _l), node1(_i, _j, _k, _l), -1);
-                            else gS[gSC++] = ivec3(node1(_i, _j, _k, _l), node0(_i, _j, _k, _l), -1); break;//1000
+                            break;
+                        }
+                        case 7:
+                            if (l % 2 != vectorPointsPositive)
+                                groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node0(i, j, k, l), -1);
+                            else
+                                groupSegments[groupSegmentCounter++] = ivec3(node0(i, j, k, l), node1(i, j, k, l), -1);
+                            break;//0111
+                        case 8:
+                            if (l % 2 != vectorPointsPositive)
+                                groupSegments[groupSegmentCounter++] = ivec3(node0(i, j, k, l), node1(i, j, k, l), -1);
+                            else
+                                groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node0(i, j, k, l), -1);
+                            break;//1000
                         case 9: {//1001
-                            int _node0 = node0(_i, _j, _k, _l), _node1 = node1(_i, _j, _k, _l), _node2 = node2(_i, _j, _k, _l), _node3 = node3(_i, _j, _k, _l);
+                            int _node0 = node0(i, j, k, l);
+                            int _node1 = node1(i, j, k, l);
+                            int _node2 = node2(i, j, k, l);
+                            int _node3 = node3(i, j, k, l);
                             if (fOfXYZ(*this, (verts[_node0].v + verts[_node1].v + verts[_node2].v + verts[_node3].v) * 0.25f, t, currentOffset, zoom) > 0.0f) {
-                                if (_l % 2 != vectorPointsPositive) { gS[gSC++] = ivec3(_node0, _node2, -1); gS[gSC++] = ivec3(_node3, _node1, -1); }
-                                else { gS[gSC++] = ivec3(_node2, _node0, -1); gS[gSC++] = ivec3(_node1, _node3, -1); }
+                                if (l % 2 != vectorPointsPositive) {
+                                    groupSegments[groupSegmentCounter++] = ivec3(_node0, _node2, -1);
+                                    groupSegments[groupSegmentCounter++] = ivec3(_node3, _node1, -1);
+                                } else {
+                                    groupSegments[groupSegmentCounter++] = ivec3(_node2, _node0, -1);
+                                    groupSegments[groupSegmentCounter++] = ivec3(_node1, _node3, -1);
+                                }
+                            } else {
+                                if (l % 2 != vectorPointsPositive) {
+                                    groupSegments[groupSegmentCounter++] = ivec3(_node3, _node2, -1);
+                                    groupSegments[groupSegmentCounter++] = ivec3(_node0, _node1, -1);
+                                } else {
+                                    groupSegments[groupSegmentCounter++] = ivec3(_node2, _node3, -1);
+                                    groupSegments[groupSegmentCounter++] = ivec3(_node1, _node0, -1);
+                                }
                             }
-                            else {
-                                if (_l % 2 != vectorPointsPositive) { gS[gSC++] = ivec3(_node3, _node2, -1); gS[gSC++] = ivec3(_node0, _node1, -1); }
-                                else { gS[gSC++] = ivec3(_node2, _node3, -1); gS[gSC++] = ivec3(_node1, _node0, -1); }
-                            }
-                            break; }
-                        case 10: if (_l % 2 != vectorPointsPositive) gS[gSC++] = ivec3(node0(_i, _j, _k, _l), node3(_i, _j, _k, _l), -1);
-                            else gS[gSC++] = ivec3(node3(_i, _j, _k, _l), node0(_i, _j, _k, _l), -1); break;//1010
-                        case 11: if (_l % 2 != vectorPointsPositive) gS[gSC++] = ivec3(node0(_i, _j, _k, _l), node2(_i, _j, _k, _l), -1);
-                            else gS[gSC++] = ivec3(node2(_i, _j, _k, _l), node0(_i, _j, _k, _l), -1); break;//1011
-                        case 12: if (_l % 2 != vectorPointsPositive) gS[gSC++] = ivec3(node2(_i, _j, _k, _l), node1(_i, _j, _k, _l), -1);
-                            else gS[gSC++] = ivec3(node1(_i, _j, _k, _l), node2(_i, _j, _k, _l), -1); break;//1100
-                        case 13: if (_l % 2 != vectorPointsPositive) gS[gSC++] = ivec3(node3(_i, _j, _k, _l), node1(_i, _j, _k, _l), -1);
-                            else gS[gSC++] = ivec3(node1(_i, _j, _k, _l), node3(_i, _j, _k, _l), -1); break;//1101
-                        case 14: if (_l % 2 != vectorPointsPositive) gS[gSC++] = ivec3(node2(_i, _j, _k, _l), node3(_i, _j, _k, _l), -1);
-                            else gS[gSC++] = ivec3(node3(_i, _j, _k, _l), node2(_i, _j, _k, _l), -1); break;//1110
-                        case 15: break;//1111
+                            break;
+                        }
+                        case 10:
+                            if (l % 2 != vectorPointsPositive)
+                                groupSegments[groupSegmentCounter++] = ivec3(node0(i, j, k, l), node3(i, j, k, l), -1);
+                            else
+                                groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node0(i, j, k, l), -1); break;//1010
+                        case 11:
+                            if (l % 2 != vectorPointsPositive)
+                                groupSegments[groupSegmentCounter++] = ivec3(node0(i, j, k, l), node2(i, j, k, l), -1);
+                            else
+                                groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node0(i, j, k, l), -1); break;//1011
+                        case 12:
+                            if (l % 2 != vectorPointsPositive)
+                                groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node1(i, j, k, l), -1);
+                            else
+                                groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node2(i, j, k, l), -1); break;//1100
+                        case 13:
+                            if (l % 2 != vectorPointsPositive)
+                                groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node1(i, j, k, l), -1);
+                            else
+                                groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node3(i, j, k, l), -1); break;//1101
+                        case 14:
+                            if (l % 2 != vectorPointsPositive)
+                                groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node3(i, j, k, l), -1);
+                            else
+                                groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node2(i, j, k, l), -1); break;//1110
+                        case 15:
+                            break;//1111
                     }
                 }
                 //Grouping
@@ -1627,41 +1751,41 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(ImplicitGrapher &gra
                 //{80}{73}{0}    {54}{21}{0}    {54}{21}{0}
                 int segPerGroup = 1;
                 if (clipEdges) {
-                    for (int _l = groupSegmentStartIndex; _l < gSC; _l++) {
-                        withinGraphRadius[_l] = _i > 1 && _j > 1 && _k > 1 && _i < sizePlus2.x && _j < sizePlus2.y && _k < sizePlus2.z;
+                    for (int l = groupSegmentStartIndex; l < groupSegmentCounter; l++) {
+                        withinGraphRadius[l] = i > 1 && j > 1 && k > 1 && i < sizePlus2.x && j < sizePlus2.y && k < sizePlus2.z;
                     }
                 }
-                for (int _l = groupSegmentStartIndex; _l < gSC - 1; _l++) {
-                    for (int _m = _l + 1; _m < gSC; _m++) {
-                        if (gS[_m][0] != gS[_l][1]) {
+                for (int l = groupSegmentStartIndex; l < groupSegmentCounter - 1; l++) {
+                    for (int _m = l + 1; _m < groupSegmentCounter; _m++) {
+                        if (groupSegments[_m][0] != groupSegments[l][1]) {
                             continue;
                         }
                         //Swap
-                        int storeA = gS[_l + 1][0];
-                        int storeB = gS[_l + 1][1];
-                        gS[_l + 1][0] = gS[_m][0];
-                        gS[_l + 1][1] = gS[_m][1];
-                        gS[_m][0] = storeA;
-                        gS[_m][1] = storeB;
+                        int storeA = groupSegments[l + 1][0];
+                        int storeB = groupSegments[l + 1][1];
+                        groupSegments[l + 1][0] = groupSegments[_m][0];
+                        groupSegments[l + 1][1] = groupSegments[_m][1];
+                        groupSegments[_m][0] = storeA;
+                        groupSegments[_m][1] = storeB;
                         segPerGroup++;
                         //Check to see if end of loop
-                        if (gS[_l + 1][1] != gS[_l + 2 - segPerGroup][0]) {
+                        if (groupSegments[l + 1][1] != groupSegments[l + 2 - segPerGroup][0]) {
                             continue;
                         }
                         if (segPerGroup == 3) {
-                            gS[_l - 1][2] = gS[_l][1];
+                            groupSegments[l - 1][2] = groupSegments[l][1];
                         }
                         else {
                             vec3 sum(0.0f);
-                            for (int _n = _l - segPerGroup + 2; _n < _l + 2; _n++) {
-                                sum += verts[gS[_n][0]].v;
-                                gS[_n][2] = sC;
+                            for (int _n = l - segPerGroup + 2; _n < l + 2; _n++) {
+                                sum += verts[groupSegments[_n][0]].v;
+                                groupSegments[_n][2] = solutionCount;
                             }
-                            verts[sC].v = sum / segPerGroup;
-                            sC++;
+                            verts[solutionCount].v = sum / segPerGroup;
+                            solutionCount++;
                         }
                         segPerGroup = 1;
-                        _l++;
+                        l++;
                         break;
                     }
                 }
@@ -1670,33 +1794,33 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(ImplicitGrapher &gra
     }
 
     // Calculate face normals and add them to the per-solution normals.
-    for (int i = 0; i < gSC; i++) {
-        if (gS[i][2] > -1) {
-            vec3 vectorA = verts[gS[i][0]].v - verts[gS[i][2]].v;
-            vec3 vectorB = verts[gS[i][1]].v - verts[gS[i][2]].v;
+    for (int i = 0; i < groupSegmentCounter; i++) {
+        if (groupSegments[i][2] > -1) {
+            vec3 vectorA = verts[groupSegments[i][0]].v - verts[groupSegments[i][2]].v;
+            vec3 vectorB = verts[groupSegments[i][1]].v - verts[groupSegments[i][2]].v;
             vec3 crossProduct = cross(vectorA, vectorB);
             float length = distance(crossProduct);
             vec3 normalizedCrossProduct = crossProduct / length;
-            verts[gS[i][0]].n += normalizedCrossProduct;
-            verts[gS[i][1]].n += normalizedCrossProduct;
-            verts[gS[i][2]].n += normalizedCrossProduct;
+            verts[groupSegments[i][0]].n += normalizedCrossProduct;
+            verts[groupSegments[i][1]].n += normalizedCrossProduct;
+            verts[groupSegments[i][2]].n += normalizedCrossProduct;
         }
     }
     //Normalize
-    for (int i = 0; i < sC; i++) {
+    for (int i = 0; i < solutionCount; i++) {
         float length = (vectorPointsPositive) ? -distance(vec3(verts[i].n)) : distance(vec3(verts[i].n));
         verts[i].n /= length;
     }
     //Create Triangle Primitives
     numIndices = 0;
     int triangleCount = 0;
-    for (int i = 0; i < gSC; i++) {
-        if (gS[i][2] > -1 && (!clipEdges || withinGraphRadius[i])) {
-            _indices[triangleCount++] = gS[i];
+    for (int i = 0; i < groupSegmentCounter; i++) {
+        if (groupSegments[i][2] > -1 && (!clipEdges || withinGraphRadius[i])) {
+            _indices[triangleCount++] = groupSegments[i];
             numIndices += 3;
         }
     }
-    for (int i = 0; i < sC; i++) {
+    for (int i = 0; i < solutionCount; i++) {
         verts[i].v -= currentOffset;
     }
 }
