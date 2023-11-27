@@ -47,8 +47,6 @@ using std::max;
 #define POSITION_ATTRIBUTE_LOCATION 0
 #define NORMAL_ATTRIBUTE_LOCATION 1
 
-const float base10LogOfE = (float)log(M_E);
-
 class Attributes{
 public:
     vec3 v;
@@ -56,20 +54,20 @@ public:
 
 class Vertex : public Attributes{
 public:
-    Vertex(const vec3 position);
+    Vertex(const vec3& position);
 };
 
-Vertex::Vertex(const vec3 position) {
+Vertex::Vertex(const vec3& position) {
     this->v = position;
 }
 
 class VertexNormal : public Attributes {
 public:
     vec3 n;
-    VertexNormal(const vec3 position, const vec3 normal);
+    VertexNormal(const vec3& position, const vec3& normal);
 };
 
-VertexNormal::VertexNormal(const vec3 position, const vec3 normal) {
+VertexNormal::VertexNormal(const vec3& position, const vec3& normal) {
     this->v = position;
     this->n = normal;
 }
@@ -130,17 +128,15 @@ public:
 
     ~Wallpaper();
 
-    virtual bool initialize();
-
     virtual void render();
 
-    static bool checkGlError(const char* funcName);
+    static bool checkGlError(const char* const funcName);
 
-    static GLuint createShader(GLenum shaderType, const char* src);
+    static GLuint createShader(const GLenum& shaderType, const char* const src);
 
-    static GLuint createProgram(const char* vtxSrc, const char* fragSrc);
+    static GLuint createProgram(const char* const vtxSrc, const char* const fragSrc);
 
-    static void printGlString(const char* name, GLenum s);
+    static void printGlString(const char* const name, const GLenum& s);
 
     void calculatePerspective();
 
@@ -154,10 +150,6 @@ Wallpaper::Wallpaper() : framesRendered(0), val(0), mEglContext(eglGetCurrentCon
 
 Wallpaper::~Wallpaper(){
     if (eglGetCurrentContext() != mEglContext) return;
-}
-
-bool Wallpaper::initialize(){
-
 }
 
 void Wallpaper::render(){
@@ -178,7 +170,7 @@ bool Wallpaper::checkGlError(const char* funcName) {
     return false;
 }
 
-GLuint Wallpaper::createShader(GLenum shaderType, const char* src) {
+GLuint Wallpaper::createShader(const GLenum& shaderType, const char* src) {
     GLuint shader = glCreateShader(shaderType);
     if (!shader) {
         checkGlError("glCreateShader");
@@ -208,7 +200,7 @@ GLuint Wallpaper::createShader(GLenum shaderType, const char* src) {
     return shader;
 }
 
-GLuint Wallpaper::createProgram(const char* vtxSrc, const char* fragSrc) {
+GLuint Wallpaper::createProgram(const char* const vtxSrc, const char* const fragSrc) {
     GLuint vtxShader = 0;
     GLuint fragShader = 0;
     GLuint program = 0;
@@ -252,7 +244,7 @@ GLuint Wallpaper::createProgram(const char* vtxSrc, const char* fragSrc) {
     return program;
 }
 
-void Wallpaper::printGlString(const char* name, GLenum s) {
+void Wallpaper::printGlString(const char* const name, const GLenum& s) {
     const char* v = (const char*)glGetString(s);
     ALOGV("GL %s: %s\n", name, v);
 }
@@ -288,28 +280,13 @@ public:
 
     ~Box();
 
-    bool initialize();
-
-    void render();
+    void render() override;
 
 private:
 };
 
 Box::Box() : Wallpaper(){
-
-}
-
-Box::~Box(){
-    glDeleteProgram(mProgram);
-    glDeleteVertexArrays(1, &mVBState);
-    glDeleteBuffers(1, mVB);
-}
-
-bool Box::initialize() {
-    mProgram = 0;
-    mVBState = 0;
     mProgram = createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
-    if (!mProgram) return false;
 
     glGenBuffers(1, mVB);
     glBindBuffer(GL_ARRAY_BUFFER, mVB[0]);
@@ -320,8 +297,12 @@ bool Box::initialize() {
 
     glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
                           (const GLvoid*)offsetof(Vertex, v));
+}
 
-    return true;
+Box::~Box(){
+    glDeleteProgram(mProgram);
+    glDeleteVertexArrays(1, &mVBState);
+    glDeleteBuffers(1, mVB);
 }
 
 void Box::render(){
@@ -386,24 +367,17 @@ public:
 
     ~Triangle();
 
-    bool initialize();
-
-    void render();
+    void render() override;
 
 private:
 };
 
 Triangle::Triangle() : Wallpaper(){
-
+    mProgram = createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
 }
 
 Triangle::~Triangle(){
     glDeleteProgram(mProgram);
-}
-
-bool Triangle::initialize() {
-    mProgram = createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
-    return true;
 }
 
 void Triangle::render(){
@@ -454,67 +428,71 @@ class ImplicitGrapher {
 
     static const char pi = 5;
 
-    static const int _X = -1;
+    static const int NAME = 0;
 
-    static const int _Y = -2;
+    static const int EQUATION = 1;
 
-    static const int _Z = -3;
+    static const int X = -1;
 
-    static const int _T = -4;
+    static const int Y = -2;
 
-    static const int _E = -5;
+    static const int Z = -3;
 
-    static const int _PI = -6;
+    static const int T = -4;
 
-    static const int _OPEN_PARENTHESIS = -7;
+    static const int E = -5;
 
-    static const int _CLOSE_PARENTHESIS = -8;
+    static const int PI = -6;
 
-    static const int _ADD = -9;
+    static const int OPEN_PARENTHESIS = -7;
 
-    static const int _SUBTRACT = -10;
+    static const int CLOSE_PARENTHESIS = -8;
 
-    static const int _MULTIPLY = -11;
+    static const int ADD = -9;
 
-    static const int _DIVIDE = -12;
+    static const int SUBTRACT = -10;
 
-    static const int _POWER = -13;
+    static const int MULTIPLY = -11;
 
-    static const int _SINE = -14;
+    static const int DIVIDE = -12;
 
-    static const int _COSINE = -15;
+    static const int POWER = -13;
 
-    static const int _TANGENT = -16;
+    static const int SINE = -14;
 
-    static const int _ARC_SINE = -17;
+    static const int COSINE = -15;
 
-    static const int _ARC_COSINE = -18;
+    static const int TANGENT = -16;
 
-    static const int _ARC_TANGENT = -19;
+    static const int ARC_SINE = -17;
 
-    static const int _HYPERBOLIC_SINE = -20;
+    static const int ARC_COSINE = -18;
 
-    static const int _HYPERBOLIC_COSINE = -21;
+    static const int ARC_TANGENT = -19;
 
-    static const int _HYPERBOLIC_TANGENT = -22;
+    static const int HYPERBOLIC_SINE = -20;
 
-    static const int _HYPERBOLIC_ARC_SINE = -23;
+    static const int HYPERBOLIC_COSINE = -21;
 
-    static const int _HYPERBOLIC_ARC_COSINE = -24;
+    static const int HYPERBOLIC_TANGENT = -22;
 
-    static const int _HYPERBOLIC_ARC_TANGENT = -25;
+    static const int HYPERBOLIC_ARC_SINE = -23;
 
-    static const int _ABSOLUTE_VALUE = -26;
+    static const int HYPERBOLIC_ARC_COSINE = -24;
 
-    static const int _LOG = -27;
+    static const int HYPERBOLIC_ARC_TANGENT = -25;
 
-    static const int _NATURAL_LOG = -28;
+    static const int ABSOLUTE_VALUE = -26;
 
-    static const int _SQUARE_ROOT = -29;
+    static const int LOG = -27;
 
-    static const int _CUBED_ROOT = -30;
+    static const int NATURAL_LOG = -28;
 
-    static const int _UNDERSCORE = -31;
+    static const int SQUARE_ROOT = -29;
+
+    static const int CUBED_ROOT = -30;
+
+    static const int UNDERSCORE = -31;
 
     static const int maxEquationLength = 4096;
 
@@ -631,29 +609,25 @@ class ImplicitGrapher {
 
     int maxSolutionCount;
 
-    int node0(int i, int j, int k, int l);
+    inline int node0(const int& i, const int& j, const int& k, const int& l);
 
-    int node1(int i, int j, int k, int l);
+    inline int node1(const int& i, const int& j, const int& k, const int& l);
 
-    int node2(int i, int j, int k, int l);
+    inline int node2(const int& i, const int& j, const int& k, const int& l);
 
-    int node3(int i, int j, int k, int l);
+    inline int node3(const int& i, const int& j, const int& k, const int& l);
 
     int solutionCount;
 
     int groupSegmentCounter;
 
-    static const int NAME = 0;
+    string decode(const int* const codedEquation, const int& length, const float* const values);
 
-    static const int EQUATION = 1;
+    static bool aDigit(const char& character);
 
-    string decode(int codedEquation[], int length, float values[]);
+    static bool aCharacter(const char& character);
 
-    bool aDigit(char character);
-
-    bool aCharacter(char character);
-
-    string charToString(char characters[], int length);
+    static string charToString(const char* const characters, const int& length);
 
     int numOfEquationsInMemory;
 
@@ -661,19 +635,19 @@ class ImplicitGrapher {
 
     void writeUserEquationsToMemory();
 
-    bool getPlusMinus(int i, int j, int k);
+    bool getPlusMinus(const int& i, const int& j, const int& k);
 
-    ivec3 getXYZLineIndex(int i, int j, int k);
+    inline ivec3 getXYZLineIndex(const int& i, const int& j, const int& k);
 
-    void refactor(ivec3 inputRadius);
+    void refactor(const ivec3& inputRadius);
 
-    void processEquation(int i);
+    void processEquation(const int& i);
 
 public:
 
     int surfaceEquation;
 
-    ImplicitGrapher(ivec3 radius);
+    explicit ImplicitGrapher(const ivec3& radius);
 
     ~ImplicitGrapher();
 
@@ -685,7 +659,7 @@ public:
 
     static float fOfXYZ(ImplicitGrapher& graph, vec3 _, const float& t, const vec3& offset, const float& zoom);
 
-    void calculateSurfaceOnCPU(float (*fOfXYZ)(ImplicitGrapher& graph, vec3, const float&, const vec3&, const float&), float timeVariable, uint iterations, vec3 offset, const float& zoom, bool vectorPointsPositive, bool clipEdges, VertexNormal* vertices, uvec3* _indices, GLuint& numIndices);
+    void calculateSurfaceOnCPU(float (*fOfXYZ)(ImplicitGrapher&, vec3, const float&, const vec3&, const float&), const float& timeVariable, const uint& iterations, const vec3& offset, const float& zoom, const bool& vectorPointsPositive, const bool& clipEdges, VertexNormal* _vertices, uvec3* _indices, GLuint& _numIndices);
 
     // Assignment Constructor
     /*ImplicitGrapher(const ImplicitGrapher& other) {
@@ -743,7 +717,7 @@ public:
     }*/
 };
 
-ImplicitGrapher::ImplicitGrapher(ivec3 radius) {
+ImplicitGrapher::ImplicitGrapher(const ivec3& radius) {
     refactor(radius);
     plusMinus = (bool*)malloc(sizePlus3.x * sizePlus3.y * sizePlus3.z * sizeof(bool));
     xyzLineIndex = (ivec3*)malloc(sizePlus3.x * sizePlus3.y * sizePlus3.z * sizeof(ivec3));
@@ -767,81 +741,81 @@ ImplicitGrapher::~ImplicitGrapher(){
     free(indices);
 }
 
-string ImplicitGrapher::decode(int codedEquation[], int length, float values[]) {
+string ImplicitGrapher::decode(const int* const codedEquation, const int& length, const float* const values) {
     string equation = "";
     for (int i = 0; i < length; i++) {
         if (codedEquation[i] < 0) {
             switch (codedEquation[i]) {
-                case _X:
+                case X:
                     equation += "x";
                     break;
-                case _Y:
+                case Y:
                     equation += "y";
                     break;
-                case _Z:
+                case Z:
                     equation += "z";
                     break;
-                case _T:
+                case T:
                     equation += "t";
                     break;
-                case _E:
+                case E:
                     equation += "e";
                     break;
-                case _PI:
+                case PI:
                     equation += pi;
                     break;
-                case _OPEN_PARENTHESIS:
+                case OPEN_PARENTHESIS:
                     equation += "(";
                     break;
-                case _CLOSE_PARENTHESIS:
+                case CLOSE_PARENTHESIS:
                     equation += ")";
                     break;
-                case _ADD:
+                case ADD:
                     equation += "+";
                     break;
-                case _SUBTRACT:
+                case SUBTRACT:
                     equation += "-";
                     break;
-                case _MULTIPLY:
+                case MULTIPLY:
                     equation += "*";
                     break;
-                case _DIVIDE:
+                case DIVIDE:
                     equation += "/";
                     break;
-                case _POWER:
+                case POWER:
                     equation += "^";
                     break;
-                case _SINE:
+                case SINE:
                     equation += "sin";
                     break;
-                case _COSINE:
+                case COSINE:
                     equation += "cos";
                     break;
-                case _TANGENT:
+                case TANGENT:
                     equation += "tan";
                     break;
-                case _ARC_SINE:
+                case ARC_SINE:
                     equation += "asin";
                     break;
-                case _ARC_COSINE:
+                case ARC_COSINE:
                     equation += "acos";
                     break;
-                case _ARC_TANGENT:
+                case ARC_TANGENT:
                     equation += "atan";
                     break;
-                case _LOG:
+                case LOG:
                     equation += "log";
                     break;
-                case _NATURAL_LOG:
+                case NATURAL_LOG:
                     equation += "ln";
                     break;
-                case _SQUARE_ROOT:
+                case SQUARE_ROOT:
                     equation += "sqrt";
                     break;
-                case _CUBED_ROOT:
+                case CUBED_ROOT:
                     equation += "cbrt";
                     break;
-                case _UNDERSCORE:
+                case UNDERSCORE:
                     equation += "_";
                     break;
             }
@@ -853,11 +827,11 @@ string ImplicitGrapher::decode(int codedEquation[], int length, float values[]) 
     return equation;
 }
 
-bool ImplicitGrapher::aDigit(char character) {
+bool ImplicitGrapher::aDigit(const char& character) {
     return character >= '0' && character <= '9';
 }
 
-bool ImplicitGrapher::aCharacter(char character) {
+bool ImplicitGrapher::aCharacter(const char& character) {
     return
             character == 'x' ||
             character == 'y' ||
@@ -867,8 +841,8 @@ bool ImplicitGrapher::aCharacter(char character) {
             character == pi;
 }
 
-string ImplicitGrapher::charToString(char characters[], int length) {
-    string string = "";
+string ImplicitGrapher::charToString(const char* const characters, const int& length) {
+    string string;
     for (int i = 0; i < length; i++) {
         string += characters[i];
     }
@@ -903,7 +877,7 @@ void ImplicitGrapher::writeUserEquationsToMemory() {
     fclose(pFile);
 }
 
-void ImplicitGrapher::processEquation(int i) {
+void ImplicitGrapher::processEquation(const int& i) {
     bool debugEquation = false;
     for (int j = 0; j < maxEquationLength; j++) {
         constant[i][j] = 0;
@@ -1196,132 +1170,132 @@ void ImplicitGrapher::processEquation(int i) {
     for (int j = 0; j < length; j++, codedEquationCounter++) {
         if (equation[j] != '.' && !aDigit(equation[j])) {
             if (equation[j] == 'x') {
-                codedEquation[codedEquationCounter] = constant[i][valuesCounter[i]] = _X;
+                codedEquation[codedEquationCounter] = constant[i][valuesCounter[i]] = X;
                 valuesCounter[i]++;
             }
             else if (equation[j] == 'y') {
-                codedEquation[codedEquationCounter] = constant[i][valuesCounter[i]] = _Y;
+                codedEquation[codedEquationCounter] = constant[i][valuesCounter[i]] = Y;
                 valuesCounter[i]++;
             }
             else if (equation[j] == 'z') {
-                codedEquation[codedEquationCounter] = constant[i][valuesCounter[i]] = _Z;
+                codedEquation[codedEquationCounter] = constant[i][valuesCounter[i]] = Z;
                 valuesCounter[i]++;
             }
             else if (equation[j] == 't' && equation[j + 1] != 'a') {
-                codedEquation[codedEquationCounter] = constant[i][valuesCounter[i]] = _T;
+                codedEquation[codedEquationCounter] = constant[i][valuesCounter[i]] = T;
                 valuesCounter[i]++;
             }
             else if (equation[j] == 'e') {
-                codedEquation[codedEquationCounter] = constant[i][valuesCounter[i]] = _E;
+                codedEquation[codedEquationCounter] = constant[i][valuesCounter[i]] = E;
                 valuesCounter[i]++;
             }
             else if (equation[j] == pi) {
-                codedEquation[codedEquationCounter] = constant[i][valuesCounter[i]] = _PI;
+                codedEquation[codedEquationCounter] = constant[i][valuesCounter[i]] = PI;
                 valuesCounter[i]++;
             }
             else if (equation[j] == '(') {
-                codedEquation[codedEquationCounter] = _OPEN_PARENTHESIS;
+                codedEquation[codedEquationCounter] = OPEN_PARENTHESIS;
             }
             else if (equation[j] == ')') {
-                codedEquation[codedEquationCounter] = _CLOSE_PARENTHESIS;
+                codedEquation[codedEquationCounter] = CLOSE_PARENTHESIS;
             }
             else if (equation[j] == '+') {
-                codedEquation[codedEquationCounter] = _ADD;
+                codedEquation[codedEquationCounter] = ADD;
             }
             else if (equation[j] == '-') {
-                codedEquation[codedEquationCounter] = _SUBTRACT;
+                codedEquation[codedEquationCounter] = SUBTRACT;
             }
             else if (equation[j] == '*') {
-                codedEquation[codedEquationCounter] = _MULTIPLY;
+                codedEquation[codedEquationCounter] = MULTIPLY;
             }
             else if (equation[j] == '/') {
-                codedEquation[codedEquationCounter] = _DIVIDE;
+                codedEquation[codedEquationCounter] = DIVIDE;
             }
             else if (equation[j] == '^') {
-                codedEquation[codedEquationCounter] = _POWER;
+                codedEquation[codedEquationCounter] = POWER;
             }
             else if (equation[j] == functions[0][0] && equation[j + 1] == functions[0][1]) {
                 if (equation[j + 3] == functions[0][3]) {
-                    codedEquation[codedEquationCounter] = _SINE;
+                    codedEquation[codedEquationCounter] = SINE;
                     j += 2;
                 }
                 else if (equation[j + 3] == functions[6][3]) {
-                    codedEquation[codedEquationCounter] = _HYPERBOLIC_SINE;
+                    codedEquation[codedEquationCounter] = HYPERBOLIC_SINE;
                     j += 3;
                 }
             }
             else if (equation[j] == functions[1][0] && equation[j + 1] == functions[1][1]) {
                 if (equation[j + 3] == functions[1][3]) {
-                    codedEquation[codedEquationCounter] = _COSINE;
+                    codedEquation[codedEquationCounter] = COSINE;
                     j += 2;
                 }
                 else if (equation[j + 3] == functions[7][3]) {
-                    codedEquation[codedEquationCounter] = _HYPERBOLIC_COSINE;
+                    codedEquation[codedEquationCounter] = HYPERBOLIC_COSINE;
                     j += 3;
                 }
             }
             else if (equation[j] == functions[2][0] && equation[j + 1] == functions[2][1]) {
                 if (equation[j + 3] == functions[2][3]) {
-                    codedEquation[codedEquationCounter] = _TANGENT;
+                    codedEquation[codedEquationCounter] = TANGENT;
                     j += 2;
                 }
                 else if (equation[j + 3] == functions[8][3]) {
-                    codedEquation[codedEquationCounter] = _HYPERBOLIC_TANGENT;
+                    codedEquation[codedEquationCounter] = HYPERBOLIC_TANGENT;
                     j += 3;
                 }
             }
             else if (equation[j] == functions[3][0] && equation[j + 1] == functions[3][1]) {
                 if (equation[j + 4] == functions[3][4]) {
-                    codedEquation[codedEquationCounter] = _ARC_SINE;
+                    codedEquation[codedEquationCounter] = ARC_SINE;
                     j += 3;
                 }
                 else if (equation[j + 4] == functions[9][4]) {
-                    codedEquation[codedEquationCounter] = _HYPERBOLIC_ARC_SINE;
+                    codedEquation[codedEquationCounter] = HYPERBOLIC_ARC_SINE;
                     j += 4;
                 }
             }
             else if (equation[j] == functions[4][0] && equation[j + 1] == functions[4][1]) {
                 if (equation[j + 4] == functions[4][4]) {
-                    codedEquation[codedEquationCounter] = _ARC_COSINE;
+                    codedEquation[codedEquationCounter] = ARC_COSINE;
                     j += 3;
                 }
                 else if (equation[j + 4] == functions[10][4]) {
-                    codedEquation[codedEquationCounter] = _HYPERBOLIC_ARC_COSINE;
+                    codedEquation[codedEquationCounter] = HYPERBOLIC_ARC_COSINE;
                     j += 4;
                 }
             }
             else if (equation[j] == functions[5][0] && equation[j + 1] == functions[5][1]) {
                 if (equation[j + 4] == functions[5][4]) {
-                    codedEquation[codedEquationCounter] = _ARC_TANGENT;
+                    codedEquation[codedEquationCounter] = ARC_TANGENT;
                     j += 3;
                 }
                 else if (equation[j + 4] == functions[11][4]) {
-                    codedEquation[codedEquationCounter] = _HYPERBOLIC_ARC_TANGENT;
+                    codedEquation[codedEquationCounter] = HYPERBOLIC_ARC_TANGENT;
                     j += 4;
                 }
             }
             else if (equation[j] == functions[12][0] && equation[j + 1] == functions[12][1]) {
-                codedEquation[codedEquationCounter] = _ABSOLUTE_VALUE;
+                codedEquation[codedEquationCounter] = ABSOLUTE_VALUE;
                 j += 2;
             }
             else if (equation[j] == functions[13][0] && equation[j + 1] == functions[13][1]) {
-                codedEquation[codedEquationCounter] = _LOG;
+                codedEquation[codedEquationCounter] = LOG;
                 j += 2;
             }
             else if (equation[j] == functions[14][0] && equation[j + 1] == functions[14][1]) {
-                codedEquation[codedEquationCounter] = _NATURAL_LOG;
+                codedEquation[codedEquationCounter] = NATURAL_LOG;
                 j += 1;
             }
             else if (equation[j] == functions[15][0] && equation[j + 1] == functions[15][1]) {
-                codedEquation[codedEquationCounter] = _SQUARE_ROOT;
+                codedEquation[codedEquationCounter] = SQUARE_ROOT;
                 j += 3;
             }
             else if (equation[j] == functions[16][0] && equation[j + 1] == functions[16][1]) {
-                codedEquation[codedEquationCounter] = _CUBED_ROOT;
+                codedEquation[codedEquationCounter] = CUBED_ROOT;
                 j += 3;
             }
             else if (equation[j] == '_') {
-                codedEquation[codedEquationCounter] = _UNDERSCORE;
+                codedEquation[codedEquationCounter] = UNDERSCORE;
             }
         }
         else {
@@ -1382,10 +1356,10 @@ void ImplicitGrapher::processEquation(int i) {
                 end = true;
             }
             switch (codedEquation[j]) {
-                case _OPEN_PARENTHESIS:
+                case OPEN_PARENTHESIS:
                     openParenthesis = j;
                     break;
-                case _CLOSE_PARENTHESIS:
+                case CLOSE_PARENTHESIS:
                     switch (j - openParenthesis) {
                         case 1:// "()"
                             for (int k = j - 1; k < codedEquationCounter; k++) {
@@ -1425,7 +1399,7 @@ void ImplicitGrapher::processEquation(int i) {
     }
 }
 
-int ImplicitGrapher::node0(int i, int j, int k, int l) {
+inline int ImplicitGrapher::node0(const int& i, const int& j, const int& k, const int& l) {
     switch (l) {
         case 0: return getXYZLineIndex(i - 1, j, k - 1)[0]; break;//XY-plane[Yz]
         case 1: return getXYZLineIndex(i - 1, j, k)[0]; break;//XY-plane[YZ]
@@ -1437,7 +1411,7 @@ int ImplicitGrapher::node0(int i, int j, int k, int l) {
     }
 }
 
-int ImplicitGrapher::node1(int i, int j, int k, int l) {
+inline int ImplicitGrapher::node1(const int& i, const int& j, const int& k, const int& l) {
     switch (l) {
         case 0: return getXYZLineIndex(i - 1, j - 1, k - 1)[1]; break;//XY-plane[xz]
         case 1: return getXYZLineIndex(i - 1, j - 1, k)[1]; break;//XY-plane[xZ]
@@ -1449,7 +1423,7 @@ int ImplicitGrapher::node1(int i, int j, int k, int l) {
     }
 }
 
-int ImplicitGrapher::node2(int i, int j, int k, int l) {
+inline int ImplicitGrapher::node2(const int& i, const int& j, const int& k, const int& l) {
     switch (l) {
         case 0: return getXYZLineIndex(i, j - 1, k - 1)[1]; break;//XY-plane[Xz]
         case 1: return getXYZLineIndex(i, j - 1, k)[1]; break;//XY-plane[XZ]
@@ -1461,7 +1435,7 @@ int ImplicitGrapher::node2(int i, int j, int k, int l) {
     }
 }
 
-int ImplicitGrapher::node3(int i, int j, int k, int l) {
+inline int ImplicitGrapher::node3(const int& i, const int& j, const int& k, const int& l) {
     switch (l) {
         case 0: return getXYZLineIndex(i - 1, j - 1, k - 1)[0]; break;//XY-plane[yz]
         case 1: return getXYZLineIndex(i - 1, j - 1, k)[0]; break;//XY-plane[yZ]
@@ -1480,12 +1454,12 @@ float ImplicitGrapher::fOfXYZ(ImplicitGrapher &graph, vec3 _, const float &t, co
     for (int i = 0; i < graph.valuesCounter[graph.surfaceEquation]; i++) {
         switch (graph.constant[graph.surfaceEquation][i]) {
             case 0: graph.values[i] = graph.equationValues[graph.surfaceEquation][i]; break;
-            case _X: graph.values[i] = _.x; break;
-            case _Y: graph.values[i] = _.y; break;
-            case _Z: graph.values[i] = _.z; break;
-            case _T: graph.values[i] = t; break;
-            case _E: graph.values[i] = M_E; break;
-            case _PI: graph.values[i] = M_PI; break;
+            case X: graph.values[i] = _.x; break;
+            case Y: graph.values[i] = _.y; break;
+            case Z: graph.values[i] = _.z; break;
+            case T: graph.values[i] = t; break;
+            case E: graph.values[i] = M_E; break;
+            case PI: graph.values[i] = M_PI; break;
         }
     }
     // A better solution to below may be near the bottom of the following web page: https://www.cplusplus.com/doc/tutorial/pointers/
@@ -1494,39 +1468,39 @@ float ImplicitGrapher::fOfXYZ(ImplicitGrapher &graph, vec3 _, const float &t, co
     for (int i = 0; i < graph.sequenceLengths[e]; i++) {
         int* s = graph.sequences[e][i];
         switch (s[0]) {
-            case _ADD: v[s[1]] += v[s[2]]; break;
-            case _SUBTRACT: v[s[1]] -= v[s[2]]; break;
-            case _MULTIPLY: v[s[1]] *= v[s[2]]; break;
-            case _DIVIDE: v[s[1]] /= v[s[2]]; break;
-            case _POWER: v[s[1]] = powf(v[s[1]], v[s[2]]); break;
-            case _SINE: v[s[1]] = sinf(v[s[1]]); break;
-            case _COSINE: v[s[1]] = cosf(v[s[1]]); break;
-            case _TANGENT: v[s[1]] = tanf(v[s[1]]); break;
-            case _ARC_SINE: v[s[1]] = asinf(v[s[1]]); break;
-            case _ARC_COSINE: v[s[1]] = acosf(v[s[1]]); break;
-            case _ARC_TANGENT: v[s[1]] = atanf(v[s[1]]); break;
-            case _HYPERBOLIC_SINE: v[s[1]] = sinhf(v[s[1]]); break;
-            case _HYPERBOLIC_COSINE: v[s[1]] = coshf(v[s[1]]); break;
-            case _HYPERBOLIC_TANGENT: v[s[1]] = tanhf(v[s[1]]); break;
-            case _HYPERBOLIC_ARC_SINE: v[s[1]] = asinhf(v[s[1]]); break;
-            case _HYPERBOLIC_ARC_COSINE: v[s[1]] = acoshf(v[s[1]]); break;
-            case _HYPERBOLIC_ARC_TANGENT: v[s[1]] = atanhf(v[s[1]]); break;
-            case _ABSOLUTE_VALUE: v[s[1]] = abs(v[s[1]]); break;
-            case _LOG: v[s[1]] = logf(v[s[1]]); break;
-            case _NATURAL_LOG: v[s[1]] = (logf(v[s[1]]) / base10LogOfE); break;
-            case _SQUARE_ROOT: v[s[1]] = sqrtf(v[s[1]]); break;
-            case _CUBED_ROOT: v[s[1]] = cbrtf(v[s[1]]); break;
+            case ADD: v[s[1]] += v[s[2]]; break;
+            case SUBTRACT: v[s[1]] -= v[s[2]]; break;
+            case MULTIPLY: v[s[1]] *= v[s[2]]; break;
+            case DIVIDE: v[s[1]] /= v[s[2]]; break;
+            case POWER: v[s[1]] = powf(v[s[1]], v[s[2]]); break;
+            case SINE: v[s[1]] = sinf(v[s[1]]); break;
+            case COSINE: v[s[1]] = cosf(v[s[1]]); break;
+            case TANGENT: v[s[1]] = tanf(v[s[1]]); break;
+            case ARC_SINE: v[s[1]] = asinf(v[s[1]]); break;
+            case ARC_COSINE: v[s[1]] = acosf(v[s[1]]); break;
+            case ARC_TANGENT: v[s[1]] = atanf(v[s[1]]); break;
+            case HYPERBOLIC_SINE: v[s[1]] = sinhf(v[s[1]]); break;
+            case HYPERBOLIC_COSINE: v[s[1]] = coshf(v[s[1]]); break;
+            case HYPERBOLIC_TANGENT: v[s[1]] = tanhf(v[s[1]]); break;
+            case HYPERBOLIC_ARC_SINE: v[s[1]] = asinhf(v[s[1]]); break;
+            case HYPERBOLIC_ARC_COSINE: v[s[1]] = acoshf(v[s[1]]); break;
+            case HYPERBOLIC_ARC_TANGENT: v[s[1]] = atanhf(v[s[1]]); break;
+            case ABSOLUTE_VALUE: v[s[1]] = abs(v[s[1]]); break;
+            case LOG: v[s[1]] = log10f(v[s[1]]); break;
+            case NATURAL_LOG: v[s[1]] = logf(v[s[1]]); break;
+            case SQUARE_ROOT: v[s[1]] = sqrtf(v[s[1]]); break;
+            case CUBED_ROOT: v[s[1]] = cbrtf(v[s[1]]); break;
         }
     }
     return v[0];
 }
 
-void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(ImplicitGrapher &graph, vec3, const float&, const vec3&, const float&), float timeVariable, uint iterations, vec3 offset, const float& zoom, bool vectorPointsPositive, bool clipEdges, VertexNormal* verts, uvec3* _indices, GLuint& numIndices) {
+void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(ImplicitGrapher& graph, vec3, const float&, const vec3&, const float&), const float& timeVariable, const uint& iterations, const vec3& offset, const float& zoom, const bool& vectorPointsPositive, const bool& clipEdges, VertexNormal* _vertices, uvec3* _indices, GLuint& _numIndices) {
     t = timeVariable;
     currentOffset = defaultOffset + offset;
     // Erase normals
     for (int i = 0; i < solutionCount; i++) {
-        verts[i].n = vec3(0.0f);
+        _vertices[i].n = vec3(0.0f);
     }
     // Reset solution count
     solutionCount = 0;
@@ -1555,12 +1529,12 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(ImplicitGrapher &gra
                     const int NEGATIVE = -1;
                     int sign = secondSample ? POSITIVE : NEGATIVE;
                     for (int m = 0; m < 3; m++) {
-                        verts[solutionCount].v[m] = iCursor[m];
+                        _vertices[solutionCount].v[m] = iCursor[m];
                     }
                     float scan = 0.5f;
                     for (int m = 0; m < iterations; m++) {// Maybe use a do-while loop here to reduce the scan operations by 1.
-                        verts[solutionCount].v[l] += scan;
-                        if (sign == POSITIVE ^ fOfXYZ(*this, verts[solutionCount].v, t, currentOffset, zoom) > 0.0f) {
+                        _vertices[solutionCount].v[l] += scan;
+                        if (sign == POSITIVE ^ fOfXYZ(*this, _vertices[solutionCount].v, t, currentOffset, zoom) > 0.0f) {
                             scan *= 0.5f;
                         }else{
                             sign *= -1;
@@ -1657,7 +1631,7 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(ImplicitGrapher &gra
                             int _node1 = node1(i, j, k, l);
                             int _node2 = node2(i, j, k, l);
                             int _node3 = node3(i, j, k, l);
-                            if (fOfXYZ(*this, (verts[_node0].v + verts[_node1].v + verts[_node2].v + verts[_node3].v) * 0.25f, t, currentOffset, zoom) > 0.0f) {
+                            if (fOfXYZ(*this, (_vertices[_node0].v + _vertices[_node1].v + _vertices[_node2].v + _vertices[_node3].v) * 0.25f, t, currentOffset, zoom) > 0.0f) {
                                 if (l % 2 != vectorPointsPositive){
                                     groupSegments[groupSegmentCounter++] = ivec3(_node1, _node0, -1);
                                     groupSegments[groupSegmentCounter++] = ivec3(_node2, _node3, -1);
@@ -1693,7 +1667,7 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(ImplicitGrapher &gra
                             int _node1 = node1(i, j, k, l);
                             int _node2 = node2(i, j, k, l);
                             int _node3 = node3(i, j, k, l);
-                            if (fOfXYZ(*this, (verts[_node0].v + verts[_node1].v + verts[_node2].v + verts[_node3].v) * 0.25f, t, currentOffset, zoom) > 0.0f) {
+                            if (fOfXYZ(*this, (_vertices[_node0].v + _vertices[_node1].v + _vertices[_node2].v + _vertices[_node3].v) * 0.25f, t, currentOffset, zoom) > 0.0f) {
                                 if (l % 2 != vectorPointsPositive) {
                                     groupSegments[groupSegmentCounter++] = ivec3(_node0, _node2, -1);
                                     groupSegments[groupSegmentCounter++] = ivec3(_node3, _node1, -1);
@@ -1778,10 +1752,10 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(ImplicitGrapher &gra
                         else {
                             vec3 sum(0.0f);
                             for (int _n = l - segPerGroup + 2; _n < l + 2; _n++) {
-                                sum += verts[groupSegments[_n][0]].v;
+                                sum += _vertices[groupSegments[_n][0]].v;
                                 groupSegments[_n][2] = solutionCount;
                             }
-                            verts[solutionCount].v = sum / segPerGroup;
+                            _vertices[solutionCount].v = sum / segPerGroup;
                             solutionCount++;
                         }
                         segPerGroup = 1;
@@ -1796,44 +1770,44 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(ImplicitGrapher &gra
     // Calculate face normals and add them to the per-solution normals.
     for (int i = 0; i < groupSegmentCounter; i++) {
         if (groupSegments[i][2] > -1) {
-            vec3 vectorA = verts[groupSegments[i][0]].v - verts[groupSegments[i][2]].v;
-            vec3 vectorB = verts[groupSegments[i][1]].v - verts[groupSegments[i][2]].v;
+            vec3 vectorA = _vertices[groupSegments[i][0]].v - _vertices[groupSegments[i][2]].v;
+            vec3 vectorB = _vertices[groupSegments[i][1]].v - _vertices[groupSegments[i][2]].v;
             vec3 crossProduct = cross(vectorA, vectorB);
             float length = distance(crossProduct);
             vec3 normalizedCrossProduct = crossProduct / length;
-            verts[groupSegments[i][0]].n += normalizedCrossProduct;
-            verts[groupSegments[i][1]].n += normalizedCrossProduct;
-            verts[groupSegments[i][2]].n += normalizedCrossProduct;
+            _vertices[groupSegments[i][0]].n += normalizedCrossProduct;
+            _vertices[groupSegments[i][1]].n += normalizedCrossProduct;
+            _vertices[groupSegments[i][2]].n += normalizedCrossProduct;
         }
     }
     //Normalize
     for (int i = 0; i < solutionCount; i++) {
-        float length = (vectorPointsPositive) ? -distance(vec3(verts[i].n)) : distance(vec3(verts[i].n));
-        verts[i].n /= length;
+        float length = (vectorPointsPositive) ? -distance(vec3(_vertices[i].n)) : distance(vec3(_vertices[i].n));
+        _vertices[i].n /= length;
     }
     //Create Triangle Primitives
-    numIndices = 0;
+    _numIndices = 0;
     int triangleCount = 0;
     for (int i = 0; i < groupSegmentCounter; i++) {
         if (groupSegments[i][2] > -1 && (!clipEdges || withinGraphRadius[i])) {
             _indices[triangleCount++] = groupSegments[i];
-            numIndices += 3;
+            _numIndices += 3;
         }
     }
     for (int i = 0; i < solutionCount; i++) {
-        verts[i].v -= currentOffset;
+        _vertices[i].v -= currentOffset;
     }
 }
 
-bool ImplicitGrapher::getPlusMinus(int i, int j, int k){
+bool ImplicitGrapher::getPlusMinus(const int& i, const int& j, const int& k){
     return plusMinus[(i * sizePlus3.y + j) * sizePlus3.z + k];
 }
 
-ivec3 ImplicitGrapher::getXYZLineIndex(int i, int j, int k){
+inline ivec3 ImplicitGrapher::getXYZLineIndex(const int& i, const int& j, const int& k){
     return xyzLineIndex[(i * sizePlus3.y + j) * sizePlus3.z + k];
 }
 
-void ImplicitGrapher::refactor(ivec3 inputRadius) {
+void ImplicitGrapher::refactor(const ivec3& inputRadius) {
     radius = inputRadius;
     radiusPlusOne = radius + ivec3(1);
     size = radius * 2;
@@ -1876,24 +1850,17 @@ public:
 
     ~Graph();
 
-    bool initialize();
-
-    void render();
+    void render() override;
 
 private:
 };
 
 Graph::Graph() : Wallpaper(){
-
+    mProgram = createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
 }
 
 Graph::~Graph(){
     glDeleteProgram(mProgram);
-}
-
-bool Graph::initialize() {
-    mProgram = createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
-    return true;
 }
 
 void Graph::render(){
@@ -1914,17 +1881,6 @@ void Graph::render(){
             1,
             GL_FALSE,
             (GLfloat*)&mvp);
-
-    struct{
-        VertexNormal vertices[3] = {
-                {vec3(1.0f, 0.0f, 0.0f), vec3(sqrtf(3.0f), sqrt(3.0f), sqrt(3.0f))},
-                {vec3(0.0f, 1.0f, 0.0f), vec3(sqrtf(3.0f), sqrt(3.0f), sqrt(3.0f))},
-                {vec3(1.0f, 0.0f, 1.0f), vec3(sqrtf(3.0f), sqrt(3.0f), sqrt(3.0f))}
-        };
-        uvec3 indices[1] = {
-                uvec3(0, 1, 2)
-        };
-    }_graph;
 
     graph.surfaceEquation = 1;
     graph.calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * framesRendered, 10, vec3(0.0f), 0.15f, false, false, &graph.vertices[0], graph.indices, graph.numIndices);
@@ -1997,17 +1953,15 @@ public:
 
     Molecule* molecules;
 
-    bool seed(float radius);
+    bool seed(const float& radius);
 
-    void simulate(vec3 gravity);
+    void simulate(const vec3& gravity);
 
     Naive();
 
     ~Naive();
 
-    bool initialize();
-
-    void render();
+    void render() override;
 
 private:
 
@@ -2051,31 +2005,19 @@ private:
 
     int pNumCells;
 
-    void populateGrid(int dataIndex);
+    void populateGrid(const int& dataIndex);
 
-    void useGrid(int i, int dataIndex, int* ids, int& count);
+    void useGrid(const int& i, const int& dataIndex, int* const ids, int& count);
 
-    float noPullBarrier(float x);
+    float noPullBarrier(const float& x);
 
-    float f(float x);
+    float f(const float& x);
 
-    inline void calculateForce(int i, vec3& gravity, vec3& force, vec3& position, int dataIndex);
+    inline void calculateForce(const int& i, const vec3& gravity, vec3& force, const vec3& position, const int& dataIndex);
 };
 
 Naive::Naive() : Simulation(){
-
-}
-
-Naive::~Naive(){
-    glDeleteProgram(mProgram);
-    glDeleteVertexArrays(1, &mVBState);
-    glDeleteBuffers(1, mVB);
-    delete molecules;
-}
-
-bool Naive::initialize() {
     mProgram = createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
-    if (!mProgram) return false;
 
     glGenBuffers(1, mVB);
     glBindBuffer(GL_ARRAY_BUFFER, mVB[0]);
@@ -2088,8 +2030,13 @@ bool Naive::initialize() {
                           (const GLvoid*)offsetof(Vertex, v));
 
     seed(15.0f);
+}
 
-    return true;
+Naive::~Naive(){
+    glDeleteProgram(mProgram);
+    glDeleteVertexArrays(1, &mVBState);
+    glDeleteBuffers(1, mVB);
+    delete molecules;
 }
 
 void Naive::render(){
@@ -2138,7 +2085,7 @@ void Naive::render(){
     framesRendered++;
 }
 
-void Naive::populateGrid(int dataIndex){
+void Naive::populateGrid(const int& dataIndex){
     for (int i = 0; i < pNumCells; i++)
         numCellParticles[i] = 0;
 
@@ -2180,7 +2127,7 @@ void Naive::populateGrid(int dataIndex){
     }
 }
 
-void Naive::useGrid(int i, int dataIndex, int* ids, int& count){
+void Naive::useGrid(const int& i, const int& dataIndex, int* const ids, int& count){
     count = 0;
     float px = ((vec3*)&molecules[i])[dataIndex].x + sphereRadiusPlusPointFive;
     float py = ((vec3*)&molecules[i])[dataIndex].y + sphereRadiusPlusPointFive;
@@ -2213,7 +2160,7 @@ void Naive::useGrid(int i, int dataIndex, int* ids, int& count){
     }
 }
 
-bool Naive::seed(float radius) {
+bool Naive::seed(const float& radius) {
     setMoleculeCount(125);
     molecules = new Molecule[moleculeCount];
     sphereRadius = radius;
@@ -2248,14 +2195,14 @@ bool Naive::seed(float radius) {
     return true;
 }
 
-float Naive::noPullBarrier(float x) {
+float Naive::noPullBarrier(const float& x) {
     if (x > 1.0f) {
         return 0.0f;
     }
     return 1000.0f * (x - 1.0f) * pow(x - 2.0f, 2.0f) / (x + 0.75f);
 }
 
-float Naive::f(float x) {
+float Naive::f(const float& x) {
     if (x > maxForceDistance) {
         return 0.0f;
     }
@@ -2267,7 +2214,7 @@ float Naive::f(float x) {
     }
 }
 
-inline void Naive::calculateForce(int i, vec3& gravity, vec3& force, vec3& position, int dataIndex){
+inline void Naive::calculateForce(const int& i, const vec3& gravity, vec3& force, const vec3& position, const int& dataIndex){
     force = gravity;
     int ids[1000]; // 700 may be high enough
     int count = 0;
@@ -2288,7 +2235,7 @@ inline void Naive::calculateForce(int i, vec3& gravity, vec3& force, vec3& posit
     }
 }
 
-void Naive::simulate(vec3 gravity) {
+void Naive::simulate(const vec3& gravity) {
     for (int i = 0; i < moleculeCount; i++) {
         calculateForce(i, gravity, molecules[i].sumForceInitial, molecules[i].position, 0);
         molecules[i].positionFinal = molecules[i].position + deltaTime * (molecules[i].sumForceInitial * 0.5f * deltaTime + molecules[i].velocity);
@@ -2333,7 +2280,7 @@ const int FLUID_CELL = 0;
 const int AIR_CELL = 1;
 const int SOLID_CELL = 2;
 
-float min(float a, float b)  // Updated function signature and parameter type
+float min(const float& a, const float& b)  // Updated function signature and parameter type
 {
     if (a < b)
         return a;
@@ -2403,30 +2350,30 @@ public:
     bool compensateDrift = true;
     bool separateParticles = true;
 
-    FlipFluid(float _density, float _width, float _height, float _depth, float _spacing, float _particleRadius, int _maxParticles);
+    FlipFluid(const float& _density, const float& _width, const float& _height, const float& _depth, const float& _spacing, const float& _particleRadius, const int& _maxParticles);
 
 private:
-    void integrateParticles(float _dt, vec3 _gravity);
+    void integrateParticles(const float& _dt, const vec3& _gravity);
 
-    void pushParticlesApart(float _numIters);
+    void pushParticlesApart(const float& _numIters);
 
     void handleParticleCollisions();
 
     void updateParticleDensity();
 
-    void transferVelocities(bool _toGrid, float _flipRatio);
+    void transferVelocities(const bool& _toGrid, const float& _flipRatio);
 
-    void solveIncompressibility(int _numIters, float _dt, float _overRelaxation, bool _compensateDrift);
+    void solveIncompressibility(const int& _numIters, const float& _dt, const float& _overRelaxation, const bool& _compensateDrift);
 
     void updateParticleColors();
 
 public:
-    void simulate(float _dt, vec3 _gravity, float _flipRatio, int _numPressureIters, int _numParticleIters, float _overRelaxation, bool _compensateDrift, bool _separateParticles);
+    void simulate(const float& _dt, const vec3& _gravity, const float& _flipRatio, const int& _numPressureIters, const int& _numParticleIters, const float& _overRelaxation, const bool& _compensateDrift, const bool& _separateParticles);
 };
 
 FlipFluid* fluid = NULL;
 
-FlipFluid::FlipFluid(float _density, float _width, float _height, float _depth, float _spacing, float _particleRadius, int _maxParticles) {
+FlipFluid::FlipFluid(const float& _density, const float& _width, const float& _height, const float& _depth, const float& _spacing, const float& _particleRadius, const int& _maxParticles) {
 
     // fluid properties
 
@@ -2476,7 +2423,7 @@ FlipFluid::FlipFluid(float _density, float _width, float _height, float _depth, 
     numParticles = 0;                                                     // Set the initial number of particles to zero
 }
 
-void FlipFluid::integrateParticles(float _dt, vec3 _gravity)
+void FlipFluid::integrateParticles(const float& _dt, const vec3& _gravity)
 {
     for (int i = 0; i < numParticles; i++) {
         particleVel[i] += _dt * _gravity;
@@ -2484,7 +2431,7 @@ void FlipFluid::integrateParticles(float _dt, vec3 _gravity)
     }
 }
 
-void FlipFluid::pushParticlesApart(float _numIters)
+void FlipFluid::pushParticlesApart(const float& _numIters)
 {
     float colorDiffusionCoeff = 0.001;
 
@@ -2711,7 +2658,7 @@ void FlipFluid::updateParticleDensity()
     }
 }
 
-void FlipFluid::transferVelocities(bool _toGrid, float _flipRatio)
+void FlipFluid::transferVelocities(const bool& _toGrid, const float& _flipRatio)
 {
     int n = fNumY;
     float h1 = fInvSpacing;
@@ -2868,7 +2815,7 @@ void FlipFluid::transferVelocities(bool _toGrid, float _flipRatio)
     }
 }
 
-void FlipFluid::solveIncompressibility(int _numIters, float _dt, float _overRelaxation, bool _compensateDrift = true) {
+void FlipFluid::solveIncompressibility(const int& _numIters, const float& _dt, const float& _overRelaxation, const bool& _compensateDrift = true) {
     for (int i = 0; i < fNumCells; i++) {
         p[i] = 0.0;
         prevU[i] = u[i];
@@ -2966,7 +2913,7 @@ void FlipFluid::updateParticleColors()
     }
 }
 
-void FlipFluid::simulate(float _dt, vec3 _gravity, float _flipRatio, int _numPressureIters, int _numParticleIters, float _overRelaxation, bool _compensateDrift, bool _separateParticles)
+void FlipFluid::simulate(const float& _dt, const vec3& _gravity, const float& _flipRatio, const int& _numPressureIters, const int& _numParticleIters, const float& _overRelaxation, const bool& _compensateDrift, const bool& _separateParticles)
 {
     int numSubSteps = 1;
     float sdt = _dt / numSubSteps;
@@ -3012,11 +2959,7 @@ public:
             "    outColor = color;\n"
             "}\n";
 
-    bool initialize();
-
-    void render();
-    float* p;
-    float* s;
+    void render() override;
 
     PicFlip();
 
@@ -3100,16 +3043,7 @@ private:
 };
 
 PicFlip::PicFlip() : Simulation(){
-
-}
-
-PicFlip::~PicFlip(){
-
-}
-
-bool PicFlip::initialize() {
     mProgram = createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
-    if (!mProgram) return false;
 
     glGenBuffers(1, mVB);
     glBindBuffer(GL_ARRAY_BUFFER, mVB[0]);
@@ -3122,8 +3056,10 @@ bool PicFlip::initialize() {
                           (const GLvoid*)offsetof(Vertex, v));
 
     setupScene();
+}
 
-    return true;
+PicFlip::~PicFlip(){
+
 }
 
 void PicFlip::render(){
@@ -3206,7 +3142,6 @@ Java_com_example_livewallpaper05_MainActivity_00024Companion_init(JNIEnv *env, j
         //wallpaper = new PicFlip();
         //wallpaper = new Triangle();
         wallpaper = new Graph();
-        wallpaper->initialize();
         ALOGV("Using OpenGL ES 3.0 renderer");
     } else if (strstr(versionStr, "OpenGL ES 2.")) {
         //g_renderer = createES2Renderer();
