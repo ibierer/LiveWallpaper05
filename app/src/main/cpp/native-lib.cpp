@@ -3102,7 +3102,11 @@ void PicFlip::render(){
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
 
     for(int i = 0; i < 2; i++){
-        simulate(-accelerometerVector);
+        if(distance(accelerometerVector) == 0.0f){
+            simulate(vec3(0.0f, -9.3f, 0.0f));
+        }else{
+            simulate(-accelerometerVector);
+        }
     }
 
     checkGlError("Renderer::render");
@@ -3139,9 +3143,9 @@ Java_com_example_livewallpaper05_MainActivity_00024Companion_init(JNIEnv *env, j
     if (strstr(versionStr, "OpenGL ES 3.") && gl3stubInit()) {
         //wallpaper = new Box();
         //wallpaper = new Naive();
-        //wallpaper = new PicFlip();
+        wallpaper = new PicFlip();
         //wallpaper = new Triangle();
-        wallpaper = new Graph();
+        //wallpaper = new Graph();
         ALOGV("Using OpenGL ES 3.0 renderer");
     } else if (strstr(versionStr, "OpenGL ES 2.")) {
         //g_renderer = createES2Renderer();
