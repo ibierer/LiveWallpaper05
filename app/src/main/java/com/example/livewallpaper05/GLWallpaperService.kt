@@ -17,7 +17,6 @@ import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModelF
 
 class GLWallpaperService() : WallpaperService() {
 
-
     override fun onCreateEngine(): Engine {
         return GLEngine()
     }

@@ -35,7 +35,6 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         repo.registerSensors(manager)
     }
 
-    // create a config json string to pass to the wallpaper service
     fun getConfig(): String {
         var config = JSONObject()
         config.put("rotationRate", repo.rotationRate)

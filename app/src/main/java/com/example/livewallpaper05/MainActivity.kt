@@ -44,7 +44,6 @@ class MainActivity : AppCompatActivity() {
 
         // register senser event listeners
         viewModel.registerSensorEvents(getSystemService(Context.SENSOR_SERVICE) as SensorManager)
-        //mRepo!!.registerSensors(getSystemService(Context.SENSOR_SERVICE) as SensorManager)
 
         layout.addView(mView)
 
@@ -60,9 +59,6 @@ class MainActivity : AppCompatActivity() {
                 viewModel.updateRotationRate(seekBar.progress.toFloat() / 100.0f)
             }
         })
-
-        // pass data to GLWallpaperService
-
 
     }
 
