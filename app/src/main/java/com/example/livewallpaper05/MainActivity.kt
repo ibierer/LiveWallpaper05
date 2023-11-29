@@ -2,6 +2,7 @@ package com.example.livewallpaper05
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.hardware.SensorManager
 import android.os.Bundle
 import android.widget.LinearLayout
@@ -11,6 +12,7 @@ import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.getSystemService
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
@@ -28,7 +30,6 @@ class MainActivity : AppCompatActivity() {
 
     //private val mRepo = (application as ActiveWallpaperApplication).repository
     //private val mRepo = viewModel.getRepository()
-    private lateinit var mRepo: ActiveWallpaperRepo
 
     private var mRotLabel: TextView? = null
 
@@ -36,9 +37,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(icicle)
         setContentView(R.layout.activity_main)
 
-        mRepo = viewModel.getRepository()
-
-        mView = GLES3JNIView(application, mRepo)
+        mView = GLES3JNIView(application, viewModel)
 
         val layout = findViewById<LinearLayout>(R.id.render_layout)
         val scroller = findViewById<SeekBar>(R.id.rotation_rate_seekbar)
@@ -61,6 +60,10 @@ class MainActivity : AppCompatActivity() {
                 viewModel.updateRotationRate(seekBar.progress.toFloat() / 100.0f)
             }
         })
+
+        // pass data to GLWallpaperService
+
+
     }
 
     override fun onPause() {

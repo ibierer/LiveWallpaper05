@@ -2,6 +2,7 @@ package com.example.livewallpaper05.activewallpaperdata
 
 import android.hardware.SensorManager
 import androidx.lifecycle.*
+import org.json.JSONObject
 
 /**
  * View Model to keep a reference to the active wallpaper data
@@ -32,6 +33,18 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
 
     fun registerSensorEvents(manager: SensorManager) {
         repo.registerSensors(manager)
+    }
+
+    // create a config json string to pass to the wallpaper service
+    fun getConfig(): String {
+        var config = JSONObject()
+        config.put("rotationRate", repo.rotationRate)
+        return config.toString()
+    }
+
+    fun loadConfig(config: String) {
+        val configJson = JSONObject(config)
+        repo.rotationRate = configJson.getDouble("rotationRate").toFloat()
     }
 }
 

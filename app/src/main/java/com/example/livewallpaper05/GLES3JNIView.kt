@@ -4,10 +4,11 @@ import android.content.Context
 import android.opengl.GLSurfaceView
 import android.util.Log
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo
+import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
-class GLES3JNIView(context: Context, repo: ActiveWallpaperRepo) : GLSurfaceView(context) {
+class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceView(context) {
     private val TAG = "GLES3JNI"
     private val DEBUG = true
 
@@ -16,31 +17,51 @@ class GLES3JNIView(context: Context, repo: ActiveWallpaperRepo) : GLSurfaceView(
         // supporting OpenGL ES 2.0 or later backwards-compatible versions.
         setEGLConfigChooser(8, 8, 8, 0, 16, 0)
         setEGLContextClientVersion(3)
-        setRenderer(Renderer(context, repo))
+        setRenderer(Renderer(context, vm))
     }
 
-    class Renderer(context: Context, repo: ActiveWallpaperRepo) : GLSurfaceView.Renderer {
+    class Renderer(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceView.Renderer {
         private var context: Context? = null
-        private var mRepo: ActiveWallpaperRepo? = repo
+        //private var mRepo: ActiveWallpaperRepo? = repo
+        private var mViewModel: ActiveWallpaperViewModel = vm
 
         fun Renderer(context: Context, repo: ActiveWallpaperRepo) {
             this.context = context
         }
 
         override fun onDrawFrame(gl: GL10) {
-            // change to repo data
-            if(mRepo != null){
-                //x_rot = mRepo!!.rotationRate
-                MainActivity.step(mRepo!!.accelerationData[0],
-                    mRepo!!.accelerationData[1],
-                    mRepo!!.accelerationData[2],
-                    mRepo!!.rotationData[0],
-                    mRepo!!.rotationData[1],
-                    mRepo!!.rotationData[2],
-                    mRepo!!.rotationData[3])
-            } else {
-                MainActivity.step(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f)
-            }
+            // default values in ActiveWallpaperViewModel
+            val accelData = mViewModel.getAccelerationData()
+            val rotData = mViewModel.getRotationData()
+            val rotTmp = mViewModel.getRotationRate()
+            MainActivity.step(
+                0.0f,
+                0.0f,
+                0.0f,
+                rotTmp,
+                0.0f,
+                0.0f,
+                0.0f
+                )
+            /**
+             MainActivity.step(
+                accelData[0],
+                accelData[1],
+                accelData[2],
+                rotData[0],
+                rotData[1],
+                rotData[2],
+                rotData[3]
+            )
+            */
+            /**MainActivity.step(mRepo!!.accelerationData[0],
+                mRepo!!.accelerationData[1],
+                mRepo!!.accelerationData[2],
+                mRepo!!.rotationData[0],
+                mRepo!!.rotationData[1],
+                mRepo!!.rotationData[2],
+                mRepo!!.rotationData[3])
+            */
         }
 
         override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {
