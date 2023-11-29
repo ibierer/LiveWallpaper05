@@ -3,10 +3,11 @@ package com.example.livewallpaper05
 import android.content.Context
 import android.opengl.GLSurfaceView
 import android.util.Log
+import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
-class GLES3JNIView(context: Context, repo: WallpaperRepo) : GLSurfaceView(context) {
+class GLES3JNIView(context: Context, repo: ActiveWallpaperRepo) : GLSurfaceView(context) {
     private val TAG = "GLES3JNI"
     private val DEBUG = true
 
@@ -18,11 +19,11 @@ class GLES3JNIView(context: Context, repo: WallpaperRepo) : GLSurfaceView(contex
         setRenderer(Renderer(context, repo))
     }
 
-    class Renderer(context: Context, repo: WallpaperRepo) : GLSurfaceView.Renderer {
+    class Renderer(context: Context, repo: ActiveWallpaperRepo) : GLSurfaceView.Renderer {
         private var context: Context? = null
-        private var mRepo: WallpaperRepo? = repo
+        private var mRepo: ActiveWallpaperRepo? = repo
 
-        fun Renderer(context: Context, repo: WallpaperRepo) {
+        fun Renderer(context: Context, repo: ActiveWallpaperRepo) {
             this.context = context
         }
 

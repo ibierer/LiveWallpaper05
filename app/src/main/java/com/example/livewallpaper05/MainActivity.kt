@@ -2,49 +2,63 @@ package com.example.livewallpaper05
 
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.hardware.SensorManager
 import android.os.Bundle
 import android.widget.LinearLayout
 import android.util.Log
 import android.widget.SeekBar
 import android.widget.TextView
-import com.example.livewallpaper05.WallpaperRepo
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.getSystemService
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
+import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
+import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo
+import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
+import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModelFactory
 
-class MainActivity : Activity() {
+class MainActivity : AppCompatActivity() {
 
     var mView: GLES3JNIView? = null
-    private var mRepo: WallpaperRepo? = null
+
+    private val viewModel: ActiveWallpaperViewModel by viewModels {
+        ActiveWallpaperViewModelFactory((application as ActiveWallpaperApplication).repository)
+    }
+
+    //private val mRepo = (application as ActiveWallpaperApplication).repository
+    //private val mRepo = viewModel.getRepository()
+    private lateinit var mRepo: ActiveWallpaperRepo
+
     private var mRotLabel: TextView? = null
 
     override fun onCreate(icicle: Bundle?) {
         super.onCreate(icicle)
         setContentView(R.layout.activity_main)
 
-        mRepo = WallpaperRepo()
-        mView = GLES3JNIView(application, mRepo!!)
+        mRepo = viewModel.getRepository()
+
+        mView = GLES3JNIView(application, mRepo)
 
         val layout = findViewById<LinearLayout>(R.id.render_layout)
         val scroller = findViewById<SeekBar>(R.id.rotation_rate_seekbar)
 
         // register senser event listeners
-        mRepo!!.registerSensors(getSystemService(Context.SENSOR_SERVICE) as SensorManager)
+        viewModel.registerSensorEvents(getSystemService(Context.SENSOR_SERVICE) as SensorManager)
+        //mRepo!!.registerSensors(getSystemService(Context.SENSOR_SERVICE) as SensorManager)
 
         layout.addView(mView)
 
-        Log.d("Livewallpaper", "rotationRate: " + mRepo!!.rotationRate.toString())
-
         scroller.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean){
-
+                // Do nothing until changes are stopped for smooth ui updates
             }
             override fun onStartTrackingTouch(seekBar: SeekBar) {
-                // Do nothing
+                // Do nothing when changes are started
             }
             override fun onStopTrackingTouch(seekBar: SeekBar) {
-                // Do nothing
-                mRepo!!.rotationRate = seekBar.progress.toFloat() / 100.0f
-                Log.d("Livewallpaper", "rotationRate: " + mRepo!!.rotationRate.toString())
+                //mRepo!!.rotationRate = seekBar.progress.toFloat() / 100.0f
+                viewModel.updateRotationRate(seekBar.progress.toFloat() / 100.0f)
             }
         })
     }

@@ -4,8 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:name='com.example.lifestyle_app_refactor.MainActivity'
+    android:id="@+id/main_activity"
     tools:context=".MainActivity"
-    android:id="@+id/PageLayout">
+    >
 
     <LinearLayout
         android:id="@+id/render_layout"

@@ -6,8 +6,20 @@ import android.opengl.GLSurfaceView
 import android.service.wallpaper.WallpaperService
 import android.view.SurfaceHolder
 import android.widget.Toast
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
+import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo
+import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
+import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModelFactory
 
 class GLWallpaperService() : WallpaperService() {
+
+    class ViewModelHolder : AppCompatActivity() {
+        val viewModel: ActiveWallpaperViewModel by viewModels {
+            ActiveWallpaperViewModelFactory((application as ActiveWallpaperApplication).repository)
+        }
+    }
 
     override fun onCreateEngine(): Engine {
         return GLEngine()
@@ -20,12 +32,16 @@ class GLWallpaperService() : WallpaperService() {
             super.onCreate(surfaceHolder)
             glSurfaceView = WallpaperGLSurfaceView(this@GLWallpaperService)
 
+            // get repo from view model
+            val viewModel = ViewModelHolder().viewModel
+            val mRepo = viewModel.getRepository()
+
             // Check if the system supports OpenGL ES 2.0.
             val activityManager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
             val configurationInfo = activityManager
                 .deviceConfigurationInfo
             val supportsEs3 = configurationInfo.reqGlEsVersion >= 0x3
-            val renderer: GLES3JNIView.Renderer = GLES3JNIView.Renderer(this@GLWallpaperService, WallpaperRepo())
+            val renderer: GLES3JNIView.Renderer = GLES3JNIView.Renderer(this@GLWallpaperService, mRepo)
             rendererSet = if (supportsEs3) {
                 glSurfaceView!!.setEGLContextClientVersion(3)
                 glSurfaceView!!.setRenderer(renderer)
