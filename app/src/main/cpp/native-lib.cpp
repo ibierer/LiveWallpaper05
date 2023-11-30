@@ -3071,7 +3071,7 @@ void PicFlip::render(){
     glUseProgram(mProgram);
     Matrix4<float> translation;
     translation = translation.Translation(
-            10.0f * Vec3<float>(0.0f, 0.0f, val * 10.0f - 6.0f) - Vec3<float>(15.f));
+            Vec3<float>(0.0f, 0.0f, val * 100.0f - 60.0f) - Vec3<float>(15.f));
     Matrix4<float> translation2;
     for(int i = 0; i < fluid->numParticles; i++) {
         translation2 = translation2.Translation(
@@ -3103,7 +3103,7 @@ void PicFlip::render(){
 
     for(int i = 0; i < 2; i++){
         if(distance(accelerometerVector) == 0.0f){
-            simulate(vec3(0.0f, -9.3f, 0.0f));
+            simulate(vec3(0.0f, -9.81f, 0.0f));
         }else{
             simulate(-accelerometerVector);
         }

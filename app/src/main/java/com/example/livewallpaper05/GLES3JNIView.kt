@@ -33,7 +33,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             // default values in ActiveWallpaperViewModel
             val accelData = mViewModel.getAccelerationData()
             val rotData = mViewModel.getRotationData()
-            val rotTmp = mViewModel.getRotationRate()
+            /**val rotTmp = mViewModel.getRotationRate()
             MainActivity.step(
                 0.0f,
                 0.0f,
@@ -42,9 +42,9 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                 0.0f,
                 0.0f,
                 0.0f
-                )
-            /**
-             MainActivity.step(
+                )*/
+
+            MainActivity.step(
                 accelData[0],
                 accelData[1],
                 accelData[2],
@@ -53,7 +53,6 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                 rotData[2],
                 rotData[3]
             )
-            */
             /**MainActivity.step(mRepo!!.accelerationData[0],
                 mRepo!!.accelerationData[1],
                 mRepo!!.accelerationData[2],
