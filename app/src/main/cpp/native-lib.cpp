@@ -886,12 +886,12 @@ void ImplicitGrapher::processEquation(const int& i) {
     char equation[2 * maxEquationLength];
     int length = memoryEquations[i][EQUATION].length();
 
-    //Convert string to char array
+    // Convert string to char array
     for (int j = 0; j < length; j++) {
         equation[j] = memoryEquations[i][EQUATION].at(j);
     }
-    //Remove spaces
-    //Log.d("VIVZ", "Remove spaces and fill remainder with underscores");
+    // Remove spaces
+    // Remove spaces and fill remainder with underscores");
     if (i == numOfEquationsInMemory - 1 && debugEquation) {
         debug_string = "Remove spaces and fill remainder with underscores:";
     }
@@ -906,17 +906,17 @@ void ImplicitGrapher::processEquation(const int& i) {
         }
     }
 
-    //Fill remainder with underscores
+    // Fill remainder with underscores
     for (int j = length; j < 2 * maxEquationLength; j++) {
         equation[j] = '_';
     }
-    //Log.d("VIVZ", "equation = " + charToString(equation));
+    // equation = " + charToString(equation));
     if (i == numOfEquationsInMemory - 1 && debugEquation) {
         debug_string += charToString(equation, length);
     }
 
     //Isolate and convert '=' to '-'
-    //Log.d("VIVZ", "Isolate and convert '=' to '-'");
+    // Isolate and convert '=' to '-'");
     if (i == numOfEquationsInMemory - 1 && debugEquation) {
         debug_string += "Isolate and convert '=' to '-':";
     }
@@ -936,13 +936,13 @@ void ImplicitGrapher::processEquation(const int& i) {
     }
     equation[0] = '(';
     length += 4;
-    //Log.d("VIVZ", "equation = " + charToString(equation));
+    // equation = " + charToString(equation));
     if (i == numOfEquationsInMemory - 1 && debugEquation) {
         debug_string += charToString(equation, length);
     }
 
     //Add parentheses to ends
-    //Log.d("VIVZ", "Add parentheses to ends");
+    // Add parentheses to ends");
     if (i == numOfEquationsInMemory - 1 && debugEquation) {
         debug_string += "Add parentheses to ends:";
     }
@@ -955,13 +955,13 @@ void ImplicitGrapher::processEquation(const int& i) {
     length += 2;
     //Insert open parenthesis
     equation[0] = '(';
-    //Log.d("VIVZ", "equation = " + charToString(equation));
+    // equation = " + charToString(equation));
     if (i == numOfEquationsInMemory - 1 && debugEquation) {
         debug_string += charToString(equation, length);
     }
 
     //Add parentheses to functions
-    //Log.d("VIVZ", "Add parentheses to functions:");
+    // Add parentheses to functions:");
     if (i == numOfEquationsInMemory - 1 && debugEquation) {
         debug_string += "Add parentheses to functions:";
     }
@@ -1000,13 +1000,13 @@ void ImplicitGrapher::processEquation(const int& i) {
             }
         }
     }
-    //Log.d("VIVZ", "equation = " + charToString(equation));
+    // equation = " + charToString(equation));
     if (i == numOfEquationsInMemory - 1 && debugEquation) {
         debug_string += charToString(equation, length);
     }
 
     //Add multiplication signs to close terms
-    //Log.d("VIVZ", "Add multiplication signs to close terms:");
+    // Add multiplication signs to close terms:");
     if (i == numOfEquationsInMemory - 1 && debugEquation) {
         debug_string += "Add multiplication signs to close terms:";
     }
@@ -1043,13 +1043,13 @@ void ImplicitGrapher::processEquation(const int& i) {
             length++;
         }
     }
-    //Log.d("VIVZ", "equation = " + charToString(equation));
+    // equation = " + charToString(equation));
     if (i == numOfEquationsInMemory - 1 && debugEquation) {
         debug_string += charToString(equation, length);
     }
 
     //Convert (-x to (0-x or (-1 to (0-1
-    //Log.d("VIVZ", "Convert (-x to ((0-x) or (-1 to ((0-1)");
+    // Convert (-x to ((0-x) or (-1 to ((0-1)");
     if (i == numOfEquationsInMemory - 1 && debugEquation) {
         debug_string += "Convert (-x to ((0-x) or (-1 to ((0-1):";
     }
@@ -1064,13 +1064,13 @@ void ImplicitGrapher::processEquation(const int& i) {
             equation[j + 1] = '0';
         }
     }
-    //Log.d("VIVZ", "equation = " + charToString(equation));
+    // equation = " + charToString(equation));
     if (i == numOfEquationsInMemory - 1 && debugEquation) {
         debug_string += charToString(equation, length);
     }
 
     //Add parentheses to symbol functions
-    //Log.d("VIVZ", "Add parentheses to symbol functions");
+    // Add parentheses to symbol functions");
     if (i == numOfEquationsInMemory - 1 && debugEquation) {
         debug_string += "Add parentheses to symbol functions:";
     }
@@ -1154,13 +1154,13 @@ void ImplicitGrapher::processEquation(const int& i) {
             }
         }
     }
-    //Log.d("VIVZ", "equation = " + charToString(equation));
+    // equation = " + charToString(equation));
     if (i == numOfEquationsInMemory - 1 && debugEquation) {
         debug_string += charToString(equation, length) + ", ";
     }
 
     //Convert to coded equation
-    //Log.d("VIVZ", "Convert to coded equation");
+    // Convert to coded equation");
     if (i == numOfEquationsInMemory - 1 && debugEquation) {
         debug_string += "Convert to coded equation:";
     }
@@ -1321,9 +1321,9 @@ void ImplicitGrapher::processEquation(const int& i) {
         }
     }
     //Display equation
-    //Log.d("VIVZ", "original equation = " + PlotterSettings.defaultEquations[i][EQUATION]);
-    //Log.d("VIVZ", "array = " + charToString(equation));
-    //Log.d("VIVZ", "coded equation = " + decode(codedEquation, values));
+    // original equation = " + PlotterSettings.defaultEquations[i][EQUATION]);
+    // array = " + charToString(equation));
+    // coded equation = " + decode(codedEquation, values));
     if (i == numOfEquationsInMemory - 1 && debugEquation) {
         debug_string += decode(codedEquation, codedEquationCounter, values);
     }
@@ -1338,7 +1338,7 @@ void ImplicitGrapher::processEquation(const int& i) {
     //Convert 2/0 to error
 
     //Create Sequence Table destroying coded equation
-    //Log.d("VIVZ", "Create Sequence Table destroying coded equation:");
+    // Create Sequence Table destroying coded equation:");
     for (int j = 0, counter = 0; j < codedEquationCounter; j++) {
         if (codedEquation[j] > -1) {
             counter++;
@@ -1348,7 +1348,7 @@ void ImplicitGrapher::processEquation(const int& i) {
             counter++;
         }
     }
-    //Log.d("VIVZ", "coded equation = " + decode(codedEquation, values));
+    // coded equation = " + decode(codedEquation, values));
     bool end = false;
     for (sequenceLengths[i] = 0; !end; ) {
         for (int j = 0, openParenthesis = 0; j < codedEquationCounter; j++) {
@@ -1391,7 +1391,7 @@ void ImplicitGrapher::processEquation(const int& i) {
                             sequenceLengths[i]++; }
                             break;
                     }
-                    //Log.d("VIVZ", "coded equation = " + decode(codedEquation, values));
+                    // coded equation = " + decode(codedEquation, values));
                     j = codedEquationCounter - 1;
                     break;
             }
@@ -3033,7 +3033,7 @@ public:
                     float s = 1.0;    // fluid
                     if (i == 0 || i == nx - 1 || j == 0 || j == ny - 1 || k == 0 || k == nz - 1)
                         s = 0.0;    // solid
-                    fluid->s[i * ny * nz + j * nz + k] = s;
+                    fluid->s[(i * ny + j) * nz + k] = s;
                 }
             }
         }
@@ -3133,7 +3133,7 @@ static GLboolean gl3stubInit() { return GL_TRUE; }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_livewallpaper05_MainActivity_00024Companion_init(JNIEnv *env, jobject thiz) {
+Java_com_example_livewallpaper05_MainActivity_00024Companion_init(JNIEnv *env, jobject thiz, jint visualization) {
     Wallpaper::printGlString("Version", GL_VERSION);
     Wallpaper::printGlString("Vendor", GL_VENDOR);
     Wallpaper::printGlString("Renderer", GL_RENDERER);
@@ -3141,11 +3141,23 @@ Java_com_example_livewallpaper05_MainActivity_00024Companion_init(JNIEnv *env, j
 
     const char* versionStr = (const char*)glGetString(GL_VERSION);
     if (strstr(versionStr, "OpenGL ES 3.") && gl3stubInit()) {
-        //wallpaper = new Box();
-        //wallpaper = new Naive();
-        wallpaper = new PicFlip();
-        //wallpaper = new Triangle();
-        //wallpaper = new Graph();
+        switch(visualization){
+            case 0:
+                wallpaper = new Box();
+                break;
+            case 1:
+                wallpaper = new Naive();
+                break;
+            case 2:
+                wallpaper = new PicFlip();
+                break;
+            case 3:
+                wallpaper = new Triangle();
+                break;
+            case 4:
+                wallpaper = new Graph();
+                break;
+        }
         ALOGV("Using OpenGL ES 3.0 renderer");
     } else if (strstr(versionStr, "OpenGL ES 2.")) {
         //g_renderer = createES2Renderer();
