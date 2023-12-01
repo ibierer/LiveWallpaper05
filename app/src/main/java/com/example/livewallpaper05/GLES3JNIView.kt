@@ -50,7 +50,8 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                 rotData[0],
                 rotData[1],
                 rotData[2],
-                rotData[3]
+                rotData[3],
+                mViewModel.getRotationRate()
             )
         }
 
@@ -59,7 +60,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
         }
 
         override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
-            PreviewActivity.init()
+            MainActivity.init(2)
         }
     }
 }
