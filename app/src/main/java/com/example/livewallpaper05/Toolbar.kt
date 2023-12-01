@@ -1,5 +1,6 @@
 package com.example.livewallpaper05
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -49,8 +50,22 @@ class Toolbar : Fragment() {
         return rootview
     }
 
-
     private fun onClick(view: Int) {
+        // get name of parent activity
+        val parent = context as Context
+        // disable button leading to parent
+        when (parent) {
+            is MainActivity -> {
+                mBEditor?.isEnabled = false
+            }
+            is ExplorerActivity -> {
+                mBExplore?.isEnabled = false
+            }
+            is ProfileActivity -> {
+                mBProfile?.isEnabled = false
+            }
+        }
+
         when (view) {
             R.id.b_expand_toolbar -> {
                 if (mOpenToolbar) {
@@ -68,7 +83,7 @@ class Toolbar : Fragment() {
             }
 
             R.id.b_editor_toolbar -> {
-                val editorIntent = Intent(activity, EditorActivity::class.java)
+                val editorIntent = Intent(activity, MainActivity::class.java)
                 startActivity(editorIntent)
             }
 

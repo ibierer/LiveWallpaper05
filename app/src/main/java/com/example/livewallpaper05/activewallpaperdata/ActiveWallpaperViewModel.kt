@@ -23,8 +23,16 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         return repo.accelerationData
     }
 
+    fun getSimulationType(): Int {
+        return repo.simulationType
+    }
+
     fun updateRotationRate(rate: Float) {
         repo.rotationRate = rate
+    }
+
+    fun updateSimulationType(type: Int) {
+        repo.simulationType = type
     }
 
     fun getRepository(): ActiveWallpaperRepo {

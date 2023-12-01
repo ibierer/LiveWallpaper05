@@ -53,14 +53,6 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                 rotData[2],
                 rotData[3]
             )
-            /**MainActivity.step(mRepo!!.accelerationData[0],
-                mRepo!!.accelerationData[1],
-                mRepo!!.accelerationData[2],
-                mRepo!!.rotationData[0],
-                mRepo!!.rotationData[1],
-                mRepo!!.rotationData[2],
-                mRepo!!.rotationData[3])
-            */
         }
 
         override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {

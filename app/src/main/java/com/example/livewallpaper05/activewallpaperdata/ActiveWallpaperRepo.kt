@@ -10,6 +10,7 @@ class ActiveWallpaperRepo private constructor () : SensorEventListener {
     var rotationRate: Float = 0.0f
     var rotationData: Array<Float> = arrayOf(0.0f,0.0f,0.0f,0.0f)
     var accelerationData: Array<Float> = arrayOf(0.0f,0.0f,0.0f)
+    var simulationType: Int = 0
 
     private lateinit var mSensorManager: SensorManager
 
