@@ -3118,7 +3118,7 @@ Wallpaper* wallpaper = nullptr;
 // ----------------------------------------------------------------------------
 
 extern "C" JNIEXPORT jstring JNICALL
-Java_com_example_livewallpaper05_MainActivity_stringFromJNI(
+Java_com_example_livewallpaper05_PreviewActivity_stringFromJNI(
         JNIEnv* env,
         jobject /* this */) {
     std::string hello = "Hello from C++";
@@ -3133,7 +3133,7 @@ static GLboolean gl3stubInit() { return GL_TRUE; }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_livewallpaper05_MainActivity_00024Companion_init(JNIEnv *env, jobject thiz) {
+Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env, jobject thiz) {
     Wallpaper::printGlString("Version", GL_VERSION);
     Wallpaper::printGlString("Vendor", GL_VENDOR);
     Wallpaper::printGlString("Renderer", GL_RENDERER);
@@ -3156,8 +3156,8 @@ Java_com_example_livewallpaper05_MainActivity_00024Companion_init(JNIEnv *env, j
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_livewallpaper05_MainActivity_00024Companion_resize(JNIEnv *env, jobject thiz,
-                                                                    jint width, jint height) {
+Java_com_example_livewallpaper05_PreviewActivity_00024Companion_resize(JNIEnv *env, jobject thiz,
+                                                                       jint width, jint height) {
     if (wallpaper) {
         wallpaper->width = width;
         wallpaper->height = height;
@@ -3168,7 +3168,7 @@ Java_com_example_livewallpaper05_MainActivity_00024Companion_resize(JNIEnv *env,
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_livewallpaper05_MainActivity_00024Companion_step(JNIEnv *env, jobject thiz, jfloat acc_x, jfloat acc_y, jfloat acc_z, jfloat rot_x, jfloat rot_y, jfloat rot_z, jfloat rot_w) {
+Java_com_example_livewallpaper05_PreviewActivity_00024Companion_step(JNIEnv *env, jobject thiz, jfloat acc_x, jfloat acc_y, jfloat acc_z, jfloat rot_x, jfloat rot_y, jfloat rot_z, jfloat rot_w) {
     if (wallpaper) {
         wallpaper->accelerometerVector = vec3(acc_x, acc_y, acc_z);
         wallpaper->rotationVector = vec4(rot_x, rot_y, rot_z, rot_w);
@@ -3178,7 +3178,7 @@ Java_com_example_livewallpaper05_MainActivity_00024Companion_step(JNIEnv *env, j
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_livewallpaper05_MainActivity_00024Companion_sendData(JNIEnv *env, jobject thiz,
-                                                                      jfloat value) {
+Java_com_example_livewallpaper05_PreviewActivity_00024Companion_sendData(JNIEnv *env, jobject thiz,
+                                                                         jfloat value) {
     wallpaper->val = value;
 }

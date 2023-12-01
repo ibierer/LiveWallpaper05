@@ -1,30 +1,21 @@
 package com.example.livewallpaper05
 
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.hardware.SensorManager
 import android.os.Bundle
 import android.widget.LinearLayout
-import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.SeekBar
 import android.widget.Spinner
-import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.getSystemService
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
-import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModelFactory
 
-class MainActivity : AppCompatActivity() {
+class PreviewActivity : AppCompatActivity() {
 
     var mView: GLES3JNIView? = null
 
@@ -34,7 +25,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(icicle: Bundle?) {
         super.onCreate(icicle)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_preview)
 
         mView = GLES3JNIView(application, viewModel)
 

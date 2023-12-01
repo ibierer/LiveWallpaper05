@@ -13,11 +13,6 @@ class ExplorerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_explorer)
 
-        mPreviewButton = findViewById(R.id.preview_button)
-        mPreviewButton!!.setText("Open Live Wallpaper Preview")
-        mPreviewButton!!.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-        }
+
     }
 }

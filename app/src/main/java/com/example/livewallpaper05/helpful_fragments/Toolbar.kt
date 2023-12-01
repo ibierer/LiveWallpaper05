@@ -1,4 +1,4 @@
-package com.example.livewallpaper05
+package com.example.livewallpaper05.helpful_fragments
 
 import android.content.Context
 import android.content.Intent
@@ -8,6 +8,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.motion.widget.MotionLayout
+import com.example.livewallpaper05.ExplorerActivity
+import com.example.livewallpaper05.PreviewActivity
+import com.example.livewallpaper05.ProfileActivity
+import com.example.livewallpaper05.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 /**
@@ -55,7 +59,7 @@ class Toolbar : Fragment() {
         val parent = context as Context
         // disable button leading to parent
         when (parent) {
-            is MainActivity -> {
+            is PreviewActivity -> {
                 mBEditor?.isEnabled = false
             }
             is ExplorerActivity -> {
@@ -83,7 +87,7 @@ class Toolbar : Fragment() {
             }
 
             R.id.b_editor_toolbar -> {
-                val editorIntent = Intent(activity, MainActivity::class.java)
+                val editorIntent = Intent(activity, PreviewActivity::class.java)
                 startActivity(editorIntent)
             }
 
