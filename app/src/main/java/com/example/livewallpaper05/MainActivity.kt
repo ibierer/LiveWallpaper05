@@ -61,6 +61,7 @@ class MainActivity : AppCompatActivity() {
         rotationScrollBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean){
                 // Do nothing until changes are stopped for smooth ui updates
+                viewModel.updateRotationRate(seekBar.progress.toFloat() / 100.0f)
             }
             override fun onStartTrackingTouch(seekBar: SeekBar) {
                 // Do nothing when changes are started
@@ -106,7 +107,7 @@ class MainActivity : AppCompatActivity() {
 
         external fun init(visualization: Int)
         external fun resize(width: Int, height: Int)
-        external fun step(acc_x: Float, acc_y: Float, acc_z: Float, rot_x: Float, rot_y: Float, rot_z: Float, rot_w: Float)
+        external fun step(acc_x: Float, acc_y: Float, acc_z: Float, rot_x: Float, rot_y: Float, rot_z: Float, rot_w: Float, value: Float)
         external fun sendData(value: Float)
     }
 }

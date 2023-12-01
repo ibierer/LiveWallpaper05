@@ -387,7 +387,7 @@ void Triangle::render(){
     glEnable(GL_DEPTH_TEST);
 
     Matrix4<float> translation;
-    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, -10.0f));
+    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 10.0f * val - 10.0f));
     Matrix4<float> rotation;
     rotation = Matrix4<float>(quaternionTo3x3(rotationVector));
     Matrix4<float> mvp = perspective * translation * rotation;
@@ -1870,7 +1870,7 @@ void Graph::render(){
     glEnable(GL_DEPTH_TEST);
 
     Matrix4<float> translation;
-    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, -50.0f));
+    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 50.0f * val - 50.0f));
     Matrix4<float> rotation;
     rotation = Matrix4<float>(quaternionTo3x3(rotationVector));
     Matrix4<float> mvp = perspective * translation * rotation;
@@ -3180,10 +3180,11 @@ Java_com_example_livewallpaper05_MainActivity_00024Companion_resize(JNIEnv *env,
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_livewallpaper05_MainActivity_00024Companion_step(JNIEnv *env, jobject thiz, jfloat acc_x, jfloat acc_y, jfloat acc_z, jfloat rot_x, jfloat rot_y, jfloat rot_z, jfloat rot_w) {
+Java_com_example_livewallpaper05_MainActivity_00024Companion_step(JNIEnv *env, jobject thiz, jfloat acc_x, jfloat acc_y, jfloat acc_z, jfloat rot_x, jfloat rot_y, jfloat rot_z, jfloat rot_w, jfloat value) {
     if (wallpaper) {
         wallpaper->accelerometerVector = vec3(acc_x, acc_y, acc_z);
         wallpaper->rotationVector = vec4(rot_x, rot_y, rot_z, rot_w);
+        wallpaper->val = value;
         wallpaper->render();
     }
 }
