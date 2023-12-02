@@ -509,8 +509,6 @@ class ImplicitGrapher {
 
     static const int numOfFunctions = 17;
 
-    string memoryEquations[maxNumOfEquations][2];
-
     const string defaultEquations[numOfDefaultEquations][2] = {
             {"Two Toroids",                  "1/((sqrt(x^2 + y^2) - 2 + 1.25cos(t))^2 + (z - 1.5sin(t))^2) + 1/((sqrt(x^2 + y^2) - 2 - 1.25cos(t))^2 + (z + 1.5sin(t))^2) = 1.9"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        },
             {"Three Toroids",                "1/((sqrt(x^2 + y^2) - 1.5 + sin(t))^2 + (z + cos(t))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 2/3))^2 + (z + cos(t + 2/3))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 4/3))^2 + (z + cos(t + 4/3))^2) = 5"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                },
@@ -636,8 +634,6 @@ class ImplicitGrapher {
 
     static string charToString(const char* const characters, const int& length);
 
-    int numOfEquationsInMemory;
-
     void writeDefaultEquationsToMemory();
 
     void writeUserEquationsToMemory();
@@ -648,9 +644,13 @@ class ImplicitGrapher {
 
     void refactor(const ivec3& inputRadius);
 
+public:
+
+    string memoryEquations[maxNumOfEquations][2];
+
     void processEquation(const int& i);
 
-public:
+    int numOfEquationsInMemory;
 
     int surfaceEquation;
 
@@ -1855,6 +1855,8 @@ public:
 
     Graph();
 
+    explicit Graph(const string& equation);
+
     ~Graph();
 
     void render() override;
@@ -1864,6 +1866,15 @@ private:
 
 Graph::Graph() : Wallpaper(){
     mProgram = createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
+    graph.surfaceEquation = 1;
+}
+
+Graph::Graph(const string& equation) : Wallpaper(){
+    mProgram = createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
+    graph.surfaceEquation = graph.numOfEquationsInMemory;
+    graph.memoryEquations[graph.numOfEquationsInMemory][1] = equation;
+    graph.processEquation(graph.numOfEquationsInMemory);
+    graph.numOfEquationsInMemory++;
 }
 
 Graph::~Graph(){
@@ -1889,7 +1900,6 @@ void Graph::render(){
             GL_FALSE,
             (GLfloat*)&mvp);
 
-    graph.surfaceEquation = 1;
     graph.calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * framesRendered, 10, vec3(0.0f), 0.15f, false, false, &graph.vertices[0], graph.indices, graph.numIndices);
 
     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
@@ -3122,6 +3132,19 @@ void PicFlip::render(){
 
 Wallpaper* wallpaper = nullptr;
 
+// Function to convert jstring to std::string
+std::string jstringToString(JNIEnv *env, jstring jStr) {
+    if (jStr == nullptr) {
+        return ""; // Handle null jstring gracefully
+    }
+
+    const char *chars = env->GetStringUTFChars(jStr, nullptr);
+    std::string result(chars);
+    env->ReleaseStringUTFChars(jStr, chars);
+
+    return result;
+}
+
 // ----------------------------------------------------------------------------
 
 extern "C" JNIEXPORT jstring JNICALL
@@ -3140,7 +3163,7 @@ static GLboolean gl3stubInit() { return GL_TRUE; }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env, jobject thiz, jint visualization) {
+Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env, jobject thiz, jstring visualization) {
     Wallpaper::printGlString("Version", GL_VERSION);
     Wallpaper::printGlString("Vendor", GL_VENDOR);
     Wallpaper::printGlString("Renderer", GL_RENDERER);
@@ -3148,22 +3171,17 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
 
     const char* versionStr = (const char*)glGetString(GL_VERSION);
     if (strstr(versionStr, "OpenGL ES 3.") && gl3stubInit()) {
-        switch(visualization){
-            case 0:
-                wallpaper = new Box();
-                break;
-            case 1:
-                wallpaper = new Naive();
-                break;
-            case 2:
-                wallpaper = new PicFlip();
-                break;
-            case 3:
-                wallpaper = new Triangle();
-                break;
-            case 4:
-                wallpaper = new Graph();
-                break;
+        string vis = jstringToString(env, visualization);
+        if(vis == "0"){
+            wallpaper = new Box();
+        }else if(vis == "1"){
+            wallpaper = new Naive();
+        }else if(vis == "2"){
+            wallpaper = new PicFlip();
+        }else if(vis == "3"){
+            wallpaper = new Triangle();
+        }else if(vis == "4"){
+            wallpaper = new Graph("1/((sqrt(x^2 + y^2) - 2 + 1.25cos(t))^2 + (z - 1.5sin(t))^2) + 1/((sqrt(x^2 + y^2) - 2 - 1.25cos(t))^2 + (z + 1.5sin(t))^2) = 1.9");
         }
         ALOGV("Using OpenGL ES 3.0 renderer");
     } else if (strstr(versionStr, "OpenGL ES 2.")) {

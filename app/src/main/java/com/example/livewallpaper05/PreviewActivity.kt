@@ -96,7 +96,7 @@ class PreviewActivity : AppCompatActivity() {
             System.loadLibrary("livewallpaper05")
         }
 
-        external fun init(visualization: Int)
+        external fun init(visualization: String)
         external fun resize(width: Int, height: Int)
         external fun step(acc_x: Float, acc_y: Float, acc_z: Float, rot_x: Float, rot_y: Float, rot_z: Float, rot_w: Float, value: Float)
         external fun sendData(value: Float)

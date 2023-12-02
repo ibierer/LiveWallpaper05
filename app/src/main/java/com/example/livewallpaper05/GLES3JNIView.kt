@@ -60,7 +60,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
         }
 
         override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
-            PreviewActivity.init(2)
+            PreviewActivity.init("4")
         }
     }
 }
