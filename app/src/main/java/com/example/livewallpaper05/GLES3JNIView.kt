@@ -76,7 +76,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     "   \"type\": \"graph\",\n" +
                     "   \"settings\": \"1/((sqrt(x^2 + y^2) - 2 + 1.25cos(t))^2 + (z - 1.5sin(t))^2) + 1/((sqrt(x^2 + y^2) - 2 - 1.25cos(t))^2 + (z + 1.5sin(t))^2) = 1.9\"\n" +
                     "}"
-            PreviewActivity.init(picflipJSON)
+            PreviewActivity.init(naiveJSON)
         }
     }
 }

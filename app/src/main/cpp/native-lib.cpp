@@ -1920,11 +1920,24 @@ public:
     int moleculeCount;
     int cbrtMoleculeCount;
     void setMoleculeCount(int n);
+    vec3 compensateForOrientation(const vec3& acc);
 };
 
 void Simulation::setMoleculeCount(int n){
     moleculeCount = n;
     cbrtMoleculeCount = cbrt(moleculeCount);
+}
+
+vec3 Simulation::compensateForOrientation(const vec3& acc){
+    if(width < height) {
+        return -1.0f * acc;
+    }else{
+        if(acc.x < 0.0f) {
+            return vec3(-acc.y, acc.x, -acc.z);
+        }else{
+            return vec3(acc.y, -acc.x, -acc.z);
+        }
+    }
 }
 
 class BarnesHut : public Simulation{
@@ -2097,7 +2110,7 @@ void Naive::render(){
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
 
     for(int i = 0; i < 5; i++){
-        simulate(-accelerometerVector);
+        simulate(compensateForOrientation(accelerometerVector));
     }
 
     checkGlError("Renderer::render");
@@ -2180,7 +2193,7 @@ void Naive::useGrid(const int& i, const int& dataIndex, int* const ids, int& cou
 }
 
 bool Naive::seed(const float& radius) {
-    setMoleculeCount(125);
+    setMoleculeCount(1000);
     molecules = new Molecule[moleculeCount];
     sphereRadius = radius;
     sphereRadiusSquared = sphereRadius * sphereRadius;
@@ -3124,7 +3137,7 @@ void PicFlip::render(){
         if(distance(accelerometerVector) == 0.0f){
             simulate(vec3(0.0f, -9.81f, 0.0f));
         }else{
-            simulate(-accelerometerVector);
+            simulate(compensateForOrientation(accelerometerVector));
         }
     }
 
@@ -3175,6 +3188,9 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
     if (strstr(versionStr, "OpenGL ES 3.") && gl3stubInit()) {
         json visualizationJSON = json::parse(jstringToString(env, JSON));
         string type = visualizationJSON["type"];
+        if(wallpaper){
+            free(wallpaper);
+        }
         if(type == "box"){
             wallpaper = new Box();
         }else if(type == "naive"){
