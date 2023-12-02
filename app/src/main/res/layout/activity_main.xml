@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:name='com.example.lifestyle_app_refactor.MainActivity'
     android:id="@+id/main_activity"
-    tools:context=".PreviewActivity"
+    tools:context=".MainActivity"
     >
 
     <LinearLayout
@@ -73,7 +73,7 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/f_toolbar"
-        android:name="com.example.livewallpaper05.helpful_fragments.Toolbar"
+        android:name="com.example.livewallpaper05.Toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"

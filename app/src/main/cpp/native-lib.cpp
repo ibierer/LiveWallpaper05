@@ -3125,7 +3125,7 @@ Wallpaper* wallpaper = nullptr;
 // ----------------------------------------------------------------------------
 
 extern "C" JNIEXPORT jstring JNICALL
-Java_com_example_livewallpaper05_PreviewActivity_stringFromJNI(
+Java_com_example_livewallpaper05_MainActivity_stringFromJNI(
         JNIEnv* env,
         jobject /* this */) {
     std::string hello = "Hello from C++";
@@ -3175,8 +3175,8 @@ Java_com_example_livewallpaper05_MainActivity_00024Companion_init(JNIEnv *env, j
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_livewallpaper05_PreviewActivity_00024Companion_resize(JNIEnv *env, jobject thiz,
-                                                                       jint width, jint height) {
+Java_com_example_livewallpaper05_MainActivity_00024Companion_resize(JNIEnv *env, jobject thiz,
+                                                                    jint width, jint height) {
     if (wallpaper) {
         wallpaper->width = width;
         wallpaper->height = height;
@@ -3198,7 +3198,7 @@ Java_com_example_livewallpaper05_MainActivity_00024Companion_step(JNIEnv *env, j
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_livewallpaper05_PreviewActivity_00024Companion_sendData(JNIEnv *env, jobject thiz,
-                                                                         jfloat value) {
+Java_com_example_livewallpaper05_MainActivity_00024Companion_sendData(JNIEnv *env, jobject thiz,
+                                                                      jfloat value) {
     wallpaper->val = value;
 }
