@@ -3174,15 +3174,16 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
     const char* versionStr = (const char*)glGetString(GL_VERSION);
     if (strstr(versionStr, "OpenGL ES 3.") && gl3stubInit()) {
         json visualizationJSON = json::parse(jstringToString(env, JSON));
-        if(visualizationJSON["type"] == "box"){
+        string type = visualizationJSON["type"];
+        if(type == "box"){
             wallpaper = new Box();
-        }else if(visualizationJSON["type"] == "naive"){
+        }else if(type == "naive"){
             wallpaper = new Naive();
-        }else if(visualizationJSON["type"] == "picflip"){
+        }else if(type == "picflip"){
             wallpaper = new PicFlip();
-        }else if(visualizationJSON["type"] == "triangle"){
+        }else if(type == "triangle"){
             wallpaper = new Triangle();
-        }else if(visualizationJSON["type"] == "graph"){
+        }else if(type == "graph"){
             wallpaper = new Graph(visualizationJSON["settings"]);
         }
         ALOGV("Using OpenGL ES 3.0 renderer");
