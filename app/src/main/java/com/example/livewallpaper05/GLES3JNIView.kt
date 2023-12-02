@@ -60,7 +60,23 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
         }
 
         override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
-            PreviewActivity.init("4")
+            val boxJSON = "{\n" +
+                    "   \"type\": \"box\"\n" +
+                    "}"
+            val naiveJSON = "{\n" +
+                    "   \"type\": \"naive\"\n" +
+                    "}"
+            val picflipJSON = "{\n" +
+                    "   \"type\": \"picflip\"\n" +
+                    "}"
+            val triangleJSON = "{\n" +
+                    "   \"type\": \"triangle\"\n" +
+                    "}"
+            val graphJSON = "{\n" +
+                    "   \"type\": \"graph\",\n" +
+                    "   \"settings\": \"1/((sqrt(x^2 + y^2) - 2 + 1.25cos(t))^2 + (z - 1.5sin(t))^2) + 1/((sqrt(x^2 + y^2) - 2 - 1.25cos(t))^2 + (z + 1.5sin(t))^2) = 1.9\"\n" +
+                    "}"
+            PreviewActivity.init(picflipJSON)
         }
     }
 }

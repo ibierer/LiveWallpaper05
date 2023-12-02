@@ -15,6 +15,7 @@ using cy::Matrix4;
 using cy::Vec3;
 using std::min;
 using std::max;
+using namespace nlohmann;
 
 //#define DYNAMIC_ES3 true
 #if DYNAMIC_ES3
@@ -3164,7 +3165,7 @@ static GLboolean gl3stubInit() { return GL_TRUE; }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env, jobject thiz, jstring visualization) {
+Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env, jobject thiz, jstring JSON) {
     Wallpaper::printGlString("Version", GL_VERSION);
     Wallpaper::printGlString("Vendor", GL_VENDOR);
     Wallpaper::printGlString("Renderer", GL_RENDERER);
@@ -3172,17 +3173,17 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
 
     const char* versionStr = (const char*)glGetString(GL_VERSION);
     if (strstr(versionStr, "OpenGL ES 3.") && gl3stubInit()) {
-        string vis = jstringToString(env, visualization);
-        if(vis == "0"){
+        json visualizationJSON = json::parse(jstringToString(env, JSON));
+        if(visualizationJSON["type"] == "box"){
             wallpaper = new Box();
-        }else if(vis == "1"){
+        }else if(visualizationJSON["type"] == "naive"){
             wallpaper = new Naive();
-        }else if(vis == "2"){
+        }else if(visualizationJSON["type"] == "picflip"){
             wallpaper = new PicFlip();
-        }else if(vis == "3"){
+        }else if(visualizationJSON["type"] == "triangle"){
             wallpaper = new Triangle();
-        }else if(vis == "4"){
-            wallpaper = new Graph("1/((sqrt(x^2 + y^2) - 2 + 1.25cos(t))^2 + (z - 1.5sin(t))^2) + 1/((sqrt(x^2 + y^2) - 2 - 1.25cos(t))^2 + (z + 1.5sin(t))^2) = 1.9");
+        }else if(visualizationJSON["type"] == "graph"){
+            wallpaper = new Graph(visualizationJSON["settings"]);
         }
         ALOGV("Using OpenGL ES 3.0 renderer");
     } else if (strstr(versionStr, "OpenGL ES 2.")) {
