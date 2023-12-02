@@ -9,6 +9,7 @@
 #include <EGL/egl.h>
 #include "vectors.h"
 #include "cyCodeBase-master/cyMatrix.h"
+#include "nlohmann/json.hpp"
 
 using cy::Matrix4;
 using cy::Vec3;
