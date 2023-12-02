@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+
+    <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.software.live_wallpaper" />
     <uses-feature
         android:glEsVersion="0x00031000"
@@ -27,15 +31,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".EditorActivity"
-            android:exported="false" />
-        <activity
             android:name=".ProfileActivity"
             android:exported="false" />
         <activity
             android:name=".PreviewActivity"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat"></activity>
+            android:theme="@style/Theme.AppCompat"/>
 
         <service
             android:name=".GLWallpaperService"
