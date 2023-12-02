@@ -33,7 +33,7 @@
             android:name=".ProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".PreviewActivity"
             android:exported="false"
             android:theme="@style/Theme.AppCompat"></activity>
 

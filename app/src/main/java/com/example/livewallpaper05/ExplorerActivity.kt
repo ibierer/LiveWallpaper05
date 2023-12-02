@@ -16,7 +16,7 @@ class ExplorerActivity : AppCompatActivity() {
         mPreviewButton = findViewById(R.id.preview_button)
         mPreviewButton!!.setText("Open Live Wallpaper Preview")
         mPreviewButton!!.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(this, PreviewActivity::class.java)
             startActivity(intent)
         }
     }

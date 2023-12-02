@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:name='com.example.lifestyle_app_refactor.MainActivity'
     android:id="@+id/main_activity"
-    tools:context=".MainActivity"
+    tools:context=".PreviewActivity"
     >
 
     <LinearLayout

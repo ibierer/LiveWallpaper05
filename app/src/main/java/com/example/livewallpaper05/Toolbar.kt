@@ -55,7 +55,7 @@ class Toolbar : Fragment() {
         val parent = context as Context
         // disable button leading to parent
         when (parent) {
-            is MainActivity -> {
+            is PreviewActivity -> {
                 mBEditor?.isEnabled = false
             }
             is ExplorerActivity -> {
@@ -83,7 +83,7 @@ class Toolbar : Fragment() {
             }
 
             R.id.b_editor_toolbar -> {
-                val editorIntent = Intent(activity, MainActivity::class.java)
+                val editorIntent = Intent(activity, PreviewActivity::class.java)
                 startActivity(editorIntent)
             }
 
