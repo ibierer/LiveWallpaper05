@@ -162,10 +162,11 @@ void Wallpaper::calculatePerspective() {
     // Compute the window aspect ratio
     float aspect = (float)width / (float)height;
     // Generate a perspective matrix with a 90-degree FOV and near and far clip planes at 0.1 and 1000.0
-    float maxViewAngle = 45.0f;
+    float maxViewAngle = 90.0f;
     float zNear = 0.1f;
     float zFar = 1000.0f;
     float verticalScreenAngle = (aspect < 1.0f) ? maxViewAngle : 2.0 * atan(tan(maxViewAngle / 2.0 * M_PI / 180.0) / aspect) / M_PI * 180.0;
+    //float verticalScreenAngle = (aspect < 1.0f) ? maxViewAngle : maxViewAngle;
     perspective.SetPerspective(verticalScreenAngle, aspect, zNear, zFar);
 }
 
@@ -1828,7 +1829,7 @@ void ImplicitGrapher::refactor(const ivec3& inputRadius) {
 
 #endif
 
-ImplicitGrapher graph(20);
+ImplicitGrapher implicitGrapher(20);
 
 class Graph : public Wallpaper{
 public:
@@ -1868,15 +1869,15 @@ private:
 
 Graph::Graph() : Wallpaper(){
     mProgram = createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
-    graph.surfaceEquation = 1;
+    implicitGrapher.surfaceEquation = 1;
 }
 
 Graph::Graph(const string& equation) : Wallpaper(){
     mProgram = createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
-    graph.surfaceEquation = graph.numOfEquationsInMemory;
-    graph.memoryEquations[graph.numOfEquationsInMemory][1] = equation;
-    graph.processEquation(graph.numOfEquationsInMemory);
-    graph.numOfEquationsInMemory++;
+    implicitGrapher.surfaceEquation = implicitGrapher.numOfEquationsInMemory;
+    implicitGrapher.memoryEquations[implicitGrapher.numOfEquationsInMemory][1] = equation;
+    implicitGrapher.processEquation(implicitGrapher.numOfEquationsInMemory);
+    implicitGrapher.numOfEquationsInMemory++;
 }
 
 Graph::~Graph(){
@@ -1902,13 +1903,13 @@ void Graph::render(){
             GL_FALSE,
             (GLfloat*)&mvp);
 
-    graph.calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * framesRendered, 10, vec3(0.0f), 0.15f, false, false, &graph.vertices[0], graph.indices, graph.numIndices);
+    implicitGrapher.calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * framesRendered, 10, vec3(0.0f), 0.15f, false, false, &implicitGrapher.vertices[0], implicitGrapher.indices, implicitGrapher.numIndices);
 
     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
-    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), (const GLvoid*)&graph.vertices[0].v);
-    glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), (const GLvoid*)&graph.vertices[0].n);
-    glDrawElements(GL_TRIANGLES, graph.numIndices, GL_UNSIGNED_INT, graph.indices);
+    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), (const GLvoid*)&implicitGrapher.vertices[0].v);
+    glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), (const GLvoid*)&implicitGrapher.vertices[0].n);
+    glDrawElements(GL_TRIANGLES, implicitGrapher.numIndices, GL_UNSIGNED_INT, implicitGrapher.indices);
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
 

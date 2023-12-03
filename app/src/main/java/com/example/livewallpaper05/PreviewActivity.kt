@@ -35,7 +35,7 @@ class PreviewActivity : AppCompatActivity() {
 
         // fill ui elements with default data
         // fill sim selector with wallpaper options from native-lib.cpp
-        // ie box, naive, picflip, triangle, graph
+        // ie box, naive, picflip, triangle, implicitGrapher
         val simSelectorAdapter = ArrayAdapter.createFromResource(
             this,
             R.array.simulation_types,
