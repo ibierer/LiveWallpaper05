@@ -36,10 +36,10 @@
             android:src="@android:drawable/ic_menu_search" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/b_other_toolbar"
+            android:id="@+id/b_help_toolbar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_dialog_map" />
+            android:src="@drawable/question_mark" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/b_expand_toolbar"
@@ -49,7 +49,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- [IGNORE, INVISIBLE LAYOUT CONTENT FOR MENU ANIMATION] -->
+        <!-- [IGNORE BELOW, INVISIBLE LAYOUT CONTENT FOR MENU ANIMATION] -->
         <!-- circular layout invisible set end points for motion label animation -->
         <androidx.constraintlayout.helper.widget.CircularFlow
             android:id="@+id/circular_flow"

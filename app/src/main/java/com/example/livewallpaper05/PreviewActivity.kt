@@ -65,7 +65,12 @@ class PreviewActivity : AppCompatActivity() {
 
         simSelectorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
-                viewModel.updateSimulationType(pos)
+                val changed = viewModel.updateSimulationType(pos)
+                if (changed){
+                    // tell view it needs to be reloaded
+                    mView!!.onPause()
+                    mView!!.onResume()
+                }
             }
             override fun onNothingSelected(parent: AdapterView<*>) {
                 // Do nothing

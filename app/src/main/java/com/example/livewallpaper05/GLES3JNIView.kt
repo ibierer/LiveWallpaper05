@@ -4,6 +4,7 @@ import android.content.Context
 import android.opengl.GLSurfaceView
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
+import kotlinx.coroutines.selects.select
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
@@ -76,7 +77,28 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     "   \"type\": \"graph\",\n" +
                     "   \"settings\": \"1/((sqrt(x^2 + y^2) - 2 + 1.25cos(t))^2 + (z - 1.5sin(t))^2) + 1/((sqrt(x^2 + y^2) - 2 - 1.25cos(t))^2 + (z + 1.5sin(t))^2) = 1.9\"\n" +
                     "}"
-            PreviewActivity.init(graphJSON)
+
+            var selectionJSON = boxJSON
+            when (mViewModel.getSimulationType()) {
+                0 -> {
+                    selectionJSON = boxJSON
+                }
+                1 -> {
+                    selectionJSON = naiveJSON
+                }
+                2 -> {
+                    selectionJSON = picflipJSON
+                }
+                3 -> {
+                    selectionJSON = triangleJSON
+                }
+                4 -> {
+                    selectionJSON = graphJSON
+                }
+
+            }
+
+            PreviewActivity.init(selectionJSON)
         }
     }
 }

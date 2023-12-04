@@ -36,7 +36,7 @@
                 />
         </Constraint>
 
-        <Constraint android:id="@+id/b_other_toolbar">
+        <Constraint android:id="@+id/b_help_toolbar">
             <Layout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -74,7 +74,7 @@
                 motion:layout_constraintEnd_toEndOf="@+id/v_anchor3"/>
         </Constraint>
 
-        <Constraint android:id="@+id/b_other_toolbar">
+        <Constraint android:id="@+id/b_help_toolbar">
             <Layout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

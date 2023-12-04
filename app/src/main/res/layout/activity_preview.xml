@@ -27,30 +27,29 @@
         android:fillViewport="true"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:fadeScrollbars="false"
-        >
+        android:fadeScrollbars="false">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:layout_marginTop="10dp">
 
-    <TextView
-        android:id="@+id/rotation_rate_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/rotation_rate"
-        android:layout_marginTop="10dp"/>
+        <TextView
+            android:id="@+id/rotation_rate_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/rotation_rate"
+            android:layout_marginTop="10dp"/>
 
-    <SeekBar
-        android:id="@+id/rotation_rate_seekbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginTop="10dp"
-        android:min="-100"
-        android:max="100"/>
+        <SeekBar
+            android:id="@+id/rotation_rate_seekbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="10dp"
+            android:min="-100"
+            android:max="100"/>
 
         <TextView
             android:id="@+id/sim_selector_text"
@@ -66,7 +65,6 @@
             android:layout_marginTop="20dp"
             android:background="@color/black"
             />
-
 
     </LinearLayout>
     </ScrollView>

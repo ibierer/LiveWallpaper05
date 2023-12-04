@@ -31,8 +31,12 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         repo.rotationRate = rate
     }
 
-    fun updateSimulationType(type: Int) {
-        repo.simulationType = type
+    fun updateSimulationType(type: Int): Boolean {
+        if (type != repo.simulationType) {
+            repo.simulationType = type
+            return true
+        }
+        return false
     }
 
     fun getRepository(): ActiveWallpaperRepo {
