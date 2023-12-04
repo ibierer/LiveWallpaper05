@@ -62,20 +62,25 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
 
         override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
             val boxJSON = "{\n" +
-                    "   \"type\": \"box\"\n" +
+                    "    \"type\": \"box\",\n" +
+                    "    \"background_color\": {\"r\": 51, \"g\": 51, \"b\": 77, \"a\": 255}\n" +
                     "}"
             val naiveJSON = "{\n" +
-                    "   \"type\": \"naive\"\n" +
+                    "    \"type\": \"naive\",\n" +
+                    "    \"background_color\": {\"r\": 51, \"g\": 51, \"b\": 77, \"a\": 255}\n" +
                     "}"
             val picflipJSON = "{\n" +
-                    "   \"type\": \"picflip\"\n" +
+                    "    \"type\": \"picflip\",\n" +
+                    "    \"background_color\": {\"r\": 51, \"g\": 51, \"b\": 77, \"a\": 255}\n" +
                     "}"
             val triangleJSON = "{\n" +
-                    "   \"type\": \"triangle\"\n" +
+                    "    \"type\": \"triangle\",\n" +
+                    "    \"background_color\": {\"r\": 51, \"g\": 51, \"b\": 77, \"a\": 255}\n" +
                     "}"
             val graphJSON = "{\n" +
-                    "   \"type\": \"graph\",\n" +
-                    "   \"settings\": \"1/((sqrt(x^2 + y^2) - 2 + 1.25cos(t))^2 + (z - 1.5sin(t))^2) + 1/((sqrt(x^2 + y^2) - 2 - 1.25cos(t))^2 + (z + 1.5sin(t))^2) = 1.9\"\n" +
+                    "    \"type\": \"graph\",\n" +
+                    "    \"background_color\": {\"r\": 51, \"g\": 51, \"b\": 77, \"a\": 255},\n" +
+                    "    \"settings\": \"1/((sqrt(x^2 + y^2) - 2 + 1.25cos(t))^2 + (z - 1.5sin(t))^2) + 1/((sqrt(x^2 + y^2) - 2 - 1.25cos(t))^2 + (z + 1.5sin(t))^2) = 1.9\"\n" +
                     "}"
 
             var selectionJSON = boxJSON

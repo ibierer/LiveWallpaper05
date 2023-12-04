@@ -79,6 +79,8 @@ public:
 
     int framesRendered;
 
+    vec4 backgroundColor;
+
     EGLContext mEglContext;
 
     float val;
@@ -319,7 +321,7 @@ void Box::render(){
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
-    glClearColor(0.2f, 0.2f, 0.3f, 1.0f);
+    glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(mProgram);
     Matrix4<float> translation;
@@ -391,7 +393,7 @@ Triangle::~Triangle(){
 }
 
 void Triangle::render(){
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     glEnable(GL_DEPTH_TEST);
@@ -1885,7 +1887,7 @@ Graph::~Graph(){
 }
 
 void Graph::render(){
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     glEnable(GL_DEPTH_TEST);
@@ -2076,7 +2078,7 @@ void Naive::render(){
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
-    glClearColor(0.2f, 0.2f, 0.3f, 1.0f);
+    glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(mProgram);
     Matrix4<float> translation;
@@ -3099,7 +3101,7 @@ void PicFlip::render(){
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
-    glClearColor(0.2f, 0.2f, 0.3f, 1.0f);
+    glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(mProgram);
     Matrix4<float> translation;
@@ -3203,6 +3205,15 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
         }else if(type == "graph"){
             wallpaper = new Graph(visualizationJSON["settings"]);
         }
+        static struct anonymous{
+            static float ubyteToFloat(const unsigned char& value){
+                return 1.0f / 255.0f * (float)value;
+            }
+        };
+        wallpaper->backgroundColor = vec4(float(visualizationJSON["background_color"]["r"]) / 255.0f,
+                                          float(visualizationJSON["background_color"]["g"]) / 255.0f,
+                                          float(visualizationJSON["background_color"]["b"]) / 255.0f,
+                                          float(visualizationJSON["background_color"]["a"]) / 255.0f);
         ALOGV("Using OpenGL ES 3.0 renderer");
     } else if (strstr(versionStr, "OpenGL ES 2.")) {
         //g_renderer = createES2Renderer();
