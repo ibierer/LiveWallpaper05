@@ -36,6 +36,7 @@ using namespace nlohmann;
 
 #define LOG_TAG "GLES3JNI"
 #define ALOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define ALOGW(...) __android_log_print(ANDROID_LOG_WARN, LOG_TAG, __VA_ARGS__)
 #if DEBUG
 #define ALOGV(...) \
   __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__)
@@ -143,6 +144,46 @@ public:
     static void printGlString(const char* const name, const GLenum& s);
 
     void calculatePerspective();
+
+    const static bool supportsES32(){
+        const GLenum& shaderType = GL_VERTEX_SHADER;
+        const char* src =
+                "#version 320 es\n"
+                "void main() {\n"
+                "}\n";
+        GLuint shader = glCreateShader(shaderType);
+        if (!shader) {
+            Wallpaper::checkGlError("glCreateShader");
+            return false;
+        }
+        glShaderSource(shader, 1, &src, NULL);
+
+        GLint compiled = GL_FALSE;
+        glCompileShader(shader);
+        glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
+        if (!compiled) {
+            GLint infoLogLen = 0;
+            glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLen);
+            if (infoLogLen > 0) {
+                GLchar* infoLog = (GLchar*)malloc(infoLogLen);
+                if (infoLog) {
+                    glGetShaderInfoLog(shader, infoLogLen, NULL, infoLog);
+                    if(std::string(infoLog).find("'320' : client/version number not supported") != std::string::npos){
+                        ALOGW("Could not compile OpenGL ES shader version %s: %s. Compiling version 310 instead.",
+                              "320", infoLog);
+                        free(infoLog);
+                        return false;
+                    }
+                    free(infoLog);
+                    return false;
+                }
+            }
+            glDeleteShader(shader);
+            return false;
+        }
+
+        return true;
+    }
 
 private:
 
@@ -270,7 +311,7 @@ public:
 
     GLuint mVBState;
 
-    char* VERTEX_SHADER =
+    char* VERTEX_SHADER_ES31 =
             "#version 310 es\n"
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
             "uniform mat4 mvp;\n"
@@ -279,8 +320,26 @@ public:
             "    gl_Position = mvp * vec4(pos, 1.0);\n"
             "}\n";
 
-    char* FRAGMENT_SHADER =
+    char* FRAGMENT_SHADER_ES31 =
             "#version 310 es\n"
+            "precision mediump float;\n"
+            "uniform vec4 color;\n"
+            "out vec4 outColor;\n"
+            "void main() {\n"
+            "    outColor = color;\n"
+            "}\n";
+
+    char* VERTEX_SHADER_ES32 =
+            "#version 320 es\n"
+            "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
+            "uniform mat4 mvp;\n"
+            "out vec4 vColor;\n"
+            "void main() {\n"
+            "    gl_Position = mvp * vec4(pos, 1.0);\n"
+            "}\n";
+
+    char* FRAGMENT_SHADER_ES32 =
+            "#version 320 es\n"
             "precision mediump float;\n"
             "uniform vec4 color;\n"
             "out vec4 outColor;\n"
@@ -298,7 +357,11 @@ private:
 };
 
 Box::Box() : Wallpaper(){
-    mProgram = createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
+    if(supportsES32()) {
+        mProgram = createProgram(VERTEX_SHADER_ES32, FRAGMENT_SHADER_ES32);
+    }else{
+        mProgram = createProgram(VERTEX_SHADER_ES31, FRAGMENT_SHADER_ES31);
+    }
 
     glGenBuffers(1, mVB);
     glBindBuffer(GL_ARRAY_BUFFER, mVB[0]);
@@ -355,7 +418,7 @@ public:
 
     GLuint mProgram;
 
-    char* VERTEX_SHADER =
+    char* VERTEX_SHADER_ES31 =
             "#version 310 es\n"
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
             "layout(location = " STRV(NORMAL_ATTRIBUTE_LOCATION) ") in vec3 normal;\n"
@@ -366,8 +429,28 @@ public:
             "    vNormal = normal;\n"
             "}\n";
 
-    char* FRAGMENT_SHADER =
+    char* FRAGMENT_SHADER_ES31 =
             "#version 310 es\n"
+            "precision mediump float;\n"
+            "in vec3 vNormal;\n"
+            "out vec4 outColor;\n"
+            "void main() {\n"
+            "    outColor = vec4(1.0f, 0.0f, 0.0f, 1.0f); \n"
+            "}\n";
+
+    char* VERTEX_SHADER_ES32 =
+            "#version 320 es\n"
+            "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
+            "layout(location = " STRV(NORMAL_ATTRIBUTE_LOCATION) ") in vec3 normal;\n"
+            "out vec3 vNormal;\n"
+            "uniform mat4 mvp;\n"
+            "void main() {\n"
+            "    gl_Position = mvp*vec4(pos, 1.0);\n"
+            "    vNormal = normal;\n"
+            "}\n";
+
+    char* FRAGMENT_SHADER_ES32 =
+            "#version 320 es\n"
             "precision mediump float;\n"
             "in vec3 vNormal;\n"
             "out vec4 outColor;\n"
@@ -385,7 +468,11 @@ private:
 };
 
 Triangle::Triangle() : Wallpaper(){
-    mProgram = createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
+    if(supportsES32()) {
+        mProgram = createProgram(VERTEX_SHADER_ES32, FRAGMENT_SHADER_ES32);
+    }else{
+        mProgram = createProgram(VERTEX_SHADER_ES31, FRAGMENT_SHADER_ES31);
+    }
 }
 
 Triangle::~Triangle(){
@@ -1838,7 +1925,7 @@ public:
 
     GLuint mProgram;
 
-    char* VERTEX_SHADER =
+    char* VERTEX_SHADER_ES31 =
             "#version 310 es\n"
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
             "layout(location = " STRV(NORMAL_ATTRIBUTE_LOCATION) ") in vec3 normal;\n"
@@ -1849,8 +1936,28 @@ public:
             "    vNormal = normal;\n"
             "}\n";
 
-    char* FRAGMENT_SHADER =
+    char* FRAGMENT_SHADER_ES31 =
             "#version 310 es\n"
+            "precision mediump float;\n"
+            "in vec3 vNormal;\n"
+            "out vec4 outColor;\n"
+            "void main() {\n"
+            "    outColor = vec4(1.0f, 0.0f, 0.0f, 1.0f); \n"
+            "}\n";
+
+    char* VERTEX_SHADER_ES32 =
+            "#version 320 es\n"
+            "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
+            "layout(location = " STRV(NORMAL_ATTRIBUTE_LOCATION) ") in vec3 normal;\n"
+            "out vec3 vNormal;\n"
+            "uniform mat4 mvp;\n"
+            "void main() {\n"
+            "    gl_Position = mvp*vec4(pos, 1.0);\n"
+            "    vNormal = normal;\n"
+            "}\n";
+
+    char* FRAGMENT_SHADER_ES32 =
+            "#version 320 es\n"
             "precision mediump float;\n"
             "in vec3 vNormal;\n"
             "out vec4 outColor;\n"
@@ -1870,12 +1977,20 @@ private:
 };
 
 Graph::Graph() : Wallpaper(){
-    mProgram = createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
+    if(supportsES32()) {
+        mProgram = createProgram(VERTEX_SHADER_ES32, FRAGMENT_SHADER_ES32);
+    }else{
+        mProgram = createProgram(VERTEX_SHADER_ES31, FRAGMENT_SHADER_ES31);
+    }
     implicitGrapher.surfaceEquation = 1;
 }
 
 Graph::Graph(const string& equation) : Wallpaper(){
-    mProgram = createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
+    if(supportsES32()) {
+        mProgram = createProgram(VERTEX_SHADER_ES32, FRAGMENT_SHADER_ES32);
+    }else{
+        mProgram = createProgram(VERTEX_SHADER_ES31, FRAGMENT_SHADER_ES31);
+    }
     implicitGrapher.surfaceEquation = implicitGrapher.numOfEquationsInMemory;
     implicitGrapher.memoryEquations[implicitGrapher.numOfEquationsInMemory][1] = equation;
     implicitGrapher.processEquation(implicitGrapher.numOfEquationsInMemory);
@@ -1960,7 +2075,7 @@ public:
 
     GLuint mVBState;
 
-    char* VERTEX_SHADER =
+    char* VERTEX_SHADER_ES31 =
             "#version 310 es\n"
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
             "uniform mat4 mvp;\n"
@@ -1969,8 +2084,26 @@ public:
             "    gl_Position = mvp * vec4(pos, 1.0);\n"
             "}\n";
 
-    char* FRAGMENT_SHADER =
+    char* FRAGMENT_SHADER_ES31 =
             "#version 310 es\n"
+            "precision mediump float;\n"
+            "uniform vec4 color;\n"
+            "out vec4 outColor;\n"
+            "void main() {\n"
+            "    outColor = color;\n"
+            "}\n";
+
+    char* VERTEX_SHADER_ES32 =
+            "#version 320 es\n"
+            "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
+            "uniform mat4 mvp;\n"
+            "out vec4 vColor;\n"
+            "void main() {\n"
+            "    gl_Position = mvp * vec4(pos, 1.0);\n"
+            "}\n";
+
+    char* FRAGMENT_SHADER_ES32 =
+            "#version 320 es\n"
             "precision mediump float;\n"
             "uniform vec4 color;\n"
             "out vec4 outColor;\n"
@@ -2052,7 +2185,11 @@ private:
 };
 
 Naive::Naive() : Simulation(){
-    mProgram = createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
+    if(supportsES32()) {
+        mProgram = createProgram(VERTEX_SHADER_ES32, FRAGMENT_SHADER_ES32);
+    }else{
+        mProgram = createProgram(VERTEX_SHADER_ES31, FRAGMENT_SHADER_ES31);
+    }
 
     glGenBuffers(1, mVB);
     glBindBuffer(GL_ARRAY_BUFFER, mVB[0]);
@@ -2976,7 +3113,7 @@ public:
 
     GLuint mVBState;
 
-    char* VERTEX_SHADER =
+    char* VERTEX_SHADER_ES31 =
             "#version 310 es\n"
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
             "uniform mat4 mvp;\n"
@@ -2985,8 +3122,26 @@ public:
             "    gl_Position = mvp * vec4(pos, 1.0);\n"
             "}\n";
 
-    char* FRAGMENT_SHADER =
+    char* FRAGMENT_SHADER_ES31 =
             "#version 310 es\n"
+            "precision mediump float;\n"
+            "uniform vec4 color;\n"
+            "out vec4 outColor;\n"
+            "void main() {\n"
+            "    outColor = color;\n"
+            "}\n";
+
+    char* VERTEX_SHADER_ES32 =
+            "#version 320 es\n"
+            "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
+            "uniform mat4 mvp;\n"
+            "out vec4 vColor;\n"
+            "void main() {\n"
+            "    gl_Position = mvp * vec4(pos, 1.0);\n"
+            "}\n";
+
+    char* FRAGMENT_SHADER_ES32 =
+            "#version 320 es\n"
             "precision mediump float;\n"
             "uniform vec4 color;\n"
             "out vec4 outColor;\n"
@@ -3078,7 +3233,11 @@ private:
 };
 
 PicFlip::PicFlip() : Simulation(){
-    mProgram = createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
+    if(supportsES32()) {
+        mProgram = createProgram(VERTEX_SHADER_ES32, FRAGMENT_SHADER_ES32);
+    }else{
+        mProgram = createProgram(VERTEX_SHADER_ES31, FRAGMENT_SHADER_ES31);
+    }
 
     glGenBuffers(1, mVB);
     glBindBuffer(GL_ARRAY_BUFFER, mVB[0]);
