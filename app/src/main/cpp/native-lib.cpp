@@ -3205,15 +3205,8 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
         }else if(type == "graph"){
             wallpaper = new Graph(visualizationJSON["settings"]);
         }
-        static struct anonymous{
-            static float ubyteToFloat(const unsigned char& value){
-                return 1.0f / 255.0f * (float)value;
-            }
-        };
-        wallpaper->backgroundColor = vec4(float(visualizationJSON["background_color"]["r"]) / 255.0f,
-                                          float(visualizationJSON["background_color"]["g"]) / 255.0f,
-                                          float(visualizationJSON["background_color"]["b"]) / 255.0f,
-                                          float(visualizationJSON["background_color"]["a"]) / 255.0f);
+        json rgba = visualizationJSON["background_color"];
+        wallpaper->backgroundColor = vec4(rgba["r"], rgba["g"], rgba["b"], rgba["a"]) / 255.0f;
         ALOGV("Using OpenGL ES 3.0 renderer");
     } else if (strstr(versionStr, "OpenGL ES 2.")) {
         //g_renderer = createES2Renderer();
