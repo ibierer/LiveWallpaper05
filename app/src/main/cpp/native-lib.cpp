@@ -146,14 +146,11 @@ public:
 
     void calculatePerspective();
 
+    const string ES_VERSION = supportsES32() ? "#version 320 es\n" : "#version 310 es\n";
+
 private:
 
     const static bool supportsES32();
-
-public:
-
-    const string ES_VERSION = supportsES32() ? "#version 320 es\n" : "#version 310 es\n";
-
 };
 
 Wallpaper::Wallpaper() : framesRendered(0), val(0), mEglContext(eglGetCurrentContext()){
