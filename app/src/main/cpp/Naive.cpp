@@ -4,6 +4,9 @@
 
 #include "Naive.h"
 
+using std::min;
+using std::max;
+
 Naive::Naive() : Simulation(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
 

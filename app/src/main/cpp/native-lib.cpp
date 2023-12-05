@@ -31,6 +31,7 @@
 #include "Wallpaper.cpp"
 #include "Box.cpp"
 #include "Triangle.cpp"
+#include "TriangleWithNormals.cpp"
 #include "ImplicitGrapher.cpp"
 #include "Graph.cpp"
 #include "Simulation.cpp"
@@ -74,6 +75,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
             wallpaper = new PicFlip();
         }else if(type == "triangle"){
             wallpaper = new Triangle();
+            //wallpaper = new TriangleWithNormals();
         }else if(type == "graph"){
             wallpaper = new Graph(visualizationJSON["settings"]);
         }

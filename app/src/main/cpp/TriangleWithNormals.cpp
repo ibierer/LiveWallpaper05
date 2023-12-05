@@ -1,18 +1,18 @@
 //
-// Created by Immanuel Bierer on 12/4/2023.
+// Created by Immanuel Bierer on 12/5/2023.
 //
 
-#include "Triangle.h"
+#include "TriangleWithNormals.h"
 
-Triangle::Triangle() : Wallpaper(){
+TriangleWithNormals::TriangleWithNormals() : Wallpaper(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
 }
 
-Triangle::~Triangle(){
+TriangleWithNormals::~TriangleWithNormals(){
     glDeleteProgram(mProgram);
 }
 
-void Triangle::render(){
+void TriangleWithNormals::render(){
     glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
@@ -31,16 +31,19 @@ void Triangle::render(){
             GL_FALSE,
             (GLfloat*)&mvp);
 
-    Vertex vertices[3] = {
-            {vec3(1.0f, 0.0f, 0.0f)},
-            {vec3(0.0f, 1.0f, 0.0f)},
-            {vec3(1.0f, 0.0f, 1.0f)}
+    VertexNormal vertices[3] = {
+            {vec3(1.0f, 0.0f, 0.0f), vec3(sqrtf(3.0f), sqrt(3.0f), sqrt(3.0f))},
+            {vec3(0.0f, 1.0f, 0.0f), vec3(sqrtf(3.0f), sqrt(3.0f), sqrt(3.0f))},
+            {vec3(1.0f, 0.0f, 1.0f), vec3(sqrtf(3.0f), sqrt(3.0f), sqrt(3.0f))}
     };
     uvec3 indices[1] = {
             uvec3(0, 1, 2)
     };
     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
-    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)&vertices[0].v);
+    glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
+    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), (const GLvoid*)&vertices[0].v);
+    glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), (const GLvoid*)&vertices[0].n);
     glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, indices);
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+    glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
 }
