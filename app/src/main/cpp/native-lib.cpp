@@ -318,7 +318,7 @@ public:
 
     GLuint mVBState;
 
-    string VERTEX_SHADER =
+    const string VERTEX_SHADER =
             ES_VERSION +
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
             "uniform mat4 mvp;\n"
@@ -327,7 +327,7 @@ public:
             "    gl_Position = mvp * vec4(pos, 1.0);\n"
             "}\n";
 
-    string FRAGMENT_SHADER =
+    const string FRAGMENT_SHADER =
             ES_VERSION +
             "precision mediump float;\n"
             "uniform vec4 color;\n"
@@ -403,7 +403,7 @@ public:
 
     GLuint mProgram;
 
-    string VERTEX_SHADER =
+    const string VERTEX_SHADER =
             ES_VERSION +
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
             "layout(location = " STRV(NORMAL_ATTRIBUTE_LOCATION) ") in vec3 normal;\n"
@@ -414,7 +414,7 @@ public:
             "    vNormal = normal;\n"
             "}\n";
 
-    string FRAGMENT_SHADER =
+    const string FRAGMENT_SHADER =
             ES_VERSION +
             "precision mediump float;\n"
             "in vec3 vNormal;\n"
@@ -1886,7 +1886,7 @@ public:
 
     GLuint mProgram;
 
-    string VERTEX_SHADER =
+    const string VERTEX_SHADER =
             ES_VERSION +
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
             "layout(location = " STRV(NORMAL_ATTRIBUTE_LOCATION) ") in vec3 normal;\n"
@@ -1897,7 +1897,7 @@ public:
             "    vNormal = normal;\n"
             "}\n";
 
-    string FRAGMENT_SHADER =
+    const string FRAGMENT_SHADER =
             ES_VERSION +
             "precision mediump float;\n"
             "in vec3 vNormal;\n"
@@ -2008,7 +2008,7 @@ public:
 
     GLuint mVBState;
 
-    string VERTEX_SHADER =
+    const string VERTEX_SHADER =
             ES_VERSION +
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
             "uniform mat4 mvp;\n"
@@ -2017,7 +2017,7 @@ public:
             "    gl_Position = mvp * vec4(pos, 1.0);\n"
             "}\n";
 
-    string FRAGMENT_SHADER =
+    const string FRAGMENT_SHADER =
             ES_VERSION +
             "precision mediump float;\n"
             "uniform vec4 color;\n"
@@ -3024,7 +3024,7 @@ public:
 
     GLuint mVBState;
 
-    string VERTEX_SHADER =
+    const string VERTEX_SHADER =
             ES_VERSION +
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
             "uniform mat4 mvp;\n"
@@ -3033,7 +3033,7 @@ public:
             "    gl_Position = mvp * vec4(pos, 1.0);\n"
             "}\n";
 
-    string FRAGMENT_SHADER =
+    const string FRAGMENT_SHADER =
             ES_VERSION +
             "precision mediump float;\n"
             "uniform vec4 color;\n"
