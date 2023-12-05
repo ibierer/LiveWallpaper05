@@ -48,41 +48,10 @@ using nlohmann::json;
 #include "BarnesHut.cpp"
 #include "BruteForce.cpp"
 #include "Naive.cpp"
-
-struct {
-    const int width = 1000;
-    const int height = 1000;
-} canvas;
-
-float simHeight = 3.0;
-float cScale = canvas.height / simHeight;
-float simWidth = canvas.width / cScale;
-float simDepth = simHeight;  // Assuming the depth is the same as the height
-
-const int FLUID_CELL = 0;
-const int AIR_CELL = 1;
-const int SOLID_CELL = 2;
-
 #include "FlipFluid.cpp"
-
-FlipFluid* fluid = nullptr;
-
 #include "PicFlip.cpp"
 
 Wallpaper* wallpaper = nullptr;
-
-// Function to convert jstring to std::string
-string jstringToString(JNIEnv *env, jstring jStr) {
-    if (jStr == nullptr) {
-        return ""; // Handle null jstring gracefully
-    }
-
-    const char *chars = env->GetStringUTFChars(jStr, nullptr);
-    string result(chars);
-    env->ReleaseStringUTFChars(jStr, chars);
-
-    return result;
-}
 
 #if !defined(DYNAMIC_ES3)
 static GLboolean gl3stubInit() { return GL_TRUE; }
@@ -98,7 +67,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
 
     const char* versionStr = (const char*)glGetString(GL_VERSION);
     if (strstr(versionStr, "OpenGL ES 3.") && gl3stubInit()) {
-        json visualizationJSON = json::parse(jstringToString(env, JSON));
+        json visualizationJSON = json::parse(Wallpaper::jstringToString(env, JSON));
         string type = visualizationJSON["type"];
         if(wallpaper){
             free(wallpaper);

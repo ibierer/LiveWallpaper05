@@ -18,7 +18,7 @@ public:
     "out vec3 vNormal;\n"
     "uniform mat4 mvp;\n"
     "void main() {\n"
-    "    gl_Position = mvp*vec4(pos, 1.0);\n"
+    "    gl_Position = mvp * vec4(pos, 1.0);\n"
     "    vNormal = normal;\n"
     "}\n";
 
