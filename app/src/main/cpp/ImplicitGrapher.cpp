@@ -28,6 +28,61 @@ ImplicitGrapher::~ImplicitGrapher(){
     free(indices);
 }
 
+// Assignment Constructor
+ImplicitGrapher::ImplicitGrapher(const ImplicitGrapher& other) {
+    // Copy primitive types
+    debug_string = other.debug_string;
+    t = other.t;
+    maxSolutionCount = other.maxSolutionCount;
+    surfaceEquation = other.surfaceEquation;
+    solutionCount = other.solutionCount;
+    groupSegmentCounter = other.groupSegmentCounter;
+    numOfEquationsInMemory = other.numOfEquationsInMemory;
+
+    // Copy arrays
+    memcpy(plusMinus, other.plusMinus, maxNumOfEquations * sizeof(bool));
+    memcpy(withinGraphRadius, other.withinGraphRadius, maxNumOfEquations * sizeof(bool));
+    memcpy(xyzLineIndex, other.xyzLineIndex, maxNumOfEquations * sizeof(ivec3));
+    memcpy(groupSegments, other.groupSegments, maxNumOfEquations * sizeof(ivec3));
+
+    for (int i = 0; i < maxNumOfEquations; ++i) {
+        memcpy(constant[i], other.constant[i], maxEquationLength * sizeof(int));
+        valuesCounter[i] = other.valuesCounter[i];
+        memcpy(values, other.values, maxEquationLength * sizeof(float));
+        memcpy(equationValues[i], other.equationValues[i], maxEquationLength * sizeof(float));
+        memcpy(sequences[i], other.sequences[i], maxEquationLength * 3 * sizeof(int));
+        sequenceLengths[i] = other.sequenceLengths[i];
+    }
+
+    // Copy ivec3 and vec3 types
+    radius = other.radius;
+    radiusPlusOne = other.radiusPlusOne;
+    size = other.size;
+    sizePlus2 = other.sizePlus2;
+    sizePlus3 = other.sizePlus3;
+    defaultOffset = other.defaultOffset;
+    currentOffset = other.currentOffset;
+
+    // Copy dynamic arrays (if any) - adjust as needed
+    vertices = (VertexNormal*)malloc(maxSolutionCount * sizeof(VertexNormal));
+    memcpy(vertices, other.vertices, maxSolutionCount * sizeof(VertexNormal));
+
+    indices = (uvec3*)malloc(maxSolutionCount * sizeof(uvec3));
+    memcpy(indices, other.indices, maxSolutionCount * sizeof(uvec3));
+}
+
+// Copy Constructor
+ImplicitGrapher&ImplicitGrapher::operator=(const ImplicitGrapher& other) {
+    if (this != &other) {
+        // Release existing resources if any
+
+        // Copy-and-swap idiom for assignment operator
+        ImplicitGrapher temp(other);
+        std::swap(*this, temp);
+    }
+    return *this;
+}
+
 string ImplicitGrapher::decode(const int* const codedEquation, const int& length, const float* const values) {
     string equation = "";
     for (int i = 0; i < length; i++) {

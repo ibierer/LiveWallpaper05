@@ -244,59 +244,10 @@ public:
     void calculateSurfaceOnCPU(float (*fOfXYZ)(ImplicitGrapher&, vec3, const float&, const vec3&, const float&), const float& timeVariable, const uint& iterations, const vec3& offset, const float& zoom, const bool& vectorPointsPositive, const bool& clipEdges, VertexNormal* _vertices, uvec3* _indices, GLuint& _numIndices);
 
     // Assignment Constructor
-    /*ImplicitGrapher(const ImplicitGrapher& other) {
-        // Copy primitive types
-        debug_string = other.debug_string;
-        t = other.t;
-        maxSolutionCount = other.maxSolutionCount;
-        surfaceEquation = other.surfaceEquation;
-        solutionCount = other.solutionCount;
-        groupSegmentCounter = other.groupSegmentCounter;
-        numOfEquationsInMemory = other.numOfEquationsInMemory;
-
-        // Copy arrays
-        memcpy(plusMinus, other.plusMinus, maxNumOfEquations * sizeof(bool));
-        memcpy(withinGraphRadius, other.withinGraphRadius, maxNumOfEquations * sizeof(bool));
-        memcpy(xyzLineIndex, other.xyzLineIndex, maxNumOfEquations * sizeof(ivec3));
-        memcpy(groupSegments, other.groupSegments, maxNumOfEquations * sizeof(ivec3));
-
-        for (int i = 0; i < maxNumOfEquations; ++i) {
-            memcpy(constant[i], other.constant[i], maxEquationLength * sizeof(int));
-            valuesCounter[i] = other.valuesCounter[i];
-            memcpy(values, other.values, maxEquationLength * sizeof(float));
-            memcpy(equationValues[i], other.equationValues[i], maxEquationLength * sizeof(float));
-            memcpy(sequences[i], other.sequences[i], maxEquationLength * 3 * sizeof(int));
-            sequenceLengths[i] = other.sequenceLengths[i];
-        }
-
-        // Copy ivec3 and vec3 types
-        radius = other.radius;
-        radiusPlusOne = other.radiusPlusOne;
-        size = other.size;
-        sizePlus2 = other.sizePlus2;
-        sizePlus3 = other.sizePlus3;
-        defaultOffset = other.defaultOffset;
-        currentOffset = other.currentOffset;
-
-        // Copy dynamic arrays (if any) - adjust as needed
-        vertices = new VertexNormal[maxSolutionCount];
-        memcpy(vertices, other.vertices, maxSolutionCount * sizeof(VertexNormal));
-
-        indices = new uvec3[maxSolutionCount];
-        memcpy(indices, other.indices, maxSolutionCount * sizeof(uvec3));
-    }
+    ImplicitGrapher(const ImplicitGrapher& other);
 
     // Copy Constructor
-    ImplicitGrapher& operator=(const ImplicitGrapher& other) {
-        if (this != &other) {
-            // Release existing resources if any
-
-            // Copy-and-swap idiom for assignment operator
-            ImplicitGrapher temp(other);
-            std::swap(*this, temp);
-        }
-        return *this;
-    }*/
+    ImplicitGrapher& operator=(const ImplicitGrapher& other);
 };
 
 
