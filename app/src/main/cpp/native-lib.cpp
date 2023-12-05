@@ -43,9 +43,6 @@ using nlohmann::json;
 #include "Box.cpp"
 #include "Triangle.cpp"
 #include "ImplicitGrapher.cpp"
-
-ImplicitGrapher implicitGrapher(20);
-
 #include "Graph.cpp"
 #include "Simulation.cpp"
 #include "BarnesHut.cpp"

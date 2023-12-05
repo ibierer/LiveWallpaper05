@@ -4,12 +4,12 @@
 
 #include "Graph.h"
 
-Graph::Graph() : Wallpaper(){
+Graph::Graph() : Wallpaper(), implicitGrapher(ImplicitGrapher(20)){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     implicitGrapher.surfaceEquation = 1;
 }
 
-Graph::Graph(const string& equation) : Wallpaper(){
+Graph::Graph(const string& equation) : Wallpaper(), implicitGrapher(ImplicitGrapher(20)){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     implicitGrapher.surfaceEquation = implicitGrapher.numOfEquationsInMemory;
     implicitGrapher.memoryEquations[implicitGrapher.numOfEquationsInMemory][1] = equation;

@@ -39,6 +39,8 @@ public:
 
     void render() override;
 
+    ImplicitGrapher implicitGrapher;
+
 private:
 };
 
