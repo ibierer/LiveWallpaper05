@@ -89,12 +89,6 @@ class PreviewActivity : AppCompatActivity() {
         mView!!.onResume()
     }
 
-    /**
-     * A native method that is implemented by the 'livewallpaper05' native library,
-     * which is packaged with this application.
-     */
-    external fun stringFromJNI(): String
-
     companion object {
         // Used to load the 'livewallpaper05' library on application startup.
         init {

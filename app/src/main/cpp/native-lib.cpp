@@ -76,20 +76,20 @@ float min(const float& a, const float& b)  // Updated function signature and par
 
 #include "FlipFluid.cpp"
 
-FlipFluid* fluid = NULL;
+FlipFluid* fluid = nullptr;
 
 #include "PicFlip.cpp"
 
 Wallpaper* wallpaper = nullptr;
 
 // Function to convert jstring to std::string
-std::string jstringToString(JNIEnv *env, jstring jStr) {
+string jstringToString(JNIEnv *env, jstring jStr) {
     if (jStr == nullptr) {
         return ""; // Handle null jstring gracefully
     }
 
     const char *chars = env->GetStringUTFChars(jStr, nullptr);
-    std::string result(chars);
+    string result(chars);
     env->ReleaseStringUTFChars(jStr, chars);
 
     return result;
