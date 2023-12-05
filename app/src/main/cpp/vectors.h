@@ -6,8 +6,8 @@
 #define LIVEWALLPAPER05_VECTORS_H
 
 
-#include <math.h>
-#include <string>
+//#include <math.h>
+//#include <string>
 #include "cyCodeBase-master/cyMatrix.h"
 
 using cy::Matrix3;

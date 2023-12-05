@@ -6,6 +6,8 @@
 #define LIVEWALLPAPER05_IMPLICITGRAPHER_H
 
 
+#include "VertexNormal.h"
+
 class ImplicitGrapher {
 
     static const char pi = 5;

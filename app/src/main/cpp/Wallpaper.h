@@ -6,6 +6,14 @@
 #define LIVEWALLPAPER05_WALLPAPER_H
 
 
+#include <string>
+#include "Vertex.h"
+#include "VertexNormal.h"
+#include "cyCodeBase-master/cyMatrix.h"
+
+using std::string;
+using cy::Matrix4;
+
 class Wallpaper{
 public:
 
@@ -78,17 +86,7 @@ public:
 
     const string ES_VERSION = supportsES32() ? "#version 320 es\n" : "#version 310 es\n";
 
-    static string jstringToString(JNIEnv *env, jstring jStr) {
-        if (jStr == nullptr) {
-            return ""; // Handle null jstring gracefully
-        }
-
-        const char *chars = env->GetStringUTFChars(jStr, nullptr);
-        string result(chars);
-        env->ReleaseStringUTFChars(jStr, chars);
-
-        return result;
-    }
+    static string jstringToString(JNIEnv *env, jstring jStr);
 
 private:
 

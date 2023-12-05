@@ -6,7 +6,9 @@
 #define LIVEWALLPAPER05_BARNESHUT_H
 
 
-class BarnesHut : public Simulation{
+#include "Simulation.h"
+
+class BarnesHut : public Simulation {
 
 };
 

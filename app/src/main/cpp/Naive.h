@@ -6,6 +6,8 @@
 #define LIVEWALLPAPER05_NAIVE_H
 
 
+#include "Simulation.h"
+
 class Naive : public Simulation{
 public:
 

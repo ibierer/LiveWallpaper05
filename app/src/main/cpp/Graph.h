@@ -6,6 +6,12 @@
 #define LIVEWALLPAPER05_GRAPH_H
 
 
+#include <string>
+#include "Wallpaper.h"
+#include "ImplicitGrapher.h"
+
+using std::string;
+
 class Graph : public Wallpaper{
 public:
 

@@ -28,6 +28,18 @@ void Wallpaper::calculatePerspective() {
     perspective.SetPerspective(verticalScreenAngle, aspect, zNear, zFar);
 }
 
+string Wallpaper::jstringToString(JNIEnv *env, jstring jStr) {
+    if (jStr == nullptr) {
+        return ""; // Handle null jstring gracefully
+    }
+
+    const char *chars = env->GetStringUTFChars(jStr, nullptr);
+    string result(chars);
+    env->ReleaseStringUTFChars(jStr, chars);
+
+    return result;
+}
+
 // returns true if a GL error occurred
 bool Wallpaper::checkGlError(const char* funcName) {
     GLint err = glGetError();

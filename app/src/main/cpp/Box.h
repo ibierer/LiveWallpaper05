@@ -6,7 +6,9 @@
 #define LIVEWALLPAPER05_BOX_H
 
 
-class Box : public Wallpaper{
+#include "Wallpaper.h"
+
+class Box : public Wallpaper {
 public:
 
     GLuint mProgram;

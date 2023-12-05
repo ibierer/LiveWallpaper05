@@ -6,6 +6,8 @@
 #define LIVEWALLPAPER05_SIMULATION_H
 
 
+#include "Wallpaper.h"
+
 class Simulation : public Wallpaper{
 public:
     int moleculeCount;

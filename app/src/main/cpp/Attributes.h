@@ -6,7 +6,9 @@
 #define LIVEWALLPAPER05_ATTRIBUTES_H
 
 
-class Attributes{
+#include "vectors.h"
+
+class Attributes {
 public:
     vec3 v;
 };

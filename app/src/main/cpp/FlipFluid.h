@@ -6,6 +6,8 @@
 #define LIVEWALLPAPER05_FLIPFLUID_H
 
 
+#include "vectors.h"
+
 struct {
     const int width = 1000;
     const int height = 1000;

@@ -6,6 +6,11 @@
 #define LIVEWALLPAPER05_TRIANGLE_H
 
 
+#include "Wallpaper.h"
+
+using std::min;
+using std::max;
+
 class Triangle : public Wallpaper{
 public:
 
@@ -14,13 +19,13 @@ public:
     const string VERTEX_SHADER =
             ES_VERSION +
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
-    "layout(location = " STRV(NORMAL_ATTRIBUTE_LOCATION) ") in vec3 normal;\n"
-    "out vec3 vNormal;\n"
-    "uniform mat4 mvp;\n"
-    "void main() {\n"
-    "    gl_Position = mvp * vec4(pos, 1.0);\n"
-    "    vNormal = normal;\n"
-    "}\n";
+            "layout(location = " STRV(NORMAL_ATTRIBUTE_LOCATION) ") in vec3 normal;\n"
+            "out vec3 vNormal;\n"
+            "uniform mat4 mvp;\n"
+            "void main() {\n"
+            "    gl_Position = mvp * vec4(pos, 1.0);\n"
+            "    vNormal = normal;\n"
+            "}\n";
 
     const string FRAGMENT_SHADER =
             ES_VERSION +

@@ -17,18 +17,6 @@
 #define POSITION_ATTRIBUTE_LOCATION 0
 #define NORMAL_ATTRIBUTE_LOCATION 1
 
-#include <cstdlib>
-#include "cyCodeBase-master/cyMatrix.h"
-#include "nlohmann/json.hpp"
-
-using cy::Matrix4;
-using cy::Vec3;
-using std::min;
-using std::max;
-using std::floor;
-using std::string;
-using nlohmann::json;
-
 #include <jni.h>
 #include <ctime>
 #include <stack>
@@ -36,6 +24,7 @@ using nlohmann::json;
 #include <cmath>
 #include <EGL/egl.h>
 #include <GLES3/gl32.h>
+#include "nlohmann/json.hpp"
 #include "vectors.cpp"
 #include "Vertex.cpp"
 #include "VertexNormal.cpp"
@@ -50,6 +39,9 @@ using nlohmann::json;
 #include "Naive.cpp"
 #include "FlipFluid.cpp"
 #include "PicFlip.cpp"
+
+using std::string;
+using nlohmann::json;
 
 Wallpaper* wallpaper = nullptr;
 

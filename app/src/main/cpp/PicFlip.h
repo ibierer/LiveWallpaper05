@@ -6,6 +6,9 @@
 #define LIVEWALLPAPER05_PICFLIP_H
 
 
+#include "Simulation.h"
+#include "FlipFluid.h"
+
 class PicFlip : public Simulation{
 public:
 
