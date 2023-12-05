@@ -74,8 +74,6 @@ float min(const float& a, const float& b)  // Updated function signature and par
         return b;
 }
 
-// ----------------- start of simulator ------------------------------
-
 #include "FlipFluid.cpp"
 
 FlipFluid* fluid = NULL;
