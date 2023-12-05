@@ -32,6 +32,12 @@ void PicFlip::simulate(const vec3& acceleration){
 }
 
 void PicFlip::setupScene(){
+
+    simHeight = 3.0;
+    cScale = canvas.height / simHeight;
+    simWidth = canvas.width / cScale;
+    simDepth = simHeight;  // Assuming the depth is the same as the height
+
     int res = 15;
 
     float tankHeight = 1.0f * simHeight;

@@ -46,7 +46,9 @@ using nlohmann::json;
 Wallpaper* wallpaper = nullptr;
 
 #if !defined(DYNAMIC_ES3)
-static GLboolean gl3stubInit() { return GL_TRUE; }
+static GLboolean gl3stubInit() {
+    return GL_TRUE;
+}
 #endif
 
 extern "C"
@@ -87,8 +89,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_livewallpaper05_PreviewActivity_00024Companion_resize(JNIEnv *env, jobject thiz,
-                                                                       jint width, jint height) {
+Java_com_example_livewallpaper05_PreviewActivity_00024Companion_resize(JNIEnv *env, jobject thiz, jint width, jint height) {
     if (wallpaper) {
         wallpaper->width = width;
         wallpaper->height = height;
@@ -110,7 +111,6 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_step(JNIEnv *env
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_livewallpaper05_PreviewActivity_00024Companion_sendData(JNIEnv *env, jobject thiz,
-                                                                         jfloat value) {
+Java_com_example_livewallpaper05_PreviewActivity_00024Companion_sendData(JNIEnv *env, jobject thiz, jfloat value) {
     wallpaper->val = value;
 }

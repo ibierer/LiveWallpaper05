@@ -6,10 +6,10 @@
 #define LIVEWALLPAPER05_VECTORS_H
 
 
-//#include <math.h>
-//#include <string>
+#include <string>
 #include "cyCodeBase-master/cyMatrix.h"
 
+using std::string;
 using cy::Matrix3;
 using cy::Matrix4;
 using cy::Vec3;
@@ -132,13 +132,13 @@ public:
     bool operator!=(_vec2 rhs) {
         return rhs.x != x || rhs.y != y;
     }
-    std::string str(){
-        return "(" + std::to_string(x) + ", " + std::to_string(y) + ")";
+    string str(){
+        return "(" + to_string(x) + ", " + to_string(y) + ")";
     }
 };
 
 template <typename T>
-std::string to_string(_vec2<T> input) {
+string to_string(_vec2<T> input) {
     return input.str();
 }
 
@@ -307,13 +307,13 @@ public:
     bool operator!=(_vec3 rhs) {
         return rhs.x != x || rhs.y != y || rhs.z != z;
     }
-    std::string str(){
-        return "(" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + ")";
+    string str(){
+        return "(" + to_string(x) + ", " + to_string(y) + ", " + to_string(z) + ")";
     }
 };
 
 template <typename T>
-std::string to_string(_vec3<T> input) {
+string to_string(_vec3<T> input) {
     return input.str();
 }
 
@@ -485,13 +485,13 @@ public:
     bool operator!=(_vec4 rhs) {
         return rhs.x != x || rhs.y != y || rhs.z != z || rhs.w != w;
     }
-    std::string str(){
-        return "(" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + ", " + std::to_string(w) + ")";
+    string str(){
+        return "(" + to_string(x) + ", " + to_string(y) + ", " + to_string(z) + ", " + to_string(w) + ")";
     }
 };
 
 template <typename T>
-std::string to_string(_vec4<T> input) {
+string to_string(_vec4<T> input) {
     return input.str();
 }
 
@@ -558,36 +558,46 @@ vec3 cross(vec3 left, vec3 right) {
             left.x * right.y - left.y * right.x
     );
 }
+
 float dot(vec2 left, vec2 right) {
     vec2 product = left * right;
     return product.x + product.y;
 }
+
 float dot(vec3 left, vec3 right) {
     vec3 product = left * right;
     return product.x + product.y + product.z;
 }
+
 float dot(vec4 left, vec4 right) {
     vec4 product = left * right;
     return product.x + product.y + product.z + product.w;
 }
+
 float distance(vec2 coordinates) {
     return sqrt(dot(coordinates, coordinates));
 }
+
 float distance(vec3 coordinates) {
     return sqrt(dot(coordinates, coordinates));
 }
+
 float distance(vec2 coordinates1, vec2 coordinates2) {
     return distance(coordinates2 - coordinates1);
 }
+
 float distance(vec3 coordinates1, vec3 coordinates2) {
     return distance(coordinates2 - coordinates1);
 }
+
 float length(vec2 coordinates) {
     return distance(coordinates);
 }
+
 float length(vec3 coordinates) {
     return distance(coordinates);
 }
+
 template <class T>
 void clamp(int vectorDimensionCount, T* x, T* minVal, T* maxVal) {
     for (int i = 0; i < vectorDimensionCount; i++) {
@@ -597,18 +607,22 @@ void clamp(int vectorDimensionCount, T* x, T* minVal, T* maxVal) {
             x[i] = maxVal[i];
     }
 }
+
 float clamp(float x, float minVal, float maxVal) {
     clamp<float>(1, (float*)&x, (float*)&minVal, (float*)&maxVal);
     return x;
 }
+
 vec2 clamp(vec2 x, vec2 minVal, vec2 maxVal) {
     clamp<float>(2, (float*)&x, (float*)&minVal, (float*)&maxVal);
     return x;
 }
+
 vec3 clamp(vec3 x, vec3 minVal, vec3 maxVal) {
     clamp<float>(3, (float*)&x, (float*)&minVal, (float*)&maxVal);
     return x;
 }
+
 vec4 clamp(vec4 x, vec4 minVal, vec4 maxVal) {
     clamp<float>(4, (float*)&x, (float*)&minVal, (float*)&maxVal);
     return x;
@@ -618,18 +632,23 @@ vec4 clamp(vec4 x, vec4 minVal, vec4 maxVal) {
 float distance(const float x, const float y) {
     return sqrt(x * x + y * y);
 }
+
 float distance(const float x, const float y, const float z) {
     return sqrt(x * x + y * y + z * z);
 }
+
 float toDegrees(const float radians) {
     return radians * 180.0f / M_PI;
 }
+
 float toRadians(const float degrees) {
     return degrees * M_PI / 180.0f;
 }
+
 vec2 normalize(vec2 input) {
     return input / distance(input);
 }
+
 vec3 normalize(vec3 input) {
     return input / distance(input);
 }

@@ -8,16 +8,6 @@
 
 #include "vectors.h"
 
-struct {
-    const int width = 1000;
-    const int height = 1000;
-} canvas;
-
-float simHeight = 3.0;
-float cScale = canvas.height / simHeight;
-float simWidth = canvas.width / cScale;
-float simDepth = simHeight;  // Assuming the depth is the same as the height
-
 class FlipFluid {
 public:
 

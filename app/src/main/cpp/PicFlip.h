@@ -42,8 +42,6 @@ public:
 
     ~PicFlip();
 
-public:
-
     FlipFluid* fluid;
 
     void simulate(const vec3& acceleration);
@@ -51,6 +49,23 @@ public:
     void setupScene();
 
 private:
+
+    struct {
+
+        const int width = 1000;
+
+        const int height = 1000;
+
+    } canvas;
+
+    float simHeight;
+
+    float cScale;
+
+    float simWidth;
+
+    float simDepth;
+
 };
 
 

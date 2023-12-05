@@ -12,7 +12,8 @@
 
 using std::string;
 
-class Graph : public Wallpaper{
+class Graph : public Wallpaper {
+
 public:
 
     GLuint mProgram;
@@ -48,6 +49,7 @@ public:
     ImplicitGrapher implicitGrapher;
 
 private:
+
 };
 
 
