@@ -6,6 +6,10 @@
 #define LIVEWALLPAPER05_WALLPAPER_H
 
 
+#include <jni.h>
+#include <android/log.h>
+#include <EGL/egl.h>
+#include <GLES3/gl32.h>
 #include <string>
 #include "Vertex.h"
 #include "VertexNormal.h"

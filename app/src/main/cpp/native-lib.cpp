@@ -17,13 +17,6 @@
 #define POSITION_ATTRIBUTE_LOCATION 0
 #define NORMAL_ATTRIBUTE_LOCATION 1
 
-#include <jni.h>
-#include <ctime>
-#include <stack>
-#include <android/log.h>
-#include <cmath>
-#include <EGL/egl.h>
-#include <GLES3/gl32.h>
 #include "nlohmann/json.hpp"
 #include "vectors.cpp"
 #include "Vertex.cpp"
