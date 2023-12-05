@@ -347,15 +347,15 @@ void FlipFluid::transferVelocities(const bool& _toGrid, const float& _flipRatio)
             y = clamp(y, h, (fNumY - 1) * h);
             z = clamp(z, h, (fNumZ - 1) * h);
 
-            int x0 = min(floor((x - dx) * h1), fNumX - 2);
+            int x0 = min<float>(floor((x - dx) * h1), fNumX - 2);
             float tx = ((x - dx) - x0 * h) * h1;
             int x1 = min(x0 + 1, fNumX - 2);
 
-            int y0 = min(floor((y - dy) * h1), fNumY - 2);
+            int y0 = min<float>(floor((y - dy) * h1), fNumY - 2);
             float ty = ((y - dy) - y0 * h) * h1;
             int y1 = min(y0 + 1, fNumY - 2);
 
-            int z0 = min(floor((z - dz) * h1), fNumZ - 2);
+            int z0 = min<float>(floor((z - dz) * h1), fNumZ - 2);
             float tz = ((z - dz) - z0 * h) * h1;
             int z1 = min(z0 + 1, fNumZ - 2);
 

@@ -18,6 +18,7 @@ using cy::Matrix4;
 using cy::Vec3;
 using std::min;
 using std::max;
+using std::floor;
 using std::string;
 using namespace nlohmann;
 
@@ -66,14 +67,6 @@ const int FLUID_CELL = 0;
 const int AIR_CELL = 1;
 const int SOLID_CELL = 2;
 
-float min(const float& a, const float& b)  // Updated function signature and parameter type
-{
-    if (a < b)
-        return a;
-    else
-        return b;
-}
-
 #include "FlipFluid.cpp"
 
 FlipFluid* fluid = nullptr;
@@ -94,18 +87,6 @@ string jstringToString(JNIEnv *env, jstring jStr) {
 
     return result;
 }
-
-// ----------------------------------------------------------------------------
-
-extern "C" JNIEXPORT jstring JNICALL
-Java_com_example_livewallpaper05_PreviewActivity_stringFromJNI(
-        JNIEnv* env,
-        jobject /* this */) {
-    std::string hello = "Hello from C++";
-    return env->NewStringUTF(hello.c_str());
-}
-
-// ----------------------------------------------------------------------------
 
 #if !defined(DYNAMIC_ES3)
 static GLboolean gl3stubInit() { return GL_TRUE; }
