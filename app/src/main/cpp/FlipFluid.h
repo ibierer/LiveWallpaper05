@@ -8,6 +8,9 @@
 
 #include "vectors.h"
 
+using std::min;
+using std::max;
+
 class FlipFluid {
 public:
 

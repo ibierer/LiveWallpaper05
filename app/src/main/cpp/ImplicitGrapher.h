@@ -6,6 +6,7 @@
 #define LIVEWALLPAPER05_IMPLICITGRAPHER_H
 
 
+#include <GLES3/gl32.h>
 #include "VertexNormal.h"
 
 class ImplicitGrapher {
