@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".helpful_fragments.Toolbar">
+
+    <androidx.constraintlayout.motion.widget.MotionLayout
+        android:id="@+id/motion_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        app:layoutDescription="@xml/toolbar_scene"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- BUTTONS in the menu bar -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/b_profile_toolbar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_account_circle_24" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/b_editor_toolbar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@android:drawable/btn_star_big_off" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/b_explore_toolbar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@android:drawable/ic_menu_search" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/b_help_toolbar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/question_mark" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/b_expand_toolbar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@android:drawable/ic_menu_sort_by_size"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- [IGNORE BELOW, INVISIBLE LAYOUT CONTENT FOR MENU ANIMATION] -->
+        <!-- circular layout invisible set end points for motion label animation -->
+        <androidx.constraintlayout.helper.widget.CircularFlow
+            android:id="@+id/circular_flow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:circularflow_angles="-90, -60, -30, 0"
+            app:circularflow_defaultRadius="150dp"
+            app:circularflow_viewCenter="@id/b_expand_toolbar"
+            app:constraint_referenced_ids="v_anchor1, v_anchor2, v_anchor3, v_anchor4"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+        <!-- below views are anchor points for toolbar animation -->
+        <!-- remove invisible tag to see anchor points on ui -->
+        <View
+            android:id="@+id/v_anchor1"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@color/teal_200"
+            android:visibility="invisible" />
+
+        <View
+            android:id="@+id/v_anchor2"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@color/teal_200"
+            android:visibility="invisible" />
+
+        <View
+            android:id="@+id/v_anchor3"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@color/teal_200"
+            android:visibility="invisible" />
+
+        <View
+            android:id="@+id/v_anchor4"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@color/teal_200"
+            android:visibility="invisible" />
+
+    </androidx.constraintlayout.motion.widget.MotionLayout>
+
+</FrameLayout>

@@ -2,12 +2,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+
+    <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.software.live_wallpaper" />
     <uses-feature
         android:glEsVersion="0x00031000"
         android:required="true" />
 
     <application
+        android:name=".activewallpaperdata.ActiveWallpaperApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -16,9 +21,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.LiveWallpaper05"
-        tools:targetApi="31">
+        tools:targetApi="33">
         <activity
-            android:name=".Explorer"
+            android:name=".ExplorerActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,15 +31,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Editor"
+            android:name=".ProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".Profile"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"></activity>
+            android:name=".PreviewActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat"/>
 
         <service
             android:name=".GLWallpaperService"

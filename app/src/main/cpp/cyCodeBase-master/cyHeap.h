@@ -1,36 +1,36 @@
 // cyCodeBase by Cem Yuksel
 // [www.cemyuksel.com]
 //-------------------------------------------------------------------------------
-//! \file   cyHeap.h 
+//! \file   cyHeap.h
 //! \author Cem Yuksel
 //!
 //! \brief  A general-purpose heap class
-//! 
+//!
 //! This file includes a general-purpose heap class.
 //!
 //-------------------------------------------------------------------------------
 //
 // Copyright (c) 2016, Cem Yuksel <cem@cemyuksel.com>
 // All rights reserved.
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy 
-// of this software and associated documentation files (the "Software"), to deal 
-// in the Software without restriction, including without limitation the rights 
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
-// copies of the Software, and to permit persons to whom the Software is 
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all 
+//
+// The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-// 
+//
 //-------------------------------------------------------------------------------
 
 #ifndef _CY_HEAP_H_INCLUDED_
@@ -50,7 +50,7 @@ namespace cy {
 //!
 //! The main data can be kept in an external array or within the Heap class.
 
-template <bool MAX_HEAP, typename DATA_TYPE, typename SIZE_TYPE=size_t> 
+template <bool MAX_HEAP, typename DATA_TYPE, typename SIZE_TYPE=size_t>
 class Heap
 {
 public:
@@ -157,12 +157,12 @@ public:
 	bool NotEmpty() const { return heapItemCount>0; }
 
 	//! Returns the item from the heap with the given heap position.
-	//! Note that items that are removed from the heap appear in the inverse order 
+	//! Note that items that are removed from the heap appear in the inverse order
 	//! with which they were removed after the last item in the heap.
 	DATA_TYPE const & GetFromHeap( SIZE_TYPE heapIndex ) const { assert(heapIndex<size); return data[heap[heapIndex+1]]; }
 
 	//! Returns the id of the item from the heap with the given heap position.
-	//! Note that items that are removed from the heap appear in the inverse order 
+	//! Note that items that are removed from the heap appear in the inverse order
 	//! with which they were removed after the last item in the heap.
 	SIZE_TYPE GetIDFromHeap( SIZE_TYPE heapIndex ) const { assert(heapIndex<size); return heap[heapIndex+1]; }
 

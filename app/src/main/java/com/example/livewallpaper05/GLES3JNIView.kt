@@ -2,10 +2,13 @@ package com.example.livewallpaper05
 
 import android.content.Context
 import android.opengl.GLSurfaceView
+import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo
+import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
+import kotlinx.coroutines.selects.select
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
-class GLES3JNIView(context: Context) : GLSurfaceView(context) {
+class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceView(context) {
     private val TAG = "GLES3JNI"
     private val DEBUG = true
 
@@ -14,26 +17,93 @@ class GLES3JNIView(context: Context) : GLSurfaceView(context) {
         // supporting OpenGL ES 2.0 or later backwards-compatible versions.
         setEGLConfigChooser(8, 8, 8, 0, 16, 0)
         setEGLContextClientVersion(3)
-        setRenderer(Renderer(context))
+        setRenderer(Renderer(context, vm))
     }
 
-    class Renderer(context: Context) : GLSurfaceView.Renderer {
+    class Renderer(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceView.Renderer {
         private var context: Context? = null
+        //private var mRepo: ActiveWallpaperRepo? = repo
+        private var mViewModel: ActiveWallpaperViewModel = vm
 
-        fun Renderer(context: Context) {
+        fun Renderer(context: Context, repo: ActiveWallpaperRepo) {
             this.context = context
         }
 
         override fun onDrawFrame(gl: GL10) {
-            MainActivity.step(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f)
+            // default values in ActiveWallpaperViewModel
+            val accelData = mViewModel.getAccelerationData()
+            val rotData = mViewModel.getRotationData()
+            /**val rotTmp = mViewModel.getRotationRate()
+            PreviewActivity.step(
+                0.0f,
+                0.0f,
+                0.0f,
+                rotTmp,
+                0.0f,
+                0.0f,
+                0.0f
+                )*/
+
+            PreviewActivity.step(
+                accelData[0],
+                accelData[1],
+                accelData[2],
+                rotData[0],
+                rotData[1],
+                rotData[2],
+                rotData[3],
+                mViewModel.getRotationRate()
+            )
         }
 
         override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {
-            MainActivity.resize(width, height)
+            PreviewActivity.resize(width, height)
         }
 
         override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
-            MainActivity.init()
+            val boxJSON = "{\n" +
+                    "    \"type\": \"box\",\n" +
+                    "    \"background_color\": {\"r\": 51, \"g\": 51, \"b\": 77, \"a\": 255}\n" +
+                    "}"
+            val naiveJSON = "{\n" +
+                    "    \"type\": \"naive\",\n" +
+                    "    \"background_color\": {\"r\": 51, \"g\": 51, \"b\": 77, \"a\": 255}\n" +
+                    "}"
+            val picflipJSON = "{\n" +
+                    "    \"type\": \"picflip\",\n" +
+                    "    \"background_color\": {\"r\": 51, \"g\": 51, \"b\": 77, \"a\": 255}\n" +
+                    "}"
+            val triangleJSON = "{\n" +
+                    "    \"type\": \"triangle\",\n" +
+                    "    \"background_color\": {\"r\": 51, \"g\": 51, \"b\": 77, \"a\": 255}\n" +
+                    "}"
+            val graphJSON = "{\n" +
+                    "    \"type\": \"graph\",\n" +
+                    "    \"background_color\": {\"r\": 51, \"g\": 51, \"b\": 77, \"a\": 255},\n" +
+                    "    \"settings\": \"1/((sqrt(x^2 + y^2) - 2 + 1.25cos(t))^2 + (z - 1.5sin(t))^2) + 1/((sqrt(x^2 + y^2) - 2 - 1.25cos(t))^2 + (z + 1.5sin(t))^2) = 1.9\"\n" +
+                    "}"
+
+            var selectionJSON = boxJSON
+            when (mViewModel.getSimulationType()) {
+                0 -> {
+                    selectionJSON = boxJSON
+                }
+                1 -> {
+                    selectionJSON = naiveJSON
+                }
+                2 -> {
+                    selectionJSON = picflipJSON
+                }
+                3 -> {
+                    selectionJSON = triangleJSON
+                }
+                4 -> {
+                    selectionJSON = graphJSON
+                }
+
+            }
+
+            PreviewActivity.init(selectionJSON)
         }
     }
 }

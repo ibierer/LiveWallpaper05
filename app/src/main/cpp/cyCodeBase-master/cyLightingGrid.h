@@ -1,19 +1,19 @@
 // cyCodeBase by Cem Yuksel
 // [www.cemyuksel.com]
 //-------------------------------------------------------------------------------
-//! \file   cyLightingGrid.h 
+//! \file   cyLightingGrid.h
 //! \author Cem Yuksel
-//! 
+//!
 //! \brief  Implementation of the Lighting Grid Hierarchy method.
-//! 
-//! This file includes an implementation of the Lighting Grid Hierarchy 
+//!
+//! This file includes an implementation of the Lighting Grid Hierarchy
 //! method for efficiently handling many lights.
 //!
 //! The Lighting Grid Hierarchy method was originally designed for explosion
 //! rendering, but it can be used for general purpose lighting computations
 //! involving a large number of (point) lights. It is particularly effective
 //! when shadows can be precomputed.
-//! 
+//!
 //! More details can be found in the original publication:
 //!
 //! Can Yuksel and Cem Yuksel. 2017. Lighting Grid Hierarchy for
@@ -25,25 +25,25 @@
 //
 // Copyright (c) 2016, Cem Yuksel <cem@cemyuksel.com>
 // All rights reserved.
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy 
-// of this software and associated documentation files (the "Software"), to deal 
-// in the Software without restriction, including without limitation the rights 
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
-// copies of the Software, and to permit persons to whom the Software is 
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all 
+//
+// The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-// 
+//
 //-------------------------------------------------------------------------------
 
 #ifndef _CY_LIGHTING_GRID_H_INCLUDED_
@@ -285,7 +285,7 @@ private:
 				stdev    += w * (p*p);
 			}
 			void Normalize()
-			{ 
+			{
 				if ( weight > 0 ) {
 					position /= weight;
 					stdev = stdev/weight - position*position;

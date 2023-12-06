@@ -1,39 +1,39 @@
 // cyCodeBase by Cem Yuksel
 // [www.cemyuksel.com]
 //-------------------------------------------------------------------------------
-//! \file   cyGL.h 
+//! \file   cyGL.h
 //! \author Cem Yuksel
-//! 
+//!
 //! \brief  OpenGL helper classes
-//! 
+//!
 //! The classes in this file are designed to provide convenient interfaces for
 //! some OpenGL features. They are not intended to provide the full flexibility
-//! of the underlying OpenGL functions, but they greatly simplify the 
+//! of the underlying OpenGL functions, but they greatly simplify the
 //! implementation of some general OpenGL operations.
 //!
 //-------------------------------------------------------------------------------
 //
 // Copyright (c) 2017, Cem Yuksel <cem@cemyuksel.com>
 // All rights reserved.
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy 
-// of this software and associated documentation files (the "Software"), to deal 
-// in the Software without restriction, including without limitation the rights 
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
-// copies of the Software, and to permit persons to whom the Software is 
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all 
+//
+// The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-// 
+//
 //-------------------------------------------------------------------------------
 
 #ifndef _CY_GL_H_INCLUDED_
@@ -193,7 +193,7 @@ public:
 //!
 //! For this class to work, you may need to initialize the OpenGL context in debug mode.
 //! This class registers an OpenGL debug callback function, which is called when
-//! there is an OpenGL generates a debug message. 
+//! there is an OpenGL generates a debug message.
 //! The class has no local storage, so it can be safely deleted.
 //! Deleting an object of this class, however, does not automatically disable the debug callbacks.
 class GLDebugCallback
@@ -207,7 +207,7 @@ public:
 
 	//! Registers the debug callback function.
 	//! The callback function outputs the debug data to the given stream.
-	//! Note that if the OpenGL context is not created in debug mode, 
+	//! Note that if the OpenGL context is not created in debug mode,
 	//! OpenGL may not call the callback function.
 	//! If there is a previously registered callback function,
 	//! calling this function overwrites the previous callback registration.
@@ -255,10 +255,10 @@ protected:
 //! texture type supported by OpenGL, such as GL_TEXTURE_1D, GL_TEXTURE_2D,
 //! GL_TEXTURE_3D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_RECTANGLE,
 //! GL_TEXTURE_1D_ARRAY, GL_TEXTURE_2D_ARRAY, GL_TEXTURE_CUBE_MAP_ARRAY,
-//! GL_TEXTURE_BUFFER, GL_TEXTURE_2D_MULTISAMPLE, or 
+//! GL_TEXTURE_BUFFER, GL_TEXTURE_2D_MULTISAMPLE, or
 //! GL_TEXTURE_2D_MULTISAMPLE_ARRAY. This class merely stores the texture id.
 //! Note that deleting an object of this class does not automatically delete
-//! the texture from the GPU memory. You must explicitly call the Delete() 
+//! the texture from the GPU memory. You must explicitly call the Delete()
 //! method to free the texture storage on the GPU.
 template <GLenum TEXTURE_TYPE>
 class GLTexture
@@ -318,7 +318,7 @@ public:
 //! 1D texture type supported by OpenGL, such as GL_TEXTURE_1D.
 //! This class merely stores the texture id.
 //! Note that deleting an object of this class does not automatically delete
-//! the texture from the GPU memory. You must explicitly call the Delete() 
+//! the texture from the GPU memory. You must explicitly call the Delete()
 //! method to free the texture storage on the GPU.
 template <GLenum TEXTURE_TYPE>
 class GLTexture1 : public GLTexture<TEXTURE_TYPE>
@@ -363,10 +363,10 @@ public:
 //!
 //! This class provides a convenient interface for handling 2D texture
 //! operations with OpenGL. The template argument TEXTURE_TYPE should be a
-//! 2D texture type supported by OpenGL, such as GL_TEXTURE_2D, 
+//! 2D texture type supported by OpenGL, such as GL_TEXTURE_2D,
 //! GL_TEXTURE_RECTANGLE, or GL_TEXTURE_1D_ARRAY. This class merely stores the texture id.
 //! Note that deleting an object of this class does not automatically delete
-//! the texture from the GPU memory. You must explicitly call the Delete() 
+//! the texture from the GPU memory. You must explicitly call the Delete()
 //! method to free the texture storage on the GPU.
 template <GLenum TEXTURE_TYPE>
 class GLTexture2 : public GLTexture<TEXTURE_TYPE>
@@ -420,7 +420,7 @@ public:
 //! 3D texture type supported by OpenGL, such as GL_TEXTURE_3D or
 //! GL_TEXTURE_2D_ARRAY. This class merely stores the texture id.
 //! Note that deleting an object of this class does not automatically delete
-//! the texture from the GPU memory. You must explicitly call the Delete() 
+//! the texture from the GPU memory. You must explicitly call the Delete()
 //! method to free the texture storage on the GPU.
 template <GLenum TEXTURE_TYPE>
 class GLTexture3 : public GLTexture<TEXTURE_TYPE>
@@ -485,7 +485,7 @@ enum GLTextureCubeMapSide {
 //! This class provides a convenient interface for handling cube map texture
 //! operations with OpenGL. This class merely stores the texture id.
 //! Note that deleting an object of this class does not automatically delete
-//! the texture from the GPU memory. You must explicitly call the Delete() 
+//! the texture from the GPU memory. You must explicitly call the Delete()
 //! method to free the texture storage on the GPU.
 class GLTextureCubeMap : public GLTexture<GL_TEXTURE_CUBE_MAP>
 {
@@ -785,7 +785,7 @@ public:
 	//! Creates a program, compiles the given shaders, and links them.
 	//! Returns true if all compilation and link operations are successful.
 	//! Writes any error or warning messages to the given output stream.
-	bool Build( GLSLShader const *vertexShader, 
+	bool Build( GLSLShader const *vertexShader,
                 GLSLShader const *fragmentShader,
 	            GLSLShader const *geometryShader=nullptr,
 	            GLSLShader const *tessControlShader=nullptr,
@@ -795,7 +795,7 @@ public:
 	//! Creates a program, compiles the given shaders, and links them.
 	//! Returns true if all compilation and link operations are successful.
 	//! Writes any error or warning messages to the given output stream.
-	bool BuildFiles( char const *vertexShaderFile, 
+	bool BuildFiles( char const *vertexShaderFile,
                      char const *fragmentShaderFile,
 	                 char const *geometryShaderFile=nullptr,
 	                 char const *tessControlShaderFile=nullptr,
@@ -807,7 +807,7 @@ public:
 	//! Returns true if all compilation and link operations are successful.
 	//! Writes any error or warning messages to the given output stream.
 	//! The prependSource string is added to the beginning of each shader code, so it must begin with the "#version" statement.
-	bool BuildFiles( char const *vertexShaderFile, 
+	bool BuildFiles( char const *vertexShaderFile,
                      char const *fragmentShaderFile,
 	                 char const *geometryShaderFile,
 	                 char const *tessControlShaderFile,
@@ -820,7 +820,7 @@ public:
 	//! Returns true if all compilation and link operations are successful.
 	//! Writes any error or warning messages to the given output stream.
 	//! The prependSources strings are added to the beginning of each shader code, so the first string must begin with "#version" statement.
-	bool BuildFiles( char const *vertexShaderFile, 
+	bool BuildFiles( char const *vertexShaderFile,
                      char const *fragmentShaderFile,
 	                 char const *geometryShaderFile,
 	                 char const *tessControlShaderFile,
@@ -832,7 +832,7 @@ public:
 	//! Creates a program, compiles the given shaders, and links them.
 	//! Returns true if all compilation and link operations are successful.
 	//! Writes any error or warning messages to the given output stream.
-	bool BuildSources( char const *vertexShaderSourceCode, 
+	bool BuildSources( char const *vertexShaderSourceCode,
                        char const *fragmentShaderSourceCode,
 	                   char const *geometryShaderSourceCode=nullptr,
 	                   char const *tessControlShaderSourceCode=nullptr,
@@ -844,7 +844,7 @@ public:
 	//! Returns true if all compilation and link operations are successful.
 	//! Writes any error or warning messages to the given output stream.
 	//! The prependSource string is added to the beginning of each shader code, so it must begin with the "#version" statement.
-	bool BuildSources( char const *vertexShaderSourceCode, 
+	bool BuildSources( char const *vertexShaderSourceCode,
                        char const *fragmentShaderSourceCode,
 	                   char const *geometryShaderSourceCode,
 	                   char const *tessControlShaderSourceCode,
@@ -857,7 +857,7 @@ public:
 	//! Returns true if all compilation and link operations are successful.
 	//! Writes any error or warning messages to the given output stream.
 	//! The prependSources strings are added to the beginning of each shader code, so the first string must begin with "#version" statement.
-	bool BuildSources( char const *vertexShaderSourceCode, 
+	bool BuildSources( char const *vertexShaderSourceCode,
                        char const *fragmentShaderSourceCode,
 	                   char const *geometryShaderSourceCode,
 	                   char const *tessControlShaderSourceCode,
@@ -878,7 +878,7 @@ public:
 	void RegisterUniforms( char const *names, unsigned int startingIndex=0, std::ostream *outStream=&std::cout );
 
 	//!@{
-	//! Sets the value of the uniform parameter with the given index. 
+	//! Sets the value of the uniform parameter with the given index.
 	//! The uniform parameter must be registered before using RegisterUniform() or RegisterUniforms().
 	//! The program must be bind by calling Bind() before calling this method.
 	void SetUniform (int index, float x)                                { glUniform1f  (params[index],x); }
@@ -935,10 +935,10 @@ public:
 	void SetUniformMatrix4  (int index, double const *m, int count=1, bool transpose=false) { glUniformMatrix4dv  (params[index],count,transpose,m); }
 	void SetUniformMatrix2x3(int index, double const *m, int count=1, bool transpose=false) { glUniformMatrix2x3dv(params[index],count,transpose,m); }
 	void SetUniformMatrix2x4(int index, double const *m, int count=1, bool transpose=false) { glUniformMatrix2x4dv(params[index],count,transpose,m); }
-	void SetUniformMatrix3x2(int index, double const *m, int count=1, bool transpose=false) { glUniformMatrix3x2dv(params[index],count,transpose,m); }	
-	void SetUniformMatrix3x4(int index, double const *m, int count=1, bool transpose=false) { glUniformMatrix3x4dv(params[index],count,transpose,m); }	
-	void SetUniformMatrix4x2(int index, double const *m, int count=1, bool transpose=false) { glUniformMatrix4x2dv(params[index],count,transpose,m); }	
-	void SetUniformMatrix4x3(int index, double const *m, int count=1, bool transpose=false) { glUniformMatrix4x3dv(params[index],count,transpose,m); }	
+	void SetUniformMatrix3x2(int index, double const *m, int count=1, bool transpose=false) { glUniformMatrix3x2dv(params[index],count,transpose,m); }
+	void SetUniformMatrix3x4(int index, double const *m, int count=1, bool transpose=false) { glUniformMatrix3x4dv(params[index],count,transpose,m); }
+	void SetUniformMatrix4x2(int index, double const *m, int count=1, bool transpose=false) { glUniformMatrix4x2dv(params[index],count,transpose,m); }
+	void SetUniformMatrix4x3(int index, double const *m, int count=1, bool transpose=false) { glUniformMatrix4x3dv(params[index],count,transpose,m); }
 #endif
 
 #ifdef _CY_VECTOR_H_INCLUDED_
@@ -1015,7 +1015,7 @@ public:
 
 
 	//!@{ glUseProgram(programID); int id = glGetUniformLocation( programID, name ); if ( id >= 0 )
-	//! Sets the value of the uniform parameter with the given name, if the uniform parameter is found. 
+	//! Sets the value of the uniform parameter with the given name, if the uniform parameter is found.
 	//! Since it searches for the uniform parameter first, it is not as efficient as setting the uniform parameter using
 	//! a previously registered id. There is no need to bind the program before calling this method.
 	void SetUniform (char const *name, float x)                                { glUseProgram(programID); int id = glGetUniformLocation( programID, name ); if ( id >= 0 ) glUniform1f  (id,x); }
@@ -1072,10 +1072,10 @@ public:
 	void SetUniformMatrix4  (char const *name, double const *m, int count=1, bool transpose=false) { glUseProgram(programID); int id = glGetUniformLocation( programID, name ); if ( id >= 0 ) glUniformMatrix4dv  (id,count,transpose,m); }
 	void SetUniformMatrix2x3(char const *name, double const *m, int count=1, bool transpose=false) { glUseProgram(programID); int id = glGetUniformLocation( programID, name ); if ( id >= 0 ) glUniformMatrix2x3dv(id,count,transpose,m); }
 	void SetUniformMatrix2x4(char const *name, double const *m, int count=1, bool transpose=false) { glUseProgram(programID); int id = glGetUniformLocation( programID, name ); if ( id >= 0 ) glUniformMatrix2x4dv(id,count,transpose,m); }
-	void SetUniformMatrix3x2(char const *name, double const *m, int count=1, bool transpose=false) { glUseProgram(programID); int id = glGetUniformLocation( programID, name ); if ( id >= 0 ) glUniformMatrix3x2dv(id,count,transpose,m); }	
-	void SetUniformMatrix3x4(char const *name, double const *m, int count=1, bool transpose=false) { glUseProgram(programID); int id = glGetUniformLocation( programID, name ); if ( id >= 0 ) glUniformMatrix3x4dv(id,count,transpose,m); }	
-	void SetUniformMatrix4x2(char const *name, double const *m, int count=1, bool transpose=false) { glUseProgram(programID); int id = glGetUniformLocation( programID, name ); if ( id >= 0 ) glUniformMatrix4x2dv(id,count,transpose,m); }	
-	void SetUniformMatrix4x3(char const *name, double const *m, int count=1, bool transpose=false) { glUseProgram(programID); int id = glGetUniformLocation( programID, name ); if ( id >= 0 ) glUniformMatrix4x3dv(id,count,transpose,m); }	
+	void SetUniformMatrix3x2(char const *name, double const *m, int count=1, bool transpose=false) { glUseProgram(programID); int id = glGetUniformLocation( programID, name ); if ( id >= 0 ) glUniformMatrix3x2dv(id,count,transpose,m); }
+	void SetUniformMatrix3x4(char const *name, double const *m, int count=1, bool transpose=false) { glUseProgram(programID); int id = glGetUniformLocation( programID, name ); if ( id >= 0 ) glUniformMatrix3x4dv(id,count,transpose,m); }
+	void SetUniformMatrix4x2(char const *name, double const *m, int count=1, bool transpose=false) { glUseProgram(programID); int id = glGetUniformLocation( programID, name ); if ( id >= 0 ) glUniformMatrix4x2dv(id,count,transpose,m); }
+	void SetUniformMatrix4x3(char const *name, double const *m, int count=1, bool transpose=false) { glUseProgram(programID); int id = glGetUniformLocation( programID, name ); if ( id >= 0 ) glUniformMatrix4x3dv(id,count,transpose,m); }
 #endif
 
 #ifdef _CY_VECTOR_H_INCLUDED_
@@ -1263,7 +1263,7 @@ inline GLenum GL::TextureFormat( GL::Type type, int numChannels )
 # endif
 #endif
 	};
-	
+
 	return internalFormats[type][numChannels-1];
 }
 
@@ -1384,8 +1384,8 @@ void GLTexture<TEXTURE_TYPE>::SetFilteringMode(GLenum magnificationFilter, GLenu
 template <GLenum TEXTURE_TYPE>
 inline void GLRenderBuffer<TEXTURE_TYPE>::Delete()
 {
-	if ( framebufferID != CY_GL_INVALID_ID ) glDeleteFramebuffers (1,&framebufferID); framebufferID = CY_GL_INVALID_ID; 
-	if ( depthbufferID != CY_GL_INVALID_ID ) glDeleteRenderbuffers(1,&depthbufferID); depthbufferID = CY_GL_INVALID_ID; 
+	if ( framebufferID != CY_GL_INVALID_ID ) glDeleteFramebuffers (1,&framebufferID); framebufferID = CY_GL_INVALID_ID;
+	if ( depthbufferID != CY_GL_INVALID_ID ) glDeleteRenderbuffers(1,&depthbufferID); depthbufferID = CY_GL_INVALID_ID;
 	texture.Delete();
 }
 
@@ -1413,7 +1413,7 @@ inline bool GLRenderBuffer<TEXTURE_TYPE>::IsComplete() const
 	glBindFramebuffer(GL_FRAMEBUFFER,framebufferID);
 	bool complete = (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 	glBindFramebuffer(GL_FRAMEBUFFER,prevbuffer);
-	return complete;  
+	return complete;
 }
 
 template <GLenum TEXTURE_TYPE>
@@ -1583,7 +1583,7 @@ inline bool GLSLProgram::Link( std::ostream *outStream )
 	return result == GL_TRUE;
 }
 
-inline bool GLSLProgram::Build( GLSLShader const *vertexShader, 
+inline bool GLSLProgram::Build( GLSLShader const *vertexShader,
                                 GLSLShader const *fragmentShader,
 	                            GLSLShader const *geometryShader,
 	                            GLSLShader const *tessControlShader,
@@ -1600,7 +1600,7 @@ inline bool GLSLProgram::Build( GLSLShader const *vertexShader,
 	return Link(outStream);
 }
 
-inline bool GLSLProgram::BuildFiles( char const *vertexShaderFile, 
+inline bool GLSLProgram::BuildFiles( char const *vertexShaderFile,
                                      char const *fragmentShaderFile,
 	                                 char const *geometryShaderFile,
 	                                 char const *tessControlShaderFile,
@@ -1647,7 +1647,7 @@ inline bool GLSLProgram::BuildFiles( char const *vertexShaderFile,
 }
 
 
-inline bool GLSLProgram::BuildSources( char const *vertexShaderSourceCode, 
+inline bool GLSLProgram::BuildSources( char const *vertexShaderSourceCode,
                                        char const *fragmentShaderSourceCode,
 	                                   char const *geometryShaderSourceCode,
 	                                   char const *tessControlShaderSourceCode,
