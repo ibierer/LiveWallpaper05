@@ -38,13 +38,10 @@ void Naive::render(){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(mProgram);
     Matrix4<float> translation;
-    translation = translation.Translation(
-            10.0f * Vec3<float>(0.0f, 0.0f, 10.0f * val - 6.0f));
-    Matrix4<float> translation2;
     for(int i = 0; i < moleculeCount; i++) {
-        translation2 = translation2.Translation(
-                Vec3<float>(molecules[i].position[0], molecules[i].position[1], molecules[i].position[2]));
-        Matrix4<float> mvp = perspective * translation * translation2;
+        translation = translation.Translation(
+                Vec3<float>(molecules[i].position[0], molecules[i].position[1], molecules[i].position[2] + 10.0f * val - 30.0f));
+        Matrix4<float> mvp = perspective * translation;
         glUniformMatrix4fv(
                 glGetUniformLocation(mProgram, "mvp"),
                 1,

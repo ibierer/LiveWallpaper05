@@ -111,7 +111,7 @@ void PicFlip::render() {
     glUseProgram(mProgram);
     Matrix4<float> translation;
     translation = translation.Translation(
-            Vec3<float>(0.0f, 0.0f, val * 100.0f - 60.0f) - Vec3<float>(15.f));
+            Vec3<float>(0.0f, 0.0f, val * 100.0f - 30.0f) - Vec3<float>(15.f));
     Matrix4<float> translation2;
     for (int i = 0; i < fluid->numParticles; i++) {
         translation2 = translation2.Translation(

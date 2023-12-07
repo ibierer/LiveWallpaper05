@@ -19,12 +19,10 @@ void Wallpaper::render(){
 void Wallpaper::calculatePerspective() {
     // Compute the window aspect ratio
     float aspect = (float)width / (float)height;
-    // Generate a perspective matrix with a 90-degree FOV and near and far clip planes at 0.1 and 1000.0
-    float maxViewAngle = 90.0f;
+    float maxViewAngle = 45.0f;
     float zNear = 0.1f;
     float zFar = 1000.0f;
-    float verticalScreenAngle = (aspect < 1.0f) ? maxViewAngle : 2.0 * atan(tan(maxViewAngle / 2.0 * M_PI / 180.0) / aspect) / M_PI * 180.0;
-    //float verticalScreenAngle = (aspect < 1.0f) ? maxViewAngle : maxViewAngle;
+    float verticalScreenAngle = (aspect > 1.0f) ? maxViewAngle : 2.0f * tanf(atanf(toRadians(0.5f * maxViewAngle)) / aspect);
     perspective.SetPerspective(verticalScreenAngle, aspect, zNear, zFar);
 }
 
