@@ -5,6 +5,7 @@ import android.hardware.SensorManager
 import android.os.Bundle
 import android.widget.LinearLayout
 import android.view.View
+import android.view.WindowManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.SeekBar
@@ -25,6 +26,7 @@ class PreviewActivity : AppCompatActivity() {
 
     override fun onCreate(icicle: Bundle?) {
         super.onCreate(icicle)
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_preview)
 
         mView = GLES3JNIView(application, viewModel)

@@ -19,7 +19,7 @@ void TriangleWithNormals::render(){
     glEnable(GL_DEPTH_TEST);
 
     Matrix4<float> translation;
-    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 10.0f * val - 3.0f));
+    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 10.0f * (val - 1.0f)));
     Matrix4<float> rotation;
     rotation = Matrix4<float>(quaternionTo3x3(rotationVector));
     Matrix4<float> mvp = perspective * translation * rotation;

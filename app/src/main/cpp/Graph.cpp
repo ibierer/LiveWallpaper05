@@ -28,7 +28,7 @@ void Graph::render(){
     glEnable(GL_DEPTH_TEST);
 
     Matrix4<float> translation;
-    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 50.0f * (val - 1.0f)));
+    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 60.0f * (val - 1.0f)));
     Matrix4<float> rotation;
     rotation = Matrix4<float>(quaternionTo3x3(rotationVector));
     Matrix4<float> mvp = perspective * translation * rotation;
