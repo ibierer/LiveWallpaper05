@@ -84,10 +84,11 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_livewallpaper05_PreviewActivity_00024Companion_resize(JNIEnv *env, jobject thiz, jint width, jint height) {
+Java_com_example_livewallpaper05_PreviewActivity_00024Companion_resize(JNIEnv *env, jobject thiz, jint width, jint height, jint orientation) {
     if (wallpaper) {
         wallpaper->width = width;
         wallpaper->height = height;
+        wallpaper->orientation = orientation;
         glViewport(0, 0, width, height);
         wallpaper->calculatePerspective();
     }

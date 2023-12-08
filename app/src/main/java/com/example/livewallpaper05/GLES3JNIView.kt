@@ -57,7 +57,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
         }
 
         override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {
-            PreviewActivity.resize(width, height)
+            PreviewActivity.resize(width, height, 0)
         }
 
         override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {

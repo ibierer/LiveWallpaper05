@@ -29,6 +29,8 @@ public:
 
     float val;
 
+    int orientation;
+
     EGLint width;
 
     EGLint height;

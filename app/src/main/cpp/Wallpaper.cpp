@@ -24,6 +24,22 @@ void Wallpaper::calculatePerspective() {
     float zFar = 1000.0f;
     float verticalScreenAngle = aspect < 1.0f ? toRadians(maxViewDegrees) : 2.0f * atanf(tanf(0.5f * toRadians(maxViewDegrees)) / aspect);
     perspective.SetPerspective(verticalScreenAngle, aspect, zNear, zFar);
+    Matrix4<float> rotation;
+    switch(orientation){
+        case 0:
+            rotation = rotation.Identity();
+            break;
+        case 1:
+            rotation.SetRotationZ(0.5 * M_PI);
+            break;
+        case 2:
+            rotation.SetRotationZ(M_PI);
+            break;
+        case 3:
+            rotation.SetRotationZ(-0.5 * M_PI);
+            break;
+    }
+    perspective *= rotation;
 }
 
 string Wallpaper::jstringToString(JNIEnv *env, jstring jStr) {
