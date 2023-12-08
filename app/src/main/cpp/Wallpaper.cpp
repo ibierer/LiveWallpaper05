@@ -39,7 +39,7 @@ void Wallpaper::calculatePerspective() {
             rotation.SetRotationZ(-0.5 * M_PI);
             break;
     }
-    perspective *= rotation;
+    orientationAdjustedPerspective = perspective * rotation;
 }
 
 string Wallpaper::jstringToString(JNIEnv *env, jstring jStr) {

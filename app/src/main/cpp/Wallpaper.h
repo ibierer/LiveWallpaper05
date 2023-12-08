@@ -41,6 +41,8 @@ public:
 
     Matrix4<float> perspective;
 
+    Matrix4<float> orientationAdjustedPerspective;
+
     const Vertex BOX[24] = {
             // FRONT
             {{-0.5f, -0.5f,  0.5f}},
