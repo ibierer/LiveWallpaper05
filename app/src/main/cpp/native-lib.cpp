@@ -33,6 +33,7 @@
 #include "Naive.cpp"
 #include "FlipFluid.cpp"
 #include "PicFlip.cpp"
+#include "CubeMap.cpp"
 #include "CubeMapView.cpp"
 
 using std::string;

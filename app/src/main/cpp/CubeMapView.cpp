@@ -4,58 +4,9 @@
 
 #include "CubeMapView.h"
 
-GLuint textureId;
-
-GLubyte* cubemapPixelBuffers[6];
-
-GLuint genCubeMap(GLint internalFormat, GLint param, GLsizei resolution) {
-    glGenTextures(1, &textureId);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
-    for (int i = 0; i < 6; i++) {
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalFormat, resolution, resolution, 0, GL_RGB, GL_UNSIGNED_BYTE, cubemapPixelBuffers == NULL ? 0 : cubemapPixelBuffers[i]);
-    }
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, param);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, param);
-    return textureId;
-}
-
-GLuint createSimpleTextureCubemap() {
-    GLsizei resolution = 256;
-    for (int i = 0; i < 6; i++) {
-        cubemapPixelBuffers[i] = (GLubyte*)malloc(3 * resolution * resolution * sizeof(unsigned char));
-    }
-    for (uint i = 0; i < resolution; i++) {
-        for (uint j = 0; j < resolution; j++) {
-            uint offset = 3 * (i * resolution + j);
-            uint r = offset;
-            uint g = offset + 1;
-            uint b = offset + 2;
-            cubemapPixelBuffers[0][r] = 255 - j;
-            cubemapPixelBuffers[0][g] = 255 - i;
-            cubemapPixelBuffers[0][b] = 255;
-            cubemapPixelBuffers[1][r] = j;
-            cubemapPixelBuffers[1][g] = 255 - i;
-            cubemapPixelBuffers[1][b] = 0;
-            cubemapPixelBuffers[2][r] = i;
-            cubemapPixelBuffers[2][g] = 255;
-            cubemapPixelBuffers[2][b] = j;
-            cubemapPixelBuffers[3][r] = 255 - i;
-            cubemapPixelBuffers[3][g] = 0;
-            cubemapPixelBuffers[3][b] = j;
-            cubemapPixelBuffers[4][r] = 255;
-            cubemapPixelBuffers[4][g] = 255 - i;
-            cubemapPixelBuffers[4][b] = j;
-            cubemapPixelBuffers[5][r] = 0;
-            cubemapPixelBuffers[5][g] = 255 - i;
-            cubemapPixelBuffers[5][b] = 255 - j;
-        }
-    }
-    return genCubeMap(GL_RGB, GL_LINEAR, resolution);
-}
-
 CubeMapView::CubeMapView() : Wallpaper(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
-    textureId = createSimpleTextureCubemap();
+    cubeMap = CubeMap::createSimpleTextureCubemap();
 }
 
 CubeMapView::~CubeMapView(){
@@ -77,7 +28,7 @@ void CubeMapView::render(){
             1,
             GL_FALSE,
             (GLfloat*)&inverseViewProjection);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap.textureId);
     //glActiveTexture(GL_TEXTURE0);
 
     Vertex vertices[3] = {
