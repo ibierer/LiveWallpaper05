@@ -14,11 +14,11 @@ public:
     const string VERTEX_SHADER =
             ES_VERSION +
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
-            "uniform mat4 mvp;\n"
+            "uniform mat4 inverseViewProjection;\n"
             "out vec3 position;\n"
             "void main() {\n"
-            "    gl_Position = mvp * vec4(pos, 1.0);\n"
-            "    position = pos;\n"
+            "    gl_Position = vec4(pos, 1.0);\n"
+            "    position = (inverseViewProjection * vec4(pos, 1.0f)).xyz;\n"
             "}\n";
 
     const string FRAGMENT_SHADER =

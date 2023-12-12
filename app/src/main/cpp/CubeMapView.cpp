@@ -68,25 +68,22 @@ void CubeMapView::render(){
 
     glEnable(GL_DEPTH_TEST);
 
-    Matrix4<float> translation;
-    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 10.0f * (val - 1.0f)));
-    Matrix4<float> rotation;
-    rotation = Matrix4<float>(quaternionTo3x3(rotationVector));
-    Matrix4<float> mvp = orientationAdjustedPerspective * translation * rotation;
+    Matrix4<float> rotation = Matrix4<float>(quaternionTo3x3(rotationVector));
+    Matrix4<float> inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();
 
     glUseProgram(mProgram);
     glUniformMatrix4fv(
-            glGetUniformLocation(mProgram, "mvp"),
+            glGetUniformLocation(mProgram, "inverseViewProjection"),
             1,
             GL_FALSE,
-            (GLfloat*)&mvp);
+            (GLfloat*)&inverseViewProjection);
     glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
-    glActiveTexture(GL_TEXTURE0);
+    //glActiveTexture(GL_TEXTURE0);
 
     Vertex vertices[3] = {
-            {vec3(1.0f, 0.0f, 0.0f)},
-            {vec3(0.0f, 1.0f, 0.0f)},
-            {vec3(1.0f, 0.0f, 1.0f)}
+            {vec3(-1.0f, -1.0f, 0.999f)},
+            {vec3( 3.0f, -1.0f, 0.999f)},
+            {vec3(-1.0f,  3.0f, 0.999f)}
     };
     uvec3 indices[1] = {
             uvec3(0, 1, 2)
