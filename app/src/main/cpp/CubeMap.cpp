@@ -70,9 +70,9 @@ CubeMap CubeMap::createSimpleTextureCubemap() {
             uint texel = i * resolution + j;
             cubemapPixelBuffers[0][texel].r = 255 - j;
             cubemapPixelBuffers[0][texel].b = 255;
+            cubemapPixelBuffers[0][texel].g = 255 - i;
             cubemapPixelBuffers[1][texel].r = j;
             cubemapPixelBuffers[1][texel].g = 255 - i;
-            cubemapPixelBuffers[0][texel].g = 255 - i;
             cubemapPixelBuffers[1][texel].b = 0;
             cubemapPixelBuffers[2][texel].r = i;
             cubemapPixelBuffers[2][texel].g = 255;
