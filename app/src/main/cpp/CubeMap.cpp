@@ -9,6 +9,11 @@ CubeMap::CubeMap() {
 
 }
 
+// Destructor
+CubeMap::~CubeMap() {
+
+}
+
 CubeMap::CubeMap(const GLuint& textureId) : textureId(textureId) {
 
 }
@@ -48,7 +53,7 @@ CubeMap CubeMap::genCubeMap(const GLint& internalFormat, const GLint& param, con
 }
 
 CubeMap CubeMap::createSimpleTextureCubemap() {
-    GLsizei resolution = 256;
+    const GLsizei resolution = 256;
     GLubyte* cubemapPixelBuffers[6];
     for (int i = 0; i < 6; i++) {
         cubemapPixelBuffers[i] = (GLubyte*)malloc(3 * resolution * resolution * sizeof(unsigned char));
@@ -79,5 +84,13 @@ CubeMap CubeMap::createSimpleTextureCubemap() {
             cubemapPixelBuffers[5][b] = 255 - j;
         }
     }
-    return genCubeMap(GL_RGB, GL_LINEAR, resolution, cubemapPixelBuffers);
+    CubeMap cubeMap = genCubeMap(GL_RGB, GL_LINEAR, resolution, cubemapPixelBuffers);
+    for (int i = 0; i < 6; i++) {
+        free(cubemapPixelBuffers[i]);
+    }
+    return cubeMap;
+}
+
+GLuint CubeMap::getTextureId() {
+    return textureId;
 }

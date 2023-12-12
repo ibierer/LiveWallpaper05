@@ -8,10 +8,12 @@
 
 class CubeMap {
 public:
-    GLuint textureId;
 
     // Default Constructor
     CubeMap();
+
+    // Destructor
+    ~CubeMap();
 
     CubeMap(const GLuint& textureId);
 
@@ -24,6 +26,13 @@ public:
     static CubeMap genCubeMap(const GLint& internalFormat, const GLint& param, const GLsizei& resolution, GLubyte* cubemapPixelBuffers[6]);
 
     static CubeMap createSimpleTextureCubemap();
+
+    GLuint getTextureId();
+
+private:
+
+    GLuint textureId;
+
 };
 
 

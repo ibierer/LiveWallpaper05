@@ -28,7 +28,7 @@ void CubeMapView::render(){
             1,
             GL_FALSE,
             (GLfloat*)&inverseViewProjection);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap.textureId);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap.getTextureId());
     //glActiveTexture(GL_TEXTURE0);
 
     Vertex vertices[3] = {
