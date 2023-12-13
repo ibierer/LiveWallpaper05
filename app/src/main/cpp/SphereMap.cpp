@@ -4,16 +4,6 @@
 
 #include "SphereMap.h"
 
-// mix function for floats
-float mix(float x, float y, float a) {
-    return x * (1.0 - a) + y * a;
-}
-
-// mix function for vectors
-vec3 mix(vec3 x, vec3 y, float a) {
-    return x * (1.0 - a) + y * a;
-}
-
 // Default Constructor
 SphereMap::SphereMap() {
     glGenTextures(1, &textureId);
@@ -22,40 +12,43 @@ SphereMap::SphereMap() {
     _vec3<GLubyte>* pixelBuffer = (_vec3<GLubyte>*)malloc(resolution * resolution * sizeof(_vec3<GLubyte>));
     for(int i = 0; i < resolution; i++){
         for(int j = 0; j < resolution; j++){
-            float r;
-            float g;
-            float b;
+            vec3 rgb;
             if(j < resolution / 6){
-                r = 255.0f;
-                g = 255.0f * 6.0f * j / resolution;
-                b = 0.0f;
+                rgb = vec3(
+                        255.0f,
+                        255.0f * 6.0f * j / resolution,
+                        0.0f);
             }else if(j < 2 * resolution / 6){
-                r = (255.0f * resolution - 255.0f * (6 * j - resolution)) / resolution;
-                g = 255.0f;
-                b = 0.0f;
+                rgb = vec3(
+                        (255.0f * resolution - 255.0f * (6 * j - resolution)) / resolution,
+                        255.0f,
+                        0.0f);
             }else if(j < 3 * resolution / 6){
-                r = 0.0f;
-                g = 255.0f;
-                b = 255.0f * 6.0f * (j - resolution / 3) / resolution;
+                rgb = vec3(
+                        0.0f,
+                        255.0f,
+                        255.0f * 6.0f * (j - resolution / 3) / resolution);
             }else if(j < 4 * resolution / 6){
-                r = 0.0f;
-                g = (255.0f - 255.0f * (6 * j - 3 * resolution) / resolution);
-                b = 255.0f;
+                rgb = vec3(
+                        0.0f,
+                        255.0f - 255.0f * (6 * j - 3 * resolution) / resolution,
+                        255.0f);
             }else if(j < 5 * resolution / 6){
-                r = 255.0f * 6.0f * (j - 2 * resolution / 3) / resolution;
-                g = 0.0f;
-                b = 255.0f;
+                rgb = vec3(
+                        255.0f * 6.0f * (j - 2 * resolution / 3) / resolution,
+                        0.0f,
+                        255.0f);
             }else{
-                r = 255.0f;
-                g = 0.0f;
-                b = (255.0f - 255.0f * (6 * j - 5 * resolution) / resolution);
+                rgb = vec3(
+                        255.0f,
+                        0.0f,
+                        255.0f - 255.0f * (6 * j - 5 * resolution) / resolution);
             }
             float ratio = (float)i / resolution;
             float inverse = 1.0f - ratio;
-            r = mix(r, 127.0f, inverse);
-            g = mix(g, 127.0f, inverse);
-            b = mix(b, 127.0f, inverse);
-            pixelBuffer[i * resolution + j] = _vec3<GLubyte>(floor(r), floor(g), floor(b));
+            vec3 grey = vec3(127.0f);
+            vec3 sum = ratio * rgb + inverse * grey;
+            pixelBuffer[i * resolution + j] = _vec3<GLubyte>(sum.r, sum.b, sum.g);
         }
     }
     glTexImage2D(
