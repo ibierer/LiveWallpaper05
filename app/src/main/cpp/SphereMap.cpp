@@ -18,7 +18,7 @@ vec3 mix(vec3 x, vec3 y, float a) {
 SphereMap::SphereMap() {
     glGenTextures(1, &textureId);
     glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
-    const int resolution = 2048;
+    const int resolution = 1536;
     _vec3<GLubyte>* pixelBuffer = (_vec3<GLubyte>*)malloc(resolution * resolution * sizeof(_vec3<GLubyte>));
     for(int i = 0; i < resolution; i++){
         for(int j = 0; j < resolution; j++){
@@ -69,10 +69,8 @@ SphereMap::SphereMap() {
             GL_UNSIGNED_BYTE,
             pixelBuffer);
     free(pixelBuffer);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 }
