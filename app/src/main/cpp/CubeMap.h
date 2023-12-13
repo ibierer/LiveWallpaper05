@@ -6,7 +6,9 @@
 #define LIVEWALLPAPER05_CUBEMAP_H
 
 
-class CubeMap {
+#include "EnvironmentMap.h"
+
+class CubeMap : public EnvironmentMap {
 public:
 
     // Default Constructor

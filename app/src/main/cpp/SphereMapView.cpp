@@ -1,19 +1,19 @@
 //
-// Created by Immanuel Bierer on 12/11/2023.
+// Created by Immanuel Bierer on 12/12/2023.
 //
 
-#include "CubeMapView.h"
+#include "SphereMapView.h"
 
-CubeMapView::CubeMapView() : Wallpaper(){
+SphereMapView::SphereMapView() : Wallpaper(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
-    cubeMap = CubeMap::createSimpleTextureCubemap();
+    sphereMap = SphereMap();
 }
 
-CubeMapView::~CubeMapView(){
+SphereMapView::~SphereMapView(){
     glDeleteProgram(mProgram);
 }
 
-void CubeMapView::render(){
+void SphereMapView::render(){
     glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -28,7 +28,7 @@ void CubeMapView::render(){
             1,
             GL_FALSE,
             (GLfloat*)&inverseViewProjection);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap.getTextureId());
+    glBindTexture(GL_TEXTURE_2D, sphereMap.getTextureId());
     //glActiveTexture(GL_TEXTURE0);
 
     Vertex vertices[3] = {

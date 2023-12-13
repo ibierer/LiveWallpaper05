@@ -33,8 +33,11 @@
 #include "Naive.cpp"
 #include "FlipFluid.cpp"
 #include "PicFlip.cpp"
+#include "EnvironmentMap.cpp"
 #include "CubeMap.cpp"
 #include "CubeMapView.cpp"
+#include "SphereMap.cpp"
+#include "SphereMapView.cpp"
 
 using std::string;
 using nlohmann::json;
@@ -71,7 +74,8 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
         }else if(type == "triangle"){
             //wallpaper = new Triangle();
             //wallpaper = new TriangleWithNormals();
-            wallpaper = new CubeMapView();
+            //wallpaper = new CubeMapView();
+            wallpaper = new SphereMapView();
         }else if(type == "graph"){
             wallpaper = new Graph(visualizationJSON["settings"]);
         }
