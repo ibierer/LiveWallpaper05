@@ -51,6 +51,8 @@ public:
     // Function to generate Mandelbrot fractal and store RGB values in the output array
     void generateMSPaintColors(_vec3<GLubyte>* pixelBuffer);
 
+    vec3 fetchFromSpectrum(const float& value);
+
 private:
 
     GLuint textureId;

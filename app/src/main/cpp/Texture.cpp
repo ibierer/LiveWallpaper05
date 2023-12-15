@@ -33,9 +33,13 @@ void Texture::generateMandelbrot(unsigned char* image) {
 
             // Store RGB values in the image array
             int index = 3 * (y * WIDTH + x);
-            image[index] = color * 100;            // Red channel
-            image[index + 1] = color * 100 % 256;  // Green channel
-            image[index + 2] = color * 100 % 256;  // Blue channel
+            //image[index] = color;            // Red channel
+            //image[index + 1] = color % 256;  // Green channel
+            //image[index + 2] = color % 256;  // Blue channel
+            //image[index] = color * 100;            // Red channel
+            //image[index + 1] = color * 100 % 256;  // Green channel
+            //image[index + 2] = color * 100 % 256;  // Blue channel
+            ((_vec3<unsigned char>*)image)[y * WIDTH + x] = fetchFromSpectrum((float)(5 * color) / COLOR_DEPTH);
         }
     }
 }
@@ -44,38 +48,7 @@ void Texture::generateMandelbrot(unsigned char* image) {
 void Texture::generateMSPaintColors(_vec3<GLubyte>* pixelBuffer) {
     for(int i = 0; i < HEIGHT; i++){
         for(int j = 0; j < WIDTH; j++){
-            vec3 rgb;
-            if(j < WIDTH / 6){
-                rgb = vec3(
-                        255.0f,
-                        255.0f * 6.0f * j / WIDTH,
-                        0.0f);
-            }else if(j < 2 * WIDTH / 6){
-                rgb = vec3(
-                        (255.0f * WIDTH - 255.0f * (6 * j - WIDTH)) / WIDTH,
-                        255.0f,
-                        0.0f);
-            }else if(j < 3 * WIDTH / 6){
-                rgb = vec3(
-                        0.0f,
-                        255.0f,
-                        255.0f * 6.0f * (j - WIDTH / 3) / WIDTH);
-            }else if(j < 4 * WIDTH / 6){
-                rgb = vec3(
-                        0.0f,
-                        255.0f - 255.0f * (6 * j - 3 * WIDTH) / WIDTH,
-                        255.0f);
-            }else if(j < 5 * WIDTH / 6){
-                rgb = vec3(
-                        255.0f * 6.0f * (j - 2 * WIDTH / 3) / WIDTH,
-                        0.0f,
-                        255.0f);
-            }else{
-                rgb = vec3(
-                        255.0f,
-                        0.0f,
-                        255.0f - 255.0f * (6 * j - 5 * WIDTH) / WIDTH);
-            }
+            vec3 rgb = fetchFromSpectrum((float)j / WIDTH);
             float ratio = (float)i / HEIGHT;
             float inverse = 1.0f - ratio;
             vec3 grey = vec3(127.0f);
@@ -140,4 +113,38 @@ Texture& Texture::operator=(const Texture& other) {
 
 GLuint Texture::getTextureId() {
     return textureId;
+}
+
+vec3 Texture::fetchFromSpectrum(const float &value) {
+    if(value < 1.0f / 6.0f){
+        return vec3(
+                255.0f,
+                255.0f * 6.0f * value,
+                0.0f);
+    }else if(value < 2.0f / 6.0f){
+        return vec3(
+                255.0f * (2.0f - 6.0f * value),
+                255.0f,
+                0.0f);
+    }else if(value < 3.0f / 6.0f){
+        return vec3(
+                0.0f,
+                255.0f,
+                255.0f * (6.0f * value - 2.0f));
+    }else if(value < 4.0f / 6.0f){
+        return vec3(
+                0.0f,
+                255.0f * (4.0f - 6.0f * value),
+                255.0f);
+    }else if(value < 5.0f / 6.0f){
+        return vec3(
+                255.0f * (6.0f * value - 4.0f),
+                0.0f,
+                255.0f);
+    }else{
+        return vec3(
+                255.0f,
+                0.0f,
+                255.0f * 6.0f * (1.0f - value));
+    }
 }
