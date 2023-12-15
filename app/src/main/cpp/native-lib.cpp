@@ -40,11 +40,12 @@
 #include "SphereMapView.cpp"
 #include "Texture.cpp"
 #include "TextureView.cpp"
+#include "RenderToTextureView.cpp"
 
 using std::string;
 using nlohmann::json;
 
-View* wallpaper = nullptr;
+View* view = nullptr;
 
 #if !defined(DYNAMIC_ES3)
 static GLboolean gl3stubInit() {
@@ -64,26 +65,27 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
     if (strstr(versionStr, "OpenGL ES 3.") && gl3stubInit()) {
         json visualizationJSON = json::parse(View::jstringToString(env, JSON));
         string type = visualizationJSON["type"];
-        if(wallpaper){
-            free(wallpaper);
+        if(view){
+            free(view);
         }
         if(type == "box"){
-            //wallpaper = new BoxView();
-            //wallpaper = new TriangleWithNormalsView();
-            //wallpaper = new CubeMapView();
-            //wallpaper = new SphereMapView();
-            wallpaper = new TextureView();
+            //view = new BoxView();
+            //view = new TriangleWithNormalsView();
+            //view = new CubeMapView();
+            //view = new SphereMapView();
+            //view = new TextureView();
+            view = new RenderToTextureView();
         }else if(type == "naive"){
-            wallpaper = new NaiveView();
+            view = new NaiveView();
         }else if(type == "picflip"){
-            wallpaper = new PicFlipView();
+            view = new PicFlipView();
         }else if(type == "triangle"){
-            wallpaper = new TriangleView();
+            view = new TriangleView();
         }else if(type == "graph"){
-            wallpaper = new GraphView(visualizationJSON["settings"]);
+            view = new GraphView(visualizationJSON["settings"]);
         }
         json rgba = visualizationJSON["background_color"];
-        wallpaper->backgroundColor = vec4(rgba["r"], rgba["g"], rgba["b"], rgba["a"]) / 255.0f;
+        view->backgroundColor = vec4(rgba["r"], rgba["g"], rgba["b"], rgba["a"]) / 255.0f;
         ALOGV("Using OpenGL ES 3.0 renderer");
     } else if (strstr(versionStr, "OpenGL ES 2.")) {
         //g_renderer = createES2Renderer();
@@ -95,28 +97,28 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_livewallpaper05_PreviewActivity_00024Companion_resize(JNIEnv *env, jobject thiz, jint width, jint height, jint orientation) {
-    if (wallpaper) {
-        wallpaper->width = width;
-        wallpaper->height = height;
-        wallpaper->orientation = orientation;
+    if (view) {
+        view->width = width;
+        view->height = height;
+        view->orientation = orientation;
         glViewport(0, 0, width, height);
-        wallpaper->calculatePerspective();
+        view->calculatePerspective();
     }
 }
 
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_livewallpaper05_PreviewActivity_00024Companion_step(JNIEnv *env, jobject thiz, jfloat acc_x, jfloat acc_y, jfloat acc_z, jfloat rot_x, jfloat rot_y, jfloat rot_z, jfloat rot_w, jfloat value) {
-    if (wallpaper) {
-        wallpaper->accelerometerVector = vec3(acc_x, acc_y, acc_z);
-        wallpaper->rotationVector = vec4(rot_x, rot_y, rot_z, rot_w);
-        wallpaper->val = value;
-        wallpaper->render();
+    if (view) {
+        view->accelerometerVector = vec3(acc_x, acc_y, acc_z);
+        view->rotationVector = vec4(rot_x, rot_y, rot_z, rot_w);
+        view->val = value;
+        view->render();
     }
 }
 
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_livewallpaper05_PreviewActivity_00024Companion_sendData(JNIEnv *env, jobject thiz, jfloat value) {
-    wallpaper->val = value;
+    view->val = value;
 }
