@@ -21,28 +21,30 @@
 #include "vectors.cpp"
 #include "Vertex.cpp"
 #include "VertexNormal.cpp"
-#include "Wallpaper.cpp"
-#include "Box.cpp"
-#include "Triangle.cpp"
-#include "TriangleWithNormals.cpp"
+#include "View.cpp"
+#include "BoxView.cpp"
+#include "TriangleView.cpp"
+#include "TriangleWithNormalsView.cpp"
 #include "ImplicitGrapher.cpp"
-#include "Graph.cpp"
-#include "Simulation.cpp"
+#include "GraphView.cpp"
+#include "SimulationView.cpp"
 #include "BarnesHut.cpp"
 #include "BruteForce.cpp"
-#include "Naive.cpp"
+#include "NaiveView.cpp"
 #include "FlipFluid.cpp"
-#include "PicFlip.cpp"
+#include "PicFlipView.cpp"
 #include "EnvironmentMap.cpp"
 #include "CubeMap.cpp"
 #include "CubeMapView.cpp"
 #include "SphereMap.cpp"
 #include "SphereMapView.cpp"
+#include "Texture.cpp"
+#include "TextureView.cpp"
 
 using std::string;
 using nlohmann::json;
 
-Wallpaper* wallpaper = nullptr;
+View* wallpaper = nullptr;
 
 #if !defined(DYNAMIC_ES3)
 static GLboolean gl3stubInit() {
@@ -53,31 +55,32 @@ static GLboolean gl3stubInit() {
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env, jobject thiz, jstring JSON) {
-    Wallpaper::printGlString("Version", GL_VERSION);
-    Wallpaper::printGlString("Vendor", GL_VENDOR);
-    Wallpaper::printGlString("Renderer", GL_RENDERER);
-    Wallpaper::printGlString("Extensions", GL_EXTENSIONS);
+    View::printGlString("Version", GL_VERSION);
+    View::printGlString("Vendor", GL_VENDOR);
+    View::printGlString("Renderer", GL_RENDERER);
+    View::printGlString("Extensions", GL_EXTENSIONS);
 
     const char* versionStr = (const char*)glGetString(GL_VERSION);
     if (strstr(versionStr, "OpenGL ES 3.") && gl3stubInit()) {
-        json visualizationJSON = json::parse(Wallpaper::jstringToString(env, JSON));
+        json visualizationJSON = json::parse(View::jstringToString(env, JSON));
         string type = visualizationJSON["type"];
         if(wallpaper){
             free(wallpaper);
         }
         if(type == "box"){
-            wallpaper = new Box();
-        }else if(type == "naive"){
-            wallpaper = new Naive();
-        }else if(type == "picflip"){
-            wallpaper = new PicFlip();
-        }else if(type == "triangle"){
-            //wallpaper = new Triangle();
-            //wallpaper = new TriangleWithNormals();
+            //wallpaper = new BoxView();
+            //wallpaper = new TriangleWithNormalsView();
             //wallpaper = new CubeMapView();
-            wallpaper = new SphereMapView();
+            //wallpaper = new SphereMapView();
+            wallpaper = new TextureView();
+        }else if(type == "naive"){
+            wallpaper = new NaiveView();
+        }else if(type == "picflip"){
+            wallpaper = new PicFlipView();
+        }else if(type == "triangle"){
+            wallpaper = new TriangleView();
         }else if(type == "graph"){
-            wallpaper = new Graph(visualizationJSON["settings"]);
+            wallpaper = new GraphView(visualizationJSON["settings"]);
         }
         json rgba = visualizationJSON["background_color"];
         wallpaper->backgroundColor = vec4(rgba["r"], rgba["g"], rgba["b"], rgba["a"]) / 255.0f;

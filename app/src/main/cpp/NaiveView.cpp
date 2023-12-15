@@ -2,12 +2,12 @@
 // Created by Immanuel Bierer on 12/4/2023.
 //
 
-#include "Naive.h"
+#include "NaiveView.h"
 
 using std::min;
 using std::max;
 
-Naive::Naive() : Simulation(){
+NaiveView::NaiveView() : SimulationView(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
 
     glGenBuffers(1, mVB);
@@ -23,14 +23,14 @@ Naive::Naive() : Simulation(){
     seed(15.0f);
 }
 
-Naive::~Naive(){
+NaiveView::~NaiveView(){
     glDeleteProgram(mProgram);
     glDeleteVertexArrays(1, &mVBState);
     glDeleteBuffers(1, mVB);
     delete molecules;
 }
 
-void Naive::render(){
+void NaiveView::render(){
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
@@ -73,7 +73,7 @@ void Naive::render(){
     framesRendered++;
 }
 
-void Naive::populateGrid(const int& dataIndex){
+void NaiveView::populateGrid(const int& dataIndex){
     for (int i = 0; i < pNumCells; i++)
         numCellParticles[i] = 0;
 
@@ -115,7 +115,7 @@ void Naive::populateGrid(const int& dataIndex){
     }
 }
 
-void Naive::useGrid(const int& i, const int& dataIndex, int* const ids, int& count){
+void NaiveView::useGrid(const int& i, const int& dataIndex, int* const ids, int& count){
     count = 0;
     float px = ((vec3*)&molecules[i])[dataIndex].x + sphereRadiusPlusPointFive;
     float py = ((vec3*)&molecules[i])[dataIndex].y + sphereRadiusPlusPointFive;
@@ -148,7 +148,7 @@ void Naive::useGrid(const int& i, const int& dataIndex, int* const ids, int& cou
     }
 }
 
-bool Naive::seed(const float& radius) {
+bool NaiveView::seed(const float& radius) {
     setMoleculeCount(1000);
     molecules = new Molecule[moleculeCount];
     sphereRadius = radius;
@@ -183,14 +183,14 @@ bool Naive::seed(const float& radius) {
     return true;
 }
 
-float Naive::noPullBarrier(const float& x) {
+float NaiveView::noPullBarrier(const float& x) {
     if (x > 1.0f) {
         return 0.0f;
     }
     return 1000.0f * (x - 1.0f) * pow(x - 2.0f, 2.0f) / (x + 0.75f);
 }
 
-float Naive::f(const float& x) {
+float NaiveView::f(const float& x) {
     if (x > maxForceDistance) {
         return 0.0f;
     }
@@ -202,7 +202,7 @@ float Naive::f(const float& x) {
     }
 }
 
-inline void Naive::calculateForce(const int& i, const vec3& gravity, vec3& force, const vec3& position, const int& dataIndex){
+inline void NaiveView::calculateForce(const int& i, const vec3& gravity, vec3& force, const vec3& position, const int& dataIndex){
     force = gravity;
     int ids[1000]; // 700 may be high enough
     int count = 0;
@@ -223,7 +223,7 @@ inline void Naive::calculateForce(const int& i, const vec3& gravity, vec3& force
     }
 }
 
-void Naive::simulate(const vec3& gravity) {
+void NaiveView::simulate(const vec3& gravity) {
     for (int i = 0; i < moleculeCount; i++) {
         calculateForce(i, gravity, molecules[i].sumForceInitial, molecules[i].position, 0);
         molecules[i].positionFinal = molecules[i].position + deltaTime * (molecules[i].sumForceInitial * 0.5f * deltaTime + molecules[i].velocity);

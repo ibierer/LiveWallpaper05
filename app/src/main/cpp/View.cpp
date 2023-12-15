@@ -2,21 +2,21 @@
 // Created by Immanuel Bierer on 12/4/2023.
 //
 
-#include "Wallpaper.h"
+#include "View.h"
 
-Wallpaper::Wallpaper() : framesRendered(0), val(0), mEglContext(eglGetCurrentContext()){
+View::View() : framesRendered(0), val(0), mEglContext(eglGetCurrentContext()){
 
 }
 
-Wallpaper::~Wallpaper(){
+View::~View(){
     if (eglGetCurrentContext() != mEglContext) return;
 }
 
-void Wallpaper::render(){
+void View::render(){
 
 }
 
-void Wallpaper::calculatePerspective() {
+void View::calculatePerspective() {
     // Compute the window aspect ratio
     float aspect = (float)width / (float)height;
     float maxViewDegrees = 60.0f;
@@ -42,7 +42,7 @@ void Wallpaper::calculatePerspective() {
     orientationAdjustedPerspective = perspective * rotation;
 }
 
-string Wallpaper::jstringToString(JNIEnv *env, jstring jStr) {
+string View::jstringToString(JNIEnv *env, jstring jStr) {
     if (jStr == nullptr) {
         return ""; // Handle null jstring gracefully
     }
@@ -55,7 +55,7 @@ string Wallpaper::jstringToString(JNIEnv *env, jstring jStr) {
 }
 
 // returns true if a GL error occurred
-bool Wallpaper::checkGlError(const char* funcName) {
+bool View::checkGlError(const char* funcName) {
     GLint err = glGetError();
     if (err != GL_NO_ERROR) {
         ALOGE("GL error after %s(): 0x%08x\n", funcName, err);
@@ -64,7 +64,7 @@ bool Wallpaper::checkGlError(const char* funcName) {
     return false;
 }
 
-GLuint Wallpaper::createShader(const GLenum& shaderType, const char* src) {
+GLuint View::createShader(const GLenum& shaderType, const char* src) {
     GLuint shader = glCreateShader(shaderType);
     if (!shader) {
         checkGlError("glCreateShader");
@@ -94,7 +94,7 @@ GLuint Wallpaper::createShader(const GLenum& shaderType, const char* src) {
     return shader;
 }
 
-GLuint Wallpaper::createProgram(const char* const vtxSrc, const char* const fragSrc) {
+GLuint View::createProgram(const char* const vtxSrc, const char* const fragSrc) {
     GLuint vtxShader = 0;
     GLuint fragShader = 0;
     GLuint program = 0;
@@ -138,7 +138,7 @@ GLuint Wallpaper::createProgram(const char* const vtxSrc, const char* const frag
     return program;
 }
 
-const bool Wallpaper::supportsES32(){
+const bool View::supportsES32(){
     const GLenum& shaderType = GL_VERTEX_SHADER;
     const char* src =
             "#version 320 es\n"
@@ -146,7 +146,7 @@ const bool Wallpaper::supportsES32(){
             "}\n";
     GLuint shader = glCreateShader(shaderType);
     if (!shader) {
-        Wallpaper::checkGlError("glCreateShader");
+        View::checkGlError("glCreateShader");
         return false;
     }
     glShaderSource(shader, 1, &src, NULL);
@@ -178,7 +178,7 @@ const bool Wallpaper::supportsES32(){
     return true;
 }
 
-void Wallpaper::printGlString(const char* const name, const GLenum& s) {
+void View::printGlString(const char* const name, const GLenum& s) {
     const char* v = (const char*)glGetString(s);
     ALOGV("GL %s: %s\n", name, v);
 }

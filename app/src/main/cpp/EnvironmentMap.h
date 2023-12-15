@@ -6,7 +6,9 @@
 #define LIVEWALLPAPER05_ENVIRONMENTMAP_H
 
 
-class EnvironmentMap {
+#include "Texture.h"
+
+class EnvironmentMap : public Texture {
 public:
 
 private:

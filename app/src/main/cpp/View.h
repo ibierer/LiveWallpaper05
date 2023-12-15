@@ -2,8 +2,8 @@
 // Created by Immanuel Bierer on 12/4/2023.
 //
 
-#ifndef LIVEWALLPAPER05_WALLPAPER_H
-#define LIVEWALLPAPER05_WALLPAPER_H
+#ifndef LIVEWALLPAPER05_VIEW_H
+#define LIVEWALLPAPER05_VIEW_H
 
 
 #include <jni.h>
@@ -18,7 +18,7 @@
 using std::string;
 using cy::Matrix4;
 
-class Wallpaper{
+class View {
 public:
 
     int framesRendered;
@@ -76,9 +76,9 @@ public:
             {{ 0.5f, -0.5f, -0.5f}}
     };
 
-    Wallpaper();
+    View();
 
-    ~Wallpaper();
+    ~View();
 
     virtual void render();
 
@@ -102,4 +102,4 @@ private:
 };
 
 
-#endif //LIVEWALLPAPER05_WALLPAPER_H
+#endif //LIVEWALLPAPER05_VIEW_H

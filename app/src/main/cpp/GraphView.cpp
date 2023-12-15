@@ -2,14 +2,14 @@
 // Created by Immanuel Bierer on 12/4/2023.
 //
 
-#include "Graph.h"
+#include "GraphView.h"
 
-Graph::Graph() : Wallpaper(), implicitGrapher(ImplicitGrapher(20)){
+GraphView::GraphView() : View(), implicitGrapher(ImplicitGrapher(20)){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     implicitGrapher.surfaceEquation = 1;
 }
 
-Graph::Graph(const string& equation) : Wallpaper(), implicitGrapher(ImplicitGrapher(20)){
+GraphView::GraphView(const string& equation) : View(), implicitGrapher(ImplicitGrapher(20)){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     implicitGrapher.surfaceEquation = implicitGrapher.numOfEquationsInMemory;
     implicitGrapher.memoryEquations[implicitGrapher.numOfEquationsInMemory][1] = equation;
@@ -17,11 +17,11 @@ Graph::Graph(const string& equation) : Wallpaper(), implicitGrapher(ImplicitGrap
     implicitGrapher.numOfEquationsInMemory++;
 }
 
-Graph::~Graph(){
+GraphView::~GraphView(){
     glDeleteProgram(mProgram);
 }
 
-void Graph::render(){
+void GraphView::render(){
     glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

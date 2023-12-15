@@ -6,9 +6,9 @@
 #define LIVEWALLPAPER05_BRUTEFORCE_H
 
 
-#include "Simulation.h"
+#include "SimulationView.h"
 
-class BruteForce : public Simulation {
+class BruteForce : public SimulationView {
 
 };
 

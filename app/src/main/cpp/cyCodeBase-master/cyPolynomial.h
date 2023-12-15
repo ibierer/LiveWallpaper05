@@ -1,45 +1,45 @@
 // cyCodeBase by Cem Yuksel
 // [www.cemyuksel.com]
 //-------------------------------------------------------------------------------
-//! \file   cyPolynomial.h 
+//! \file   cyPolynomial.h
 //! \author Cem Yuksel
-//! 
+//!
 //! \brief  Polynomial operations and solver class and functions.
 //!
 //! This file includes the implementation of the numerical polynomial solver
 //! described in
-//! 
+//!
 //! Cem Yuksel. 2022. High-Performance Polynomial Root Finding for Graphics.
-//! Proc. ACM Comput. Graph. Interact. Tech. 5, 3, Article 7 (July 2022), 15 pages.
-//! 
+//! Proc. ACM Comput. GraphView. Interact. Tech. 5, 3, Article 7 (July 2022), 15 pages.
+//!
 //! http://www.cemyuksel.com/?x=polynomials
-//! 
+//!
 //! The polynomial functions take an array of polynomial coefficients in the
 //! order of increasing degrees.
-//! 
+//!
 //-------------------------------------------------------------------------------
 //
 // Copyright (c) 2022, Cem Yuksel <cem@cemyuksel.com>
 // All rights reserved.
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy 
-// of this software and associated documentation files (the "Software"), to deal 
-// in the Software without restriction, including without limitation the rights 
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
-// copies of the Software, and to permit persons to whom the Software is 
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all 
+//
+// The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-// 
+//
 //-------------------------------------------------------------------------------
 
 #ifndef _CY_POLYNOMIAL_H_INCLUDED_
@@ -58,12 +58,12 @@ namespace cy {
 //!
 //! These functions can be used for evaluating polynomials and their derivatives,
 //! computing their derivatives, deflating them, and inflating them.
-//! 
+//!
 /////////////////////////////////////////////////////////////////////////////////
 //-------------------------------------------------------------------------------
 
 //! Evaluates the given polynomial of degree `N` at `x`.
-//! 
+//!
 //! The coefficients in the `coef` array must be in the order of increasing degrees.
 template <int N, typename ftype>
 inline ftype PolynomialEval( ftype const coef[N+1], ftype x ) { ftype r = coef[N]; for ( int i=N-1; i>=0; --i ) r = r*x + coef[i]; return r; }
@@ -71,7 +71,7 @@ inline ftype PolynomialEval( ftype const coef[N+1], ftype x ) { ftype r = coef[N
 //-------------------------------------------------------------------------------
 
 //! Evaluates the given polynomial and its derivative at `x`.
-//! 
+//!
 //! This function does not require computing the derivative of the polynomial,
 //! but it is slower than evaluating the polynomial and its precomputed derivative separately.
 //! Therefore, it is not recommended when the polynomial and it derivative are computed repeatedly.
@@ -95,7 +95,7 @@ inline ftype PolynomialEvalWithDeriv( ftype &derivativeValue, ftype const coef[N
 //-------------------------------------------------------------------------------
 
 //! Computes the polynomial's derivative and sets the coefficients of the `deriv` array.
-//! 
+//!
 //! Note that a degree N polynomial's derivative is degree `N-1` and has `N` coefficients.
 //! The coefficients are in the order of increasing degrees.
 template <int N, typename ftype>
@@ -104,13 +104,13 @@ inline void PolynomialDerivative( ftype deriv[N], ftype const coef[N+1] ) { deri
 //-------------------------------------------------------------------------------
 
 //! Deflates the given polynomial using one of its known roots.
-//! 
+//!
 //! Stores the coefficients of the deflated polynomial in the `defPoly` array.
 //! Let f(x) represent the given polynomial.
 //! This computes the deflated polynomial g(x) of a lower degree such that
-//! 
+//!
 //! `f(x) = (x - root) * g(x)`.
-//! 
+//!
 //! The given root must be a valid root of the given polynomial.
 //! Note that the deflated polynomial has degree `N-1` with `N` coefficients.
 //! The coefficients are in the order of increasing degrees.
@@ -123,13 +123,13 @@ template <int N, typename ftype> inline void PolynomialDeflate( ftype defPoly[N]
 //-------------------------------------------------------------------------------
 
 //! Inflates the given polynomial using the given root.
-//! 
+//!
 //! Stores the coefficients of the inflated polynomial in the `infPoly` array.
 //! Let f(x) represent the given polynomial.
 //! This computes the inflated polynomial g(x) of a higher degree such that
-//! 
+//!
 //! `g(x) = (x - root) * f(x)`.
-//! 
+//!
 //! Note that the inflated polynomial has degree `N+1` with `N+2` coefficients.
 //! The coefficients are in the order of increasing degrees.
 template <int N, typename ftype> inline void PolynomialInflate( ftype infPoly[N+2], ftype const coef[N+1], ftype root )
@@ -142,7 +142,7 @@ template <int N, typename ftype> inline void PolynomialInflate( ftype infPoly[N+
 //-------------------------------------------------------------------------------
 /////////////////////////////////////////////////////////////////////////////////
 //!@{
-//! 
+//!
 //! @name Polynomial Root Finding Functions
 //!
 //! These functions find polynomial roots.
@@ -151,16 +151,16 @@ template <int N, typename ftype> inline void PolynomialInflate( ftype infPoly[N+
 //! By default, they use Newton iterations defined in `RootFinderNewton` as their
 //! numerical root finding method, but they can also be used with a custom class
 //! that provides the same interface.
-//! 
+//!
 //! The given `xError` parameter is passed on to the numerical root finder.
 //! The default value is 0, which aims to find the root up to numerical precision.
 //! This might be too slow. Therefore, for a high-performance implementation,
 //! it is recommended to use a non-zero error threshold for `xError`.
-//! 
+//!
 //! If `boundError` is false (the default value), `RootFinderNewton` does not
 //! guarantee satisfying the error bound `xError`, but it almost always does.
 //! Keeping `boundError` false is recommended for improved performance.
-//! 
+//!
 /////////////////////////////////////////////////////////////////////////////////
 //-------------------------------------------------------------------------------
 
@@ -229,7 +229,7 @@ _CY_POLY_TEMPLATE_A bool QuadraticHasRoot ( ftype const coef[3] ) { return coef[
 
 //! Calls the given `callback` function for each root of the given polynomial between `xMin` and `xMax` in increasing order.
 //! The `callback` function should have the following form:
-//! 
+//!
 //! `bool RootCallback( ftype root );`
 //!
 //! If the `callback` function returns true, root finding is terminated without finding any additional roots.
@@ -243,7 +243,7 @@ _CY_POLY_TEMPLATE_AC bool QuadraticForEachRoot ( RootCallback callback, ftype co
 
 //! Calls the given `callback` function for each root of the given polynomial in increasing order.
 //! The `callback` function should have the following form:
-//! 
+//!
 //! `bool RootCallback( ftype root );`
 //!
 //! If the `callback` function returns true, root finding is terminated without finding any additional roots.
@@ -267,7 +267,7 @@ _CY_POLY_TEMPLATE_AC bool QuadraticForEachRoot ( RootCallback callback, ftype co
 //!
 //! This class can be used for easily generating and manipulating polynomials.
 //! It also offers interfaces to the polynomial evaluation and root finding functions.
-//! 
+//!
 /////////////////////////////////////////////////////////////////////////////////
 template < typename ftype, int N>
 class Polynomial

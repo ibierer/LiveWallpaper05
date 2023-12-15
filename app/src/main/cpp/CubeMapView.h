@@ -8,7 +8,7 @@
 
 #include "CubeMap.h"
 
-class CubeMapView : public Wallpaper {
+class CubeMapView : public View {
 public:
 
     GLuint mProgram;

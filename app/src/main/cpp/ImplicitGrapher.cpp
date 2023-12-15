@@ -1127,7 +1127,7 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(ImplicitGrapher& gra
         float length = (vectorPointsPositive) ? -distance(vec3(_vertices[i].n)) : distance(vec3(_vertices[i].n));
         _vertices[i].n /= length;
     }
-    //Create Triangle Primitives
+    //Create TriangleView Primitives
     _numIndices = 0;
     int triangleCount = 0;
     for (int i = 0; i < groupSegmentCounter; i++) {

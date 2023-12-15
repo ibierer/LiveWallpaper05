@@ -2,13 +2,13 @@
 // Created by Immanuel Bierer on 12/4/2023.
 //
 
-#ifndef LIVEWALLPAPER05_NAIVE_H
-#define LIVEWALLPAPER05_NAIVE_H
+#ifndef LIVEWALLPAPER05_NAIVEVIEW_H
+#define LIVEWALLPAPER05_NAIVEVIEW_H
 
 
-#include "Simulation.h"
+#include "SimulationView.h"
 
-class Naive : public Simulation{
+class NaiveView : public SimulationView{
 public:
 
     GLuint mProgram;
@@ -49,9 +49,9 @@ public:
 
     void simulate(const vec3& gravity);
 
-    Naive();
+    NaiveView();
 
-    ~Naive();
+    ~NaiveView();
 
     void render() override;
 
@@ -109,4 +109,4 @@ private:
 };
 
 
-#endif //LIVEWALLPAPER05_NAIVE_H
+#endif //LIVEWALLPAPER05_NAIVEVIEW_H

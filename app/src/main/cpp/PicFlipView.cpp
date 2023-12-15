@@ -2,9 +2,9 @@
 // Created by Immanuel Bierer on 12/4/2023.
 //
 
-#include "PicFlip.h"
+#include "PicFlipView.h"
 
-PicFlip::PicFlip() : Simulation(){
+PicFlipView::PicFlipView() : SimulationView(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
 
     glGenBuffers(1, mVB);
@@ -20,18 +20,18 @@ PicFlip::PicFlip() : Simulation(){
     setupScene();
 }
 
-PicFlip::~PicFlip(){
+PicFlipView::~PicFlipView(){
 
 }
 
-void PicFlip::simulate(const vec3& acceleration){
+void PicFlipView::simulate(const vec3& acceleration){
     fluid->simulate(
             fluid->dt, acceleration, fluid->flipRatio, fluid->numPressureIters, fluid->numParticleIters,
             fluid->overRelaxation, fluid->compensateDrift, fluid->separateParticles);
     fluid->frameNr++;
 }
 
-void PicFlip::setupScene(){
+void PicFlipView::setupScene(){
 
     simHeight = 3.0;
     cScale = canvas.height / simHeight;
@@ -102,7 +102,7 @@ void PicFlip::setupScene(){
     }
 }
 
-void PicFlip::render() {
+void PicFlipView::render() {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);

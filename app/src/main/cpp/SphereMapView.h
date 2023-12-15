@@ -8,7 +8,7 @@
 
 #include "SphereMap.h"
 
-class SphereMapView : public Wallpaper {
+class SphereMapView : public View {
 public:
 
     GLuint mProgram;

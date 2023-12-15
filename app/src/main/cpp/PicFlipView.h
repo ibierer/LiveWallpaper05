@@ -2,13 +2,14 @@
 // Created by Immanuel Bierer on 12/4/2023.
 //
 
-#ifndef LIVEWALLPAPER05_BOX_H
-#define LIVEWALLPAPER05_BOX_H
+#ifndef LIVEWALLPAPER05_PICFLIPVIEW_H
+#define LIVEWALLPAPER05_PICFLIPVIEW_H
 
 
-#include "Wallpaper.h"
+#include "SimulationView.h"
+#include "FlipFluid.h"
 
-class Box : public Wallpaper {
+class PicFlipView : public SimulationView{
 public:
 
     GLuint mProgram;
@@ -35,14 +36,37 @@ public:
             "    outColor = color;\n"
             "}\n";
 
-    Box();
-
-    ~Box();
-
     void render() override;
 
+    PicFlipView();
+
+    ~PicFlipView();
+
+    FlipFluid* fluid;
+
+    void simulate(const vec3& acceleration);
+
+    void setupScene();
+
 private:
+
+    struct {
+
+        const int width = 1000;
+
+        const int height = 1000;
+
+    } canvas;
+
+    float simHeight;
+
+    float cScale;
+
+    float simWidth;
+
+    float simDepth;
+
 };
 
 
-#endif //LIVEWALLPAPER05_BOX_H
+#endif //LIVEWALLPAPER05_PICFLIPVIEW_H

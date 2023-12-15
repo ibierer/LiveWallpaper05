@@ -2,9 +2,9 @@
 // Created by Immanuel Bierer on 12/4/2023.
 //
 
-#include "Box.h"
+#include "BoxView.h"
 
-Box::Box() : Wallpaper(){
+BoxView::BoxView() : View(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
 
     glGenBuffers(1, mVB);
@@ -18,13 +18,13 @@ Box::Box() : Wallpaper(){
                           (const GLvoid*)offsetof(Vertex, v));
 }
 
-Box::~Box(){
+BoxView::~BoxView(){
     glDeleteProgram(mProgram);
     glDeleteVertexArrays(1, &mVBState);
     glDeleteBuffers(1, mVB);
 }
 
-void Box::render(){
+void BoxView::render(){
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);

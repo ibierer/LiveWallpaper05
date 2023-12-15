@@ -4,7 +4,7 @@
 
 #include "SphereMapView.h"
 
-SphereMapView::SphereMapView() : Wallpaper(){
+SphereMapView::SphereMapView() : View() {
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     sphereMap = SphereMap();
 }

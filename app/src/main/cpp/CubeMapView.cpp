@@ -4,7 +4,7 @@
 
 #include "CubeMapView.h"
 
-CubeMapView::CubeMapView() : Wallpaper(){
+CubeMapView::CubeMapView() : View(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     cubeMap = CubeMap::createSimpleTextureCubemap();
 }

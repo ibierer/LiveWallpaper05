@@ -6,9 +6,9 @@
 #define LIVEWALLPAPER05_BARNESHUT_H
 
 
-#include "Simulation.h"
+#include "SimulationView.h"
 
-class BarnesHut : public Simulation {
+class BarnesHut : public SimulationView {
 
 };
 
