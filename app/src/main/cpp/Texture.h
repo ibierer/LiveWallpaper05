@@ -6,18 +6,30 @@
 #define LIVEWALLPAPER05_TEXTURE_H
 
 
+#include <complex>
+
 class Texture {
 public:
 
-    enum imageOption {
+    enum ImageOption {
         MS_PAINT_COLORS,
-        MANDLEBROT
+        MANDELBROT
     };
+
+    // Image dimensions
+    const int WIDTH = 1536;
+    const int HEIGHT = 1536;
+
+    // Color depth (8-bit per channel)
+    const int COLOR_DEPTH = 256;
+
+    // Maximum number of iterations for Mandelbrot algorithm
+    const int MAX_ITERATIONS = 1000;
 
     // Default Constructor
     Texture();
 
-    Texture(imageOption option);
+    Texture(ImageOption option);
 
     // Destructor
     ~Texture();
@@ -30,26 +42,14 @@ public:
 
     GLuint getTextureId();
 
-    // Function to generate MS Paint color picker image and store RGB values in the output array
-    void generateMSPaintColors(_vec3<GLubyte>* pixelBuffer);
+    // Function to map a value from one range to another
+    double map(double value, double in_min, double in_max, double out_min, double out_max);
 
     // Function to generate Mandelbrot fractal and store RGB values in the output array
     void generateMandelbrot(unsigned char* image);
 
-protected:
-
-    // Image dimensions
-    const int WIDTH = 1536;
-    const int HEIGHT = 1536;
-
-    // Color depth (8-bit per channel)
-    const int COLOR_DEPTH = 256;
-
-    // Maximum number of iterations for Mandelbrot algorithm
-    const int MAX_ITERATIONS = 1000;
-
-    // Function to map a value from one range to another
-    double map(double value, double in_min, double in_max, double out_min, double out_max);
+    // Function to generate Mandelbrot fractal and store RGB values in the output array
+    void generateMSPaintColors(_vec3<GLubyte>* pixelBuffer);
 
 private:
 

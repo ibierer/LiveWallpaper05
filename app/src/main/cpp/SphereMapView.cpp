@@ -6,7 +6,7 @@
 
 SphereMapView::SphereMapView() : View() {
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
-    sphereMap = SphereMap(Texture::MANDLEBROT);
+    sphereMap = SphereMap(Texture::MANDELBROT);
 }
 
 SphereMapView::~SphereMapView(){

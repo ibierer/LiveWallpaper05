@@ -4,66 +4,13 @@
 
 #include "Texture.h"
 
-#include <complex>
-
-Texture::Texture(){
-    *this = SphereMap(Texture::MS_PAINT_COLORS);
+// Function to map a value from one range to another
+double Texture::map(double value, double in_min, double in_max, double out_min, double out_max) {
+    return (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
-Texture::Texture(imageOption option){
-    glGenTextures(1, &textureId);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
-    const int resolution = 1536;
-    _vec3<GLubyte>* pixelBuffer = (_vec3<GLubyte>*)malloc(resolution * resolution * sizeof(_vec3<GLubyte>));
-    switch(option){
-        case MS_PAINT_COLORS:
-            generateMSPaintColors(pixelBuffer);
-            break;
-        case MANDLEBROT:
-            generateMandelbrot((unsigned char*)pixelBuffer);
-            break;
-    }
-    glTexImage2D(
-            GL_TEXTURE_2D,
-            0,
-            GL_RGB,
-            resolution,
-            resolution,
-            0,
-            GL_RGB,
-            GL_UNSIGNED_BYTE,
-            pixelBuffer);
-    free(pixelBuffer);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-}
-
-// Destructor
-Texture::~Texture() {
-
-}
-
-// Copy Constructor
-Texture::Texture(const Texture& other) : textureId(other.textureId) {
-
-}
-
-// Assignment Operator
-Texture& Texture::operator=(const Texture& other) {
-    if (this != &other) {
-        textureId = other.textureId;
-    }
-
-    return *this;
-}
-
-GLuint Texture::getTextureId() {
-    return textureId;
-}
-
-void Texture::generateMandelbrot(unsigned char *image) {
+// Function to generate Mandelbrot fractal and store RGB values in the output array
+void Texture::generateMandelbrot(unsigned char* image) {
     for (int y = 0; y < HEIGHT; ++y) {
         for (int x = 0; x < WIDTH; ++x) {
             // Map pixel coordinates to the complex plane
@@ -93,6 +40,7 @@ void Texture::generateMandelbrot(unsigned char *image) {
     }
 }
 
+// Function to generate Mandelbrot fractal and store RGB values in the output array
 void Texture::generateMSPaintColors(_vec3<GLubyte>* pixelBuffer) {
     for(int i = 0; i < HEIGHT; i++){
         for(int j = 0; j < WIDTH; j++){
@@ -137,6 +85,59 @@ void Texture::generateMSPaintColors(_vec3<GLubyte>* pixelBuffer) {
     }
 }
 
-double Texture::map(double value, double in_min, double in_max, double out_min, double out_max) {
-    return (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+Texture::Texture(){
+    *this = Texture(MS_PAINT_COLORS);
+}
+
+Texture::Texture(ImageOption option){
+    glGenTextures(1, &textureId);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
+    const int resolution = 1536;
+    _vec3<GLubyte>* pixelBuffer = (_vec3<GLubyte>*)malloc(resolution * resolution * sizeof(_vec3<GLubyte>));
+    switch(option){
+        case MS_PAINT_COLORS:
+            generateMSPaintColors(pixelBuffer);
+            break;
+        case MANDELBROT:
+            generateMandelbrot((unsigned char*)pixelBuffer);
+            break;
+    }
+    glTexImage2D(
+            GL_TEXTURE_2D,
+            0,
+            GL_RGB,
+            resolution,
+            resolution,
+            0,
+            GL_RGB,
+            GL_UNSIGNED_BYTE,
+            pixelBuffer);
+    free(pixelBuffer);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+}
+
+// Destructor
+Texture::~Texture() {
+
+}
+
+// Copy Constructor
+Texture::Texture(const Texture& other) : textureId(other.textureId) {
+
+}
+
+// Assignment Operator
+Texture& Texture::operator=(const Texture& other) {
+    if (this != &other) {
+        textureId = other.textureId;
+    }
+
+    return *this;
+}
+
+GLuint Texture::getTextureId() {
+    return textureId;
 }

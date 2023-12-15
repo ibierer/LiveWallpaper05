@@ -80,6 +80,7 @@ public:
             "in vec3 position;\n"
             "out vec4 outColor;\n"
             "void main() {\n"
+            //"    outColor = vec4(1.0f, 0.0f, 0.0f, 1.0f); \n"
             "    outColor = texture(environmentTexture, position.xy); \n"
             "}\n";
 
@@ -90,7 +91,6 @@ public:
     void render() override;
 
 private:
-
 };
 
 
