@@ -21,7 +21,6 @@ public:
             GL_COLOR_ATTACHMENT0
     };
 
-    // Default contsructor
     FBO() {
 
     }
@@ -81,17 +80,25 @@ public:
 
 class FBOWithStencilBuffer : public FBO {
 public:
+
     GLuint depthAndStencilRenderBuffer;
 
-    FBOWithStencilBuffer(const int& width, const int& height) : FBO() {
+    FBOWithStencilBuffer() {
+
+    }
+
+    FBOWithStencilBuffer(const int& width, const int& height){
         initialize(width, height);
     }
 
     // Copy constructor
-    FBOWithStencilBuffer(const FBOWithStencilBuffer& other) : FBOWithStencilBuffer(other.width, other.height) {
+    FBOWithStencilBuffer(const FBOWithStencilBuffer& other) : FBO() {
         // Shallow copy: sharing OpenGL resources
         frameBuffer = other.frameBuffer;
         renderedTexture = other.renderedTexture;
+        width = other.width;
+        height = other.height;
+        depthAndStencilRenderBuffer = other.depthAndStencilRenderBuffer;
     }
 
     // Assignment operator
@@ -102,6 +109,7 @@ public:
             renderedTexture = other.renderedTexture;
             width = other.width;
             height = other.height;
+            depthAndStencilRenderBuffer = other.depthAndStencilRenderBuffer;
         }
         return *this;
     }
