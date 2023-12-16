@@ -41,6 +41,6 @@ void CubeMapView::render(){
     };
     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)&vertices[0].v);
-    glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, indices);
+    glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(unsigned int), GL_UNSIGNED_INT, indices);
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
 }

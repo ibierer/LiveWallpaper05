@@ -41,6 +41,7 @@
 #include "Texture.cpp"
 #include "TextureView.cpp"
 #include "RenderToTextureView.cpp"
+#include "FBO.cpp"
 
 using std::string;
 using nlohmann::json;
