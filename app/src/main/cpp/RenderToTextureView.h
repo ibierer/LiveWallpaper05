@@ -13,10 +13,15 @@
 
 class FBO {
 public:
+
     GLuint frameBuffer;
+
     GLuint renderedTexture;
+
     GLsizei width;
+
     GLsizei height;
+
     const GLenum drawBuffers[1] = {
             GL_COLOR_ATTACHMENT0
     };
@@ -54,7 +59,7 @@ public:
         glDeleteFramebuffers(1, &frameBuffer);
     }
 
-    int initialize(int width, int height) {
+    int initialize(const int& width, const int& height) {
         this->width = width;
         this->height = height;
         glGenFramebuffers(1, &frameBuffer);
