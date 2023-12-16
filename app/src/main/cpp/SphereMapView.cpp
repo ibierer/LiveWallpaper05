@@ -4,9 +4,8 @@
 
 #include "SphereMapView.h"
 
-SphereMapView::SphereMapView() : View() {
+SphereMapView::SphereMapView() : View(), sphereMap(SphereMap(Texture::MANDELBROT)) {
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
-    sphereMap = SphereMap(Texture::MANDELBROT);
 }
 
 SphereMapView::~SphereMapView(){

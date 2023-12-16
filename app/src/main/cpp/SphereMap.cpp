@@ -4,11 +4,6 @@
 
 #include "SphereMap.h"
 
-// Default Constructor
-SphereMap::SphereMap() {
-
-}
-
 SphereMap::SphereMap(Texture::ImageOption option){
     generateTexture(option);
 }
