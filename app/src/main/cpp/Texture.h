@@ -16,20 +16,14 @@ public:
         MANDELBROT
     };
 
-    // Image dimensions
-    const int WIDTH = 1536;
-    const int HEIGHT = 1536;
+    //int width;
 
-    // Color depth (8-bit per channel)
-    const int COLOR_DEPTH = 256;
-
-    // Maximum number of iterations for Mandelbrot algorithm
-    const int MAX_ITERATIONS = 1000;
+    //int height;
 
     // Default Constructor
     Texture();
 
-    Texture(ImageOption option);
+    Texture(const ImageOption& option);
 
     // Destructor
     ~Texture();
@@ -42,20 +36,21 @@ public:
 
     GLuint getTextureId();
 
-    // Function to map a value from one range to another
-    double map(const double& value, const double& in_min, const double& in_max, const double& out_min, const double& out_max);
+    // Function to generate Mandelbrot fractal and store RGB values in the output array
+    void generateMandelbrot(unsigned char* image, const int& WIDTH, const int& HEIGHT);
 
     // Function to generate Mandelbrot fractal and store RGB values in the output array
-    void generateMandelbrot(unsigned char* image);
-
-    // Function to generate Mandelbrot fractal and store RGB values in the output array
-    void generateMSPaintColors(_vec3<GLubyte>* pixelBuffer);
+    void generateMSPaintColors(_vec3<GLubyte>* pixelBuffer, const int& WIDTH, const int& HEIGHT);
 
     static vec3 fetchFromSpectrum(const float& value);
 
-private:
+protected:
+
+    void generateTexture(const ImageOption& option);
 
     GLuint textureId;
+
+private:
 
 };
 

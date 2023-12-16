@@ -10,16 +10,21 @@ SphereMap::SphereMap() {
 }
 
 SphereMap::SphereMap(Texture::ImageOption option){
+    //generateTexture(option);
     glGenTextures(1, &textureId);
     glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
-    const int resolution = 1536;
-    _vec3<GLubyte>* pixelBuffer = (_vec3<GLubyte>*)malloc(resolution * resolution * sizeof(_vec3<GLubyte>));
+    int resolution;
+    _vec3<GLubyte>* pixelBuffer;
     switch(option){
         case MS_PAINT_COLORS:
-            generateMSPaintColors(pixelBuffer);
+            resolution = 1536;
+            pixelBuffer = (_vec3<GLubyte>*)malloc(resolution * resolution * sizeof(_vec3<GLubyte>));
+            generateMSPaintColors(pixelBuffer, resolution, resolution);
             break;
         case MANDELBROT:
-            generateMandelbrot((unsigned char*)pixelBuffer);
+            resolution = 1024;
+            pixelBuffer = (_vec3<GLubyte>*)malloc(resolution * resolution * sizeof(_vec3<GLubyte>));
+            generateMandelbrot((unsigned char*)pixelBuffer, resolution, resolution);
             break;
     }
     glTexImage2D(
@@ -45,8 +50,8 @@ SphereMap::~SphereMap() {
 }
 
 // Copy Constructor
-SphereMap::SphereMap(const SphereMap& other) : textureId(other.textureId) {
-
+SphereMap::SphereMap(const SphereMap& other) {
+    textureId = other.textureId;
 }
 
 // Assignment Operator
@@ -56,8 +61,4 @@ SphereMap& SphereMap::operator=(const SphereMap& other) {
     }
 
     return *this;
-}
-
-GLuint SphereMap::getTextureId() {
-    return textureId;
 }

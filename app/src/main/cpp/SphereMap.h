@@ -23,11 +23,7 @@ public:
     // Assignment Operator
     SphereMap& operator=(const SphereMap& other);
 
-    GLuint getTextureId();
-
 private:
-
-    GLuint textureId;
 
 };
 

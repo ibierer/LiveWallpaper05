@@ -4,48 +4,79 @@
 
 #include "Texture.h"
 
-// Function to map a value from one range to another
-double Texture::map(const double& value, const double& in_min, const double& in_max, const double& out_min, const double& out_max) {
-    return (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+vec3 Texture::fetchFromSpectrum(const float &value) {
+    float index = value - std::floor(value);
+    if(index < 1.0f / 6.0f){
+        return 255.0f * vec3(
+                1.0f,
+                6.0f * index,
+                0.0f);
+    }else if(index < 2.0f / 6.0f){
+        return 255.0f * vec3(
+                2.0f - 6.0f * index,
+                1.0f,
+                0.0f);
+    }else if(index < 3.0f / 6.0f){
+        return 255.0f * vec3(
+                0.0f,
+                1.0f,
+                6.0f * index - 2.0f);
+    }else if(index < 4.0f / 6.0f){
+        return 255.0f * vec3(
+                0.0f,
+                4.0f - 6.0f * index,
+                1.0f);
+    }else if(index < 5.0f / 6.0f){
+        return 255.0f * vec3(
+                6.0f * index - 4.0f,
+                0.0f,
+                1.0f);
+    }else{
+        return 255.0f * vec3(
+                1.0f,
+                0.0f,
+                6.0f * (1.0f - index));
+    }
 }
 
 // Function to generate Mandelbrot fractal and store RGB values in the output array
-void Texture::generateMandelbrot(unsigned char* image) {
-    for (int y = 0; y < HEIGHT; ++y) {
-        for (int x = 0; x < WIDTH; ++x) {
+void Texture::generateMandelbrot(unsigned char* image, const int& WIDTH, const int& HEIGHT) {
+
+    // Maximum number of iterations for Mandelbrot algorithm
+    const int MAX_ITERATIONS = 1536;
+
+    for (int y = 0; y < HEIGHT; y++) {
+        for (int x = 0; x < WIDTH; x++) {
             // Map pixel coordinates to the complex plane
-            double real = map(x, 0, WIDTH, -2.0, 2.0);
-            double imag = map(y, 0, HEIGHT, -1.5, 1.5);
+            double minX = -2.0;
+            double maxX = 2.0;
+            double minY = -1.5;
+            double maxY = 1.5;
+            double real = minX + x * (maxX - minX) / (WIDTH - 1);
+            double imag = -1.5 + y * (maxY - minY) / (HEIGHT - 1);
 
             std::complex<double> c(real, imag);
-            std::complex<double> z(0, 0);
+            std::complex<double> z = 0;
 
-            int iteration = 0;
+            int iterations = 0;
 
-            // Iterate until the escape condition is met or maximum iterations are reached
-            while (std::abs(z) < 2.0 && iteration < MAX_ITERATIONS) {
+            // Iterate to check if the point is in the Mandelbrot set
+            while (iterations < MAX_ITERATIONS && abs(z) < 2) {
                 z = z * z + c;
-                ++iteration;
+                iterations++;
             }
 
-            // Map the iteration count to a color
-            int color = map(iteration, 0, MAX_ITERATIONS, 0, COLOR_DEPTH);
-
-            // Store RGB values in the image array
-            //int index = 3 * (y * WIDTH + x);
-            //image[index] = color;            // Red channel
-            //image[index + 1] = color % 256;  // Green channel
-            //image[index + 2] = color % 256;  // Blue channel
-            //image[index] = color * 100;            // Red channel
-            //image[index + 1] = color * 100 % 256;  // Green channel
-            //image[index + 2] = color * 100 % 256;  // Blue channel
-            ((_vec3<unsigned char>*)image)[y * WIDTH + x] = fetchFromSpectrum((float)(5 * color) / COLOR_DEPTH);
+            if(iterations == MAX_ITERATIONS){
+                ((_vec3<unsigned char>*)image)[y * WIDTH + x] = _vec3<unsigned char>(0, 0, 0);
+            }else{
+                ((_vec3<unsigned char>*)image)[y * WIDTH + x] = fetchFromSpectrum(0.005f * iterations);
+            }
         }
     }
 }
 
 // Function to generate Mandelbrot fractal and store RGB values in the output array
-void Texture::generateMSPaintColors(_vec3<GLubyte>* pixelBuffer) {
+void Texture::generateMSPaintColors(_vec3<GLubyte>* pixelBuffer, const int& WIDTH, const int& HEIGHT) {
     for(int i = 0; i < HEIGHT; i++){
         for(int j = 0; j < WIDTH; j++){
             vec3 rgb = fetchFromSpectrum((float)j / WIDTH);
@@ -62,34 +93,8 @@ Texture::Texture(){
     *this = Texture(MS_PAINT_COLORS);
 }
 
-Texture::Texture(ImageOption option){
-    glGenTextures(1, &textureId);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
-    const int resolution = 1536;
-    _vec3<GLubyte>* pixelBuffer = (_vec3<GLubyte>*)malloc(resolution * resolution * sizeof(_vec3<GLubyte>));
-    switch(option){
-        case MS_PAINT_COLORS:
-            generateMSPaintColors(pixelBuffer);
-            break;
-        case MANDELBROT:
-            generateMandelbrot((unsigned char*)pixelBuffer);
-            break;
-    }
-    glTexImage2D(
-            GL_TEXTURE_2D,
-            0,
-            GL_RGB,
-            resolution,
-            resolution,
-            0,
-            GL_RGB,
-            GL_UNSIGNED_BYTE,
-            pixelBuffer);
-    free(pixelBuffer);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+Texture::Texture(const ImageOption& option){
+    generateTexture(option);
 }
 
 // Destructor
@@ -115,36 +120,36 @@ GLuint Texture::getTextureId() {
     return textureId;
 }
 
-vec3 Texture::fetchFromSpectrum(const float &value) {
-    if(value < 1.0f / 6.0f){
-        return 255.0f * vec3(
-                1.0f,
-                6.0f * value,
-                0.0f);
-    }else if(value < 2.0f / 6.0f){
-        return 255.0f * vec3(
-                2.0f - 6.0f * value,
-                1.0f,
-                0.0f);
-    }else if(value < 3.0f / 6.0f){
-        return 255.0f * vec3(
-                0.0f,
-                1.0f,
-                6.0f * value - 2.0f);
-    }else if(value < 4.0f / 6.0f){
-        return 255.0f * vec3(
-                0.0f,
-                4.0f - 6.0f * value,
-                1.0f);
-    }else if(value < 5.0f / 6.0f){
-        return 255.0f * vec3(
-                6.0f * value - 4.0f,
-                0.0f,
-                1.0f);
-    }else{
-        return 255.0f * vec3(
-                1.0f,
-                0.0f,
-                6.0f * (1.0f - value));
+void Texture::generateTexture(const ImageOption& option) {
+    glGenTextures(1, &textureId);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
+    int resolution;
+    _vec3<GLubyte>* pixelBuffer;
+    switch(option){
+        case MS_PAINT_COLORS:
+            resolution = 1536;
+            pixelBuffer = (_vec3<GLubyte>*)malloc(resolution * resolution * sizeof(_vec3<GLubyte>));
+            generateMSPaintColors(pixelBuffer, resolution, resolution);
+            break;
+        case MANDELBROT:
+            resolution = 1024;
+            pixelBuffer = (_vec3<GLubyte>*)malloc(resolution * resolution * sizeof(_vec3<GLubyte>));
+            generateMandelbrot((unsigned char*)pixelBuffer, resolution, resolution);
+            break;
     }
+    glTexImage2D(
+            GL_TEXTURE_2D,
+            0,
+            GL_RGB,
+            resolution,
+            resolution,
+            0,
+            GL_RGB,
+            GL_UNSIGNED_BYTE,
+            pixelBuffer);
+    free(pixelBuffer);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 }
