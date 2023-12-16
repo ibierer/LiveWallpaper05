@@ -7,7 +7,7 @@
 RenderToTextureView::RenderToTextureView() : View(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     texture = Texture(Texture::MS_PAINT_COLORS);
-    fbo.initialize(2048, 2048);
+    fbo.initialize(16, 16);
 }
 
 RenderToTextureView::~RenderToTextureView(){
@@ -16,9 +16,9 @@ RenderToTextureView::~RenderToTextureView(){
 
 void RenderToTextureView::render(){
     int storeWidth = width;
-    width = 2048;
+    width = fbo.width;
     int storeHeight = height;
-    height = 2048;
+    height = fbo.height;
     calculatePerspective();
     glViewport(0, 0, width, height);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo.frameBuffer);

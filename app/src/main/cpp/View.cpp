@@ -17,7 +17,6 @@ void View::render(){
 }
 
 void View::calculatePerspective() {
-    // Compute the window aspect ratio
     float aspect = (float)width / (float)height;
     float maxViewDegrees = 60.0f;
     float zNear = 0.1f;
