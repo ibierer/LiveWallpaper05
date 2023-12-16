@@ -21,6 +21,8 @@ using cy::Matrix4;
 class View {
 public:
 
+    GLuint mProgram;
+
     int framesRendered;
 
     vec4 backgroundColor;

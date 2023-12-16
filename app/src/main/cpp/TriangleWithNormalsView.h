@@ -11,8 +11,6 @@
 class TriangleWithNormalsView : public View {
 public:
 
-    GLuint mProgram;
-
     const string VERTEX_SHADER =
             ES_VERSION +
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"

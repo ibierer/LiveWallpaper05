@@ -11,8 +11,6 @@
 class CubeMapView : public View {
 public:
 
-    GLuint mProgram;
-
     CubeMap cubeMap;
 
     const string VERTEX_SHADER =

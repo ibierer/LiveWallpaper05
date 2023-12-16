@@ -11,8 +11,6 @@
 class SphereMapView : public View {
 public:
 
-    GLuint mProgram;
-
     SphereMap sphereMap;
 
     const string VERTEX_SHADER =

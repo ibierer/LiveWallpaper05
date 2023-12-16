@@ -11,8 +11,6 @@
 class NaiveView : public SimulationView{
 public:
 
-    GLuint mProgram;
-
     GLuint mVB[1];
 
     GLuint mVBState;

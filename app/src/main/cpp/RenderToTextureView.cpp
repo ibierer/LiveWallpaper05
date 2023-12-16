@@ -6,9 +6,8 @@
 
 RenderToTextureView::RenderToTextureView() : View(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
-    mProgram2 = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER2.c_str());
     texture = Texture(Texture::MS_PAINT_COLORS);
-    fbo.initialize(1024, 1024);
+    fbo.initialize(2048, 2048);
 }
 
 RenderToTextureView::~RenderToTextureView(){
@@ -35,13 +34,15 @@ void RenderToTextureView::render(){
     rotation = Matrix4<float>(quaternionTo3x3(rotationVector));
     Matrix4<float> mvp = orientationAdjustedPerspective * translation * rotation;
 
-    glUseProgram(mProgram2);
+    glUseProgram(mProgram);
     glUniformMatrix4fv(
-            glGetUniformLocation(mProgram2, "mvp"),
+            glGetUniformLocation(mProgram, "mvp"),
             1,
             GL_FALSE,
             (GLfloat*)&mvp);
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture.getTextureId());
+    glUniform1i(glGetUniformLocation(mProgram, "environmentTexture"), 0);
 
     Vertex vertices[4] = {
             {vec3(0.0f, 0.0f, 0.0f)},
@@ -56,7 +57,6 @@ void RenderToTextureView::render(){
     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)&vertices[0].v);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, indices);
-    //glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
 
 
 
@@ -71,16 +71,17 @@ void RenderToTextureView::render(){
     glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glUseProgram(mProgram);
+    mvp = orientationAdjustedPerspective * translation * rotation;
+
     glUniformMatrix4fv(
             glGetUniformLocation(mProgram, "mvp"),
             1,
             GL_FALSE,
             (GLfloat*)&mvp);
+    glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, fbo.renderedTexture);
+    glUniform1i(glGetUniformLocation(mProgram, "environmentTexture"), 1);
 
-    //glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
-    //glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)&vertices[0].v);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, indices);
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
 }

@@ -61,9 +61,6 @@ public:
 class RenderToTextureView : public View {
 public:
 
-    GLuint mProgram;
-    GLuint mProgram2;
-
     Texture texture;
 
     FBO fbo;
@@ -87,17 +84,6 @@ public:
             "void main() {\n"
             //"    outColor = vec4(1.0f, 0.0f, 0.0f, 1.0f); \n"
             "    outColor = texture(environmentTexture, position.xy); \n"
-            "}\n";
-
-    const string FRAGMENT_SHADER2 =
-            ES_VERSION +
-            "precision mediump float;\n"
-            "uniform sampler2D environmentTexture;\n"
-            "in vec3 position;\n"
-            "out vec4 outColor;\n"
-            "void main() {\n"
-            "    outColor = vec4(1.0f, 0.0f, 0.0f, 1.0f); \n"
-            //"    outColor = texture(environmentTexture, position.xy); \n"
             "}\n";
 
     RenderToTextureView();
