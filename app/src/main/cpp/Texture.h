@@ -48,6 +48,8 @@ protected:
 
     void generateTexture(const ImageOption& option);
 
+    void generateTexture2(const ImageOption& option);
+
     GLuint textureId;
 
 private:
