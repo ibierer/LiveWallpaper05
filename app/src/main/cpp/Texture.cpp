@@ -90,7 +90,7 @@ void Texture::generateMSPaintColors(_vec3<GLubyte>* pixelBuffer, const int& WIDT
 }
 
 Texture::Texture(){
-    *this = Texture(MS_PAINT_COLORS);
+
 }
 
 Texture::Texture(const ImageOption& option){

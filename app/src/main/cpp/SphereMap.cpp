@@ -6,7 +6,7 @@
 
 // Default Constructor
 SphereMap::SphereMap() {
-    *this = SphereMap(Texture::MS_PAINT_COLORS);
+
 }
 
 SphereMap::SphereMap(Texture::ImageOption option){

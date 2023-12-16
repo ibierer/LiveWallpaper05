@@ -16,10 +16,6 @@ public:
         MANDELBROT
     };
 
-    //int width;
-
-    //int height;
-
     // Default Constructor
     Texture();
 
@@ -36,12 +32,6 @@ public:
 
     GLuint getTextureId();
 
-    // Function to generate Mandelbrot fractal and store RGB values in the output array
-    void generateMandelbrot(unsigned char* image, const int& WIDTH, const int& HEIGHT);
-
-    // Function to generate Mandelbrot fractal and store RGB values in the output array
-    void generateMSPaintColors(_vec3<GLubyte>* pixelBuffer, const int& WIDTH, const int& HEIGHT);
-
     static vec3 fetchFromSpectrum(const float& value);
 
 protected:
@@ -51,6 +41,10 @@ protected:
     GLuint textureId;
 
 private:
+
+    void generateMandelbrot(unsigned char* image, const int& WIDTH, const int& HEIGHT);
+
+    void generateMSPaintColors(_vec3<GLubyte>* pixelBuffer, const int& WIDTH, const int& HEIGHT);
 
 };
 
