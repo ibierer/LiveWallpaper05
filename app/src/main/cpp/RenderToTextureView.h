@@ -14,6 +14,69 @@
 class FBO {
 public:
     GLuint frameBuffer;
+    GLuint renderedTexture;
+    GLsizei width;
+    GLsizei height;
+    const GLenum drawBuffers[1] = {
+            GL_COLOR_ATTACHMENT0
+    };
+
+    FBO(const int& width, const int& height){
+        initialize(width, height);
+    }
+
+    // Copy constructor
+    FBO(const FBO& other) {
+        // Shallow copy: sharing OpenGL resources
+        frameBuffer = other.frameBuffer;
+        renderedTexture = other.renderedTexture;
+        width = other.width;
+        height = other.height;
+    }
+
+    // Assignment operator
+    FBO& operator=(const FBO& other) {
+        if (this != &other) { // Check for self-assignment
+            // Shallow copy: sharing OpenGL resources
+            frameBuffer = other.frameBuffer;
+            renderedTexture = other.renderedTexture;
+            width = other.width;
+            height = other.height;
+        }
+        return *this;
+    }
+
+    ~FBO() {
+        glDeleteFramebuffers(1, &frameBuffer);
+    }
+
+    int initialize(int width, int height) {
+        this->width = width;
+        this->height = height;
+        glGenFramebuffers(1, &frameBuffer);
+        glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+
+        glGenTextures(1, &renderedTexture);
+        glBindTexture(GL_TEXTURE_2D, renderedTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers[DRAW_BUFFER], GL_TEXTURE_2D, renderedTexture, 0);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+        bool frameBufferStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+        return frameBufferStatus == GL_FRAMEBUFFER_COMPLETE;
+    }
+};
+
+class FBOWithStencilBuffer {
+public:
+    GLuint frameBuffer;
     GLuint depthAndStencilRenderBuffer;
     GLuint renderedTexture;
     GLsizei width;
@@ -22,11 +85,28 @@ public:
             GL_COLOR_ATTACHMENT0
     };
 
-    FBO() {
-        initialize(16, 16);
+    // Copy constructor
+    FBOWithStencilBuffer(const FBOWithStencilBuffer& other) {
+        // Shallow copy: sharing OpenGL resources
+        frameBuffer = other.frameBuffer;
+        renderedTexture = other.renderedTexture;
+        width = other.width;
+        height = other.height;
     }
 
-    ~FBO() {
+    // Assignment operator
+    FBOWithStencilBuffer& operator=(const FBOWithStencilBuffer& other) {
+        if (this != &other) { // Check for self-assignment
+            // Shallow copy: sharing OpenGL resources
+            frameBuffer = other.frameBuffer;
+            renderedTexture = other.renderedTexture;
+            width = other.width;
+            height = other.height;
+        }
+        return *this;
+    }
+
+    ~FBOWithStencilBuffer() {
         glDeleteFramebuffers(1, &frameBuffer);
         glDeleteRenderbuffers(1, &depthAndStencilRenderBuffer);
     }
