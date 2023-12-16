@@ -53,7 +53,7 @@ void Texture::generateMandelbrot(unsigned char* image, const int& WIDTH, const i
             double minY = -1.5;
             double maxY = 1.5;
             double real = minX + x * (maxX - minX) / (WIDTH - 1);
-            double imag = -1.5 + y * (maxY - minY) / (HEIGHT - 1);
+            double imag = minY + y * (maxY - minY) / (HEIGHT - 1);
 
             std::complex<double> c(real, imag);
             std::complex<double> z = 0;
