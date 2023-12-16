@@ -4,9 +4,10 @@
 
 #include "RenderToTextureView.h"
 
-RenderToTextureView::RenderToTextureView() : View(), fbo(FBO(2048, 2048)){
+RenderToTextureView::RenderToTextureView() : View() {
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     texture = Texture(Texture::MS_PAINT_COLORS);
+    fbo = FBO(2048, 2048);
 }
 
 RenderToTextureView::~RenderToTextureView(){

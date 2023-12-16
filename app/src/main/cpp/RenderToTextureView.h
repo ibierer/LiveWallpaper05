@@ -21,6 +21,11 @@ public:
             GL_COLOR_ATTACHMENT0
     };
 
+    // Default contsructor
+    FBO() {
+
+    }
+
     FBO(const int& width, const int& height){
         initialize(width, height);
     }
@@ -74,24 +79,19 @@ public:
     }
 };
 
-class FBOWithStencilBuffer {
+class FBOWithStencilBuffer : public FBO {
 public:
-    GLuint frameBuffer;
     GLuint depthAndStencilRenderBuffer;
-    GLuint renderedTexture;
-    GLsizei width;
-    GLsizei height;
-    const GLenum drawBuffers[1] = {
-            GL_COLOR_ATTACHMENT0
-    };
+
+    FBOWithStencilBuffer(const int& width, const int& height) : FBO() {
+        initialize(width, height);
+    }
 
     // Copy constructor
-    FBOWithStencilBuffer(const FBOWithStencilBuffer& other) {
+    FBOWithStencilBuffer(const FBOWithStencilBuffer& other) : FBOWithStencilBuffer(other.width, other.height) {
         // Shallow copy: sharing OpenGL resources
         frameBuffer = other.frameBuffer;
         renderedTexture = other.renderedTexture;
-        width = other.width;
-        height = other.height;
     }
 
     // Assignment operator
