@@ -23,7 +23,7 @@ public:
     };
 
     FBO() {
-
+        initialize(16, 16);
     }
 
     ~FBO() {

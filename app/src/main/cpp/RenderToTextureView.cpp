@@ -6,8 +6,6 @@
 
 RenderToTextureView::RenderToTextureView() : View(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
-    texture = Texture(Texture::MS_PAINT_COLORS);
-    fbo.initialize(16, 16);
 }
 
 RenderToTextureView::~RenderToTextureView(){
