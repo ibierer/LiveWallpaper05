@@ -43,7 +43,7 @@ public:
     GLuint getTextureId();
 
     // Function to map a value from one range to another
-    double map(double value, double in_min, double in_max, double out_min, double out_max);
+    double map(const double& value, const double& in_min, const double& in_max, const double& out_min, const double& out_max);
 
     // Function to generate Mandelbrot fractal and store RGB values in the output array
     void generateMandelbrot(unsigned char* image);
@@ -51,7 +51,7 @@ public:
     // Function to generate Mandelbrot fractal and store RGB values in the output array
     void generateMSPaintColors(_vec3<GLubyte>* pixelBuffer);
 
-    vec3 fetchFromSpectrum(const float& value);
+    static vec3 fetchFromSpectrum(const float& value);
 
 private:
 

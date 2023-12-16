@@ -5,7 +5,7 @@
 #include "Texture.h"
 
 // Function to map a value from one range to another
-double Texture::map(double value, double in_min, double in_max, double out_min, double out_max) {
+double Texture::map(const double& value, const double& in_min, const double& in_max, const double& out_min, const double& out_max) {
     return (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
@@ -32,7 +32,7 @@ void Texture::generateMandelbrot(unsigned char* image) {
             int color = map(iteration, 0, MAX_ITERATIONS, 0, COLOR_DEPTH);
 
             // Store RGB values in the image array
-            int index = 3 * (y * WIDTH + x);
+            //int index = 3 * (y * WIDTH + x);
             //image[index] = color;            // Red channel
             //image[index + 1] = color % 256;  // Green channel
             //image[index + 2] = color % 256;  // Blue channel
@@ -117,34 +117,34 @@ GLuint Texture::getTextureId() {
 
 vec3 Texture::fetchFromSpectrum(const float &value) {
     if(value < 1.0f / 6.0f){
-        return vec3(
-                255.0f,
-                255.0f * 6.0f * value,
+        return 255.0f * vec3(
+                1.0f,
+                6.0f * value,
                 0.0f);
     }else if(value < 2.0f / 6.0f){
-        return vec3(
-                255.0f * (2.0f - 6.0f * value),
-                255.0f,
+        return 255.0f * vec3(
+                2.0f - 6.0f * value,
+                1.0f,
                 0.0f);
     }else if(value < 3.0f / 6.0f){
-        return vec3(
+        return 255.0f * vec3(
                 0.0f,
-                255.0f,
-                255.0f * (6.0f * value - 2.0f));
+                1.0f,
+                6.0f * value - 2.0f);
     }else if(value < 4.0f / 6.0f){
-        return vec3(
+        return 255.0f * vec3(
                 0.0f,
-                255.0f * (4.0f - 6.0f * value),
-                255.0f);
+                4.0f - 6.0f * value,
+                1.0f);
     }else if(value < 5.0f / 6.0f){
-        return vec3(
-                255.0f * (6.0f * value - 4.0f),
+        return 255.0f * vec3(
+                6.0f * value - 4.0f,
                 0.0f,
-                255.0f);
+                1.0f);
     }else{
-        return vec3(
-                255.0f,
+        return 255.0f * vec3(
+                1.0f,
                 0.0f,
-                255.0f * 6.0f * (1.0f - value));
+                6.0f * (1.0f - value));
     }
 }
