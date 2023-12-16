@@ -14,13 +14,13 @@ CubeMap::~CubeMap() {
 
 }
 
-CubeMap::CubeMap(const GLuint& textureId) : textureId(textureId) {
-
+CubeMap::CubeMap(const GLuint& textureId) {
+    this->textureId = textureId;
 }
 
 // Copy Constructor
-CubeMap::CubeMap(const CubeMap& other) : textureId(other.textureId) {
-
+CubeMap::CubeMap(const CubeMap& other) {
+    this->textureId = other.textureId;
 }
 
 // Assignment Operator
@@ -96,8 +96,4 @@ CubeMap CubeMap::createSimpleTextureCubemap() {
     }
 
     return cubeMap;
-}
-
-GLuint CubeMap::getTextureId() {
-    return textureId;
 }

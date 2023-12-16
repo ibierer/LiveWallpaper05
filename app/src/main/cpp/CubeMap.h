@@ -29,11 +29,7 @@ public:
 
     static CubeMap createSimpleTextureCubemap();
 
-    GLuint getTextureId();
-
 private:
-
-    GLuint textureId;
 
 };
 

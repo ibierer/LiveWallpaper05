@@ -42,17 +42,19 @@ public:
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers[DRAW_BUFFER], GL_TEXTURE_2D,
-                               renderedTexture, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers[DRAW_BUFFER], GL_TEXTURE_2D, renderedTexture, 0);
 
         glGenRenderbuffers(1, &depthAndStencilRenderBuffer);
         glBindRenderbuffer(GL_RENDERBUFFER, depthAndStencilRenderBuffer);
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER,
-                                  depthAndStencilRenderBuffer);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthAndStencilRenderBuffer);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
         bool frameBufferStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-        return frameBufferStatus != GL_FRAMEBUFFER_COMPLETE;
+        return frameBufferStatus == GL_FRAMEBUFFER_COMPLETE;
     }
 };
 
@@ -60,8 +62,11 @@ class RenderToTextureView : public View {
 public:
 
     GLuint mProgram;
+    GLuint mProgram2;
 
     Texture texture;
+
+    FBO fbo;
 
     const string VERTEX_SHADER =
             ES_VERSION +
@@ -82,6 +87,17 @@ public:
             "void main() {\n"
             //"    outColor = vec4(1.0f, 0.0f, 0.0f, 1.0f); \n"
             "    outColor = texture(environmentTexture, position.xy); \n"
+            "}\n";
+
+    const string FRAGMENT_SHADER2 =
+            ES_VERSION +
+            "precision mediump float;\n"
+            "uniform sampler2D environmentTexture;\n"
+            "in vec3 position;\n"
+            "out vec4 outColor;\n"
+            "void main() {\n"
+            "    outColor = vec4(1.0f, 0.0f, 0.0f, 1.0f); \n"
+            //"    outColor = texture(environmentTexture, position.xy); \n"
             "}\n";
 
     RenderToTextureView();
