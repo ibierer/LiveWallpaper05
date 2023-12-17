@@ -6,14 +6,16 @@
 #define LIVEWALLPAPER05_RENDERTOCUBEMAPVIEW_H
 
 
+#include "CubeMapFBO.h"
+
 class RenderToCubeMapView : public View {
 public:
 
     GLuint _mProgram;
 
-    CubeMap cubeMap;
-
     Texture texture;
+
+    CubeMapFBO cubeMapFBO;
 
     const string VERTEX_SHADER =
             ES_VERSION +
@@ -60,14 +62,6 @@ public:
     ~RenderToCubeMapView();
 
     void render() override;
-
-    GLuint frameBuffers[6];
-    GLuint depthAndStencilRenderBuffers[6];
-    const GLenum drawBuffers[1] = {
-            GL_COLOR_ATTACHMENT0
-    };
-
-    int initialize();
 
 private:
 

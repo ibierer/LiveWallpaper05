@@ -17,7 +17,7 @@ public:
     // Destructor
     ~CubeMap();
 
-    CubeMap(const GLuint& textureId);
+    CubeMap(const GLuint& textureId, const int& size);
 
     // Copy Constructor
     CubeMap(const CubeMap& other);
@@ -29,7 +29,11 @@ public:
 
     static CubeMap createSimpleTextureCubemap();
 
+    int getResolution();
+
 private:
+
+    int resolution;
 
 };
 

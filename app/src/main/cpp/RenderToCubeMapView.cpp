@@ -4,31 +4,11 @@
 
 #include "RenderToCubeMapView.h"
 
-const int squareSize = 2048;
-
 RenderToCubeMapView::RenderToCubeMapView() : View(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     _mProgram = createProgram(_VERTEX_SHADER.c_str(), _FRAGMENT_SHADER.c_str());
     texture = Texture(Texture::MANDELBROT);
-    cubeMap = CubeMap(GL_RGB, GL_LINEAR, squareSize, 0);
-
-    glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap.getTextureId());
-    glGenFramebuffers(6, &frameBuffers[0]);
-    glGenRenderbuffers(6, &depthAndStencilRenderBuffers[0]);
-    for (int i = 0; i < 6; i++) {
-        glBindFramebuffer(GL_FRAMEBUFFER, frameBuffers[i]);
-        glBindRenderbuffer(GL_RENDERBUFFER, depthAndStencilRenderBuffers[i]);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, squareSize, squareSize);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthAndStencilRenderBuffers[i]);
-    }
-    glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers[DRAW_BUFFER], GL_TEXTURE_CUBE_MAP_POSITIVE_X, cubeMap.getTextureId(), 0);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glBindRenderbuffer(GL_RENDERBUFFER, 0);
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    bool frameBufferStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-    //return frameBufferStatus != GL_FRAMEBUFFER_COMPLETE;
+    cubeMapFBO = CubeMapFBO(CubeMap(GL_RGB, GL_LINEAR, 2048, 0), true, false);
 }
 
 RenderToCubeMapView::~RenderToCubeMapView(){
@@ -37,9 +17,9 @@ RenderToCubeMapView::~RenderToCubeMapView(){
 
 void RenderToCubeMapView::render(){
     int storeWidth = width;
-    width = squareSize;
+    width = cubeMapFBO.getResolution();
     int storeHeight = height;
-    height = squareSize;
+    height = cubeMapFBO.getResolution();
     calculatePerspective(90.0f);
     glViewport(0, 0, width, height);
 
@@ -50,13 +30,12 @@ void RenderToCubeMapView::render(){
 
     glUseProgram(_mProgram);
 
-    glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap.getTextureId());
+    glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapFBO.getTextureId());
     glActiveTexture(GL_TEXTURE1);
 
     for(int i = 0; i < 6; i++){
-        glBindFramebuffer(GL_FRAMEBUFFER, frameBuffers[i]);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers[DRAW_BUFFER], GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubeMap.getTextureId(), 0);
-
+        glBindFramebuffer(GL_FRAMEBUFFER, cubeMapFBO.frameBuffers[i]);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, cubeMapFBO.drawBuffers[DRAW_BUFFER], GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubeMapFBO.cubeMap.getTextureId(), 0);
         glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -136,7 +115,7 @@ void RenderToCubeMapView::render(){
             GL_FALSE,
             (GLfloat*)&inverseViewProjection);
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap.getTextureId());
+    glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapFBO.cubeMap.getTextureId());
     glUniform1i(glGetUniformLocation(mProgram, "environmentTexture"), 1);
 
     Vertex vertices[3] = {
@@ -151,21 +130,4 @@ void RenderToCubeMapView::render(){
     glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(unsigned int), GL_UNSIGNED_INT, indices);
 
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
-}
-
-int RenderToCubeMapView::initialize() {
-    /*renderedTexture = genCubeMap(GL_RGB, squareSize, squareSize, GL_LINEAR, NULL);
-    glGenFramebuffers(6, &frameBuffers[0]);
-    glGenRenderbuffers(6, &depthAndStencilRenderBuffers[0]);
-    for (int i = 0; i < 6; i++) {
-        glBindFramebuffer(GL_FRAMEBUFFER, frameBuffers[i]);
-        glBindRenderbuffer(GL_RENDERBUFFER, depthAndStencilRenderBuffers[i]);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, squareSize, squareSize);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthAndStencilRenderBuffers[i]);
-    }
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers[DRAW_BUFFER], GL_TEXTURE_CUBE_MAP_POSITIVE_X, renderedTexture, 0);
-    bool frameBufferStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-    return frameBufferStatus != GL_FRAMEBUFFER_COMPLETE;*/
 }

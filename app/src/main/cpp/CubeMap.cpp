@@ -14,19 +14,22 @@ CubeMap::~CubeMap() {
 
 }
 
-CubeMap::CubeMap(const GLuint& textureId) {
+CubeMap::CubeMap(const GLuint& textureId, const int& resolution) {
     this->textureId = textureId;
+    this->resolution = resolution;
 }
 
 // Copy Constructor
 CubeMap::CubeMap(const CubeMap& other) {
     this->textureId = other.textureId;
+    this->resolution = other.resolution;
 }
 
 // Assignment Operator
 CubeMap& CubeMap::operator=(const CubeMap& other) {
     if (this != &other) {
         textureId = other.textureId;
+        resolution = other.resolution;
     }
 
     return *this;
@@ -63,6 +66,7 @@ CubeMap CubeMap::createSimpleTextureCubemap() {
 }
 
 CubeMap::CubeMap(const GLint &internalFormat, const GLint &param, const GLsizei &resolution, GLubyte **cubemapPixelBuffers) {
+    this->resolution = resolution;
     glGenTextures(1, &textureId);
     glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
 
@@ -84,4 +88,8 @@ CubeMap::CubeMap(const GLint &internalFormat, const GLint &param, const GLsizei 
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+}
+
+int CubeMap::getResolution() {
+    return resolution;
 }

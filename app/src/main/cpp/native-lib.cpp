@@ -41,8 +41,9 @@
 #include "Texture.cpp"
 #include "TextureView.cpp"
 #include "RenderToTextureView.cpp"
-#include "FBO.cpp"
 #include "RenderToCubeMapView.cpp"
+#include "FBO.cpp"
+#include "CubeMapFBO.cpp"
 
 using std::string;
 using nlohmann::json;
