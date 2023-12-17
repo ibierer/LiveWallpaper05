@@ -63,7 +63,6 @@ public:
 
     GLuint frameBuffers[6];
     GLuint depthAndStencilRenderBuffers[6];
-    GLuint renderedTexture;
     const GLenum drawBuffers[1] = {
             GL_COLOR_ATTACHMENT0
     };

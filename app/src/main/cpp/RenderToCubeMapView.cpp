@@ -25,9 +25,9 @@ RenderToCubeMapView::RenderToCubeMapView() : View(){
     cubeMap = CubeMap::createSimpleTextureCubemap();
     texture = Texture(Texture::MS_PAINT_COLORS);
 
-    renderedTexture = genCubeMap(GL_RGB, squareSize, squareSize, GL_LINEAR, NULL);
+    //renderedTexture = genCubeMap(GL_RGB, squareSize, squareSize, GL_LINEAR, NULL);
 
-    //cubeMap = CubeMap(genCubeMap(GL_RGB, squareSize, squareSize, GL_LINEAR, NULL));
+    cubeMap = CubeMap(genCubeMap(GL_RGB, squareSize, squareSize, GL_LINEAR, NULL));
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap.getTextureId());
 
     glGenFramebuffers(6, &frameBuffers[0]);
@@ -40,7 +40,7 @@ RenderToCubeMapView::RenderToCubeMapView() : View(){
     }
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers[DRAW_BUFFER], GL_TEXTURE_CUBE_MAP_POSITIVE_X, renderedTexture, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers[DRAW_BUFFER], GL_TEXTURE_CUBE_MAP_POSITIVE_X, cubeMap.getTextureId(), 0);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
@@ -66,17 +66,17 @@ void RenderToCubeMapView::render(){
 
     for(int i = 0; i < 6; i++){
         glBindFramebuffer(GL_FRAMEBUFFER, frameBuffers[i]);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers[DRAW_BUFFER], GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, renderedTexture, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers[DRAW_BUFFER], GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubeMap.getTextureId(), 0);
         glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    glBindTexture(GL_TEXTURE_CUBE_MAP, renderedTexture);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap.getTextureId());
     glActiveTexture(GL_TEXTURE1);
 
     for(int i = 0; i < 6; i++){
         glBindFramebuffer(GL_FRAMEBUFFER, frameBuffers[i]);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers[DRAW_BUFFER], GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, renderedTexture, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers[DRAW_BUFFER], GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubeMap.getTextureId(), 0);
 
         Matrix4<float> translation;
         translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 10.0f * (val - 1.0f)));
@@ -134,7 +134,7 @@ void RenderToCubeMapView::render(){
             GL_FALSE,
             (GLfloat*)&inverseViewProjection);
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, renderedTexture);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap.getTextureId());
     glUniform1i(glGetUniformLocation(mProgram, "environmentTexture"), 1);
 
     Vertex vertices[3] = {
