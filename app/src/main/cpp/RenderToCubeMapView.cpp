@@ -4,7 +4,7 @@
 
 #include "RenderToCubeMapView.h"
 
-const int squareSize = 256;
+const int squareSize = 2048;
 
 GLuint genCubeMap(GLint internalFormat, const GLsizei imageWidth, const GLsizei imageHeight, GLint param, GLubyte* cubemapPixelBuffers[6]) {
     GLuint textureId;
