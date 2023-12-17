@@ -105,7 +105,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_resize(JNIEnv *e
         view->height = height;
         view->orientation = orientation;
         glViewport(0, 0, width, height);
-        view->calculatePerspective();
+        view->calculatePerspective(60.0f);
     }
 }
 
@@ -117,6 +117,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_step(JNIEnv *env
         view->rotationVector = vec4(rot_x, rot_y, rot_z, rot_w);
         view->val = value;
         view->render();
+        view->incrementFrameCount();
     }
 }
 

@@ -70,7 +70,6 @@ void NaiveView::render(){
     }
 
     checkGlError("Renderer::render");
-    framesRendered++;
 }
 
 void NaiveView::populateGrid(const int& dataIndex){

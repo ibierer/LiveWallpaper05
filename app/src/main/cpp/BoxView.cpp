@@ -54,5 +54,4 @@ void BoxView::render(){
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
 
     checkGlError("Renderer::render");
-    framesRendered++;
 }

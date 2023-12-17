@@ -40,7 +40,7 @@ void GraphView::render(){
             GL_FALSE,
             (GLfloat*)&mvp);
 
-    implicitGrapher.calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * framesRendered, 10, vec3(0.0f), 0.15f, false, false, &implicitGrapher.vertices[0], implicitGrapher.indices, implicitGrapher.numIndices);
+    implicitGrapher.calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, false, false, &implicitGrapher.vertices[0], implicitGrapher.indices, implicitGrapher.numIndices);
 
     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
@@ -49,6 +49,4 @@ void GraphView::render(){
     glDrawElements(GL_TRIANGLES, implicitGrapher.numIndices, GL_UNSIGNED_INT, implicitGrapher.indices);
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
-
-    framesRendered++;
 }

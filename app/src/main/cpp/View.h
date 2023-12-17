@@ -23,8 +23,6 @@ public:
 
     GLuint mProgram;
 
-    int framesRendered;
-
     vec4 backgroundColor;
 
     EGLContext mEglContext;
@@ -92,15 +90,22 @@ public:
 
     static void printGlString(const char* const name, const GLenum& s);
 
-    void calculatePerspective();
+    void calculatePerspective(const float& maxViewDegrees);
 
     const string ES_VERSION = supportsES32() ? "#version 320 es\n" : "#version 310 es\n";
 
     static string jstringToString(JNIEnv *env, jstring jStr);
 
+    void incrementFrameCount();
+
+    int getFrameCount();
+
 private:
 
+    int framesRendered;
+
     const static bool supportsES32();
+
 };
 
 

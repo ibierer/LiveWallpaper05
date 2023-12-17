@@ -18,7 +18,7 @@ void RenderToTextureView::render(){
     width = fbo.getWidth();
     int storeHeight = height;
     height = fbo.getHeight();
-    calculatePerspective();
+    calculatePerspective(60.0f);
     glViewport(0, 0, width, height);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo.getFrameBuffer());
     glDrawBuffers(1, fbo.drawBuffers);
@@ -65,7 +65,7 @@ void RenderToTextureView::render(){
 
     width = storeWidth;
     height = storeHeight;
-    calculatePerspective();
+    calculatePerspective(60.0f);
     glViewport(0, 0, width, height);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);

@@ -16,9 +16,8 @@ void View::render(){
 
 }
 
-void View::calculatePerspective() {
+void View::calculatePerspective(const float& maxViewDegrees) {
     float aspect = (float)width / (float)height;
-    float maxViewDegrees = 60.0f;
     float zNear = 0.1f;
     float zFar = 1000.0f;
     float verticalScreenAngle = aspect < 1.0f ? toRadians(maxViewDegrees) : 2.0f * atanf(tanf(0.5f * toRadians(maxViewDegrees)) / aspect);
@@ -180,4 +179,12 @@ const bool View::supportsES32(){
 void View::printGlString(const char* const name, const GLenum& s) {
     const char* v = (const char*)glGetString(s);
     ALOGV("GL %s: %s\n", name, v);
+}
+
+void View::incrementFrameCount() {
+    framesRendered++;
+}
+
+int View::getFrameCount() {
+    return framesRendered;
 }

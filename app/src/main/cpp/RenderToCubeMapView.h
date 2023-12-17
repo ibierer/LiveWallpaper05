@@ -18,12 +18,12 @@ public:
     const string VERTEX_SHADER =
             ES_VERSION +
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
-    "uniform mat4 inverseViewProjection;\n"
-    "out vec3 direction;\n"
-    "void main() {\n"
-    "    gl_Position = vec4(pos, 1.0);\n"
-    "    direction = (inverseViewProjection * vec4(pos, 1.0f)).xyz;\n"
-    "}\n";
+            "uniform mat4 inverseViewProjection;\n"
+            "out vec3 direction;\n"
+            "void main() {\n"
+            "    gl_Position = vec4(pos, 1.0);\n"
+            "    direction = (inverseViewProjection * vec4(pos, 1.0f)).xyz;\n"
+            "}\n";
 
     const string FRAGMENT_SHADER =
             ES_VERSION +

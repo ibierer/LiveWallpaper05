@@ -151,5 +151,4 @@ void PicFlipView::render() {
     }
 
     checkGlError("Renderer::render");
-    framesRendered++;
 }
