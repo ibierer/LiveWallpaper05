@@ -4,7 +4,7 @@
 
 #include "RenderToCubeMapView.h"
 
-const int squareSize = 2048;
+const int squareSize = 256;
 
 GLuint genCubeMap(GLint internalFormat, const GLsizei imageWidth, const GLsizei imageHeight, GLint param, GLubyte* cubemapPixelBuffers[6]) {
     GLuint textureId;
@@ -23,7 +23,7 @@ RenderToCubeMapView::RenderToCubeMapView() : View(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     _mProgram = createProgram(_VERTEX_SHADER.c_str(), _FRAGMENT_SHADER.c_str());
     cubeMap = CubeMap::createSimpleTextureCubemap();
-    texture = Texture(Texture::MS_PAINT_COLORS);
+    texture = Texture(Texture::MANDELBROT);
     cubeMap = CubeMap(genCubeMap(GL_RGB, squareSize, squareSize, GL_LINEAR, NULL));
 
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap.getTextureId());
@@ -76,6 +76,32 @@ void RenderToCubeMapView::render(){
     for(int i = 0; i < 6; i++){
         glBindFramebuffer(GL_FRAMEBUFFER, frameBuffers[i]);
         glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers[DRAW_BUFFER], GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubeMap.getTextureId(), 0);
+
+        glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture.getTextureId());
+        glUniform1i(glGetUniformLocation(_mProgram, "environmentTexture"), 0);
+
+        Vertex vertices[8] = {
+                {vec3(0.0f, 0.0f, -0.25f)},
+                {vec3(0.0f, 1.0f, -0.25f)},
+                {vec3(1.0f, 0.0f, -0.25f)},
+                {vec3(1.0f, 1.0f, -0.25f)},
+                {vec3(0.0f, 0.0f, 0.25f)},
+                {vec3(0.0f, 1.0f, 0.25f)},
+                {vec3(1.0f, 0.0f, 0.25f)},
+                {vec3(1.0f, 1.0f, 0.25f)}
+        };
+        uvec3 indices[4] = {
+                uvec3(0, 2, 1),
+                uvec3(1, 3, 2),
+                uvec3(4, 6, 5),
+                uvec3(5, 7, 6)
+        };
+        glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)&vertices[0].v);
+
         switch(i){
             case 0:
                 rotation.SetRotation(Vec3<float>(0.0f, 1.0f, 0.0f), M_PI / 2.0);
@@ -97,44 +123,18 @@ void RenderToCubeMapView::render(){
                 break;
         }
 
-        glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        Matrix4<float> translation;
+        translation = translation.Translation(Vec3<float>(-0.5f, -0.5f, 0.0f));
+        Matrix4<float> rotation2;
+        rotation2.SetRotation(Vec3<float>(0.0f, 0.0f, 1.0f), 0.01 * getFrameCount());
+        Matrix4<float> mvp = orientationAdjustedPerspective * rotation * rotation2 * translation;
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture.getTextureId());
-        glUniform1i(glGetUniformLocation(_mProgram, "environmentTexture"), 0);
-
-        Vertex vertices[8] = {
-                {vec3(0.0f, 0.0f, -5.0f)},
-                {vec3(0.0f, 1.0f, -5.0f)},
-                {vec3(1.0f, 0.0f, -5.0f)},
-                {vec3(1.0f, 1.0f, -5.0f)},
-                {vec3(0.0f, 0.0f, 50.0f)},
-                {vec3(0.0f, 1.0f, 50.0f)},
-                {vec3(1.0f, 0.0f, 50.0f)},
-                {vec3(1.0f, 1.0f, 50.0f)}
-        };
-        uvec3 indices[4] = {
-                uvec3(0, 2, 1),
-                uvec3(1, 3, 2),
-                uvec3(4, 6, 5),
-                uvec3(5, 7, 6)
-        };
-        for(int j = 0; j < 10; j++){
-            for(int k = 0; k < 10; k++){
-                Matrix4<float> translation;
-                translation = translation.Translation(12.0f * Vec3<float>(sinf(0.01f * getFrameCount()) * j, sinf(0.01f * getFrameCount()) * k, 0.0f));
-                Matrix4<float> mvp = orientationAdjustedPerspective * rotation * translation;
-
-                glUniformMatrix4fv(
-                        glGetUniformLocation(_mProgram, "mvp"),
-                        1,
-                        GL_FALSE,
-                        (GLfloat*)&mvp);
-                glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)&vertices[0].v);
-                glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(unsigned int), GL_UNSIGNED_INT, indices);
-            }
-        }
+        glUniformMatrix4fv(
+                glGetUniformLocation(_mProgram, "mvp"),
+                1,
+                GL_FALSE,
+                (GLfloat*)&mvp);
+        glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(unsigned int), GL_UNSIGNED_INT, indices);
     }
 
     width = storeWidth;
