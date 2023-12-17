@@ -30,7 +30,6 @@ CubeMapFBO::CubeMapFBO(CubeMap cubeMap, const bool &includeDepthBuffer, const bo
                 glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthAndOrStencilRenderBuffers[i]);
             }
         }
-        glBindRenderbuffer(GL_RENDERBUFFER, 0);
     }
     glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers[DRAW_BUFFER], GL_TEXTURE_CUBE_MAP_POSITIVE_X, cubeMap.getTextureId(), 0);
 
