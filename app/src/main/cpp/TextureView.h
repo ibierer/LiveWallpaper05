@@ -26,11 +26,11 @@ public:
     const string FRAGMENT_SHADER =
             ES_VERSION +
             "precision mediump float;\n"
-            "uniform sampler2D environmentTexture;\n"
+            "uniform sampler2D image;\n"
             "in vec3 position;\n"
             "out vec4 outColor;\n"
             "void main() {\n"
-            "    outColor = texture(environmentTexture, position.xy); \n"
+            "    outColor = texture(image, position.xy); \n"
             "}\n";
 
     TextureView();

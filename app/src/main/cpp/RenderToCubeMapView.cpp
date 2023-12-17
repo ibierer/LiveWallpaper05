@@ -6,25 +6,11 @@
 
 const int squareSize = 2048;
 
-GLuint genCubeMap(GLint internalFormat, const GLsizei imageWidth, const GLsizei imageHeight, GLint param, GLubyte* cubemapPixelBuffers[6]) {
-    GLuint textureId;
-    glGenTextures(1, &textureId);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
-    for (int i = 0; i < 6; i++) {
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalFormat, imageWidth, imageHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, cubemapPixelBuffers == NULL ? 0 : cubemapPixelBuffers[i]);
-    }
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, param);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, param);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-    return textureId;
-}
-
 RenderToCubeMapView::RenderToCubeMapView() : View(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     _mProgram = createProgram(_VERTEX_SHADER.c_str(), _FRAGMENT_SHADER.c_str());
-    cubeMap = CubeMap::createSimpleTextureCubemap();
     texture = Texture(Texture::MANDELBROT);
-    cubeMap = CubeMap(genCubeMap(GL_RGB, squareSize, squareSize, GL_LINEAR, NULL));
+    cubeMap = CubeMap(GL_RGB, GL_LINEAR, squareSize, 0);
 
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap.getTextureId());
     glGenFramebuffers(6, &frameBuffers[0]);
@@ -35,11 +21,6 @@ RenderToCubeMapView::RenderToCubeMapView() : View(){
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, squareSize, squareSize);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthAndStencilRenderBuffers[i]);
     }
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers[DRAW_BUFFER], GL_TEXTURE_CUBE_MAP_POSITIVE_X, cubeMap.getTextureId(), 0);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -55,7 +36,6 @@ RenderToCubeMapView::~RenderToCubeMapView(){
 }
 
 void RenderToCubeMapView::render(){
-
     int storeWidth = width;
     width = squareSize;
     int storeHeight = height;
@@ -82,7 +62,7 @@ void RenderToCubeMapView::render(){
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture.getTextureId());
-        glUniform1i(glGetUniformLocation(_mProgram, "environmentTexture"), 0);
+        glUniform1i(glGetUniformLocation(_mProgram, "image"), 0);
 
         Vertex vertices[8] = {
                 {vec3(0.0f, 0.0f, -0.25f)},

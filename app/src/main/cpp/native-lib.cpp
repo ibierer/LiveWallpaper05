@@ -104,8 +104,8 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_resize(JNIEnv *e
         view->width = width;
         view->height = height;
         view->orientation = orientation;
-        glViewport(0, 0, width, height);
         view->calculatePerspective(60.0f);
+        glViewport(0, 0, width, height);
     }
 }
 

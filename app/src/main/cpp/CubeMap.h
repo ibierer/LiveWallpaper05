@@ -22,10 +22,10 @@ public:
     // Copy Constructor
     CubeMap(const CubeMap& other);
 
+    CubeMap(const GLint& internalFormat, const GLint& param, const GLsizei& resolution, GLubyte* cubemapPixelBuffers[6]);
+
     // Assignment Operator
     CubeMap& operator=(const CubeMap& other);
-
-    static CubeMap genCubeMap(const GLint& internalFormat, const GLint& param, const GLsizei& resolution, GLubyte* cubemapPixelBuffers[6]);
 
     static CubeMap createSimpleTextureCubemap();
 

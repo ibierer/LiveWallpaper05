@@ -32,10 +32,39 @@ CubeMap& CubeMap::operator=(const CubeMap& other) {
     return *this;
 }
 
-CubeMap CubeMap::genCubeMap(const GLint& internalFormat, const GLint& param, const GLsizei& resolution, GLubyte* cubemapPixelBuffers[6]) {
-    GLuint texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
+CubeMap CubeMap::createSimpleTextureCubemap() {
+    const GLsizei resolution = 256;
+
+    _vec3<GLubyte>* cubeMapPixelBuffers[6];
+
+    for (int i = 0; i < 6; i++) {
+        cubeMapPixelBuffers[i] = (_vec3<GLubyte>*)malloc(resolution * resolution * sizeof(_vec3<GLubyte>));
+    }
+
+    for (uint i = 0; i < resolution; i++) {
+        for (uint j = 0; j < resolution; j++) {
+            uint texel = i * resolution + j;
+            cubeMapPixelBuffers[0][texel] = _vec3<GLubyte>(255 - j, 255, 255 - i);
+            cubeMapPixelBuffers[1][texel] = _vec3<GLubyte>(j, 255 - i, 0);
+            cubeMapPixelBuffers[2][texel] = _vec3<GLubyte>(i, 255, j);
+            cubeMapPixelBuffers[3][texel] = _vec3<GLubyte>(255 - i, 0, j);
+            cubeMapPixelBuffers[4][texel] = _vec3<GLubyte>(255, 255 - i, j);
+            cubeMapPixelBuffers[5][texel] = _vec3<GLubyte>(0, 255 - i, 255 - j);
+        }
+    }
+
+    CubeMap cubeMap = CubeMap(GL_RGB, GL_LINEAR, resolution, (GLubyte**)cubeMapPixelBuffers);
+
+    for (int i = 0; i < 6; i++) {
+        free(cubeMapPixelBuffers[i]);
+    }
+
+    return cubeMap;
+}
+
+CubeMap::CubeMap(const GLint &internalFormat, const GLint &param, const GLsizei &resolution, GLubyte **cubemapPixelBuffers) {
+    glGenTextures(1, &textureId);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
 
     for (int i = 0; i < 6; i++) {
         glTexImage2D(
@@ -55,48 +84,4 @@ CubeMap CubeMap::genCubeMap(const GLint& internalFormat, const GLint& param, con
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-    return CubeMap(texture);
-}
-
-CubeMap CubeMap::createSimpleTextureCubemap() {
-    const GLsizei resolution = 256;
-
-    _vec3<GLubyte>* cubemapPixelBuffers[6];
-
-    for (int i = 0; i < 6; i++) {
-        cubemapPixelBuffers[i] = (_vec3<GLubyte>*)malloc(resolution * resolution * sizeof(_vec3<GLubyte>));
-    }
-
-    for (uint i = 0; i < resolution; i++) {
-        for (uint j = 0; j < resolution; j++) {
-            uint texel = i * resolution + j;
-            cubemapPixelBuffers[0][texel].r = 255 - j;
-            cubemapPixelBuffers[0][texel].b = 255;
-            cubemapPixelBuffers[0][texel].g = 255 - i;
-            cubemapPixelBuffers[1][texel].r = j;
-            cubemapPixelBuffers[1][texel].g = 255 - i;
-            cubemapPixelBuffers[1][texel].b = 0;
-            cubemapPixelBuffers[2][texel].r = i;
-            cubemapPixelBuffers[2][texel].g = 255;
-            cubemapPixelBuffers[2][texel].b = j;
-            cubemapPixelBuffers[3][texel].r = 255 - i;
-            cubemapPixelBuffers[3][texel].g = 0;
-            cubemapPixelBuffers[3][texel].b = j;
-            cubemapPixelBuffers[4][texel].r = 255;
-            cubemapPixelBuffers[4][texel].g = 255 - i;
-            cubemapPixelBuffers[4][texel].b = j;
-            cubemapPixelBuffers[5][texel].r = 0;
-            cubemapPixelBuffers[5][texel].g = 255 - i;
-            cubemapPixelBuffers[5][texel].b = 255 - j;
-        }
-    }
-
-    CubeMap cubeMap = genCubeMap(GL_RGB, GL_LINEAR, resolution, (GLubyte**)cubemapPixelBuffers);
-
-    for (int i = 0; i < 6; i++) {
-        free(cubemapPixelBuffers[i]);
-    }
-
-    return cubeMap;
 }
