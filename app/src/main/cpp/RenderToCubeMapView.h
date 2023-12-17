@@ -11,7 +11,7 @@
 class RenderToCubeMapView : public View {
 public:
 
-    GLuint _mProgram;
+    GLuint mPlanesProgram;
 
     Texture texture;
 
@@ -37,7 +37,7 @@ public:
             "    outColor = texture(environmentTexture, direction); \n"
             "}\n";
 
-    const string _VERTEX_SHADER =
+    const string PLANES_VERTEX_SHADER =
             ES_VERSION +
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
             "out vec3 position;\n"
@@ -47,7 +47,7 @@ public:
             "    position = pos;\n"
             "}\n";
 
-    const string _FRAGMENT_SHADER =
+    const string PLANES_FRAGMENT_SHADER =
             ES_VERSION +
             "precision mediump float;\n"
             "uniform sampler2D image;\n"

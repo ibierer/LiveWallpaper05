@@ -6,7 +6,7 @@
 
 RenderToCubeMapView::RenderToCubeMapView() : View(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
-    _mProgram = createProgram(_VERTEX_SHADER.c_str(), _FRAGMENT_SHADER.c_str());
+    mPlanesProgram = createProgram(PLANES_VERTEX_SHADER.c_str(), PLANES_FRAGMENT_SHADER.c_str());
     texture = Texture(Texture::MANDELBROT);
     cubeMapFBO = CubeMapFBO(CubeMap(GL_RGB, GL_LINEAR, 2048, 0), true, false);
 }
@@ -28,11 +28,11 @@ void RenderToCubeMapView::render(){
 
     Matrix4<float> rotation;
 
-    glUseProgram(_mProgram);
+    glUseProgram(mPlanesProgram);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture.getTextureId());
-    glUniform1i(glGetUniformLocation(_mProgram, "image"), 0);
+    glUniform1i(glGetUniformLocation(mPlanesProgram, "image"), 0);
 
     for(int i = 0; i < 6; i++){
         glBindFramebuffer(GL_FRAMEBUFFER, cubeMapFBO.frameBuffers[i]);
@@ -86,7 +86,7 @@ void RenderToCubeMapView::render(){
         Matrix4<float> mvp = orientationAdjustedPerspective * rotation * rotation2 * translation;
 
         glUniformMatrix4fv(
-                glGetUniformLocation(_mProgram, "mvp"),
+                glGetUniformLocation(mPlanesProgram, "mvp"),
                 1,
                 GL_FALSE,
                 (GLfloat*)&mvp);

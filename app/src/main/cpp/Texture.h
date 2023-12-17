@@ -38,9 +38,9 @@ protected:
 
     void generateTexture(const ImageOption& option);
 
-    GLuint textureId;
-
 private:
+
+    GLuint textureId;
 
     void generateMandelbrot(unsigned char* image, const int& WIDTH, const int& HEIGHT);
 
