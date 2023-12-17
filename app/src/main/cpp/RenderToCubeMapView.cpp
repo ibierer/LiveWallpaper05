@@ -30,18 +30,15 @@ void RenderToCubeMapView::render(){
 
     glUseProgram(_mProgram);
 
-    glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapFBO.getTextureId());
-    glActiveTexture(GL_TEXTURE1);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture.getTextureId());
+    glUniform1i(glGetUniformLocation(_mProgram, "image"), 0);
 
     for(int i = 0; i < 6; i++){
         glBindFramebuffer(GL_FRAMEBUFFER, cubeMapFBO.frameBuffers[i]);
         glFramebufferTexture2D(GL_FRAMEBUFFER, cubeMapFBO.drawBuffers[DRAW_BUFFER], GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubeMapFBO.cubeMap.getTextureId(), 0);
         glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture.getTextureId());
-        glUniform1i(glGetUniformLocation(_mProgram, "image"), 0);
 
         Vertex vertices[8] = {
                 {vec3(0.0f, 0.0f, -0.25f)},
