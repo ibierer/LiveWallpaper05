@@ -5,7 +5,7 @@
 #include "DrawWithFragmentShaderView.h"
 
 DrawWithFragmentShaderView::DrawWithFragmentShaderView() : View() {
-    fbo = FBO(Texture(1536, 1536, 0, GL_LINEAR), true, false);
+    fbo = FBO(Texture(8192, 8192, 0, GL_LINEAR), true, false);
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     mPlanesProgram = createProgram(PLANES_VERTEX_SHADER.c_str(), PLANES_FRAGMENT_SHADER.c_str());
 }
@@ -32,6 +32,8 @@ void DrawWithFragmentShaderView::render(){
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture.getTextureId());
     glUniform1i(glGetUniformLocation(mProgram, "image"), 0);
+    glUniform1i(glGetUniformLocation(mProgram, "WIDTH"), fbo.getWidth());
+    glUniform1i(glGetUniformLocation(mProgram, "HEIGHT"), fbo.getHeight());
 
     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     {
