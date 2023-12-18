@@ -8,8 +8,7 @@ FBO::FBO() {
 
 }
 
-FBO::FBO(Texture texture, const bool& includeDepthBuffer, const bool& includeStencilBuffer){
-    renderedTexture = texture;
+FBO::FBO(Texture texture, const bool& includeDepthBuffer, const bool& includeStencilBuffer) : renderedTexture(texture) {
     initialize(includeDepthBuffer, includeStencilBuffer);
 }
 

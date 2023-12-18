@@ -13,7 +13,7 @@ public:
 
     Texture(const GLuint &texture, const int& w, const int& h);
 
-    Texture(const int &width, const int &height);
+    Texture(const int &width, const int &height, const float *pixelBuffer, const GLenum param);
 
     enum ImageOption {
         MS_PAINT_COLORS,
@@ -37,8 +37,6 @@ public:
     GLuint getTextureId();
 
     static vec3 fetchFromSpectrum(const float& value);
-
-    static GLuint generateTexture(const int& width, const int& height);
 
     int getWidth();
 
