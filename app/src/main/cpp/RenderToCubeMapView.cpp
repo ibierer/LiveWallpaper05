@@ -10,8 +10,8 @@ RenderToCubeMapView::RenderToCubeMapView() : View(){
     texture = Texture(Texture::DefaultImages::MANDELBROT, 1024, 1024);
     cubeMapFBO = CubeMapFBO(
             CubeMap(GL_RGB, GL_LINEAR, 2048, 0),
-            yes,
-            no);
+            YES,
+            NO);
 }
 
 RenderToCubeMapView::~RenderToCubeMapView(){

@@ -5,9 +5,12 @@
 #include "RenderToTextureView.h"
 
 RenderToTextureView::RenderToTextureView() : View() {
-    texture = Texture(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536);
-    fbo = FBO(Texture(GL_RGB, texture.getWidth(), texture.getHeight(), 0, GL_LINEAR), yes, no);
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
+    texture = Texture(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536);
+    fbo = FBO(
+            Texture(GL_RGB, texture.getWidth(), texture.getHeight(), 0, GL_LINEAR),
+            YES,
+            NO);
 }
 
 RenderToTextureView::~RenderToTextureView(){

@@ -42,8 +42,6 @@ public:
 
     int getHeight();
 
-    static void generateMandelbrotWithVertexShader(const int& w, const int& h);
-
 protected:
 
     void generateTexture(const DefaultImages& option, const int& w, const int& h);

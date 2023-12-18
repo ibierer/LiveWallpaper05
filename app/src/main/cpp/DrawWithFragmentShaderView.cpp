@@ -5,10 +5,10 @@
 #include "DrawWithFragmentShaderView.h"
 
 DrawWithFragmentShaderView::DrawWithFragmentShaderView() : View() {
-    fbo = FBO(Texture(GL_RGB, 16384, 16384, 0, GL_LINEAR), no, no);
+    fbo = FBO(Texture(GL_RGB, 16384, 16384, 0, GL_LINEAR), NO, NO);
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     mPlanesProgram = createProgram(PLANES_VERTEX_SHADER.c_str(), PLANES_FRAGMENT_SHADER.c_str());
-    generateTexture();
+    FBO::generateMandelbrotWithVertexShader(fbo, mProgram, this);
 }
 
 DrawWithFragmentShaderView::~DrawWithFragmentShaderView(){
@@ -68,25 +68,4 @@ void DrawWithFragmentShaderView::render(){
 
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glBindTexture(GL_TEXTURE_2D, 0);
-}
-
-void DrawWithFragmentShaderView::generateTexture() {
-    glViewport(0, 0, fbo.getWidth(), fbo.getHeight());
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo.getFrameBuffer());
-    glDrawBuffers(1, fbo.drawBuffers);
-    glClearColor(1.0f - backgroundColor.r, 1.0f - backgroundColor.g, 1.0f - backgroundColor.b, backgroundColor.a);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    glEnable(GL_DEPTH_TEST);
-
-    glUseProgram(mProgram);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture.getTextureId());
-    glUniform1i(glGetUniformLocation(mProgram, "image"), 0);
-    glUniform1i(glGetUniformLocation(mProgram, "WIDTH"), fbo.getWidth());
-    glUniform1i(glGetUniformLocation(mProgram, "HEIGHT"), fbo.getHeight());
-
-    Texture::generateMandelbrotWithVertexShader(fbo.getWidth(), fbo.getHeight());
-
-    glViewport(0, 0, width, width);
 }

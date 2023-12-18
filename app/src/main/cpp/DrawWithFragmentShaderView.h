@@ -130,8 +130,6 @@ public:
 
     void render() override;
 
-    void generateTexture();
-
 private:
 
 };
