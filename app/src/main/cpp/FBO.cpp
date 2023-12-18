@@ -10,7 +10,7 @@ FBO::FBO() {
 
 FBO::FBO(Texture texture, const int& width, const int& height, const bool& includeDepthBuffer, const bool& includeStencilBuffer){
     renderedTexture = Texture::generateTexture(width, height);
-    initialize(width, height, includeDepthBuffer, includeStencilBuffer);
+    initialize(texture.getWidth(), texture.getHeight(), includeDepthBuffer, includeStencilBuffer);
 }
 
 // Copy constructor

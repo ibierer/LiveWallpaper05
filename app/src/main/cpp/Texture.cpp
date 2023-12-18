@@ -97,8 +97,10 @@ Texture::Texture(const ImageOption& option){
     generateTexture(option);
 }
 
-Texture::Texture(const GLuint& texture){
+Texture::Texture(const GLuint& texture, const int& w, const int& h){
     textureId = texture;
+    width = w;
+    height = h;
 }
 
 // Destructor
@@ -107,7 +109,7 @@ Texture::~Texture() {
 }
 
 // Copy Constructor
-Texture::Texture(const Texture& other) : textureId(other.textureId) {
+Texture::Texture(const Texture& other) : textureId(other.textureId), width(other.width), height(other.height) {
 
 }
 
@@ -115,6 +117,8 @@ Texture::Texture(const Texture& other) : textureId(other.textureId) {
 Texture& Texture::operator=(const Texture& other) {
     if (this != &other) {
         textureId = other.textureId;
+        width = other.width;
+        height = other.height;
     }
 
     return *this;
@@ -141,6 +145,8 @@ void Texture::generateTexture(const ImageOption& option) {
             generateMandelbrot((unsigned char*)pixelBuffer, resolution, resolution);
             break;
     }
+    width = resolution;
+    height = resolution;
     glTexImage2D(
             GL_TEXTURE_2D,
             0,

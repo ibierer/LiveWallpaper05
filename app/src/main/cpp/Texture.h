@@ -11,7 +11,7 @@
 class Texture {
 public:
 
-    Texture(const GLuint &texture);
+    Texture(const GLuint &texture, const int& w, const int& h);
 
     enum ImageOption {
         MS_PAINT_COLORS,
