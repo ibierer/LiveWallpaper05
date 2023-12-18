@@ -133,13 +133,14 @@ void Texture::generateTexture(const DefaultImages& option) {
     _vec3<GLubyte>* pixelBuffer;
     switch(option){
         case MS_PAINT_COLORS:
-            glGenTextures(1, &textureId);
-            glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
             resolution = 1536;
             pixelBuffer = (_vec3<GLubyte>*)malloc(resolution * resolution * sizeof(_vec3<GLubyte>));
             generateMSPaintColors(pixelBuffer, resolution, resolution);
-            width = resolution;
+            *this = Texture(resolution, resolution, (float*)pixelBuffer, GL_LINEAR);
+            /*width = resolution;
             height = resolution;
+            glGenTextures(1, &textureId);
+            glBindTexture(GL_TEXTURE_2D, textureId);
             glTexImage2D(
                     GL_TEXTURE_2D,
                     0,
@@ -154,15 +155,17 @@ void Texture::generateTexture(const DefaultImages& option) {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glBindTexture(GL_TEXTURE_2D, 0);*/
             break;
         case MANDELBROT:
-            glGenTextures(1, &textureId);
-            glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
             resolution = 1024;
             pixelBuffer = (_vec3<GLubyte>*)malloc(resolution * resolution * sizeof(_vec3<GLubyte>));
             generateMandelbrot((unsigned char*)pixelBuffer, resolution, resolution);
-            width = resolution;
+            *this = Texture(resolution, resolution, (float*)pixelBuffer, GL_LINEAR);
+            /*width = resolution;
             height = resolution;
+            glGenTextures(1, &textureId);
+            glBindTexture(GL_TEXTURE_2D, textureId);
             glTexImage2D(
                     GL_TEXTURE_2D,
                     0,
@@ -177,6 +180,7 @@ void Texture::generateTexture(const DefaultImages& option) {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glBindTexture(GL_TEXTURE_2D, textureId);*/
             break;
     }
     free(pixelBuffer);

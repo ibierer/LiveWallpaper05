@@ -6,7 +6,7 @@
 
 TextureView::TextureView() : View(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
-    texture = Texture(Texture::DefaultImages::MS_PAINT_COLORS);
+    texture = Texture(Texture::DefaultImages::MANDELBROT);
 }
 
 TextureView::~TextureView(){
