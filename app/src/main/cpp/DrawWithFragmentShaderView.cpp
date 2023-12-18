@@ -9,48 +9,7 @@ DrawWithFragmentShaderView::DrawWithFragmentShaderView() : View() {
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     mPlanesProgram = createProgram(PLANES_VERTEX_SHADER.c_str(), PLANES_FRAGMENT_SHADER.c_str());
 
-    int storeWidth = width;
-    width = fbo.getWidth();
-    int storeHeight = height;
-    height = fbo.getHeight();
-    calculatePerspective(60.0f);
-    glViewport(0, 0, width, height);
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo.getFrameBuffer());
-    glDrawBuffers(1, fbo.drawBuffers);
-    glClearColor(1.0f - backgroundColor.r, 1.0f - backgroundColor.g, 1.0f - backgroundColor.b, backgroundColor.a);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    glEnable(GL_DEPTH_TEST);
-
-    glUseProgram(mProgram);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture.getTextureId());
-    glUniform1i(glGetUniformLocation(mProgram, "image"), 0);
-    glUniform1i(glGetUniformLocation(mProgram, "WIDTH"), fbo.getWidth());
-    glUniform1i(glGetUniformLocation(mProgram, "HEIGHT"), fbo.getHeight());
-
-    Vertex vertices[4] = {
-            {vec3(-1.0f, -1.0f, 0.0f)},
-            {vec3(-1.0f, 1.0f, 0.0f)},
-            {vec3(1.0f, -1.0f, 0.0f)},
-            {vec3(1.0f, 1.0f, 0.0f)}
-    };
-    uvec3 indices[2] = {
-            uvec3(0, 2, 1),
-            uvec3(1, 3, 2)
-    };
-
-    glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
-    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid *) &vertices[0].v);
-    glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(unsigned int), GL_UNSIGNED_INT, indices);
-    glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
-
-    width = storeWidth;
-    height = storeHeight;
-    calculatePerspective(60.0f);
-    glViewport(0, 0, width, height);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    generateTexture();
 }
 
 DrawWithFragmentShaderView::~DrawWithFragmentShaderView(){
@@ -104,5 +63,50 @@ void DrawWithFragmentShaderView::render(){
                    indices);
 
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void DrawWithFragmentShaderView::generateTexture() {
+    int storeWidth = width;
+    width = fbo.getWidth();
+    int storeHeight = height;
+    height = fbo.getHeight();
+    calculatePerspective(60.0f);
+    glViewport(0, 0, width, height);
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo.getFrameBuffer());
+    glDrawBuffers(1, fbo.drawBuffers);
+    glClearColor(1.0f - backgroundColor.r, 1.0f - backgroundColor.g, 1.0f - backgroundColor.b, backgroundColor.a);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glEnable(GL_DEPTH_TEST);
+
+    glUseProgram(mProgram);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture.getTextureId());
+    glUniform1i(glGetUniformLocation(mProgram, "image"), 0);
+    glUniform1i(glGetUniformLocation(mProgram, "WIDTH"), fbo.getWidth());
+    glUniform1i(glGetUniformLocation(mProgram, "HEIGHT"), fbo.getHeight());
+
+    Vertex vertices[4] = {
+            {vec3(-1.0f, -1.0f, 0.0f)},
+            {vec3(-1.0f, 1.0f, 0.0f)},
+            {vec3(1.0f, -1.0f, 0.0f)},
+            {vec3(1.0f, 1.0f, 0.0f)}
+    };
+    uvec3 indices[2] = {
+            uvec3(0, 2, 1),
+            uvec3(1, 3, 2)
+    };
+
+    glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid *) &vertices[0].v);
+    glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(unsigned int), GL_UNSIGNED_INT, indices);
+    glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+
+    width = storeWidth;
+    height = storeHeight;
+    calculatePerspective(60.0f);
+    glViewport(0, 0, width, height);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glBindTexture(GL_TEXTURE_2D, 0);
 }
