@@ -4,7 +4,8 @@
 
 #include "RenderToTextureView.h"
 
-RenderToTextureView::RenderToTextureView() : View(), fbo(FBO(2048, 2048, true, false)){
+RenderToTextureView::RenderToTextureView() : View() {
+    fbo = FBO(2048, 2048, true, false);
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     texture = Texture(Texture::MS_PAINT_COLORS);
 }
@@ -28,10 +29,12 @@ void RenderToTextureView::render(){
     glEnable(GL_DEPTH_TEST);
 
     Matrix4<float> translation;
-    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 10.0f * (val - 1.0f)));
+    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 3.0f * (val - 1.0f)));
+    Matrix4<float> translation2;
+    translation2 = translation2.Translation(Vec3<float>(-0.5f));
     Matrix4<float> rotation;
     rotation = Matrix4<float>(quaternionTo3x3(rotationVector));
-    Matrix4<float> mvp = orientationAdjustedPerspective * translation * rotation;
+    Matrix4<float> mvp = orientationAdjustedPerspective * translation * rotation * translation2;
 
     glUseProgram(mProgram);
     glUniformMatrix4fv(
@@ -71,7 +74,7 @@ void RenderToTextureView::render(){
     glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    mvp = orientationAdjustedPerspective * translation * rotation;
+    mvp = orientationAdjustedPerspective * translation * rotation * translation2;
 
     glUniformMatrix4fv(
             glGetUniformLocation(mProgram, "mvp"),

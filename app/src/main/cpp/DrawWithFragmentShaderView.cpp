@@ -4,7 +4,8 @@
 
 #include "DrawWithFragmentShaderView.h"
 
-DrawWithFragmentShaderView::DrawWithFragmentShaderView() : View(), fbo(FBO(1536, 1536, true, false)){
+DrawWithFragmentShaderView::DrawWithFragmentShaderView() : View() {
+    fbo = FBO(1536, 1536, true, false);
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     mPlanesProgram = createProgram(PLANES_VERTEX_SHADER.c_str(), PLANES_FRAGMENT_SHADER.c_str());
     texture = Texture(Texture::MS_PAINT_COLORS);
@@ -60,11 +61,12 @@ void DrawWithFragmentShaderView::render(){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     Matrix4<float> translation;
-    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 10.0f * (val - 1.0f)));
+    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 3.0f * (val - 1.0f)));
+    Matrix4<float> translation2;
+    translation2 = translation2.Translation(Vec3<float>(-0.5f));
     Matrix4<float> rotation;
     rotation = Matrix4<float>(quaternionTo3x3(rotationVector));
-    Matrix4<float> mvp = orientationAdjustedPerspective * translation * rotation;
-    mvp = orientationAdjustedPerspective * translation * rotation;
+    Matrix4<float> mvp = orientationAdjustedPerspective * translation * rotation * translation2;
 
     glUseProgram(mPlanesProgram);
     glUniformMatrix4fv(
