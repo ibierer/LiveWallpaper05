@@ -13,6 +13,8 @@ public:
 
     Texture(const GLuint &texture, const int& w, const int& h);
 
+    Texture(const int &width, const int &height);
+
     enum ImageOption {
         MS_PAINT_COLORS,
         MANDELBROT
