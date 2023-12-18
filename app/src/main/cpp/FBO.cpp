@@ -8,8 +8,8 @@ FBO::FBO() {
 
 }
 
-FBO::FBO(Texture texture, const bool& includeDepthBuffer, const bool& includeStencilBuffer) : renderedTexture(texture) {
-    initialize(includeDepthBuffer, includeStencilBuffer);
+FBO::FBO(Texture texture, const bool& addDepthBuffer, const bool& addStencilBuffer) : renderedTexture(texture) {
+    initialize(addDepthBuffer, addStencilBuffer);
 }
 
 // Copy constructor
@@ -35,22 +35,22 @@ FBO::~FBO() {
 
 }
 
-int FBO::initialize(const bool& includeDepthBuffer, const bool& includeStencilBuffer) {
+int FBO::initialize(const bool& addDepthBuffer, const bool& addStencilBuffer) {
     glBindTexture(GL_TEXTURE_2D, renderedTexture.getTextureId());
     glGenFramebuffers(1, &frameBuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
     glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers[DRAW_BUFFER], GL_TEXTURE_2D, renderedTexture.getTextureId(), 0);
 
-    if(includeDepthBuffer || includeStencilBuffer) {
+    if(addDepthBuffer || addStencilBuffer) {
         glGenRenderbuffers(1, &depthAndOrStencilRenderBuffer);
         glBindRenderbuffer(GL_RENDERBUFFER, depthAndOrStencilRenderBuffer);
-        if (includeDepthBuffer && !includeStencilBuffer) {
+        if (addDepthBuffer && !addStencilBuffer) {
             glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, renderedTexture.getWidth(), renderedTexture.getHeight());
             glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthAndOrStencilRenderBuffer);
-        } else if (!includeDepthBuffer && includeStencilBuffer) {
+        } else if (!addDepthBuffer && addStencilBuffer) {
             glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX8, renderedTexture.getWidth(), renderedTexture.getHeight());
             glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthAndOrStencilRenderBuffer);
-        } else if (includeDepthBuffer && includeStencilBuffer) {
+        } else if (addDepthBuffer && addStencilBuffer) {
             glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, renderedTexture.getWidth(), renderedTexture.getHeight());
             glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthAndOrStencilRenderBuffer);
         }

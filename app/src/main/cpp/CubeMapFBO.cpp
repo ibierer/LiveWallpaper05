@@ -8,7 +8,7 @@ CubeMapFBO::CubeMapFBO() {
 
 }
 
-CubeMapFBO::CubeMapFBO(CubeMap cubeMap, const bool &includeDepthBuffer, const bool &includeStencilBuffer) {
+CubeMapFBO::CubeMapFBO(CubeMap cubeMap, const bool &addDepthBuffer, const bool &addStencilBuffer) {
     this->cubeMap = cubeMap;
 
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap.getTextureId());
@@ -16,16 +16,16 @@ CubeMapFBO::CubeMapFBO(CubeMap cubeMap, const bool &includeDepthBuffer, const bo
     for (int i = 0; i < 6; i++) {
         glBindFramebuffer(GL_FRAMEBUFFER, frameBuffers[i]);
 
-        if(includeDepthBuffer || includeStencilBuffer) {
+        if(addDepthBuffer || addStencilBuffer) {
             glGenRenderbuffers(1, &depthAndOrStencilRenderBuffers[i]);
             glBindRenderbuffer(GL_RENDERBUFFER, depthAndOrStencilRenderBuffers[i]);
-            if (includeDepthBuffer && !includeStencilBuffer) {
+            if (addDepthBuffer && !addStencilBuffer) {
                 glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, cubeMap.getResolution(), cubeMap.getResolution());
                 glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthAndOrStencilRenderBuffers[i]);
-            } else if (!includeDepthBuffer && includeStencilBuffer) {
+            } else if (!addDepthBuffer && addStencilBuffer) {
                 glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX8, cubeMap.getResolution(), cubeMap.getResolution());
                 glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthAndOrStencilRenderBuffers[i]);
-            } else if (includeDepthBuffer && includeStencilBuffer) {
+            } else if (addDepthBuffer && addStencilBuffer) {
                 glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, cubeMap.getResolution(), cubeMap.getResolution());
                 glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthAndOrStencilRenderBuffers[i]);
             }

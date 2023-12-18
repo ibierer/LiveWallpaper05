@@ -14,6 +14,9 @@
 #define STR(s) #s
 #define STRV(s) STR(s)
 
+#define yes true
+#define no false
+
 #include "nlohmann/json.hpp"
 #include "vectors.cpp"
 #include "Vertex.cpp"

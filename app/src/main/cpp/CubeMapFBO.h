@@ -22,7 +22,7 @@ public:
     // Default constructor
     CubeMapFBO();
 
-    CubeMapFBO(CubeMap cubeMap, const bool& includeDepthBuffer, const bool& includeStencilBuffer);
+    CubeMapFBO(CubeMap cubeMap, const bool& addDepthBuffer, const bool& addStencilBuffer);
 
     // Copy constructor
     CubeMapFBO(const CubeMapFBO& other);

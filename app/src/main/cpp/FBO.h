@@ -17,7 +17,7 @@ public:
 
     FBO();
 
-    FBO(Texture texture, const bool& includeDepthBuffer, const bool& includeStencilBuffer);
+    FBO(Texture texture, const bool& addDepthBuffer, const bool& addStencilBuffer);
 
     // Copy constructor
     FBO(const FBO& other);
@@ -27,7 +27,7 @@ public:
 
     ~FBO();
 
-    int initialize(const bool& includeDepthBuffer, const bool& includeStencilBuffer);
+    int initialize(const bool& addDepthBuffer, const bool& addStencilBuffer);
 
     GLuint getWidth();
 

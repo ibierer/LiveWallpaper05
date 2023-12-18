@@ -160,3 +160,26 @@ int Texture::getWidth() {
 int Texture::getHeight() {
     return height;
 }
+
+void Texture::generateMandelbrotWithVertexShader(const int&w, const int& h) {
+
+    Vertex vertices[4] = {
+            {vec3(-1.0f, -1.0f, 0.0f)},
+            {vec3(-1.0f, 1.0f, 0.0f)},
+            {vec3(1.0f, -1.0f, 0.0f)},
+            {vec3(1.0f, 1.0f, 0.0f)}
+    };
+    uvec3 indices[2] = {
+            uvec3(0, 2, 1),
+            uvec3(1, 3, 2)
+    };
+
+    glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid *) &vertices[0].v);
+    glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(unsigned int), GL_UNSIGNED_INT, indices);
+    glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+
+    glViewport(0, 0, w, h);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
