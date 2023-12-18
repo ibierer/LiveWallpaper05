@@ -23,7 +23,7 @@ public:
     // Default Constructor
     Texture();
 
-    Texture(const DefaultImages& option);
+    Texture(const DefaultImages& option, const int& w, const int& h);
 
     // Destructor
     ~Texture();

@@ -7,7 +7,7 @@
 RenderToCubeMapView::RenderToCubeMapView() : View(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     mPlanesProgram = createProgram(PLANES_VERTEX_SHADER.c_str(), PLANES_FRAGMENT_SHADER.c_str());
-    texture = Texture(Texture::DefaultImages::MANDELBROT);
+    texture = Texture(Texture::DefaultImages::MANDELBROT, 1024, 1024);
     cubeMapFBO = CubeMapFBO(
             CubeMap(GL_RGB, GL_LINEAR, 2048, 0),
             true,

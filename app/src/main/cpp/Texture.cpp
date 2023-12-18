@@ -93,8 +93,8 @@ Texture::Texture(){
 
 }
 
-Texture::Texture(const DefaultImages& option){
-    generateTexture(option, 0, 0);
+Texture::Texture(const DefaultImages& option, const int& w, const int& h){
+    generateTexture(option, w, h);
 }
 
 Texture::Texture(const GLuint& texture, const int& w, const int& h){
@@ -129,22 +129,16 @@ GLuint Texture::getTextureId() {
 }
 
 void Texture::generateTexture(const DefaultImages& option, const int& w, const int& h) {
-    int resolution;
-    _vec3<GLubyte>* pixelBuffer;
+    _vec3<GLubyte>* pixelBuffer = (_vec3<GLubyte>*)malloc(w * h * sizeof(_vec3<GLubyte>));
     switch(option){
         case MS_PAINT_COLORS:
-            resolution = 1536;
-            pixelBuffer = (_vec3<GLubyte>*)malloc(resolution * resolution * sizeof(_vec3<GLubyte>));
-            generateMSPaintColors(pixelBuffer, resolution, resolution);
-            *this = Texture(resolution, resolution, (float*)pixelBuffer, GL_LINEAR);
+            generateMSPaintColors(pixelBuffer, w, h);
             break;
         case MANDELBROT:
-            resolution = 1024;
-            pixelBuffer = (_vec3<GLubyte>*)malloc(resolution * resolution * sizeof(_vec3<GLubyte>));
-            generateMandelbrot((unsigned char*)pixelBuffer, resolution, resolution);
-            *this = Texture(resolution, resolution, (float*)pixelBuffer, GL_LINEAR);
+            generateMandelbrot((unsigned char*)pixelBuffer, w, h);
             break;
     }
+    *this = Texture(w, h, (float*)pixelBuffer, GL_LINEAR);
     free(pixelBuffer);
 }
 
