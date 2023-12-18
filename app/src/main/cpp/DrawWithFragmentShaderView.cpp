@@ -8,7 +8,6 @@ DrawWithFragmentShaderView::DrawWithFragmentShaderView() : View() {
     fbo = FBO(Texture(16384, 16384, 0, GL_LINEAR), true, false);
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     mPlanesProgram = createProgram(PLANES_VERTEX_SHADER.c_str(), PLANES_FRAGMENT_SHADER.c_str());
-
     generateTexture();
 }
 
@@ -18,7 +17,10 @@ DrawWithFragmentShaderView::~DrawWithFragmentShaderView(){
 
 void DrawWithFragmentShaderView::render(){
 
-    glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+    // Option to regenerate the texture each frame.
+    if(getFrameCount() > 0){
+        //generateTexture();
+    }
 
     glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -57,6 +59,8 @@ void DrawWithFragmentShaderView::render(){
             uvec3(4, 6, 5),
             uvec3(5, 7, 6)
     };
+
+    glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
                           (const GLvoid *) &vertices[0].v);
     glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(unsigned int), GL_UNSIGNED_INT,
