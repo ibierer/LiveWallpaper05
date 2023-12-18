@@ -38,6 +38,10 @@ public:
 
     static GLuint generateTexture(const int& width, const int& height);
 
+    int getWidth();
+
+    int getHeight();
+
 protected:
 
     void generateTexture(const ImageOption& option);
@@ -45,6 +49,10 @@ protected:
     GLuint textureId;
 
 private:
+
+    int width;
+
+    int height;
 
     void generateMandelbrot(unsigned char* image, const int& WIDTH, const int& HEIGHT);
 

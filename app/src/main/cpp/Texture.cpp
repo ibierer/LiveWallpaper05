@@ -170,3 +170,11 @@ GLuint Texture::generateTexture(const int& width, const int& height){
     glBindTexture(GL_TEXTURE_2D, 0);
     return texture;
 }
+
+int Texture::getWidth() {
+    return width;
+}
+
+int Texture::getHeight() {
+    return height;
+}
