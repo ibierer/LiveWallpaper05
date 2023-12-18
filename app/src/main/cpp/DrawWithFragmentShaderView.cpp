@@ -5,7 +5,7 @@
 #include "DrawWithFragmentShaderView.h"
 
 DrawWithFragmentShaderView::DrawWithFragmentShaderView() : View() {
-    fbo = FBO(Texture(16384, 16384, 0, GL_LINEAR), no, no);
+    fbo = FBO(Texture(GL_RGB, 16384, 16384, 0, GL_LINEAR), no, no);
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     mPlanesProgram = createProgram(PLANES_VERTEX_SHADER.c_str(), PLANES_FRAGMENT_SHADER.c_str());
     generateTexture();

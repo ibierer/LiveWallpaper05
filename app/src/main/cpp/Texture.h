@@ -18,7 +18,7 @@ public:
 
     Texture(const GLuint &texture, const int& w, const int& h);
 
-    Texture(const int &width, const int &height, const float *pixelBuffer, const GLenum param);
+    Texture(const GLint& internalFormat, const int &width, const int &height, const float *pixelBuffer, const GLenum param);
 
     // Default Constructor
     Texture();
