@@ -97,6 +97,10 @@ Texture::Texture(const ImageOption& option){
     generateTexture(option);
 }
 
+Texture::Texture(const GLuint& texture){
+    textureId = texture;
+}
+
 // Destructor
 Texture::~Texture() {
 

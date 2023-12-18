@@ -11,6 +11,8 @@
 class Texture {
 public:
 
+    Texture(const GLuint &texture);
+
     enum ImageOption {
         MS_PAINT_COLORS,
         MANDELBROT

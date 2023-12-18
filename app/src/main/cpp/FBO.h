@@ -17,7 +17,7 @@ public:
 
     FBO();
 
-    FBO(const int& width, const int& height, const bool& includeDepthBuffer, const bool& includeStencilBuffer);
+    FBO(Texture texture, const int& width, const int& height, const bool& includeDepthBuffer, const bool& includeStencilBuffer);
 
     // Copy constructor
     FBO(const FBO& other);
