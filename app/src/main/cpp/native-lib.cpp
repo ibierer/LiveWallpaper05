@@ -73,8 +73,8 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
             //view = new BoxView();
             //view = new TriangleWithNormalsView();
             //view = new CubeMapView();
-            //view = new SphereMapView();
-            view = new TextureView();
+            view = new SphereMapView();
+            //view = new TextureView();
             //view = new RenderToTextureView();
             //view = new RenderToCubeMapView();
             //view = new DrawWithFragmentShaderView();

@@ -9,6 +9,8 @@
 class SphereMap : public EnvironmentMap {
 public:
 
+    SphereMap();
+
     SphereMap(Texture::DefaultImages option);
 
     // Destructor
