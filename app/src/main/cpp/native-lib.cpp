@@ -14,9 +14,6 @@
 #define STR(s) #s
 #define STRV(s) STR(s)
 
-#define POSITION_ATTRIBUTE_LOCATION 0
-#define NORMAL_ATTRIBUTE_LOCATION 1
-
 #include "nlohmann/json.hpp"
 #include "vectors.cpp"
 #include "Vertex.cpp"

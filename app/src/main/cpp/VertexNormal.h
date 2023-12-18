@@ -8,6 +8,8 @@
 
 #include "Attributes.h"
 
+#define NORMAL_ATTRIBUTE_LOCATION 1
+
 class VertexNormal : public Attributes {
 public:
     vec3 n;

@@ -8,6 +8,8 @@
 
 #include "vectors.h"
 
+#define POSITION_ATTRIBUTE_LOCATION 0
+
 class Attributes {
 public:
     vec3 v;
