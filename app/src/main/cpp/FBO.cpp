@@ -9,7 +9,7 @@ FBO::FBO() {
 }
 
 FBO::FBO(Texture texture, const int& width, const int& height, const bool& includeDepthBuffer, const bool& includeStencilBuffer){
-    renderedTexture = Texture::generateTexture(width, height);
+    renderedTexture = Texture(Texture::generateTexture(width, height), width, height);
     initialize(texture.getWidth(), texture.getHeight(), includeDepthBuffer, includeStencilBuffer);
 }
 
@@ -43,10 +43,10 @@ FBO::~FBO() {
 int FBO::initialize(const int& width, const int& height, const bool& includeDepthBuffer, const bool& includeStencilBuffer) {
     this->width = width;
     this->height = height;
-    glBindTexture(GL_TEXTURE_2D, renderedTexture);
+    glBindTexture(GL_TEXTURE_2D, renderedTexture.getTextureId());
     glGenFramebuffers(1, &frameBuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers[DRAW_BUFFER], GL_TEXTURE_2D, renderedTexture, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers[DRAW_BUFFER], GL_TEXTURE_2D, renderedTexture.getTextureId(), 0);
 
     if(includeDepthBuffer || includeStencilBuffer) {
         glGenRenderbuffers(1, &depthAndOrStencilRenderBuffer);
@@ -84,5 +84,5 @@ GLuint FBO::getFrameBuffer() {
 }
 
 GLuint FBO::getRenderedTexture() {
-    return renderedTexture;
+    return renderedTexture.getTextureId();
 }

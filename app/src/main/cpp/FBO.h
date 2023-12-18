@@ -45,7 +45,7 @@ private:
 
     GLuint frameBuffer;
 
-    GLuint renderedTexture;
+    Texture renderedTexture;
 
     GLuint depthAndOrStencilRenderBuffer;
 
