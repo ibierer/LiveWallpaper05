@@ -17,8 +17,6 @@ public:
     // Destructor
     ~CubeMap();
 
-    CubeMap(const GLuint& textureId, const int& size);
-
     // Copy Constructor
     CubeMap(const CubeMap& other);
 

@@ -14,11 +14,6 @@ CubeMap::~CubeMap() {
 
 }
 
-CubeMap::CubeMap(const GLuint& textureId, const int& resolution) {
-    this->textureId = textureId;
-    this->resolution = resolution;
-}
-
 // Copy Constructor
 CubeMap::CubeMap(const CubeMap& other) {
     this->textureId = other.textureId;
