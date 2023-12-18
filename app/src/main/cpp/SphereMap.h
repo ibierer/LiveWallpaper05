@@ -11,7 +11,7 @@ public:
 
     SphereMap();
 
-    SphereMap(Texture::DefaultImages option);
+    SphereMap(Texture::DefaultImages option, const int& w, const int& h);
 
     // Destructor
     ~SphereMap();

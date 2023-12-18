@@ -9,8 +9,8 @@ SphereMap::SphereMap() {
 
 }
 
-SphereMap::SphereMap(Texture::DefaultImages option){
-    generateTexture(option, 1024, 1024);
+SphereMap::SphereMap(Texture::DefaultImages option, const int& w, const int& h){
+    generateTexture(option, w, h);
 }
 
 // Destructor
