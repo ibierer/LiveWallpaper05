@@ -1,19 +1,19 @@
 //
-// Created by Immanuel Bierer on 12/14/2023.
+// Created by Immanuel Bierer on 12/17/2023.
 //
 
-#include "RenderToTextureView.h"
+#include "DrawWithFragmentShaderView.h"
 
-RenderToTextureView::RenderToTextureView() : View(), fbo(FBO(2048, 2048, true, false)){
+DrawWithFragmentShaderView::DrawWithFragmentShaderView() : View(), fbo(FBO(2048, 2048, true, false)){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     texture = Texture(Texture::MS_PAINT_COLORS);
 }
 
-RenderToTextureView::~RenderToTextureView(){
+DrawWithFragmentShaderView::~DrawWithFragmentShaderView(){
     glDeleteProgram(mProgram);
 }
 
-void RenderToTextureView::render(){
+void DrawWithFragmentShaderView::render(){
     int storeWidth = width;
     width = fbo.getWidth();
     int storeHeight = height;
