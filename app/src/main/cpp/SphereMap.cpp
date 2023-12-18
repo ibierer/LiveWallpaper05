@@ -5,7 +5,7 @@
 #include "SphereMap.h"
 
 SphereMap::SphereMap(Texture::DefaultImages option){
-    generateTexture(option);
+    generateTexture(option, 1024, 1024);
 }
 
 // Destructor

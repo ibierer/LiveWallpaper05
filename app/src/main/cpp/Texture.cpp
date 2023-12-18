@@ -94,7 +94,7 @@ Texture::Texture(){
 }
 
 Texture::Texture(const DefaultImages& option){
-    generateTexture(option);
+    generateTexture(option, 0, 0);
 }
 
 Texture::Texture(const GLuint& texture, const int& w, const int& h){
@@ -128,7 +128,7 @@ GLuint Texture::getTextureId() {
     return textureId;
 }
 
-void Texture::generateTexture(const DefaultImages& option) {
+void Texture::generateTexture(const DefaultImages& option, const int& w, const int& h) {
     int resolution;
     _vec3<GLubyte>* pixelBuffer;
     switch(option){

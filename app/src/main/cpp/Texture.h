@@ -44,7 +44,7 @@ public:
 
 protected:
 
-    void generateTexture(const DefaultImages& option);
+    void generateTexture(const DefaultImages& option, const int& w, const int& h);
 
     GLuint textureId;
 
