@@ -41,7 +41,7 @@ void RenderToTextureView::render(){
             (GLfloat*)&mvp);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture.getTextureId());
-    glUniform1i(glGetUniformLocation(mProgram, "environmentTexture"), 0);
+    glUniform1i(glGetUniformLocation(mProgram, "image"), 0);
 
     Vertex vertices[8] = {
             {vec3(0.0f, 0.0f, 0.0f)},
@@ -80,7 +80,7 @@ void RenderToTextureView::render(){
             (GLfloat*)&mvp);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTexture());
-    glUniform1i(glGetUniformLocation(mProgram, "environmentTexture"), 1);
+    glUniform1i(glGetUniformLocation(mProgram, "image"), 1);
 
     glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(unsigned int), GL_UNSIGNED_INT, indices);
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
