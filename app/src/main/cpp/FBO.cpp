@@ -9,6 +9,7 @@ FBO::FBO() {
 }
 
 FBO::FBO(const int& width, const int& height, const bool& includeDepthBuffer, const bool& includeStencilBuffer){
+    renderedTexture = Texture::generateTexture(width, height);
     initialize(width, height, includeDepthBuffer, includeStencilBuffer);
 }
 
@@ -42,7 +43,6 @@ FBO::~FBO() {
 int FBO::initialize(const int& width, const int& height, const bool& includeDepthBuffer, const bool& includeStencilBuffer) {
     this->width = width;
     this->height = height;
-    renderedTexture = Texture::generateTexture(width, height);
     glBindTexture(GL_TEXTURE_2D, renderedTexture);
     glGenFramebuffers(1, &frameBuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
