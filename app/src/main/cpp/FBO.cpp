@@ -36,8 +36,7 @@ FBO& FBO::operator=(const FBO& other) {
 }
 
 FBO::~FBO() {
-    //glDeleteFramebuffers(1, &frameBuffer);
-    //glDeleteRenderbuffers(1, &depthAndOrStencilRenderBuffer);
+
 }
 
 int FBO::initialize(const int& width, const int& height, const bool& includeDepthBuffer, const bool& includeStencilBuffer) {
