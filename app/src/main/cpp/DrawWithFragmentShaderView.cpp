@@ -8,7 +8,7 @@ DrawWithFragmentShaderView::DrawWithFragmentShaderView() : View() {
     fbo = FBO(Texture(GL_RGB, 16384, 16384, 0, GL_LINEAR), NO, NO);
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     mPlanesProgram = createProgram(PLANES_VERTEX_SHADER.c_str(), PLANES_FRAGMENT_SHADER.c_str());
-    FBO::generateMandelbrotWithVertexShader(fbo, mProgram, this);
+    texture = FBO::generateMandelbrotWithVertexShader(fbo, mProgram, this);
 }
 
 DrawWithFragmentShaderView::~DrawWithFragmentShaderView(){
@@ -19,7 +19,7 @@ void DrawWithFragmentShaderView::render(){
 
     // Option to regenerate the texture each frame.
     if(getFrameCount() > 0){
-        //FBO::generateMandelbrotWithVertexShader(fbo, mProgram, this);
+        //texture = FBO::generateMandelbrotWithVertexShader(fbo, mProgram, this);
     }
 
     glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
@@ -40,7 +40,7 @@ void DrawWithFragmentShaderView::render(){
             GL_FALSE,
             (GLfloat*)&mvp);
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTexture());
+    glBindTexture(GL_TEXTURE_2D, texture.getTextureId());
     glUniform1i(glGetUniformLocation(mPlanesProgram, "image"), 1);
 
     Vertex vertices[8] = {
