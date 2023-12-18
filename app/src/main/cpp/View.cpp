@@ -18,7 +18,7 @@ void View::render(){
 
 void View::calculatePerspective(const float& maxViewDegrees) {
     float aspect = (float)width / (float)height;
-    float zNear = 0.1f;
+    float zNear = 0.001f;
     float zFar = 1000.0f;
     float verticalScreenAngle = aspect < 1.0f ? toRadians(maxViewDegrees) : 2.0f * atanf(tanf(0.5f * toRadians(maxViewDegrees)) / aspect);
     perspective.SetPerspective(verticalScreenAngle, aspect, zNear, zFar);
