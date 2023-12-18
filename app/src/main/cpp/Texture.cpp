@@ -7,32 +7,32 @@
 vec3 Texture::fetchFromSpectrum(const float &value) {
     float index = value - std::floor(value);
     if(index < 1.0f / 6.0f){
-        return 255.0f * vec3(
+        return vec3(
                 1.0f,
                 6.0f * index,
                 0.0f);
     }else if(index < 2.0f / 6.0f){
-        return 255.0f * vec3(
+        return vec3(
                 2.0f - 6.0f * index,
                 1.0f,
                 0.0f);
     }else if(index < 3.0f / 6.0f){
-        return 255.0f * vec3(
+        return vec3(
                 0.0f,
                 1.0f,
                 6.0f * index - 2.0f);
     }else if(index < 4.0f / 6.0f){
-        return 255.0f * vec3(
+        return vec3(
                 0.0f,
                 4.0f - 6.0f * index,
                 1.0f);
     }else if(index < 5.0f / 6.0f){
-        return 255.0f * vec3(
+        return vec3(
                 6.0f * index - 4.0f,
                 0.0f,
                 1.0f);
     }else{
-        return 255.0f * vec3(
+        return vec3(
                 1.0f,
                 0.0f,
                 6.0f * (1.0f - index));
@@ -69,7 +69,7 @@ void Texture::generateMandelbrot(unsigned char* image, const int& WIDTH, const i
             if(iterations == MAX_ITERATIONS){
                 ((_vec3<unsigned char>*)image)[y * WIDTH + x] = _vec3<unsigned char>(0, 0, 0);
             }else{
-                ((_vec3<unsigned char>*)image)[y * WIDTH + x] = fetchFromSpectrum(0.005f * iterations);
+                ((_vec3<unsigned char>*)image)[y * WIDTH + x] = 255.0f * fetchFromSpectrum(0.005f * iterations);
             }
         }
     }
@@ -82,9 +82,9 @@ void Texture::generateMSPaintColors(_vec3<GLubyte>* pixelBuffer, const int& WIDT
             vec3 rgb = fetchFromSpectrum((float)j / WIDTH);
             float ratio = (float)i / HEIGHT;
             float inverse = 1.0f - ratio;
-            vec3 grey = vec3(127.0f);
+            vec3 grey = vec3(0.5f);
             vec3 sum = ratio * rgb + inverse * grey;
-            pixelBuffer[i * WIDTH + j] = _vec3<GLubyte>(sum.r, sum.b, sum.g);
+            pixelBuffer[i * WIDTH + j] = _vec3<GLubyte>(sum.r * 255.0f, sum.b * 255.0f, sum.g * 255.0f);
         }
     }
 }
