@@ -5,7 +5,7 @@
 #include "RenderToTextureView.h"
 
 RenderToTextureView::RenderToTextureView() : View() {
-    texture = Texture(Texture::MS_PAINT_COLORS);
+    texture = Texture(Texture::DefaultImages::MS_PAINT_COLORS);
     fbo = FBO(Texture(texture.getWidth(), texture.getHeight(), 0, GL_LINEAR), true, false);
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
 }

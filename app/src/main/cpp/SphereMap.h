@@ -9,7 +9,7 @@
 class SphereMap : public EnvironmentMap {
 public:
 
-    SphereMap(Texture::ImageOption option);
+    SphereMap(Texture::DefaultImages option);
 
     // Destructor
     ~SphereMap();

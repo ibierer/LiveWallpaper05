@@ -93,7 +93,7 @@ Texture::Texture(){
 
 }
 
-Texture::Texture(const ImageOption& option){
+Texture::Texture(const DefaultImages& option){
     generateTexture(option);
 }
 
@@ -128,7 +128,7 @@ GLuint Texture::getTextureId() {
     return textureId;
 }
 
-void Texture::generateTexture(const ImageOption& option) {
+void Texture::generateTexture(const DefaultImages& option) {
     glGenTextures(1, &textureId);
     glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
     int resolution;

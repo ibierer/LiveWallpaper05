@@ -4,7 +4,7 @@
 
 #include "SphereMap.h"
 
-SphereMap::SphereMap(Texture::ImageOption option){
+SphereMap::SphereMap(Texture::DefaultImages option){
     generateTexture(option);
 }
 

@@ -11,19 +11,19 @@
 class Texture {
 public:
 
-    Texture(const GLuint &texture, const int& w, const int& h);
-
-    Texture(const int &width, const int &height, const float *pixelBuffer, const GLenum param);
-
-    enum ImageOption {
+    enum DefaultImages {
         MS_PAINT_COLORS,
         MANDELBROT
     };
 
+    Texture(const GLuint &texture, const int& w, const int& h);
+
+    Texture(const int &width, const int &height, const float *pixelBuffer, const GLenum param);
+
     // Default Constructor
     Texture();
 
-    Texture(const ImageOption& option);
+    Texture(const DefaultImages& option);
 
     // Destructor
     ~Texture();
@@ -44,7 +44,7 @@ public:
 
 protected:
 
-    void generateTexture(const ImageOption& option);
+    void generateTexture(const DefaultImages& option);
 
     GLuint textureId;
 
