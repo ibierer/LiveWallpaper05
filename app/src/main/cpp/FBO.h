@@ -17,7 +17,7 @@ public:
 
     FBO();
 
-    FBO(Texture texture, const int& width, const int& height, const bool& includeDepthBuffer, const bool& includeStencilBuffer);
+    FBO(Texture texture, const bool& includeDepthBuffer, const bool& includeStencilBuffer);
 
     // Copy constructor
     FBO(const FBO& other);
@@ -27,7 +27,7 @@ public:
 
     ~FBO();
 
-    int initialize(const int& width, const int& height, const bool& includeDepthBuffer, const bool& includeStencilBuffer);
+    int initialize(const bool& includeDepthBuffer, const bool& includeStencilBuffer);
 
     GLuint getWidth();
 
@@ -38,10 +38,6 @@ public:
     GLuint getRenderedTexture();
 
 private:
-
-    GLsizei width;
-
-    GLsizei height;
 
     GLuint frameBuffer;
 
