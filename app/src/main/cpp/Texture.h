@@ -34,6 +34,8 @@ public:
 
     static vec3 fetchFromSpectrum(const float& value);
 
+    static GLuint generateTexture(const int& width, const int& height);
+
 protected:
 
     void generateTexture(const ImageOption& option);

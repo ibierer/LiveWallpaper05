@@ -42,15 +42,10 @@ FBO::~FBO() {
 int FBO::initialize(const int& width, const int& height, const bool& includeDepthBuffer, const bool& includeStencilBuffer) {
     this->width = width;
     this->height = height;
+    renderedTexture = Texture::generateTexture(width, height);
+    glBindTexture(GL_TEXTURE_2D, renderedTexture);
     glGenFramebuffers(1, &frameBuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
-    glGenTextures(1, &renderedTexture);
-    glBindTexture(GL_TEXTURE_2D, renderedTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers[DRAW_BUFFER], GL_TEXTURE_2D, renderedTexture, 0);
 
     if(includeDepthBuffer || includeStencilBuffer) {
