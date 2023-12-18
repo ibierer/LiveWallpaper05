@@ -80,7 +80,7 @@ GLuint FBO::getRenderedTexture() {
     return renderedTexture.getTextureId();
 }
 
-void FBO::generateMandelbrotWithVertexShader(FBO& fbo, const GLuint& mProgram, View* view) {
+Texture& FBO::generateMandelbrotWithVertexShader(FBO& fbo, const GLuint& mProgram, View* view) {
     glViewport(0, 0, fbo.getWidth(), fbo.getHeight());
     glBindFramebuffer(GL_FRAMEBUFFER, fbo.getFrameBuffer());
     glDrawBuffers(1, fbo.drawBuffers);
@@ -113,4 +113,6 @@ void FBO::generateMandelbrotWithVertexShader(FBO& fbo, const GLuint& mProgram, V
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glBindTexture(GL_TEXTURE_2D, 0);
     glViewport(0, 0, view->width, view->height);
+
+    return fbo.renderedTexture;
 }

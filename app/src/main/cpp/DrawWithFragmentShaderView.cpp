@@ -19,7 +19,7 @@ void DrawWithFragmentShaderView::render(){
 
     // Option to regenerate the texture each frame.
     if(getFrameCount() > 0){
-        //generateTexture();
+        //FBO::generateMandelbrotWithVertexShader(fbo, mProgram, this);
     }
 
     glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
