@@ -51,11 +51,12 @@ protected:
     void generateTexture(const DefaultImages& option, const int& w, const int& h);
 
     GLuint textureId;
-    int width;
-    int height;
-private:
 
-    static FBO fbo;
+    int width;
+
+    int height;
+
+private:
 
     void generateMandelbrot(unsigned char* image, const int& WIDTH, const int& HEIGHT);
 
