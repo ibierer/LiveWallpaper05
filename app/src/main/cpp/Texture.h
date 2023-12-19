@@ -12,8 +12,7 @@ class Texture {
 public:
 
     enum DefaultImages {
-        MS_PAINT_COLORS,
-        MANDELBROT
+        MS_PAINT_COLORS
     };
 
     Texture(const GLuint &texture, const int& w, const int& h);

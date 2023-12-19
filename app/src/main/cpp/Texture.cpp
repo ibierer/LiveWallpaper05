@@ -134,9 +134,6 @@ void Texture::generateTexture(const DefaultImages& option, const int& w, const i
         case MS_PAINT_COLORS:
             generateMSPaintColors(pixelBuffer, w, h);
             break;
-        case MANDELBROT:
-            generateMandelbrot((unsigned char*)pixelBuffer, w, h);
-            break;
     }
     *this = Texture(GL_RGB, w, h, (float*)pixelBuffer, GL_LINEAR);
     free(pixelBuffer);

@@ -5,7 +5,7 @@
 #include "SphereMapView.h"
 
 SphereMapView::SphereMapView() : View() {
-    sphereMap = SphereMap(Texture::DefaultImages::MANDELBROT, 1024, 1024);
+    sphereMap = SphereMap(Texture::DefaultImages::MS_PAINT_COLORS, 1024, 1024);
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
 }
 

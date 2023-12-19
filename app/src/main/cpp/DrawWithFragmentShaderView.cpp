@@ -7,7 +7,6 @@
 DrawWithFragmentShaderView::DrawWithFragmentShaderView() : View() {
     fbo = FBO(Texture(GL_RGB, 16384, 16384, 0, GL_LINEAR), NO, NO);
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
-    mPlanesProgram = createProgram(PLANES_VERTEX_SHADER.c_str(), PLANES_FRAGMENT_SHADER.c_str());
     texture = FBO::staticallyGenerateMandelbrotWithVertexShader(Texture(GL_RGB, 16384, 16384, 0, GL_LINEAR), this);
 }
 
@@ -33,15 +32,15 @@ void DrawWithFragmentShaderView::render(){
     rotation = Matrix4<float>(quaternionTo3x3(rotationVector));
     Matrix4<float> mvp = orientationAdjustedPerspective * translation * rotation * translation2;
 
-    glUseProgram(mPlanesProgram);
+    glUseProgram(mProgram);
     glUniformMatrix4fv(
-            glGetUniformLocation(mPlanesProgram, "mvp"),
+            glGetUniformLocation(mProgram, "mvp"),
             1,
             GL_FALSE,
             (GLfloat*)&mvp);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, texture.getTextureId());
-    glUniform1i(glGetUniformLocation(mPlanesProgram, "image"), 1);
+    glUniform1i(glGetUniformLocation(mProgram, "image"), 1);
 
     Vertex vertices[8] = {
             {vec3(0.0f, 0.0f, 0.0f)},
