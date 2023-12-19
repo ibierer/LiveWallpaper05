@@ -42,6 +42,10 @@ public:
 
     int getHeight();
 
+    static Texture& dynamicallyGenerateMandelbrotWithVertexShader(FBO& fbo, View* view);
+
+    static Texture& staticallyGenerateMandelbrotWithVertexShader(const Texture& texture, View* view);
+
 protected:
 
     void generateTexture(const DefaultImages& option, const int& w, const int& h);

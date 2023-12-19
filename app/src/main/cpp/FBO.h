@@ -39,10 +39,6 @@ public:
 
     GLuint getRenderedTextureId();
 
-    static Texture& dynamicallyGenerateMandelbrotWithVertexShader(FBO& fbo, View* view);
-
-    static Texture& staticallyGenerateMandelbrotWithVertexShader(const Texture& texture, View* view);
-
     template<class T> T& getRenderedTexture();
 
 private:
