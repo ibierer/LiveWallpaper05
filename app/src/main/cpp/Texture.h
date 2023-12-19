@@ -13,7 +13,8 @@ class Texture {
 public:
 
     enum DefaultImages {
-        MS_PAINT_COLORS
+        MS_PAINT_COLORS,
+        MANDELBROT
     };
 
     Texture(const GLuint &texture, const int& w, const int& h);
@@ -23,7 +24,7 @@ public:
     // Default Constructor
     Texture();
 
-    Texture(const DefaultImages& option, const int& w, const int& h);
+    Texture(const DefaultImages &option, const int &w, const int &h, View *view);
 
     // Destructor
     ~Texture();
@@ -48,7 +49,7 @@ public:
 
 protected:
 
-    void generateTexture(const DefaultImages& option, const int& w, const int& h);
+    void generateTexture(const DefaultImages& option, const int& w, const int& h, View* view);
 
     GLuint textureId;
 

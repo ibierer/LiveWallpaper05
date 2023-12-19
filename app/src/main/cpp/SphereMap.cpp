@@ -9,8 +9,8 @@ SphereMap::SphereMap() {
 
 }
 
-SphereMap::SphereMap(Texture::DefaultImages option, const int& w, const int& h){
-    generateTexture(option, w, h);
+SphereMap::SphereMap(Texture::DefaultImages option, const int &w, const int &h, View *view) {
+    generateTexture(option, w, h, view);
 }
 
 SphereMap::SphereMap(Texture& texture) {

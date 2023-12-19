@@ -7,10 +7,10 @@
 RenderToCubeMapView::RenderToCubeMapView() : View(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     mPlanesProgram = createProgram(PLANES_VERTEX_SHADER.c_str(), PLANES_FRAGMENT_SHADER.c_str());
-    //texture = Texture(Texture::DefaultImages::MANDELBROT, 1024, 1024);
-    texture = Texture::staticallyGenerateMandelbrotWithVertexShader(Texture(GL_RGB, 16384, 16384, 0, GL_LINEAR), this);
+    texture = Texture(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
+    //texture = Texture(Texture::DefaultImages::MANDELBROT, 16384, 16384, this);
     cubeMapFBO = CubeMapFBO(
-            CubeMap(GL_RGB, GL_LINEAR, 2048, 0),
+            CubeMap(GL_RGB, GL_LINEAR, 64, 0),
             YES,
             NO);
 }
@@ -84,10 +84,14 @@ void RenderToCubeMapView::render(){
         }
 
         Matrix4<float> translation;
-        translation = translation.Translation(Vec3<float>(-0.5f, -0.5f, 0.0f));
+        translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 3.0f * (val - 1.0f)));
+        Matrix4<float> translation2;
+        translation2 = translation2.Translation(Vec3<float>(-0.5f, -0.5f, 0.0f));
         Matrix4<float> rotation2;
-        rotation2.SetRotation(Vec3<float>(0.0f, 0.0f, 1.0f), 0.0025 * getFrameCount());
-        Matrix4<float> mvp = orientationAdjustedPerspective * rotation * rotation2 * translation;
+        rotation2.SetRotation(Vec3<float>(0.0f, 0.0f, 1.0f), 0.005 * getFrameCount());
+        Matrix4<float> rotation3 = Matrix4<float>(quaternionTo3x3(rotationVector));
+        //Matrix4<float> mvp = orientationAdjustedPerspective * rotation * rotation2 * translation2;
+        Matrix4<float> mvp = orientationAdjustedPerspective * rotation * rotation2 * translation2;
 
         glUniformMatrix4fv(
                 glGetUniformLocation(mPlanesProgram, "mvp"),

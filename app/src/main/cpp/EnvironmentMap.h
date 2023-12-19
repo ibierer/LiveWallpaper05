@@ -13,6 +13,7 @@ public:
 
 private:
 
+    //EnvironmentMap() : Texture(<#initializer#>, <#initializer#>, <#initializer#>, nullptr) {}
 };
 
 

@@ -13,7 +13,7 @@ public:
 
     SphereMap(Texture &texture);
 
-    SphereMap(Texture::DefaultImages option, const int& w, const int& h);
+    SphereMap(Texture::DefaultImages option, const int &w, const int &h, View *view);
 
     // Destructor
     ~SphereMap();

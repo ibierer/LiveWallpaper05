@@ -93,8 +93,8 @@ Texture::Texture(){
 
 }
 
-Texture::Texture(const DefaultImages& option, const int& w, const int& h){
-    generateTexture(option, w, h);
+Texture::Texture(const DefaultImages &option, const int &w, const int &h, View* view) {
+    generateTexture(option, w, h, view);
 }
 
 Texture::Texture(const GLuint& texture, const int& w, const int& h){
@@ -128,15 +128,19 @@ GLuint Texture::getTextureId() {
     return textureId;
 }
 
-void Texture::generateTexture(const DefaultImages& option, const int& w, const int& h) {
-    _vec3<GLubyte>* pixelBuffer = (_vec3<GLubyte>*)malloc(w * h * sizeof(_vec3<GLubyte>));
+void Texture::generateTexture(const DefaultImages& option, const int& w, const int& h, View* view) {
     switch(option){
-        case MS_PAINT_COLORS:
+        case MS_PAINT_COLORS:{
+            _vec3<GLubyte>* pixelBuffer = (_vec3<GLubyte>*)malloc(w * h * sizeof(_vec3<GLubyte>));
             generateMSPaintColors(pixelBuffer, w, h);
+            *this = Texture(GL_RGB, w, h, (float*)pixelBuffer, GL_LINEAR);
+            free(pixelBuffer);}
+            break;
+        case MANDELBROT:{
+            FBO fbo = FBO((void*) new Texture(GL_RGB, w, h, 0, GL_LINEAR), NO, NO);
+            *this = Texture::dynamicallyGenerateMandelbrotWithVertexShader(fbo, view);}
             break;
     }
-    *this = Texture(GL_RGB, w, h, (float*)pixelBuffer, GL_LINEAR);
-    free(pixelBuffer);
 }
 
 Texture::Texture(const GLint& internalFormat, const int& width, const int& height, const float *pixelBuffer, const GLenum param) : width(width), height(height) {
