@@ -203,7 +203,7 @@ Texture& FBO::dynamicallyGenerateMandelbrotWithVertexShader(FBO& fbo, View* view
     return fbo.renderedTexture;
 }
 
-Texture &FBO::staticallyGenerateMandelbrotWithVertexShader(View* view) {
-    FBO fbo = FBO(Texture(GL_RGB, 16384, 16384, 0, GL_LINEAR), NO, NO);
+Texture &FBO::staticallyGenerateMandelbrotWithVertexShader(const Texture& texture, View* view) {
+    FBO fbo = FBO(texture, NO, NO);
     return FBO::dynamicallyGenerateMandelbrotWithVertexShader(fbo, view);
 }

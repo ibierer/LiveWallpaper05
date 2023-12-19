@@ -8,7 +8,7 @@ DrawWithFragmentShaderView::DrawWithFragmentShaderView() : View() {
     fbo = FBO(Texture(GL_RGB, 16384, 16384, 0, GL_LINEAR), NO, NO);
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     mPlanesProgram = createProgram(PLANES_VERTEX_SHADER.c_str(), PLANES_FRAGMENT_SHADER.c_str());
-    texture = FBO::staticallyGenerateMandelbrotWithVertexShader(this);
+    texture = FBO::staticallyGenerateMandelbrotWithVertexShader(Texture(GL_RGB, 16384, 16384, 0, GL_LINEAR), this);
 }
 
 DrawWithFragmentShaderView::~DrawWithFragmentShaderView(){

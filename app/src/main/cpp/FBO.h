@@ -39,7 +39,7 @@ public:
 
     static Texture& dynamicallyGenerateMandelbrotWithVertexShader(FBO& fbo, View* view);
 
-    static Texture& staticallyGenerateMandelbrotWithVertexShader(View* view);
+    static Texture& staticallyGenerateMandelbrotWithVertexShader(const Texture& texture, View* view);
 
 private:
 
