@@ -80,7 +80,7 @@ GLuint FBO::getRenderedTexture() {
     return renderedTexture.getTextureId();
 }
 
-Texture& FBO::generateMandelbrotWithVertexShader(FBO& fbo, const GLuint& mProgram, View* view) {
+Texture& FBO::dynamicallyGenerateMandelbrotWithVertexShader(FBO& fbo, View* view) {
     glViewport(0, 0, fbo.getWidth(), fbo.getHeight());
     glBindFramebuffer(GL_FRAMEBUFFER, fbo.getFrameBuffer());
     glDrawBuffers(1, fbo.drawBuffers);
@@ -88,6 +88,92 @@ Texture& FBO::generateMandelbrotWithVertexShader(FBO& fbo, const GLuint& mProgra
     glClear(GL_COLOR_BUFFER_BIT);
 
     glEnable(GL_DEPTH_TEST);
+
+    const string VERTEX_SHADER =
+            view->ES_VERSION +
+            "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
+            "void main() {\n"
+            "    gl_Position = vec4(pos, 1.0);\n"
+            "}\n";
+
+    const string FRAGMENT_SHADER =
+            view->ES_VERSION +
+            "precision mediump float;\n"
+            "uniform sampler2D image;\n"
+            "uniform int WIDTH;\n"
+            "uniform int HEIGHT;\n"
+            "out vec4 outColor;\n"
+            "\n"
+            "vec3 fetchFromSpectrum(float value) {\n"
+            "    float index = value - floor(value);\n"
+            "    if(index < 1.0f / 6.0f){\n"
+            "        return vec3(\n"
+            "                1.0f,\n"
+            "                6.0f * index,\n"
+            "                0.0f);\n"
+            "    }else if(index < 2.0f / 6.0f){\n"
+            "        return vec3(\n"
+            "                2.0f - 6.0f * index,\n"
+            "                1.0f,\n"
+            "                0.0f);\n"
+            "    }else if(index < 3.0f / 6.0f){\n"
+            "        return vec3(\n"
+            "                0.0f,\n"
+            "                1.0f,\n"
+            "                6.0f * index - 2.0f);\n"
+            "    }else if(index < 4.0f / 6.0f){\n"
+            "        return vec3(\n"
+            "                0.0f,\n"
+            "                4.0f - 6.0f * index,\n"
+            "                1.0f);\n"
+            "    }else if(index < 5.0f / 6.0f){\n"
+            "        return vec3(\n"
+            "                6.0f * index - 4.0f,\n"
+            "                0.0f,\n"
+            "                1.0f);\n"
+            "    }else{\n"
+            "        return vec3(\n"
+            "                1.0f,\n"
+            "                0.0f,\n"
+            "                6.0f * (1.0f - index));\n"
+            "    }\n"
+            "}\n"
+            "void main() {\n"
+            "   // Maximum number of iterations for Mandelbrot algorithm\n"
+            "   const int MAX_ITERATIONS = 1536;\n"
+            "   float width = float(WIDTH);\n"
+            "   float height = float(HEIGHT);\n"
+            "   \n"
+            "   float y = gl_FragCoord.y;\n"
+            "   float x = gl_FragCoord.x;\n"
+            "   // Map pixel coordinates to the complex plane\n"
+            "   float minX = -2.0;\n"
+            "   float maxX = 2.0;\n"
+            "   float minY = -1.5;\n"
+            "   float maxY = 1.5;\n"
+            "   float cr = minX + x * (maxX - minX) / (width - 1.0f);\n"
+            "   float ci = minY + y * (maxY - minY) / (height - 1.0f);\n"
+            "   float zr = 0.0f;\n"
+            "   float zi = 0.0f;\n"
+            "   \n"
+            "   int iterations = 0;\n"
+            "   \n"
+            "   // Iterate to check if the point is in the Mandelbrot set\n"
+            "   while (iterations < MAX_ITERATIONS && (zr * zr + zi * zi) < 4.0f) {\n"
+            "       float temp = zr * zr - zi * zi + cr;\n"
+            "       zi = 2.0 * zr * zi + ci;\n"
+            "       zr = temp;\n"
+            "       \n"
+            "       iterations++;\n"
+            "   }\n"
+            "   \n"
+            "   if(iterations == MAX_ITERATIONS){\n"
+            "       outColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);\n"
+            "   }else{\n"
+            "       outColor = vec4(fetchFromSpectrum(0.005f * float(iterations)), 1.0f);\n"
+            "   }\n"
+            "}\n";
+    GLuint mProgram = View::createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
 
     glUseProgram(mProgram);
     glUniform1i(glGetUniformLocation(mProgram, "image"), 0);
@@ -115,4 +201,9 @@ Texture& FBO::generateMandelbrotWithVertexShader(FBO& fbo, const GLuint& mProgra
     glViewport(0, 0, view->width, view->height);
 
     return fbo.renderedTexture;
+}
+
+Texture &FBO::staticallyGenerateMandelbrotWithVertexShader(View* view) {
+    FBO fbo = FBO(Texture(GL_RGB, 16384, 16384, 0, GL_LINEAR), NO, NO);
+    return FBO::dynamicallyGenerateMandelbrotWithVertexShader(fbo, view);
 }

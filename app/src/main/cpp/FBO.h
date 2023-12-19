@@ -37,7 +37,9 @@ public:
 
     GLuint getRenderedTexture();
 
-    static Texture& generateMandelbrotWithVertexShader(FBO& fbo, const GLuint& mProgram, View* view);
+    static Texture& dynamicallyGenerateMandelbrotWithVertexShader(FBO& fbo, View* view);
+
+    static Texture& staticallyGenerateMandelbrotWithVertexShader(View* view);
 
 private:
 
