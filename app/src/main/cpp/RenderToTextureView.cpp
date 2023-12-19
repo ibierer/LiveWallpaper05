@@ -8,7 +8,7 @@ RenderToTextureView::RenderToTextureView() : View() {
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     texture = Texture(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536);
     fbo = FBO(
-            Texture(GL_RGB, texture.getWidth(), texture.getHeight(), 0, GL_LINEAR),
+            (void*) new Texture(GL_RGB, texture.getWidth(), texture.getHeight(), 0, GL_LINEAR),
             YES,
             NO);
 }
@@ -85,7 +85,7 @@ void RenderToTextureView::render(){
             GL_FALSE,
             (GLfloat*)&mvp);
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTexture());
+    glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
     glUniform1i(glGetUniformLocation(mProgram, "image"), 1);
 
     glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(unsigned int), GL_UNSIGNED_INT, indices);

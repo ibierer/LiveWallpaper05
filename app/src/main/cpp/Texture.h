@@ -7,6 +7,7 @@
 
 
 #include <complex>
+#include "FBO.h"
 
 class Texture {
 public:
@@ -52,6 +53,8 @@ private:
     int width;
 
     int height;
+
+    static FBO fbo;
 
     void generateMandelbrot(unsigned char* image, const int& WIDTH, const int& HEIGHT);
 

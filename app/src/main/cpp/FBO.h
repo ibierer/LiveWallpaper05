@@ -6,6 +6,8 @@
 #define LIVEWALLPAPER05_FBO_H
 
 
+class Texture;
+
 #define DRAW_BUFFER 0
 
 class FBO {
@@ -17,7 +19,7 @@ public:
 
     FBO();
 
-    FBO(Texture texture, const bool& addDepthBuffer, const bool& addStencilBuffer);
+    FBO(void* texture, const bool& addDepthBuffer, const bool& addStencilBuffer);
 
     // Copy constructor
     FBO(const FBO& other);
@@ -35,17 +37,19 @@ public:
 
     GLuint getFrameBuffer();
 
-    GLuint getRenderedTexture();
+    GLuint getRenderedTextureId();
 
     static Texture& dynamicallyGenerateMandelbrotWithVertexShader(FBO& fbo, View* view);
 
     static Texture& staticallyGenerateMandelbrotWithVertexShader(const Texture& texture, View* view);
 
+    template<class T> T& getRenderedTexture();
+
 private:
 
     GLuint frameBuffer;
 
-    Texture renderedTexture;
+    void* renderedTexture;
 
     GLuint depthAndOrStencilRenderBuffer;
 
