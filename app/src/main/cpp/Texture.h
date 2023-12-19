@@ -51,12 +51,9 @@ protected:
     void generateTexture(const DefaultImages& option, const int& w, const int& h);
 
     GLuint textureId;
-
-private:
-
     int width;
-
     int height;
+private:
 
     static FBO fbo;
 

@@ -11,6 +11,8 @@ public:
 
     SphereMap();
 
+    SphereMap(Texture &texture);
+
     SphereMap(Texture::DefaultImages option, const int& w, const int& h);
 
     // Destructor
