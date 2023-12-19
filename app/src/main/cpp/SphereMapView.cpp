@@ -5,7 +5,8 @@
 #include "SphereMapView.h"
 
 SphereMapView::SphereMapView() : View() {
-    sphereMap = SphereMap(Texture::DefaultImages::MS_PAINT_COLORS, 1024, 1024);
+    //sphereMap = SphereMap(Texture::DefaultImages::MS_PAINT_COLORS, 1024, 1024);
+    sphereMap = SphereMap(Texture::staticallyGenerateMandelbrotWithVertexShader(Texture(GL_RGB, 16384, 16384, 0, GL_LINEAR), this));
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
 }
 
