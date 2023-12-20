@@ -119,7 +119,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_step(JNIEnv *env
     if (view) {
         view->accelerometerVector = vec3(acc_x, acc_y, acc_z);
         view->rotationVector = vec4(rot_x, rot_y, rot_z, rot_w);
-        view->val = value;
+        view->zoom = value;
         view->render();
         view->incrementFrameCount();
     }
@@ -128,5 +128,5 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_step(JNIEnv *env
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_livewallpaper05_PreviewActivity_00024Companion_sendData(JNIEnv *env, jobject thiz, jfloat value) {
-    view->val = value;
+    view->zoom = value;
 }

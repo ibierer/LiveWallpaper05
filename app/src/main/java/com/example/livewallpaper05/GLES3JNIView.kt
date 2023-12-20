@@ -33,7 +33,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             // default values in ActiveWallpaperViewModel
             val accelData = mViewModel.getAccelerationData()
             val rotData = mViewModel.getRotationData()
-            /**val rotTmp = mViewModel.getRotationRate()
+            /**zoom rotTmp = mViewModel.getRotationRate()
             PreviewActivity.step(
                 0.0f,
                 0.0f,

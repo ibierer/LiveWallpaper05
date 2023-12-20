@@ -27,7 +27,7 @@ public:
 
     EGLContext mEglContext;
 
-    float val;
+    float zoom;
 
     int orientation;
 

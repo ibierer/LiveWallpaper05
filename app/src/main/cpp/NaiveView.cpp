@@ -40,7 +40,7 @@ void NaiveView::render(){
     Matrix4<float> translation;
     for(int i = 0; i < moleculeCount; i++) {
         translation = translation.Translation(
-                Vec3<float>(molecules[i].position[0], molecules[i].position[1], molecules[i].position[2] + 50.0f * (val - 1.0f)));
+                Vec3<float>(molecules[i].position[0], molecules[i].position[1], molecules[i].position[2] + 50.0f * (zoom - 1.0f)));
         Matrix4<float> mvp = perspective * translation;
         glUniformMatrix4fv(
                 glGetUniformLocation(mProgram, "mvp"),

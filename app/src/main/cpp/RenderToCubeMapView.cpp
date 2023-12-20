@@ -84,7 +84,7 @@ void RenderToCubeMapView::render(){
         }
 
         Matrix4<float> translation;
-        translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 3.0f * (val - 1.0f)));
+        translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 3.0f * (zoom - 1.0f)));
         Matrix4<float> translation2;
         translation2 = translation2.Translation(Vec3<float>(-0.5f, -0.5f, 0.0f));
         Matrix4<float> rotation2;

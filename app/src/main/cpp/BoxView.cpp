@@ -32,7 +32,7 @@ void BoxView::render(){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(mProgram);
     Matrix4<float> translation;
-    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, val - 2.0f));
+    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, zoom - 2.0f));
     Matrix4<float> rotation = Matrix4<float>(quaternionTo3x3(rotationVector));
     Matrix4<float> mvp = orientationAdjustedPerspective * translation * rotation;
     glUniformMatrix4fv(

@@ -21,6 +21,7 @@ void SphereMapView::render(){
 
     glEnable(GL_DEPTH_TEST);
 
+    calculatePerspective(60.0f * (1.0f - zoom));
     Matrix4<float> rotation = Matrix4<float>(quaternionTo3x3(rotationVector));
     Matrix4<float> inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();
 

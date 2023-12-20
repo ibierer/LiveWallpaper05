@@ -4,7 +4,7 @@
 
 #include "View.h"
 
-View::View() : framesRendered(0), val(0), mEglContext(eglGetCurrentContext()){
+View::View() : framesRendered(0), zoom(0), mEglContext(eglGetCurrentContext()){
 
 }
 
