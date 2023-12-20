@@ -10,7 +10,7 @@ RenderToCubeMapView::RenderToCubeMapView() : View(){
     texture = Texture(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
     //texture = Texture(Texture::DefaultImages::MANDELBROT, 16384, 16384, this);
     cubeMapFBO = CubeMapFBO(
-            CubeMap(GL_RGB, GL_LINEAR, 64, 0),
+            CubeMap(GL_RGB, GL_LINEAR, 2048, 0),
             YES,
             NO);
 }
@@ -91,6 +91,7 @@ void RenderToCubeMapView::render(){
         rotation2.SetRotation(Vec3<float>(0.0f, 0.0f, 1.0f), 0.005 * getFrameCount());
         Matrix4<float> rotation3 = Matrix4<float>(quaternionTo3x3(rotationVector));
         //Matrix4<float> mvp = orientationAdjustedPerspective * rotation * rotation2 * translation2;
+        //orientationAdjustedPerspective * translation * rotation3 * translation2;
         Matrix4<float> mvp = orientationAdjustedPerspective * rotation * rotation2 * translation2;
 
         glUniformMatrix4fv(

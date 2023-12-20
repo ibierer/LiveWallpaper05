@@ -6,8 +6,8 @@
 
 RenderToTextureView::RenderToTextureView() : View() {
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
-    //texture = Texture(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
-    texture = Texture::staticallyGenerateMandelbrotWithVertexShader(Texture(GL_RGB, 16384, 16384, 0, GL_LINEAR), this);
+    texture = Texture(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
+    //texture = Texture::staticallyGenerateMandelbrotWithVertexShader(Texture(GL_RGB, 16384, 16384, 0, GL_LINEAR), this);
     fbo = FBO(
             (void*) new Texture(GL_RGB, texture.getWidth(), texture.getHeight(), 0, GL_LINEAR),
             YES,
