@@ -113,8 +113,6 @@ void RenderToCubeMapView::render(){
         Matrix4<float> rotation2;
         rotation2.SetRotation(Vec3<float>(0.0f, 0.0f, 1.0f), 0.005 * getFrameCount());
         Matrix4<float> rotation3 = Matrix4<float>(quaternionTo3x3(rotationVector));
-        //Matrix4<float> mvp = orientationAdjustedPerspective * rotation * rotation2 * translation2;
-        //orientationAdjustedPerspective * translation * rotation3 * translation2;
         Matrix3<float> subMatrix = rotation3.GetSubMatrix3();
         /*float ax = subMatrix.GetRow(0)[0] * position.x;
         float by = subMatrix.GetRow(0)[1] * position.y;
@@ -139,6 +137,7 @@ void RenderToCubeMapView::render(){
         translation = translation.Translation(transpose);
         Matrix4<float> translation2;
         translation2 = translation2.Translation(Vec3<float>(-0.5f, -0.5f, 0.0f));
+        //Matrix4<float> mvp = orientationAdjustedPerspective * rotation * rotation2 * translation2;
         Matrix4<float> mvp = orientationAdjustedPerspective * rotation * translation * rotation2 * translation2;
 
         glUniformMatrix4fv(
