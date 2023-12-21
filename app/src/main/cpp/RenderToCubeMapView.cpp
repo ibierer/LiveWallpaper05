@@ -124,7 +124,7 @@ void RenderToCubeMapView::render(){
 
     width = storeWidth;
     height = storeHeight;
-    calculatePerspective(45.0f);
+    calculatePerspective(60.0f);
     glViewport(0, 0, width, height);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
