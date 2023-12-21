@@ -109,8 +109,9 @@ void RenderToCubeMapView::render(){
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        Vec3<float> position = Vec3<float>(0.0f, 0.0f, 3.0f * (zoom - 1.0f));
         Matrix4<float> translation;
-        translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 3.0f * (zoom - 1.0f)));
+        translation = translation.Translation(position);
         Matrix4<float> translation2;
         translation2 = translation2.Translation(Vec3<float>(-0.5f, -0.5f, 0.0f));
         Matrix4<float> rotation2;
@@ -119,7 +120,6 @@ void RenderToCubeMapView::render(){
         //Matrix4<float> mvp = orientationAdjustedPerspective * rotation * rotation2 * translation2;
         //orientationAdjustedPerspective * translation * rotation3 * translation2;
         Matrix3<float> subMatrix = rotation3.GetSubMatrix3();
-        Vec3<float> position = Vec3<float>(0.0f, 0.0f, 3.0f * (zoom - 1.0f));
         /*float ax = subMatrix.GetRow(0)[0] * position.x;
         float by = subMatrix.GetRow(0)[1] * position.y;
         float cz = subMatrix.GetRow(0)[2] * position.z;
@@ -138,8 +138,8 @@ void RenderToCubeMapView::render(){
         float gx = subMatrix.GetRow(0)[2] * position.x;
         float hy = subMatrix.GetRow(1)[2] * position.y;
         float iz = subMatrix.GetRow(2)[2] * position.z;
-        Vec3<float> transpose = Vec3<float>(-(ax + by + cz), dx + ey + fz, gx + hy + iz);
-        Matrix4<float> mvp = orientationAdjustedPerspective * rotation * translation.Translation(-transpose) /* * rotation2*/ * translation2;
+        Vec3<float> transpose = Vec3<float>(ax + by + cz, -(dx + ey + fz), -(gx + hy + iz));
+        Matrix4<float> mvp = orientationAdjustedPerspective * rotation * translation.Translation(transpose) /* * rotation2*/ * translation2;
 
         glUniformMatrix4fv(
                 glGetUniformLocation(mPlanesProgram, "mvp"),
