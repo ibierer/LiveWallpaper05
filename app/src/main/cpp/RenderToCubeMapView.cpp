@@ -39,8 +39,6 @@ void RenderToCubeMapView::render(){
     glUniform1i(glGetUniformLocation(mPlanesProgram, "image"), 0);
 
     for(int i = 0; i < 6; i++){
-        glBindFramebuffer(GL_FRAMEBUFFER, cubeMapFBO.frameBuffers[i]);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, cubeMapFBO.drawBuffers[DRAW_BUFFER], GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubeMapFBO.cubeMap.getTextureId(), 0);
         Vertex vertices[8] = {
                 {vec3(0.0f, 0.0f, -0.25f)},
                 {vec3(0.0f, 1.0f, -0.25f)},
@@ -62,30 +60,27 @@ void RenderToCubeMapView::render(){
         switch(i){
             case 0:
                 rotation.SetRotation(Vec3<float>(0.0f, 1.0f, 0.0f), M_PI / 2.0);
-                glClearColor(1.0f, backgroundColor.g, backgroundColor.b, backgroundColor.a);
                 break;
             case 1:
                 rotation.SetRotation(Vec3<float>(0.0f, 1.0f, 0.0f), -M_PI / 2.0);
-                glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
                 break;
             case 2:
                 rotation.SetRotation(Vec3<float>(1.0f, 0.0f, 0.0f), M_PI / 2.0f);
-                glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
                 break;
             case 3:
                 rotation.SetRotation(Vec3<float>(1.0f, 0.0f, 0.0f), -M_PI / 2.0);
-                glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
                 break;
             case 4:
                 rotation.SetIdentity();
-                glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
                 break;
             case 5:
-                glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
                 rotation.SetRotation(Vec3<float>(0.0f, 1.0f, 0.0f), M_PI);
                 break;
         }
 
+        glBindFramebuffer(GL_FRAMEBUFFER, cubeMapFBO.frameBuffers[i]);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, cubeMapFBO.drawBuffers[DRAW_BUFFER], GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubeMapFBO.cubeMap.getTextureId(), 0);
+        glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         Vec3<float> position = Vec3<float>(0.0f, 0.0f, 3.0f * (zoom - 1.0f));
