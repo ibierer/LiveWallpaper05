@@ -40,14 +40,14 @@ void RenderToCubeMapView::render(){
 
     for(int i = 0; i < 6; i++){
         Vertex vertices[8] = {
-                {vec3(0.0f, 0.0f, -0.25f)},
-                {vec3(0.0f, 1.0f, -0.25f)},
-                {vec3(1.0f, 0.0f, -0.25f)},
-                {vec3(1.0f, 1.0f, -0.25f)},
-                {vec3(0.0f, 0.0f, 0.25f)},
-                {vec3(0.0f, 1.0f, 0.25f)},
-                {vec3(1.0f, 0.0f, 0.25f)},
-                {vec3(1.0f, 1.0f, 0.25f)}
+                {vec3(0.0f, 0.0f, 0.0f)},
+                {vec3(0.0f, 1.0f, 0.0f)},
+                {vec3(1.0f, 0.0f, 0.0f)},
+                {vec3(1.0f, 1.0f, 0.0f)},
+                {vec3(0.0f, 0.0f, 1.0f)},
+                {vec3(0.0f, 1.0f, 1.0f)},
+                {vec3(1.0f, 0.0f, 1.0f)},
+                {vec3(1.0f, 1.0f, 1.0f)}
         };
         uvec3 indices[4] = {
                 uvec3(0, 2, 1),
@@ -110,7 +110,7 @@ void RenderToCubeMapView::render(){
         Matrix4<float> translation;
         translation = translation.Translation(transpose);
         Matrix4<float> translation2;
-        translation2 = translation2.Translation(Vec3<float>(-0.5f, -0.5f, 0.0f));
+        translation2 = translation2.Translation(Vec3<float>(-0.5f));
         //Matrix4<float> mvp = orientationAdjustedPerspective * rotation * rotation2 * translation2;
         Matrix4<float> mvp = orientationAdjustedPerspective * rotation * translation * rotation2 * translation2;
 
