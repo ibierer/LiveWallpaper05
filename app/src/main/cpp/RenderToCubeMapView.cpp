@@ -59,27 +59,6 @@ void RenderToCubeMapView::render(){
         };
         glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)&vertices[0].v);
 
-        /*switch(i){
-            case 0:
-                rotation.SetRotation(Vec3<float>(0.0f, 1.0f, 0.0f), M_PI / 2.0);
-                break;
-            case 1:
-                rotation.SetRotation(Vec3<float>(0.0f, 1.0f, 0.0f), -M_PI / 2.0);
-                break;
-            case 2:
-                rotation.SetRotation(Vec3<float>(1.0f, 0.0f, 0.0f), M_PI / 2.0f);
-                break;
-            case 3:
-                rotation.SetRotation(Vec3<float>(1.0f, 0.0f, 0.0f), -M_PI / 2.0);
-                break;
-            case 4:
-                rotation.SetIdentity();
-                break;
-            case 5:
-                rotation.SetRotation(Vec3<float>(0.0f, 1.0f, 0.0f), M_PI);
-                break;
-        }*/
-
         switch(i){
             case 0:
                 rotation.SetRotation(Vec3<float>(0.0f, 1.0f, 0.0f), M_PI / 2.0);
