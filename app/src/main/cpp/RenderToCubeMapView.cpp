@@ -10,7 +10,7 @@ RenderToCubeMapView::RenderToCubeMapView() : View(){
     texture = Texture(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
     //texture = Texture(Texture::DefaultImages::MANDELBROT, 16384, 16384, this);
     cubeMapFBO = CubeMapFBO(
-            CubeMap(GL_RGB, GL_LINEAR, 2048, 0),
+            CubeMap(GL_RGB, GL_LINEAR, 256, 0),
             YES,
             NO);
 }
@@ -41,9 +41,6 @@ void RenderToCubeMapView::render(){
     for(int i = 0; i < 6; i++){
         glBindFramebuffer(GL_FRAMEBUFFER, cubeMapFBO.frameBuffers[i]);
         glFramebufferTexture2D(GL_FRAMEBUFFER, cubeMapFBO.drawBuffers[DRAW_BUFFER], GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubeMapFBO.cubeMap.getTextureId(), 0);
-        glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
         Vertex vertices[8] = {
                 {vec3(0.0f, 0.0f, -0.25f)},
                 {vec3(0.0f, 1.0f, -0.25f)},
@@ -62,7 +59,7 @@ void RenderToCubeMapView::render(){
         };
         glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)&vertices[0].v);
 
-        switch(i){
+        /*switch(i){
             case 0:
                 rotation.SetRotation(Vec3<float>(0.0f, 1.0f, 0.0f), M_PI / 2.0);
                 break;
@@ -81,7 +78,36 @@ void RenderToCubeMapView::render(){
             case 5:
                 rotation.SetRotation(Vec3<float>(0.0f, 1.0f, 0.0f), M_PI);
                 break;
+        }*/
+
+        switch(i){
+            case 0:
+                rotation.SetRotation(Vec3<float>(0.0f, 1.0f, 0.0f), M_PI / 2.0);
+                glClearColor(1.0f, backgroundColor.g, backgroundColor.b, backgroundColor.a);
+                break;
+            case 1:
+                rotation.SetRotation(Vec3<float>(0.0f, 1.0f, 0.0f), -M_PI / 2.0);
+                glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
+                break;
+            case 2:
+                rotation.SetRotation(Vec3<float>(1.0f, 0.0f, 0.0f), M_PI / 2.0f);
+                glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
+                break;
+            case 3:
+                rotation.SetRotation(Vec3<float>(1.0f, 0.0f, 0.0f), -M_PI / 2.0);
+                glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
+                break;
+            case 4:
+                rotation.SetIdentity();
+                glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
+                break;
+            case 5:
+                glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
+                rotation.SetRotation(Vec3<float>(0.0f, 1.0f, 0.0f), M_PI);
+                break;
         }
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         Matrix4<float> translation;
         translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 3.0f * (zoom - 1.0f)));
@@ -92,7 +118,28 @@ void RenderToCubeMapView::render(){
         Matrix4<float> rotation3 = Matrix4<float>(quaternionTo3x3(rotationVector));
         //Matrix4<float> mvp = orientationAdjustedPerspective * rotation * rotation2 * translation2;
         //orientationAdjustedPerspective * translation * rotation3 * translation2;
-        Matrix4<float> mvp = orientationAdjustedPerspective * rotation * rotation2 * translation2;
+        Matrix3<float> subMatrix = rotation3.GetSubMatrix3();
+        Vec3<float> position = Vec3<float>(0.0f, 0.0f, 3.0f * (zoom - 1.0f));
+        /*float ax = subMatrix.GetRow(0)[0] * position.x;
+        float by = subMatrix.GetRow(0)[1] * position.y;
+        float cz = subMatrix.GetRow(0)[2] * position.z;
+        float dx = subMatrix.GetRow(1)[0] * position.x;
+        float ey = subMatrix.GetRow(1)[1] * position.y;
+        float fz = subMatrix.GetRow(1)[2] * position.z;
+        float gx = subMatrix.GetRow(2)[0] * position.x;
+        float hy = subMatrix.GetRow(2)[1] * position.y;
+        float iz = subMatrix.GetRow(2)[2] * position.z;*/
+        float ax = subMatrix.GetRow(0)[0] * position.x;
+        float by = subMatrix.GetRow(1)[0] * position.y;
+        float cz = subMatrix.GetRow(2)[0] * position.z;
+        float dx = subMatrix.GetRow(0)[1] * position.x;
+        float ey = subMatrix.GetRow(1)[1] * position.y;
+        float fz = subMatrix.GetRow(2)[1] * position.z;
+        float gx = subMatrix.GetRow(0)[2] * position.x;
+        float hy = subMatrix.GetRow(1)[2] * position.y;
+        float iz = subMatrix.GetRow(2)[2] * position.z;
+        Vec3<float> transpose = Vec3<float>(-(ax + by + cz), dx + ey + fz, gx + hy + iz);
+        Matrix4<float> mvp = orientationAdjustedPerspective * rotation * translation.Translation(-transpose) /* * rotation2*/ * translation2;
 
         glUniformMatrix4fv(
                 glGetUniformLocation(mPlanesProgram, "mvp"),
@@ -111,7 +158,7 @@ void RenderToCubeMapView::render(){
     glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    calculatePerspective(60.0f * (1.0f - zoom));
+    //calculatePerspective(60.0f * (1.0f - zoom));
     rotation = Matrix4<float>(quaternionTo3x3(rotationVector));
     Matrix4<float> inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();
 
