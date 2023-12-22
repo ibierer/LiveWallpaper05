@@ -4,7 +4,7 @@
 
 #include "RenderToCubeMapView.h"
 
-RenderToCubeMapView::RenderToCubeMapView() : View(){
+RenderToCubeMapView::RenderToCubeMapView() : View() {
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     mPlanesProgram = createProgram(PLANES_VERTEX_SHADER.c_str(), PLANES_FRAGMENT_SHADER.c_str());
     texture = Texture(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
