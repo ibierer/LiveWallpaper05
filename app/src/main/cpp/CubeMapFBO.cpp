@@ -29,7 +29,6 @@ bool CubeMapFBO::initialize(CubeMap cubeMap, const bool &addDepthBuffer, const b
     if(addDepthBuffer || addStencilBuffer){
         for (int i = 0; i < 6; i++) {
             glBindFramebuffer(GL_FRAMEBUFFER, frameBuffers[i]);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers[DRAW_BUFFER], GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubeMap.getTextureId(), 0);
             glGenRenderbuffers(1, &depthAndOrStencilRenderBuffers[i]);
             glBindRenderbuffer(GL_RENDERBUFFER, depthAndOrStencilRenderBuffers[i]);
             if (addDepthBuffer && !addStencilBuffer) {

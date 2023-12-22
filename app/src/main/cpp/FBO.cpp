@@ -36,11 +36,10 @@ FBO::~FBO() {
 }
 
 int FBO::initialize(const bool& addDepthBuffer, const bool& addStencilBuffer) {
-    glBindTexture(GL_TEXTURE_2D, getRenderedTexture<Texture>().getTextureId());
     glGenFramebuffers(1, &frameBuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+    glBindTexture(GL_TEXTURE_2D, getRenderedTexture<Texture>().getTextureId());
     glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers[DRAW_BUFFER], GL_TEXTURE_2D, getRenderedTexture<Texture>().getTextureId(), 0);
-
     if(addDepthBuffer || addStencilBuffer) {
         glGenRenderbuffers(1, &depthAndOrStencilRenderBuffer);
         glBindRenderbuffer(GL_RENDERBUFFER, depthAndOrStencilRenderBuffer);
@@ -54,9 +53,8 @@ int FBO::initialize(const bool& addDepthBuffer, const bool& addStencilBuffer) {
             glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, getRenderedTexture<Texture>().getWidth(), getRenderedTexture<Texture>().getHeight());
             glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthAndOrStencilRenderBuffer);
         }
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
     }
-
-    glBindRenderbuffer(GL_RENDERBUFFER, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glBindTexture(GL_TEXTURE_2D, 0);
 
