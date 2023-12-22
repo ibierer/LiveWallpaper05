@@ -12,7 +12,7 @@ RenderToCubeMapView::RenderToCubeMapView() : View(){
     cubeMapFBO = CubeMapFBO(
             CubeMap(GL_RGB, GL_LINEAR, 256, 0),
             YES,
-            NO);
+            YES);
 }
 
 RenderToCubeMapView::~RenderToCubeMapView(){
@@ -27,12 +27,18 @@ void RenderToCubeMapView::render(){
     calculatePerspective(90.0f);
     glViewport(0, 0, width, height);
 
-    glEnable(GL_DEPTH_TEST);
     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
 
     Matrix4<float> rotation;
 
     glUseProgram(mPlanesProgram);
+
+    for(int i = 0; i < 6; i++){
+        glBindFramebuffer(GL_FRAMEBUFFER, cubeMapFBO.frameBuffers[i]);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, cubeMapFBO.drawBuffers[DRAW_BUFFER], GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubeMapFBO.cubeMap.getTextureId(), 0);
+        glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture.getTextureId());
@@ -80,8 +86,6 @@ void RenderToCubeMapView::render(){
 
         glBindFramebuffer(GL_FRAMEBUFFER, cubeMapFBO.frameBuffers[i]);
         glFramebufferTexture2D(GL_FRAMEBUFFER, cubeMapFBO.drawBuffers[DRAW_BUFFER], GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubeMapFBO.cubeMap.getTextureId(), 0);
-        glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         Vec3<float> position = Vec3<float>(0.0f, 0.0f, 3.0f * (zoom - 1.0f));
         Matrix4<float> rotation2;
@@ -119,6 +123,8 @@ void RenderToCubeMapView::render(){
                 1,
                 GL_FALSE,
                 (GLfloat*)&mvp);
+        glEnable(GL_DEPTH_TEST);
+        glDepthMask(GL_TRUE);
         glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(unsigned int), GL_UNSIGNED_INT, indices);
     }
 
@@ -153,6 +159,8 @@ void RenderToCubeMapView::render(){
     uvec3 indices[1] = {
             uvec3(0, 1, 2)
     };
+
+    glDisable(GL_DEPTH_TEST);
     glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)&vertices[0].v);
     glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(unsigned int), GL_UNSIGNED_INT, indices);
 

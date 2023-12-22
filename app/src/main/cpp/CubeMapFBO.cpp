@@ -9,14 +9,27 @@ CubeMapFBO::CubeMapFBO() {
 }
 
 CubeMapFBO::CubeMapFBO(CubeMap cubeMap, const bool &addDepthBuffer, const bool &addStencilBuffer) {
+    initialize(cubeMap, addDepthBuffer, addStencilBuffer);
+}
+
+CubeMapFBO::CubeMapFBO(const CubeMapFBO& other) : cubeMap(other.cubeMap) {
+    // Assign the CubeMap
+    cubeMap = other.cubeMap;
+    // Copy the frameBuffers and depthAndStencilRenderBuffers
+    for (int i = 0; i < 6; ++i) {
+        frameBuffers[i] = other.frameBuffers[i];
+        depthAndOrStencilRenderBuffers[i] = other.depthAndOrStencilRenderBuffers[i];
+    }
+}
+
+bool CubeMapFBO::initialize(CubeMap cubeMap, const bool &addDepthBuffer, const bool &addStencilBuffer){
     this->cubeMap = cubeMap;
 
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap.getTextureId());
     glGenFramebuffers(6, frameBuffers);
-    for (int i = 0; i < 6; i++) {
-        glBindFramebuffer(GL_FRAMEBUFFER, frameBuffers[i]);
-
-        if(addDepthBuffer || addStencilBuffer) {
+    if(addDepthBuffer || addStencilBuffer){
+        for (int i = 0; i < 6; i++) {
+            glBindFramebuffer(GL_FRAMEBUFFER, frameBuffers[i]);
             glGenRenderbuffers(1, &depthAndOrStencilRenderBuffers[i]);
             glBindRenderbuffer(GL_RENDERBUFFER, depthAndOrStencilRenderBuffers[i]);
             if (addDepthBuffer && !addStencilBuffer) {
@@ -30,23 +43,16 @@ CubeMapFBO::CubeMapFBO(CubeMap cubeMap, const bool &addDepthBuffer, const bool &
                 glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthAndOrStencilRenderBuffers[i]);
             }
         }
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers[DRAW_BUFFER], GL_TEXTURE_CUBE_MAP_POSITIVE_X, cubeMap.getTextureId(), 0);
-
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glBindRenderbuffer(GL_RENDERBUFFER, 0);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
     bool frameBufferStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-    //return frameBufferStatus != GL_FRAMEBUFFER_COMPLETE;
-}
-
-CubeMapFBO::CubeMapFBO(const CubeMapFBO& other) : cubeMap(other.cubeMap) {
-    // Copy the frameBuffers and depthAndStencilRenderBuffers
-    for (int i = 0; i < 6; ++i) {
-        frameBuffers[i] = other.frameBuffers[i];
-        depthAndOrStencilRenderBuffers[i] = other.depthAndOrStencilRenderBuffers[i];
-    }
+    return frameBufferStatus != GL_FRAMEBUFFER_COMPLETE;
 }
 
 CubeMapFBO &CubeMapFBO::operator=(const CubeMapFBO &other) {
