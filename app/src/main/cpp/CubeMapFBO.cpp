@@ -25,8 +25,6 @@ CubeMapFBO::CubeMapFBO(const CubeMapFBO& other) : cubeMap(other.cubeMap) {
 bool CubeMapFBO::initialize(CubeMap cubeMap, const bool &addDepthBuffer, const bool &addStencilBuffer){
     this->cubeMap = cubeMap;
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap.getTextureId());
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glGenFramebuffers(6, frameBuffers);
     if(addDepthBuffer || addStencilBuffer){
         for (int i = 0; i < 6; i++) {
