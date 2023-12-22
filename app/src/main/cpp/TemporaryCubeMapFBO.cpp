@@ -15,18 +15,22 @@ TemporaryCubeMapFBO::TemporaryCubeMapFBO(void* texture, const bool& addDepthBuff
 // Copy constructor
 TemporaryCubeMapFBO::TemporaryCubeMapFBO(const TemporaryCubeMapFBO& other) {
     // Shallow copy: sharing OpenGL resources
-    frameBuffer = other.frameBuffer;
     renderedTexture = other.renderedTexture;
-    depthAndOrStencilRenderBuffer = other.depthAndOrStencilRenderBuffer;
+    for(int i = 0; i < 6; i++){
+        frameBuffers[i] = other.frameBuffers[i];
+        depthAndOrStencilRenderBuffers[i] = other.depthAndOrStencilRenderBuffers[i];
+    }
 }
 
 // Assignment operator
 TemporaryCubeMapFBO& TemporaryCubeMapFBO::operator=(const TemporaryCubeMapFBO& other) {
     if (this != &other) { // Check for self-assignment
         // Shallow copy: sharing OpenGL resources
-        frameBuffer = other.frameBuffer;
         renderedTexture = other.renderedTexture;
-        depthAndOrStencilRenderBuffer = other.depthAndOrStencilRenderBuffer;
+        for(int i = 0; i < 6; i++){
+            frameBuffers[i] = other.frameBuffers[i];
+            depthAndOrStencilRenderBuffers[i] = other.depthAndOrStencilRenderBuffers[i];
+        }
     }
     return *this;
 }
@@ -37,22 +41,33 @@ TemporaryCubeMapFBO::~TemporaryCubeMapFBO() {
 
 int TemporaryCubeMapFBO::initialize(const bool& addDepthBuffer, const bool& addStencilBuffer) {
     glBindTexture(GL_TEXTURE_2D, getRenderedTexture<Texture>().getTextureId());
-    glGenFramebuffers(1, &frameBuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers[DRAW_BUFFER], GL_TEXTURE_2D, getRenderedTexture<Texture>().getTextureId(), 0);
 
-    if(addDepthBuffer || addStencilBuffer) {
-        glGenRenderbuffers(1, &depthAndOrStencilRenderBuffer);
-        glBindRenderbuffer(GL_RENDERBUFFER, depthAndOrStencilRenderBuffer);
-        if (addDepthBuffer && !addStencilBuffer) {
-            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, getRenderedTexture<Texture>().getWidth(), getRenderedTexture<Texture>().getHeight());
-            glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthAndOrStencilRenderBuffer);
-        } else if (!addDepthBuffer && addStencilBuffer) {
-            glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX8, getRenderedTexture<Texture>().getWidth(), getRenderedTexture<Texture>().getHeight());
-            glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthAndOrStencilRenderBuffer);
-        } else if (addDepthBuffer && addStencilBuffer) {
-            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, getRenderedTexture<Texture>().getWidth(), getRenderedTexture<Texture>().getHeight());
-            glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthAndOrStencilRenderBuffer);
+    for(int i = 0; i < 6; i++) {
+        glGenFramebuffers(1, &frameBuffers[i]);
+        glBindFramebuffer(GL_FRAMEBUFFER, frameBuffers[i]);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers[DRAW_BUFFER], GL_TEXTURE_2D, getRenderedTexture<Texture>().getTextureId(), 0);
+        if (addDepthBuffer || addStencilBuffer) {
+            glGenRenderbuffers(1, &depthAndOrStencilRenderBuffers[i]);
+            glBindRenderbuffer(GL_RENDERBUFFER, depthAndOrStencilRenderBuffers[i]);
+            if (addDepthBuffer && !addStencilBuffer) {
+                glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24,
+                                      getRenderedTexture<Texture>().getWidth(),
+                                      getRenderedTexture<Texture>().getHeight());
+                glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER,
+                                          depthAndOrStencilRenderBuffers[i]);
+            } else if (!addDepthBuffer && addStencilBuffer) {
+                glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX8,
+                                      getRenderedTexture<Texture>().getWidth(),
+                                      getRenderedTexture<Texture>().getHeight());
+                glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER,
+                                          depthAndOrStencilRenderBuffers[i]);
+            } else if (addDepthBuffer && addStencilBuffer) {
+                glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8,
+                                      getRenderedTexture<Texture>().getWidth(),
+                                      getRenderedTexture<Texture>().getHeight());
+                glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
+                                          GL_RENDERBUFFER, depthAndOrStencilRenderBuffers[i]);
+            }
         }
     }
 
@@ -72,8 +87,8 @@ GLuint TemporaryCubeMapFBO::getHeight() {
     return getRenderedTexture<Texture>().getHeight();
 }
 
-GLuint TemporaryCubeMapFBO::getFrameBuffer() {
-    return frameBuffer;
+GLuint TemporaryCubeMapFBO::getFrameBuffer(const int &i) {
+    return frameBuffers[i];
 }
 
 GLuint TemporaryCubeMapFBO::getRenderedTextureId() {

@@ -35,7 +35,7 @@ public:
 
     GLuint getHeight();
 
-    GLuint getFrameBuffer();
+    GLuint getFrameBuffer(const int &i);
 
     GLuint getRenderedTextureId();
 
@@ -43,11 +43,11 @@ public:
 
 private:
 
-    GLuint frameBuffer;
+    GLuint frameBuffers[6];
 
     void* renderedTexture;
 
-    GLuint depthAndOrStencilRenderBuffer;
+    GLuint depthAndOrStencilRenderBuffers[6];
 
 };
 

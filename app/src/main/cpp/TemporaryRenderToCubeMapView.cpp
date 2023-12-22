@@ -25,7 +25,7 @@ void TemporaryRenderToCubeMapView::render(){
     height = temporaryCubeMapFBO.getHeight();
     calculatePerspective(60.0f);
     glViewport(0, 0, width, height);
-    glBindFramebuffer(GL_FRAMEBUFFER, temporaryCubeMapFBO.getFrameBuffer());
+    glBindFramebuffer(GL_FRAMEBUFFER, temporaryCubeMapFBO.getFrameBuffer(0));
     glDrawBuffers(1, temporaryCubeMapFBO.drawBuffers);
     glClearColor(backgroundColor.r + 0.5f, backgroundColor.g + 0.5f, backgroundColor.b + 0.5f, backgroundColor.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
