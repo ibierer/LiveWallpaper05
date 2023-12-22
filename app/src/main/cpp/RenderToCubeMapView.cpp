@@ -7,16 +7,39 @@
 RenderToCubeMapView::RenderToCubeMapView() : View() {
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     mPlanesProgram = createProgram(PLANES_VERTEX_SHADER.c_str(), PLANES_FRAGMENT_SHADER.c_str());
-    texture = Texture(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
-    //texture = Texture(Texture::DefaultImages::MANDELBROT, 16384, 16384, this);
+    //texture = Texture(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
+    texture = Texture(Texture::DefaultImages::MANDELBROT, 16384, 16384, this);
     cubeMapFBO = CubeMapFBO(
             CubeMap(GL_RGB, GL_LINEAR, 256, 0),
             YES,
-            YES);
+            NO);
 }
 
 RenderToCubeMapView::~RenderToCubeMapView(){
     glDeleteProgram(mProgram);
+}
+
+template<class T>
+Vec3<T> transform(Matrix3<T> matrix, const Vec3<T>& vector){
+    /*float ax = matrix.GetRow(0)[0] * vector.x;
+    float by = matrix.GetRow(0)[1] * vector.y;
+    float cz = matrix.GetRow(0)[2] * vector.z;
+    float dx = matrix.GetRow(1)[0] * vector.x;
+    float ey = matrix.GetRow(1)[1] * vector.y;
+    float fz = matrix.GetRow(1)[2] * vector.z;
+    float gx = matrix.GetRow(2)[0] * vector.x;
+    float hy = matrix.GetRow(2)[1] * vector.y;
+    float iz = matrix.GetRow(2)[2] * vector.z;*/
+    Vec3<T> result = Vec3<T>((T)0, (T)0, (T)0);
+    for(int i = 0; i < 3; i++){
+        for(int j = 0; j < 3; j++){
+            result[i] += matrix.GetRow(j)[i] * vector[j];
+        }
+        if(i > 0){
+            result[i] *= (T)(-1);
+        }
+    }
+    return result;
 }
 
 void RenderToCubeMapView::render(){
@@ -32,13 +55,6 @@ void RenderToCubeMapView::render(){
     Matrix4<float> rotation;
 
     glUseProgram(mPlanesProgram);
-
-    for(int i = 0; i < 6; i++){
-        glBindFramebuffer(GL_FRAMEBUFFER, cubeMapFBO.frameBuffers[i]);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, cubeMapFBO.drawBuffers[DRAW_BUFFER], GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubeMapFBO.cubeMap.getTextureId(), 0);
-        glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    }
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture.getTextureId());
@@ -86,31 +102,15 @@ void RenderToCubeMapView::render(){
 
         glBindFramebuffer(GL_FRAMEBUFFER, cubeMapFBO.frameBuffers[i]);
         glFramebufferTexture2D(GL_FRAMEBUFFER, cubeMapFBO.drawBuffers[DRAW_BUFFER], GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubeMapFBO.cubeMap.getTextureId(), 0);
+        glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         Vec3<float> position = Vec3<float>(0.0f, 0.0f, 3.0f * (zoom - 1.0f));
         Matrix4<float> rotation2;
         rotation2.SetRotation(Vec3<float>(0.0f, 0.0f, 1.0f), 0.005 * getFrameCount());
         Matrix4<float> rotation3 = Matrix4<float>(quaternionTo3x3(rotationVector));
         Matrix3<float> subMatrix = rotation3.GetSubMatrix3();
-        /*float ax = subMatrix.GetRow(0)[0] * position.x;
-        float by = subMatrix.GetRow(0)[1] * position.y;
-        float cz = subMatrix.GetRow(0)[2] * position.z;
-        float dx = subMatrix.GetRow(1)[0] * position.x;
-        float ey = subMatrix.GetRow(1)[1] * position.y;
-        float fz = subMatrix.GetRow(1)[2] * position.z;
-        float gx = subMatrix.GetRow(2)[0] * position.x;
-        float hy = subMatrix.GetRow(2)[1] * position.y;
-        float iz = subMatrix.GetRow(2)[2] * position.z;*/
-        float ax = subMatrix.GetRow(0)[0] * position.x;
-        float by = subMatrix.GetRow(1)[0] * position.y;
-        float cz = subMatrix.GetRow(2)[0] * position.z;
-        float dx = subMatrix.GetRow(0)[1] * position.x;
-        float ey = subMatrix.GetRow(1)[1] * position.y;
-        float fz = subMatrix.GetRow(2)[1] * position.z;
-        float gx = subMatrix.GetRow(0)[2] * position.x;
-        float hy = subMatrix.GetRow(1)[2] * position.y;
-        float iz = subMatrix.GetRow(2)[2] * position.z;
-        Vec3<float> transpose = Vec3<float>(ax + by + cz, -(dx + ey + fz), -(gx + hy + iz));
+        Vec3<float> transpose = transform(subMatrix, position);
         Matrix4<float> translation;
         translation = translation.Translation(transpose);
         Matrix4<float> translation2;

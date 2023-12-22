@@ -45,8 +45,6 @@
 #include "FBO.cpp"
 #include "CubeMapFBO.cpp"
 #include "DrawWithFragmentShaderView.cpp"
-#include "TemporaryCubeMapFBO.cpp"
-#include "TemporaryRenderToCubeMapView.cpp"
 
 using std::string;
 using nlohmann::json;
@@ -81,9 +79,8 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
             //view = new SphereMapView();
             //view = new TextureView();
             //view = new RenderToTextureView();
-            //view = new RenderToCubeMapView();
+            view = new RenderToCubeMapView();
             //view = new DrawWithFragmentShaderView();
-            view = new TemporaryRenderToCubeMapView();
         }else if(type == "naive"){
             view = new NaiveView();
         }else if(type == "picflip"){

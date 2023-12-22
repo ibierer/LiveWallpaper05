@@ -24,12 +24,14 @@ CubeMapFBO::CubeMapFBO(const CubeMapFBO& other) : cubeMap(other.cubeMap) {
 
 bool CubeMapFBO::initialize(CubeMap cubeMap, const bool &addDepthBuffer, const bool &addStencilBuffer){
     this->cubeMap = cubeMap;
-
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap.getTextureId());
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glGenFramebuffers(6, frameBuffers);
     if(addDepthBuffer || addStencilBuffer){
         for (int i = 0; i < 6; i++) {
             glBindFramebuffer(GL_FRAMEBUFFER, frameBuffers[i]);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers[DRAW_BUFFER], GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubeMap.getTextureId(), 0);
             glGenRenderbuffers(1, &depthAndOrStencilRenderBuffers[i]);
             glBindRenderbuffer(GL_RENDERBUFFER, depthAndOrStencilRenderBuffers[i]);
             if (addDepthBuffer && !addStencilBuffer) {
@@ -44,11 +46,8 @@ bool CubeMapFBO::initialize(CubeMap cubeMap, const bool &addDepthBuffer, const b
             }
         }
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
     }
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers[DRAW_BUFFER], GL_TEXTURE_CUBE_MAP_POSITIVE_X, cubeMap.getTextureId(), 0);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
     bool frameBufferStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
@@ -73,10 +72,10 @@ CubeMapFBO &CubeMapFBO::operator=(const CubeMapFBO &other) {
 
 CubeMapFBO::~CubeMapFBO() {
     // Delete OpenGL resources in the destructor
-    for (int i = 0; i < 6; ++i) {
+    /*for (int i = 0; i < 6; ++i) { // This breaks the depth and stencil buffers
         glDeleteFramebuffers(1, &frameBuffers[i]);
         glDeleteRenderbuffers(1, &depthAndOrStencilRenderBuffers[i]);
-    }
+    }*/
 }
 
 int CubeMapFBO::getResolution() {

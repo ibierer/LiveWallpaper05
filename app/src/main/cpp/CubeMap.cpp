@@ -18,6 +18,8 @@ CubeMap::~CubeMap() {
 CubeMap::CubeMap(const CubeMap& other) {
     this->textureId = other.textureId;
     this->resolution = other.resolution;
+    width = other.width;
+    height = other.height;
 }
 
 // Assignment Operator
@@ -25,6 +27,8 @@ CubeMap& CubeMap::operator=(const CubeMap& other) {
     if (this != &other) {
         textureId = other.textureId;
         resolution = other.resolution;
+        width = other.width;
+        height = other.height;
     }
 
     return *this;
@@ -64,6 +68,8 @@ CubeMap::CubeMap(const GLint &internalFormat, const GLint &param, const GLsizei 
     this->resolution = resolution;
     glGenTextures(1, &textureId);
     glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
+    width = resolution;
+    height = resolution;
 
     for (int i = 0; i < 6; i++) {
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalFormat, resolution, resolution, 0, GL_RGB, GL_UNSIGNED_BYTE, cubemapPixelBuffers == NULL ? 0 : cubemapPixelBuffers[i]);
