@@ -18,7 +18,7 @@ void DrawWithFragmentShaderView::render(){
 
     // Option to regenerate the texture each frame.
     if(getFrameCount() > 0){
-        //texture = FBO::dynamicallyGenerateMandelbrotWithVertexShader(fbo, this);
+        //texture = FBO::dynamicallyGenerateMandelbrotWithVertexShader(temporaryCubeMapFBO, this);
     }
 
     glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);

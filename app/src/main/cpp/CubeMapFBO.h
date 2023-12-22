@@ -40,6 +40,7 @@ public:
 private:
 
     bool initialize(CubeMap cubeMap, const bool &addDepthBuffer, const bool &addStencilBuffer);
+
 };
 
 

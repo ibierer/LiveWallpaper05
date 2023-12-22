@@ -45,6 +45,7 @@
 #include "FBO.cpp"
 #include "CubeMapFBO.cpp"
 #include "DrawWithFragmentShaderView.cpp"
+#include "TemporaryCubeMapFBO.cpp"
 #include "TemporaryRenderToCubeMapView.cpp"
 
 using std::string;

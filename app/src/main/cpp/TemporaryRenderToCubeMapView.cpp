@@ -8,7 +8,7 @@ TemporaryRenderToCubeMapView::TemporaryRenderToCubeMapView() : View() {
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     texture = Texture(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
     //texture = Texture::staticallyGenerateMandelbrotWithVertexShader(Texture(GL_RGB, 16384, 16384, 0, GL_LINEAR), this);
-    fbo = FBO(
+    temporaryCubeMapFBO = TemporaryCubeMapFBO(
             (void*) new Texture(GL_RGB, texture.getWidth(), texture.getHeight(), 0, GL_LINEAR),
             YES,
             NO);
@@ -20,13 +20,13 @@ TemporaryRenderToCubeMapView::~TemporaryRenderToCubeMapView(){
 
 void TemporaryRenderToCubeMapView::render(){
     int storeWidth = width;
-    width = fbo.getWidth();
+    width = temporaryCubeMapFBO.getWidth();
     int storeHeight = height;
-    height = fbo.getHeight();
+    height = temporaryCubeMapFBO.getHeight();
     calculatePerspective(60.0f);
     glViewport(0, 0, width, height);
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo.getFrameBuffer());
-    glDrawBuffers(1, fbo.drawBuffers);
+    glBindFramebuffer(GL_FRAMEBUFFER, temporaryCubeMapFBO.getFrameBuffer());
+    glDrawBuffers(1, temporaryCubeMapFBO.drawBuffers);
     glClearColor(backgroundColor.r + 0.5f, backgroundColor.g + 0.5f, backgroundColor.b + 0.5f, backgroundColor.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -86,7 +86,7 @@ void TemporaryRenderToCubeMapView::render(){
             GL_FALSE,
             (GLfloat*)&mvp);
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
+    glBindTexture(GL_TEXTURE_2D, temporaryCubeMapFBO.getRenderedTextureId());
     glUniform1i(glGetUniformLocation(mProgram, "image"), 1);
 
     glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(unsigned int), GL_UNSIGNED_INT, indices);

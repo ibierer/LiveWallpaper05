@@ -11,7 +11,7 @@ public:
 
     Texture texture;
 
-    FBO fbo;
+    TemporaryCubeMapFBO temporaryCubeMapFBO;
 
     const string VERTEX_SHADER =
             ES_VERSION +
