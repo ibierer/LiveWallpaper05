@@ -901,40 +901,22 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(ImplicitGrapher& gra
                     int combo = 0;
                     switch (l) {
                         case 0://XY
-                            combo += xYz * 8;
-                            combo += XYz * 4;
-                            combo += xyz * 2;
-                            combo += Xyz * 1;
+                            combo = xYz * 8 | XYz * 4 | xyz * 2 | Xyz * 1;
                             break;
                         case 1://XY
-                            combo += xYZ * 8;
-                            combo += XYZ * 4;
-                            combo += xyZ * 2;
-                            combo += XyZ * 1;
+                            combo = xYZ * 8 | XYZ * 4 | xyZ * 2 | XyZ * 1;
                             break;
                         case 2://YZ
-                            combo += xyZ * 8;
-                            combo += xYZ * 4;
-                            combo += xyz * 2;
-                            combo += xYz * 1;
+                            combo = xyZ * 8 | xYZ * 4 | xyz * 2 | xYz * 1;
                             break;
                         case 3://YZ
-                            combo += XyZ * 8;
-                            combo += XYZ * 4;
-                            combo += Xyz * 2;
-                            combo += XYz * 1;
+                            combo = XyZ * 8 | XYZ * 4 | Xyz * 2 | XYz * 1;
                             break;
                         case 4://ZX
-                            combo += Xyz * 8;
-                            combo += XyZ * 4;
-                            combo += xyz * 2;
-                            combo += xyZ * 1;
+                            combo = Xyz * 8 | XyZ * 4 | xyz * 2 | xyZ * 1;
                             break;
                         case 5://ZX
-                            combo += XYz * 8;
-                            combo += XYZ * 4;
-                            combo += xYz * 2;
-                            combo += xYZ * 1;
+                            combo = XYz * 8 | XYZ * 4 | xYz * 2 | xYZ * 1;
                             break;
                     }
                     switch (combo) {
