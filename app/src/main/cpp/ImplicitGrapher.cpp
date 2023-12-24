@@ -921,35 +921,35 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(ImplicitGrapher& gra
                     }
                     switch (combo) {
                         case 0: break;//0000
-                        case 1:
+                        case 1://0001
                             if (l % 2 != vectorPointsPositive)
                                 groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node2(i, j, k, l), -1);
                             else
                                 groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node3(i, j, k, l), -1);
-                            break;//0001
-                        case 2:
+                            break;
+                        case 2://0010
                             if (l % 2 != vectorPointsPositive)
                                 groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node3(i, j, k, l), -1);
                             else
                                 groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node1(i, j, k, l), -1);
-                            break;//0010
-                        case 3:
+                            break;
+                        case 3://0011
                             if (l % 2 != vectorPointsPositive)
                                 groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node2(i, j, k, l), -1);
                             else
-                                groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node1(i, j, k, l), -1); break;//0011
-                        case 4:
+                                groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node1(i, j, k, l), -1); break;
+                        case 4://0100
                             if (l % 2 != vectorPointsPositive)
                                 groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node0(i, j, k, l), -1);
                             else
                                 groupSegments[groupSegmentCounter++] = ivec3(node0(i, j, k, l), node2(i, j, k, l), -1);
-                            break;//0100
-                        case 5:
+                            break;
+                        case 5://0101
                             if(l % 2 != vectorPointsPositive)
                                 groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node0(i, j, k, l), -1);
                             else
                                 groupSegments[groupSegmentCounter++] = ivec3(node0(i, j, k, l), node3(i, j, k, l), -1);
-                            break;//0101
+                            break;
                         case 6: {//0110
                             int _node0 = node0(i, j, k, l);
                             int _node1 = node1(i, j, k, l);
@@ -974,18 +974,18 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(ImplicitGrapher& gra
                             }
                             break;
                         }
-                        case 7:
+                        case 7://0111
                             if (l % 2 != vectorPointsPositive)
                                 groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node0(i, j, k, l), -1);
                             else
                                 groupSegments[groupSegmentCounter++] = ivec3(node0(i, j, k, l), node1(i, j, k, l), -1);
-                            break;//0111
-                        case 8:
+                            break;
+                        case 8://1000
                             if (l % 2 != vectorPointsPositive)
                                 groupSegments[groupSegmentCounter++] = ivec3(node0(i, j, k, l), node1(i, j, k, l), -1);
                             else
                                 groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node0(i, j, k, l), -1);
-                            break;//1000
+                            break;
                         case 9: {//1001
                             int _node0 = node0(i, j, k, l);
                             int _node1 = node1(i, j, k, l);
@@ -1010,31 +1010,31 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(ImplicitGrapher& gra
                             }
                             break;
                         }
-                        case 10:
+                        case 10://1010
                             if (l % 2 != vectorPointsPositive)
                                 groupSegments[groupSegmentCounter++] = ivec3(node0(i, j, k, l), node3(i, j, k, l), -1);
                             else
-                                groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node0(i, j, k, l), -1); break;//1010
-                        case 11:
+                                groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node0(i, j, k, l), -1); break;
+                        case 11://1011
                             if (l % 2 != vectorPointsPositive)
                                 groupSegments[groupSegmentCounter++] = ivec3(node0(i, j, k, l), node2(i, j, k, l), -1);
                             else
-                                groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node0(i, j, k, l), -1); break;//1011
-                        case 12:
+                                groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node0(i, j, k, l), -1); break;
+                        case 12://1100
                             if (l % 2 != vectorPointsPositive)
                                 groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node1(i, j, k, l), -1);
                             else
-                                groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node2(i, j, k, l), -1); break;//1100
-                        case 13:
+                                groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node2(i, j, k, l), -1); break;
+                        case 13://1101
                             if (l % 2 != vectorPointsPositive)
                                 groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node1(i, j, k, l), -1);
                             else
-                                groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node3(i, j, k, l), -1); break;//1101
-                        case 14:
+                                groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node3(i, j, k, l), -1); break;
+                        case 14://1110
                             if (l % 2 != vectorPointsPositive)
                                 groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node3(i, j, k, l), -1);
                             else
-                                groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node2(i, j, k, l), -1); break;//1110
+                                groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node2(i, j, k, l), -1); break;
                         case 15:
                             break;//1111
                     }
