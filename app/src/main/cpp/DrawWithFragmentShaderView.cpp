@@ -6,7 +6,7 @@
 
 DrawWithFragmentShaderView::DrawWithFragmentShaderView() : View() {
     texture = Texture::staticallyGenerateMandelbrotWithVertexShader(Texture(GL_RGB, 16384, 16384, 0, GL_LINEAR), this);
-    fbo = FBO((void*) &texture, NO, NO);
+    fbo = FBO(&texture, NO, NO);
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
 }
 
