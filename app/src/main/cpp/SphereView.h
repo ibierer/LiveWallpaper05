@@ -8,8 +8,16 @@
 
 #include "View.h"
 
+class object {
+public:
+    VertexNormal* vertices;
+    int numVertices;
+};
+
 class SphereView : public View {
 public:
+
+    object sphere;
 
     const string VERTEX_SHADER =
             ES_VERSION +

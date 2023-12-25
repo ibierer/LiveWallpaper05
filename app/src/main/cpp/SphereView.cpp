@@ -4,55 +4,35 @@
 
 #include "SphereView.h"
 
-struct object{
-    VertexNormal* vertices;
-    uvec3* indices;
-    int numIndices;
-};
+SphereView::SphereView() : View() {
+    mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
 
-object generateSoccerBallVertices(const float& radius) {
-    const float goldenRatio = (1.0f + std::sqrt(5.0f)) / 2.0f;
+    const double twoPi = 2.0 * M_PI;
+    const float radius = 1.0f;
+    const int horizontalSegments = 50;
+    const int verticalSegments = 2 * horizontalSegments;
+    float theta;
+    float phi;
+    float sineOfPhi;
 
-    VertexNormal* vertices = (VertexNormal*)malloc(1000 * sizeof(VertexNormal));
-    int numVertices = 0;
+    sphere.vertices = (VertexNormal*)malloc(2 * horizontalSegments * (verticalSegments + 1) * sizeof(VertexNormal));
+    sphere.numVertices = 0;
 
-    vertices[numVertices++].v = vec3(0.0f, 0.0f, 1.0f);
-    for(int i = 0; i < 6; i++){
-        const float theta = M_PI * i / 3.0;
-        const float phi = 1.0f / 9.0f * M_PI;
-        const float sineOfPhi = sinf(phi);
-        vertices[numVertices++].v = vec3(sineOfPhi * cosf(theta), sineOfPhi * sinf(theta), cosf(phi));
-    }
-
-    for(int i = 0; i < 6; i++){
-
+    for(int i = 0; i < horizontalSegments; i++) {
+        for (int j = 0; j <= verticalSegments; j++) {
+            theta = twoPi * j / verticalSegments;
+            sineOfPhi = sinf(phi = twoPi * i / verticalSegments);
+            sphere.vertices[sphere.numVertices++].v = vec3(sineOfPhi * cosf(theta), sineOfPhi * sinf(theta), cosf(phi));
+            sineOfPhi = sinf(phi = twoPi * (i + 1) / verticalSegments);
+            sphere.vertices[sphere.numVertices++].v = vec3(sineOfPhi * cosf(theta), sineOfPhi * sinf(theta), cosf(phi));
+        }
     }
 
     // Set normals and set scale according to radius parameter.
-    for(int i = 0; i < numVertices; i++) {
-        vertices[i].n = vertices[i].v;
-        vertices[i].v *= radius;
+    for(int i = 0; i < sphere.numVertices; i++) {
+        sphere.vertices[i].n = sphere.vertices[i].v;
+        sphere.vertices[i].v *= radius;
     }
-
-    uint* indices = (uint*)malloc(1000 * sizeof(uvec3));
-
-    int numIndices = 0;
-
-    for(int i = 0; i < 6; i++){
-        indices[numIndices++] = 0;
-        indices[numIndices++] = i + 1;
-        indices[numIndices++] = (i + 1) % 6 + 1;
-    }
-
-    return {
-        (VertexNormal*)realloc(vertices, numVertices * sizeof(VertexNormal)),
-        (uvec3*)realloc(indices, numVertices * sizeof(uvec3)),
-        numIndices
-    };
-}
-
-SphereView::SphereView() : View(){
-    mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
 }
 
 SphereView::~SphereView(){
@@ -61,9 +41,11 @@ SphereView::~SphereView(){
 
 void SphereView::render(){
     glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
 
     Matrix4<float> translation;
     translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 10.0f * (zoom - 1.0f)));
@@ -87,17 +69,16 @@ void SphereView::render(){
     for(int i = 0; i < sizeof(vertices) / sizeof(VertexNormal); i++){
         vertices[i].n = normalize(cross(vertices[2].v - vertices[1].v, vertices[1].v - vertices[0].v));
     }*/
-    object sphere = generateSoccerBallVertices(1.0f);
-    /*uvec3 indices[1] = {
+
+    uvec3 indices[1] = {
             uvec3(0, 1, 2)
-    };*/
+    };
+
     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
     glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), (const GLvoid*)&sphere.vertices[0].v);
     glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), (const GLvoid*)&sphere.vertices[0].n);
-    glDrawElements(GL_TRIANGLES, sphere.numIndices, GL_UNSIGNED_INT, sphere.indices);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, sphere.numVertices);
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
-    free(sphere.vertices);
-    free(sphere.indices);
 }
