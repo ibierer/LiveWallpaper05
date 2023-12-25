@@ -7,6 +7,7 @@
 struct object{
     VertexNormal* vertices;
     uvec3* indices;
+    int numVertices;
     int numIndices;
 };
 
@@ -47,6 +48,7 @@ object generateSoccerBallVertices(const float& radius) {
     return {
         (VertexNormal*)realloc(vertices, numVertices * sizeof(VertexNormal)),
         (uvec3*)realloc(indices, numVertices * sizeof(uvec3)),
+        numVertices,
         numIndices
     };
 }
