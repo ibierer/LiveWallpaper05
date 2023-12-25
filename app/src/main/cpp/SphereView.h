@@ -7,17 +7,12 @@
 
 
 #include "View.h"
-
-class object {
-public:
-    VertexNormal* vertices;
-    int numVertices;
-};
+#include "Sphere.h"
 
 class SphereView : public View {
 public:
 
-    object sphere;
+    Sphere sphere;
 
     const string VERTEX_SHADER =
             ES_VERSION +

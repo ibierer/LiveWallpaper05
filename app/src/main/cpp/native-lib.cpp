@@ -46,6 +46,8 @@
 #include "CubeMapFBO.cpp"
 #include "DrawWithFragmentShaderView.cpp"
 #include "SphereView.cpp"
+#include "TriangleStripObject.cpp"
+#include "Sphere.cpp"
 
 using std::string;
 using nlohmann::json;

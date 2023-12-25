@@ -80,7 +80,7 @@ public:
 	//! Modifying this array externally can invalidate the heap structure.
 	//! The given array must NOT be deleted externally.
 	//! The given items pointer still points to the same data, but the class claims
-	//! ownership of the data. Therefore, when the class object is deleted, the data
+	//! ownership of the data. Therefore, when the class TriangleStripObject is deleted, the data
 	//! items are deleted as well. If this is not desirable, use SetDataPointer.
 	void MoveData( DATA_TYPE *items, SIZE_TYPE itemCount )
 	{
@@ -95,7 +95,7 @@ public:
 	//! method, when SetDataPointer is used, the class does NOT claim ownership
 	//! of the data. Therefore, it does not deallocate memory used for the main data
 	//! when it is deleted, and the data items must be deleted externally.
-	//! However, the data items must NOT be deleted while an object of this class is used.
+	//! However, the data items must NOT be deleted while an TriangleStripObject of this class is used.
 	void SetDataPointer( DATA_TYPE *items, SIZE_TYPE itemCount )
 	{
 		ClearData();

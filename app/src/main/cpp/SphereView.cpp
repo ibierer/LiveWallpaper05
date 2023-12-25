@@ -4,51 +4,13 @@
 
 #include "SphereView.h"
 
-class Sphere{
-public:
-    static object generateSphere(const float& radius, const int& resolution);
-};
-
-object Sphere::generateSphere(const float& radius, const int& resolution){
-    const double twoPi = 2.0 * M_PI;
-    const int horizontalSegments = resolution;
-    const int verticalSegments = 2 * horizontalSegments;
-    float theta;
-    float phi;
-    float sineOfPhi;
-
-    object sphere;
-
-    sphere.vertices = (VertexNormal*)malloc(2 * horizontalSegments * (verticalSegments + 1) * sizeof(VertexNormal));
-    sphere.numVertices = 0;
-
-    for(int i = 0; i < horizontalSegments; i++) {
-        for (int j = 0; j <= verticalSegments; j++) {
-            theta = twoPi * j / verticalSegments;
-            sineOfPhi = sinf(phi = twoPi * i / verticalSegments);
-            sphere.vertices[sphere.numVertices++].v = vec3(sineOfPhi * cosf(theta), sineOfPhi * sinf(theta), cosf(phi));
-            sineOfPhi = sinf(phi = twoPi * (i + 1) / verticalSegments);
-            sphere.vertices[sphere.numVertices++].v = vec3(sineOfPhi * cosf(theta), sineOfPhi * sinf(theta), cosf(phi));
-        }
-    }
-
-    // Set normals and set scale according to radius parameter.
-    for(int i = 0; i < sphere.numVertices; i++) {
-        sphere.vertices[i].n = sphere.vertices[i].v;
-        sphere.vertices[i].v *= radius;
-    }
-
-    return sphere;
-}
-
 SphereView::SphereView() : View() {
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
-    sphere = Sphere::generateSphere(1.0f, 100);
+    sphere = Sphere(1.0f, 100);
 }
 
 SphereView::~SphereView(){
     glDeleteProgram(mProgram);
-    free(sphere.vertices);
 }
 
 void SphereView::render(){
@@ -74,9 +36,9 @@ void SphereView::render(){
 
     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
-    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), (const GLvoid*)&sphere.vertices[0].v);
-    glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), (const GLvoid*)&sphere.vertices[0].n);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, sphere.numVertices);
+    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), (const GLvoid*)&sphere.getVertices()[0].v);
+    glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), (const GLvoid*)&sphere.getVertices()[0].n);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, sphere.getNumVertices());
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
 }

@@ -195,7 +195,7 @@ public:
 //! This class registers an OpenGL debug callback function, which is called when
 //! there is an OpenGL generates a debug message.
 //! The class has no local storage, so it can be safely deleted.
-//! Deleting an object of this class, however, does not automatically disable the debug callbacks.
+//! Deleting an TriangleStripObject of this class, however, does not automatically disable the debug callbacks.
 class GLDebugCallback
 {
 public:
@@ -257,7 +257,7 @@ protected:
 //! GL_TEXTURE_1D_ARRAY, GL_TEXTURE_2D_ARRAY, GL_TEXTURE_CUBE_MAP_ARRAY,
 //! GL_TEXTURE_BUFFER, GL_TEXTURE_2D_MULTISAMPLE, or
 //! GL_TEXTURE_2D_MULTISAMPLE_ARRAY. This class merely stores the texture id.
-//! Note that deleting an object of this class does not automatically delete
+//! Note that deleting an TriangleStripObject of this class does not automatically delete
 //! the texture from the GPU memory. You must explicitly call the Delete()
 //! method to free the texture storage on the GPU.
 template <GLenum TEXTURE_TYPE>
@@ -273,7 +273,7 @@ public:
 
 	void   Delete() { if ( textureID != CY_GL_INVALID_ID ) glDeleteTextures(1,&textureID); textureID = CY_GL_INVALID_ID; }	//!< Deletes the texture.
 	GLuint GetID () const { return textureID; }													//!< Returns the texture ID.
-	bool   IsNull() const { return textureID == CY_GL_INVALID_ID; }								//!< Returns true if the OpenGL texture object is not generated, i.e. the texture id is invalid.
+	bool   IsNull() const { return textureID == CY_GL_INVALID_ID; }								//!< Returns true if the OpenGL texture TriangleStripObject is not generated, i.e. the texture id is invalid.
 	void   Bind  () const { glBindTexture(TEXTURE_TYPE, textureID); }							//!< Binds the texture to the current texture unit.
 	void   Bind  (int textureUnit) const { glActiveTexture(GL_TEXTURE0+textureUnit); Bind(); }	//!< Binds the texture to the given texture unit.
 	GLenum Type  () const { return TEXTURE_TYPE; }
@@ -317,7 +317,7 @@ public:
 //! operations with OpenGL. The template argument TEXTURE_TYPE should be a
 //! 1D texture type supported by OpenGL, such as GL_TEXTURE_1D.
 //! This class merely stores the texture id.
-//! Note that deleting an object of this class does not automatically delete
+//! Note that deleting an TriangleStripObject of this class does not automatically delete
 //! the texture from the GPU memory. You must explicitly call the Delete()
 //! method to free the texture storage on the GPU.
 template <GLenum TEXTURE_TYPE>
@@ -365,7 +365,7 @@ public:
 //! operations with OpenGL. The template argument TEXTURE_TYPE should be a
 //! 2D texture type supported by OpenGL, such as GL_TEXTURE_2D,
 //! GL_TEXTURE_RECTANGLE, or GL_TEXTURE_1D_ARRAY. This class merely stores the texture id.
-//! Note that deleting an object of this class does not automatically delete
+//! Note that deleting an TriangleStripObject of this class does not automatically delete
 //! the texture from the GPU memory. You must explicitly call the Delete()
 //! method to free the texture storage on the GPU.
 template <GLenum TEXTURE_TYPE>
@@ -419,7 +419,7 @@ public:
 //! operations with OpenGL. The template argument TEXTURE_TYPE should be a
 //! 3D texture type supported by OpenGL, such as GL_TEXTURE_3D or
 //! GL_TEXTURE_2D_ARRAY. This class merely stores the texture id.
-//! Note that deleting an object of this class does not automatically delete
+//! Note that deleting an TriangleStripObject of this class does not automatically delete
 //! the texture from the GPU memory. You must explicitly call the Delete()
 //! method to free the texture storage on the GPU.
 template <GLenum TEXTURE_TYPE>
@@ -484,7 +484,7 @@ enum GLTextureCubeMapSide {
 //!
 //! This class provides a convenient interface for handling cube map texture
 //! operations with OpenGL. This class merely stores the texture id.
-//! Note that deleting an object of this class does not automatically delete
+//! Note that deleting an TriangleStripObject of this class does not automatically delete
 //! the texture from the GPU memory. You must explicitly call the Delete()
 //! method to free the texture storage on the GPU.
 class GLTextureCubeMap : public GLTexture<GL_TEXTURE_CUBE_MAP>
@@ -703,7 +703,7 @@ public:
 
 	void   Delete() { if (shaderID!=CY_GL_INVALID_ID) { glDeleteShader(shaderID); shaderID=CY_GL_INVALID_ID; } }	//!< Deletes the shader.
 	GLuint GetID () const { return shaderID; }						//!< Returns the shader ID.
-	bool   IsNull() const { return shaderID == CY_GL_INVALID_ID; }	//!< Returns true if the OpenGL shader object is not generated, i.e. the shader id is invalid.
+	bool   IsNull() const { return shaderID == CY_GL_INVALID_ID; }	//!< Returns true if the OpenGL shader TriangleStripObject is not generated, i.e. the shader id is invalid.
 
 	//!@name Compilation Methods
 
@@ -759,7 +759,7 @@ public:
 
 	void   Delete() { if (programID!=CY_GL_INVALID_ID) { glDeleteProgram(programID); programID=CY_GL_INVALID_ID; } }	//!< Deletes the program.
 	GLuint GetID () const { return programID; }						//!< Returns the program ID
-	bool   IsNull() const { return programID == CY_GL_INVALID_ID; }	//!< Returns true if the OpenGL program object is not generated, i.e. the program id is invalid.
+	bool   IsNull() const { return programID == CY_GL_INVALID_ID; }	//!< Returns true if the OpenGL program TriangleStripObject is not generated, i.e. the program id is invalid.
 	void   Bind  () const { glUseProgram(programID); }				//!< Binds the program for rendering
 
 	//! Attaches the given shader to the program.

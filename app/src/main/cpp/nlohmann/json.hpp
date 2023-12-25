@@ -2872,7 +2872,7 @@ value with the default value for a given type
 enum class value_t : std::uint8_t
 {
     null,             ///< null value
-    object,           ///< object (unordered set of name/value pairs)
+    object,           ///< TriangleStripObject (unordered set of name/value pairs)
     array,            ///< array (ordered collection of values)
     string,           ///< string value
     boolean,          ///< boolean value
@@ -2887,7 +2887,7 @@ enum class value_t : std::uint8_t
 @brief comparison operator for JSON types
 
 Returns an ordering that is similar to Python:
-- order: null < boolean < number < object < array < string < binary
+- order: null < boolean < number < TriangleStripObject < array < string < binary
 - furthermore, each type is not smaller than itself
 - discarded values are not comparable
 - binary is represented as a b"" string in python and directly comparable to a
@@ -2903,7 +2903,7 @@ Returns an ordering that is similar to Python:
 #endif
 {
     static constexpr std::array<std::uint8_t, 9> order = {{
-            0 /* null */, 3 /* object */, 4 /* array */, 5 /* string */,
+            0 /* null */, 3 /* TriangleStripObject */, 4 /* array */, 5 /* string */,
             1 /* boolean */, 2 /* integer */, 2 /* unsigned */, 2 /* float */,
             6 /* binary */
         }
@@ -3426,7 +3426,7 @@ NLOHMANN_JSON_NAMESPACE_END
     template<class Key, class T, class IgnoredLess, class Allocator>
     struct ordered_map;
 
-    /// @brief specialization that maintains the insertion order of object keys
+    /// @brief specialization that maintains the insertion order of TriangleStripObject keys
     /// @sa https://json.nlohmann.me/api/ordered_json/
     using ordered_json = basic_json<nlohmann::ordered_map>;
 
@@ -3582,7 +3582,7 @@ using detect_key_compare = typename T::key_compare;
 template<typename T>
 struct has_key_compare : std::integral_constant<bool, is_detected<detect_key_compare, T>::value> {};
 
-// obtains the actual object key comparator
+// obtains the actual TriangleStripObject key comparator
 template<typename BasicJsonType>
 struct actual_object_comparator
 {
@@ -3985,7 +3985,7 @@ decltype(std::declval<Compare>()(std::declval<B>(), std::declval<A>()))
 template<typename T>
 using detect_is_transparent = typename T::is_transparent;
 
-// type trait to check if KeyType can be used as object key (without a BasicJsonType)
+// type trait to check if KeyType can be used as TriangleStripObject key (without a BasicJsonType)
 // see is_usable_as_basic_json_key_type below
 template<typename Comparator, typename ObjectKeyType, typename KeyTypeCVRef, bool RequireTransparentComparator = true,
          bool ExcludeObjectKeyType = RequireTransparentComparator, typename KeyType = uncvref_t<KeyTypeCVRef>>
@@ -3999,7 +3999,7 @@ using is_usable_as_key_type = typename std::conditional <
                               std::true_type,
                               std::false_type >::type;
 
-// type trait to check if KeyType can be used as object key
+// type trait to check if KeyType can be used as TriangleStripObject key
 // true if:
 //   - KeyType is comparable with BasicJsonType::object_t::key_type
 //   - if ExcludeObjectKeyType is true, KeyType is not BasicJsonType::object_t::key_type
@@ -4460,7 +4460,7 @@ class exception : public std::exception
     }
 
   private:
-    /// an exception object as storage for error messages
+    /// an exception TriangleStripObject as storage for error messages
     std::runtime_error m;
 };
 
@@ -4476,7 +4476,7 @@ class parse_error : public exception
                          chars_read_total=0 if the position cannot be
                          determined)
     @param[in] what_arg  the explanatory string
-    @return parse_error object
+    @return parse_error TriangleStripObject
     */
     template<typename BasicJsonContext, enable_if_t<is_basic_json_context<BasicJsonContext>::value, int> = 0>
     static parse_error create(int id_, const position_t& pos, const std::string& what_arg, BasicJsonContext context)
@@ -4936,7 +4936,7 @@ inline void from_json(const BasicJsonType& j, ConstructibleObjectType& obj)
 {
     if (JSON_HEDLEY_UNLIKELY(!j.is_object()))
     {
-        JSON_THROW(type_error::create(302, concat("type must be object, but is ", j.type_name()), &j));
+        JSON_THROW(type_error::create(302, concat("type must be TriangleStripObject, but is ", j.type_name()), &j));
     }
 
     ConstructibleObjectType ret;
@@ -5277,7 +5277,7 @@ template<typename IteratorType> class iteration_proxy_value
                 return array_index_str;
             }
 
-            // use key from the object
+            // use key from the TriangleStripObject
             case value_t::object:
                 return anchor.key();
 
@@ -6726,23 +6726,23 @@ struct json_sax
     virtual bool binary(binary_t& val) = 0;
 
     /*!
-    @brief the beginning of an object was read
-    @param[in] elements  number of object elements or -1 if unknown
+    @brief the beginning of an TriangleStripObject was read
+    @param[in] elements  number of TriangleStripObject elements or -1 if unknown
     @return whether parsing should proceed
     @note binary formats may report the number of elements
     */
     virtual bool start_object(std::size_t elements) = 0;
 
     /*!
-    @brief an object key was read
-    @param[in] val  object key
+    @brief an TriangleStripObject key was read
+    @param[in] val  TriangleStripObject key
     @return whether parsing should proceed
     @note It is safe to move the passed string.
     */
     virtual bool key(string_t& val) = 0;
 
     /*!
-    @brief the end of an object was read
+    @brief the end of an TriangleStripObject was read
     @return whether parsing should proceed
     */
     virtual bool end_object() = 0;
@@ -6765,7 +6765,7 @@ struct json_sax
     @brief a parse error occurred
     @param[in] position    the position in the input where the error occurs
     @param[in] last_token  the last read token
-    @param[in] ex          an exception object describing the error
+    @param[in] ex          an exception TriangleStripObject describing the error
     @return whether parsing should proceed (must return false)
     */
     virtual bool parse_error(std::size_t position,
@@ -6788,7 +6788,7 @@ namespace detail
 This class implements the @ref json_sax interface and processes the SAX events
 to create a JSON value which makes it basically a DOM parser. The structure or
 hierarchy of the JSON value is managed by the stack `ref_stack` which contains
-a pointer to the respective array or object for each recursion depth.
+a pointer to the respective array or TriangleStripObject for each recursion depth.
 
 After successful parsing, the value that is passed by reference to the
 constructor contains the parsed value.
@@ -6869,7 +6869,7 @@ class json_sax_dom_parser
 
         if (JSON_HEDLEY_UNLIKELY(len != static_cast<std::size_t>(-1) && len > ref_stack.back()->max_size()))
         {
-            JSON_THROW(out_of_range::create(408, concat("excessive object size: ", std::to_string(len)), ref_stack.back()));
+            JSON_THROW(out_of_range::create(408, concat("excessive TriangleStripObject size: ", std::to_string(len)), ref_stack.back()));
         }
 
         return true;
@@ -6940,7 +6940,7 @@ class json_sax_dom_parser
     @invariant If the ref stack is empty, then the passed value will be the new
                root.
     @invariant If the ref stack contains a value, then it is an array or an
-               object to which we can add elements
+               TriangleStripObject to which we can add elements
     */
     template<typename Value>
     JSON_HEDLEY_RETURNS_NON_NULL
@@ -6970,7 +6970,7 @@ class json_sax_dom_parser
     BasicJsonType& root;
     /// stack to model hierarchy of values
     std::vector<BasicJsonType*> ref_stack {};
-    /// helper to hold the reference for the next object element
+    /// helper to hold the reference for the next TriangleStripObject element
     BasicJsonType* object_element = nullptr;
     /// whether a syntax error occurred
     bool errored = false;
@@ -7049,17 +7049,17 @@ class json_sax_dom_callback_parser
 
     bool start_object(std::size_t len)
     {
-        // check callback for object start
+        // check callback for TriangleStripObject start
         const bool keep = callback(static_cast<int>(ref_stack.size()), parse_event_t::object_start, discarded);
         keep_stack.push_back(keep);
 
         auto val = handle_value(BasicJsonType::value_t::object, true);
         ref_stack.push_back(val.second);
 
-        // check object limit
+        // check TriangleStripObject limit
         if (ref_stack.back() && JSON_HEDLEY_UNLIKELY(len != static_cast<std::size_t>(-1) && len > ref_stack.back()->max_size()))
         {
-            JSON_THROW(out_of_range::create(408, concat("excessive object size: ", std::to_string(len)), ref_stack.back()));
+            JSON_THROW(out_of_range::create(408, concat("excessive TriangleStripObject size: ", std::to_string(len)), ref_stack.back()));
         }
 
         return true;
@@ -7088,7 +7088,7 @@ class json_sax_dom_callback_parser
         {
             if (!callback(static_cast<int>(ref_stack.size()) - 1, parse_event_t::object_end, *ref_stack.back()))
             {
-                // discard object
+                // discard TriangleStripObject
                 *ref_stack.back() = discarded;
             }
             else
@@ -7191,12 +7191,12 @@ class json_sax_dom_callback_parser
     @param[in] skip_callback  whether we should skip calling the callback
                function; this is required after start_array() and
                start_object() SAX events, because otherwise we would call the
-               callback function with an empty array or object, respectively.
+               callback function with an empty array or TriangleStripObject, respectively.
 
     @invariant If the ref stack is empty, then the passed value will be the new
                root.
     @invariant If the ref stack contains a value, then it is an array or an
-               object to which we can add elements
+               TriangleStripObject to which we can add elements
 
     @return pair of boolean (whether value should be kept) and pointer (to the
             passed value in the ref_stack hierarchy; nullptr if not kept)
@@ -7248,7 +7248,7 @@ class json_sax_dom_callback_parser
             return {true, & (ref_stack.back()->m_data.m_value.array->back())};
         }
 
-        // object
+        // TriangleStripObject
         JSON_ASSERT(ref_stack.back()->is_object());
         // check if we should store an element for the current key
         JSON_ASSERT(!key_keep_stack.empty());
@@ -7271,9 +7271,9 @@ class json_sax_dom_callback_parser
     std::vector<BasicJsonType*> ref_stack {};
     /// stack to manage which values to keep
     std::vector<bool> keep_stack {};
-    /// stack to manage which object keys to keep
+    /// stack to manage which TriangleStripObject keys to keep
     std::vector<bool> key_keep_stack {};
-    /// helper to hold the reference for the next object element
+    /// helper to hold the reference for the next TriangleStripObject element
     BasicJsonType* object_element = nullptr;
     /// whether a syntax error occurred
     bool errored = false;
@@ -7418,9 +7418,9 @@ class lexer_base
         value_integer,    ///< a signed integer -- use get_number_integer() for actual value
         value_float,      ///< an floating point number -- use get_number_float() for actual value
         begin_array,      ///< the character for array begin `[`
-        begin_object,     ///< the character for object begin `{`
+        begin_object,     ///< the character for TriangleStripObject begin `{`
         end_array,        ///< the character for array end `]`
-        end_object,       ///< the character for object end `}`
+        end_object,       ///< the character for TriangleStripObject end `}`
         name_separator,   ///< the name separator `:`
         value_separator,  ///< the value separator `,`
         parse_error,      ///< indicating a parse error
@@ -9306,7 +9306,7 @@ class binary_reader
     //////////
 
     /*!
-    @brief Reads in a BSON-object and passes it to the SAX-parser.
+    @brief Reads in a BSON-TriangleStripObject and passes it to the SAX-parser.
     @return whether a valid BSON-value was passed to the SAX parser
     */
     bool parse_bson_internal()
@@ -9411,7 +9411,7 @@ class binary_reader
     @warning Not all BSON element types are supported yet. An unsupported
              @a element_type will give rise to a parse_error.114:
              Unsupported BSON record type 0x...
-    @return whether a valid BSON-object/array was passed to the SAX parser
+    @return whether a valid BSON-TriangleStripObject/array was passed to the SAX parser
     */
     bool parse_bson_element_internal(const char_int_type element_type,
                                      const std::size_t element_type_parse_position)
@@ -9431,7 +9431,7 @@ class binary_reader
                 return get_number<std::int32_t, true>(input_format_t::bson, len) && get_bson_string(len, value) && sax->string(value);
             }
 
-            case 0x03: // object
+            case 0x03: // TriangleStripObject
             {
                 return parse_bson_internal();
             }
@@ -9486,12 +9486,12 @@ class binary_reader
 
     The same binary layout is used for objects and arrays, hence it must be
     indicated with the argument @a is_array which one is expected
-    (true --> array, false --> object).
+    (true --> array, false --> TriangleStripObject).
 
     @param[in] is_array Determines if the element list being read is to be
-                        treated as an object (@a is_array == false), or as an
+                        treated as an TriangleStripObject (@a is_array == false), or as an
                         array (@a is_array == true).
-    @return whether a valid BSON-object/array was passed to the SAX parser
+    @return whether a valid BSON-TriangleStripObject/array was passed to the SAX parser
     */
     bool parse_bson_element_list(const bool is_array)
     {
@@ -10276,10 +10276,10 @@ class binary_reader
     }
 
     /*!
-    @param[in] len  the length of the object or static_cast<std::size_t>(-1) for an
-                    object of indefinite size
+    @param[in] len  the length of the TriangleStripObject or static_cast<std::size_t>(-1) for an
+                    TriangleStripObject of indefinite size
     @param[in] tag_handler how CBOR tags should be treated
-    @return whether object creation completed
+    @return whether TriangleStripObject creation completed
     */
     bool get_cbor_object(const std::size_t len,
                          const cbor_tag_handler_t tag_handler)
@@ -10931,8 +10931,8 @@ class binary_reader
     }
 
     /*!
-    @param[in] len  the length of the object
-    @return whether object creation completed
+    @param[in] len  the length of the TriangleStripObject
+    @return whether TriangleStripObject creation completed
     */
     bool get_msgpack_object(const std::size_t len)
     {
@@ -10980,7 +10980,7 @@ class binary_reader
     @brief reads a UBJSON string
 
     This function is either called after reading the 'S' byte explicitly
-    indicating a string, or in case of an object key where the 'S' byte can be
+    indicating a string, or in case of an TriangleStripObject key where the 'S' byte can be
     left out.
 
     @param[out] result   created string
@@ -11309,7 +11309,7 @@ class binary_reader
                     result = dim.at(dim.size() - 1);
                     return true;
                 }
-                if (!dim.empty())  // if ndarray, convert to an object in JData annotated array format
+                if (!dim.empty())  // if ndarray, convert to an TriangleStripObject in JData annotated array format
                 {
                     for (auto i : dim) // test if any dimension in an ndarray is 0, if so, return a 1D empty container
                     {
@@ -11610,7 +11610,7 @@ class binary_reader
             case '[':  // array
                 return get_ubjson_array();
 
-            case '{':  // object
+            case '{':  // TriangleStripObject
                 return get_ubjson_object();
 
             default: // anything else
@@ -11631,7 +11631,7 @@ class binary_reader
             return false;
         }
 
-        // if bit-8 of size_and_type.second is set to 1, encode bjdata ndarray as an object in JData annotated array format (https://github.com/NeuroJSON/jdata):
+        // if bit-8 of size_and_type.second is set to 1, encode bjdata ndarray as an TriangleStripObject in JData annotated array format (https://github.com/NeuroJSON/jdata):
         // {"_ArrayType_" : "typeid", "_ArraySize_" : [n1, n2, ...], "_ArrayData_" : [v1, v2, ...]}
 
         if (input_format == input_format_t::bjdata && size_and_type.first != npos && (size_and_type.second & (1 << 8)) != 0)
@@ -11729,7 +11729,7 @@ class binary_reader
     }
 
     /*!
-    @return whether object creation completed
+    @return whether TriangleStripObject creation completed
     */
     bool get_ubjson_object()
     {
@@ -11744,7 +11744,7 @@ class binary_reader
         {
             auto last_token = get_token_string();
             return sax->parse_error(chars_read, last_token, parse_error::create(112, chars_read,
-                                    exception_message(input_format, "BJData object does not support ND-array size in optimized format", "object"), nullptr));
+                                    exception_message(input_format, "BJData TriangleStripObject does not support ND-array size in optimized format", "TriangleStripObject"), nullptr));
         }
 
         string_t key;
@@ -12201,15 +12201,15 @@ namespace detail
 
 enum class parse_event_t : std::uint8_t
 {
-    /// the parser read `{` and started to process a JSON object
+    /// the parser read `{` and started to process a JSON TriangleStripObject
     object_start,
-    /// the parser read `}` and finished processing a JSON object
+    /// the parser read `}` and finished processing a JSON TriangleStripObject
     object_end,
     /// the parser read `[` and started to process a JSON array
     array_start,
     /// the parser read `]` and finished processing a JSON array
     array_end,
-    /// the parser read a key of a value in an object
+    /// the parser read a key of a value in an TriangleStripObject
     key,
     /// the parser finished reading a JSON value
     value
@@ -12348,7 +12348,7 @@ class parser
     bool sax_parse_internal(SAX* sax)
     {
         // stack to remember the hierarchy of structured values we are parsing
-        // true = array; false = object
+        // true = array; false = TriangleStripObject
         std::vector<bool> states;
         // value to avoid a goto (see comment where set to true)
         bool skip_to_state_evaluation = false;
@@ -12382,7 +12382,7 @@ class parser
                         {
                             return sax->parse_error(m_lexer.get_position(),
                                                     m_lexer.get_token_string(),
-                                                    parse_error::create(101, m_lexer.get_position(), exception_message(token_type::value_string, "object key"), nullptr));
+                                                    parse_error::create(101, m_lexer.get_position(), exception_message(token_type::value_string, "TriangleStripObject key"), nullptr));
                         }
                         if (JSON_HEDLEY_UNLIKELY(!sax->key(m_lexer.get_string())))
                         {
@@ -12394,10 +12394,10 @@ class parser
                         {
                             return sax->parse_error(m_lexer.get_position(),
                                                     m_lexer.get_token_string(),
-                                                    parse_error::create(101, m_lexer.get_position(), exception_message(token_type::name_separator, "object separator"), nullptr));
+                                                    parse_error::create(101, m_lexer.get_position(), exception_message(token_type::name_separator, "TriangleStripObject separator"), nullptr));
                         }
 
-                        // remember we are now inside an object
+                        // remember we are now inside an TriangleStripObject
                         states.push_back(false);
 
                         // parse values
@@ -12582,7 +12582,7 @@ class parser
                                         parse_error::create(101, m_lexer.get_position(), exception_message(token_type::end_array, "array"), nullptr));
             }
 
-            // states.back() is false -> object
+            // states.back() is false -> TriangleStripObject
 
             // comma -> next value
             if (get_token() == token_type::value_separator)
@@ -12592,7 +12592,7 @@ class parser
                 {
                     return sax->parse_error(m_lexer.get_position(),
                                             m_lexer.get_token_string(),
-                                            parse_error::create(101, m_lexer.get_position(), exception_message(token_type::value_string, "object key"), nullptr));
+                                            parse_error::create(101, m_lexer.get_position(), exception_message(token_type::value_string, "TriangleStripObject key"), nullptr));
                 }
 
                 if (JSON_HEDLEY_UNLIKELY(!sax->key(m_lexer.get_string())))
@@ -12605,7 +12605,7 @@ class parser
                 {
                     return sax->parse_error(m_lexer.get_position(),
                                             m_lexer.get_token_string(),
-                                            parse_error::create(101, m_lexer.get_position(), exception_message(token_type::name_separator, "object separator"), nullptr));
+                                            parse_error::create(101, m_lexer.get_position(), exception_message(token_type::name_separator, "TriangleStripObject separator"), nullptr));
                 }
 
                 // parse values
@@ -12621,7 +12621,7 @@ class parser
                     return false;
                 }
 
-                // We are done with this object. Before we can parse a
+                // We are done with this TriangleStripObject. Before we can parse a
                 // new value, we need to evaluate the new state first.
                 // By setting skip_to_state_evaluation to false, we
                 // are effectively jumping to the beginning of this if.
@@ -12633,7 +12633,7 @@ class parser
 
             return sax->parse_error(m_lexer.get_position(),
                                     m_lexer.get_token_string(),
-                                    parse_error::create(101, m_lexer.get_position(), exception_message(token_type::end_object, "object"), nullptr));
+                                    parse_error::create(101, m_lexer.get_position(), exception_message(token_type::end_object, "TriangleStripObject"), nullptr));
         }
     }
 
@@ -12930,7 +12930,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
     // superficial check for the LegacyBidirectionalIterator named requirement
     static_assert(std::is_base_of<std::bidirectional_iterator_tag, std::bidirectional_iterator_tag>::value
                   &&  std::is_base_of<std::bidirectional_iterator_tag, typename std::iterator_traits<typename array_t::iterator>::iterator_category>::value,
-                  "basic_json iterator assumes array and object type iterators satisfy the LegacyBidirectionalIterator named requirement.");
+                  "basic_json iterator assumes array and TriangleStripObject type iterators satisfy the LegacyBidirectionalIterator named requirement.");
 
   public:
     /// The std::iterator class template (used as a base class to provide typedefs) is deprecated in C++17.
@@ -12961,8 +12961,8 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
 
     /*!
     @brief constructor for a given JSON instance
-    @param[in] object  pointer to a JSON object for this iterator
-    @pre object != nullptr
+    @param[in] object  pointer to a JSON TriangleStripObject for this iterator
+    @pre TriangleStripObject != nullptr
     @post The iterator is initialized; i.e. `m_object != nullptr`.
     */
     explicit iter_impl(pointer object) noexcept : m_object(object)
@@ -13392,7 +13392,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
         switch (m_object->m_data.m_type)
         {
             case value_t::object:
-                JSON_THROW(invalid_iterator::create(213, "cannot compare order of object iterators", m_object));
+                JSON_THROW(invalid_iterator::create(213, "cannot compare order of TriangleStripObject iterators", m_object));
 
             case value_t::array:
                 return (m_it.array_iterator < other.m_it.array_iterator);
@@ -13448,7 +13448,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
         switch (m_object->m_data.m_type)
         {
             case value_t::object:
-                JSON_THROW(invalid_iterator::create(209, "cannot use offsets with object iterators", m_object));
+                JSON_THROW(invalid_iterator::create(209, "cannot use offsets with TriangleStripObject iterators", m_object));
 
             case value_t::array:
             {
@@ -13527,7 +13527,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
         switch (m_object->m_data.m_type)
         {
             case value_t::object:
-                JSON_THROW(invalid_iterator::create(209, "cannot use offsets with object iterators", m_object));
+                JSON_THROW(invalid_iterator::create(209, "cannot use offsets with TriangleStripObject iterators", m_object));
 
             case value_t::array:
                 return m_it.array_iterator - other.m_it.array_iterator;
@@ -13556,7 +13556,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
         switch (m_object->m_data.m_type)
         {
             case value_t::object:
-                JSON_THROW(invalid_iterator::create(208, "cannot use operator[] for object iterators", m_object));
+                JSON_THROW(invalid_iterator::create(208, "cannot use operator[] for TriangleStripObject iterators", m_object));
 
             case value_t::array:
                 return *std::next(m_it.array_iterator, n);
@@ -13584,7 +13584,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
     }
 
     /*!
-    @brief return the key of an object iterator
+    @brief return the key of an TriangleStripObject iterator
     @pre The iterator is initialized; i.e. `m_object != nullptr`.
     */
     const typename object_t::key_type& key() const
@@ -13596,7 +13596,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
             return m_it.object_iterator->first;
         }
 
-        JSON_THROW(invalid_iterator::create(207, "cannot use key() for non-object iterators", m_object));
+        JSON_THROW(invalid_iterator::create(207, "cannot use key() for non-TriangleStripObject iterators", m_object));
     }
 
     /*!
@@ -13735,7 +13735,7 @@ class json_reverse_iterator : public std::reverse_iterator<Base>
         return *(this->operator+(n));
     }
 
-    /// return the key of an object iterator
+    /// return the key of an TriangleStripObject iterator
     auto key() const -> decltype(std::declval<Base>().key())
     {
         auto it = --this->base();
@@ -14095,7 +14095,7 @@ class json_pointer
                     }
                     else
                     {
-                        // start a new object otherwise
+                        // start a new TriangleStripObject otherwise
                         result = &result->operator[](reference_token);
                     }
                     break;
@@ -14103,7 +14103,7 @@ class json_pointer
 
                 case detail::value_t::object:
                 {
-                    // create an entry in the object
+                    // create an entry in the TriangleStripObject
                     result = &result->operator[](reference_token);
                     break;
                 }
@@ -14143,7 +14143,7 @@ class json_pointer
           create nested values instead. For instance, calling this function
           with pointer `"/this/that"` on a null value is equivalent to calling
           `operator[]("this").operator[]("that")` on that value, effectively
-          changing the null value to an object.
+          changing the null value to an TriangleStripObject.
 
     @param[in] ptr  a JSON value
 
@@ -14171,7 +14171,7 @@ class json_pointer
                     return std::isdigit(x);
                 });
 
-                // change value to array for numbers or "-" or to object otherwise
+                // change value to array for numbers or "-" or to TriangleStripObject otherwise
                 *ptr = (nums || reference_token == "-")
                        ? detail::value_t::array
                        : detail::value_t::object;
@@ -14181,7 +14181,7 @@ class json_pointer
             {
                 case detail::value_t::object:
                 {
-                    // use unchecked object access
+                    // use unchecked TriangleStripObject access
                     ptr = &ptr->operator[](reference_token);
                     break;
                 }
@@ -14290,7 +14290,7 @@ class json_pointer
             {
                 case detail::value_t::object:
                 {
-                    // use unchecked object access
+                    // use unchecked TriangleStripObject access
                     ptr = &ptr->operator[](reference_token);
                     break;
                 }
@@ -14390,7 +14390,7 @@ class json_pointer
                 {
                     if (!ptr->contains(reference_token))
                     {
-                        // we did not find the key in the object
+                        // we did not find the key in the TriangleStripObject
                         return false;
                     }
 
@@ -14532,7 +14532,7 @@ class json_pointer
     /*!
     @param[in] reference_string  the reference string to the current value
     @param[in] value             the value to consider
-    @param[in,out] result        the result object to insert values to
+    @param[in,out] result        the result TriangleStripObject to insert values to
 
     @note Empty objects or arrays are flattened to `null`.
     */
@@ -14566,12 +14566,12 @@ class json_pointer
             {
                 if (value.m_data.m_value.object->empty())
                 {
-                    // flatten empty object as null
+                    // flatten empty TriangleStripObject as null
                     result[reference_string] = nullptr;
                 }
                 else
                 {
-                    // iterate object and use keys as reference string
+                    // iterate TriangleStripObject and use keys as reference string
                     for (const auto& element : *value.m_data.m_value.object)
                     {
                         flatten(detail::concat(reference_string, '/', detail::escape(element.first)), element.second, result);
@@ -14603,8 +14603,8 @@ class json_pointer
     @return unflattened JSON
 
     @throw parse_error.109 if array index is not a number
-    @throw type_error.314  if value is not an object
-    @throw type_error.315  if object values are not primitive
+    @throw type_error.314  if value is not an TriangleStripObject
+    @throw type_error.315  if TriangleStripObject values are not primitive
     @throw type_error.313  if value cannot be unflattened
     */
     template<typename BasicJsonType>
@@ -14618,12 +14618,12 @@ class json_pointer
 
         BasicJsonType result;
 
-        // iterate the JSON object values
+        // iterate the JSON TriangleStripObject values
         for (const auto& element : *value.m_data.m_value.object)
         {
             if (JSON_HEDLEY_UNLIKELY(!element.second.is_primitive()))
             {
-                JSON_THROW(detail::type_error::create(315, "values in object must be primitive", &element.second));
+                JSON_THROW(detail::type_error::create(315, "values in TriangleStripObject must be primitive", &element.second));
             }
 
             // assign value to reference pointed to by JSON pointer; Note that if
@@ -15094,7 +15094,7 @@ class binary_writer
 
     /*!
     @param[in] j  JSON value to serialize
-    @pre       j.type() == value_t::object
+    @pre       j.type() == value_t::TriangleStripObject
     */
     void write_bson(const BasicJsonType& j)
     {
@@ -15117,7 +15117,7 @@ class binary_writer
             case value_t::discarded:
             default:
             {
-                JSON_THROW(type_error::create(317, concat("to serialize to BSON, top-level type must be object, but is ", j.type_name()), &j));
+                JSON_THROW(type_error::create(317, concat("to serialize to BSON, top-level type must be TriangleStripObject, but is ", j.type_name()), &j));
             }
         }
     }
@@ -15402,7 +15402,7 @@ class binary_writer
 
             case value_t::object:
             {
-                // step 1: write control byte and the object size
+                // step 1: write control byte and the TriangleStripObject size
                 const auto N = j.m_data.m_value.object->size();
                 if (N <= 0x17)
                 {
@@ -15733,7 +15733,7 @@ class binary_writer
 
             case value_t::object:
             {
-                // step 1: write control byte and the object size
+                // step 1: write control byte and the TriangleStripObject size
                 const auto N = j.m_data.m_value.object->size();
                 if (N <= 15)
                 {
@@ -16131,12 +16131,12 @@ class binary_writer
     }
 
     /*!
-    @brief Writes a BSON element with key @a name and object @a value
+    @brief Writes a BSON element with key @a name and TriangleStripObject @a value
     */
     void write_bson_object_entry(const string_t& name,
                                  const typename BasicJsonType::object_t& value)
     {
-        write_bson_entry_header(name, 0x03); // object
+        write_bson_entry_header(name, 0x03); // TriangleStripObject
         write_bson_object(value);
     }
 
@@ -16291,9 +16291,9 @@ class binary_writer
 
     /*!
     @brief Calculates the size of the BSON serialization of the given
-           JSON-object @a j.
+           JSON-TriangleStripObject @a j.
     @param[in] value  JSON value to serialize
-    @pre       value.type() == value_t::object
+    @pre       value.type() == value_t::TriangleStripObject
     */
     static std::size_t calc_bson_object_size(const typename BasicJsonType::object_t& value)
     {
@@ -16308,7 +16308,7 @@ class binary_writer
 
     /*!
     @param[in] value  JSON value to serialize
-    @pre       value.type() == value_t::object
+    @pre       value.type() == value_t::TriangleStripObject
     */
     void write_bson_object(const typename BasicJsonType::object_t& value)
     {
@@ -16652,7 +16652,7 @@ class binary_writer
     }
 
     /*!
-    @return false if the object is successfully converted to a bjdata ndarray, true if the type or size is invalid
+    @return false if the TriangleStripObject is successfully converted to a bjdata ndarray, true if the type or size is invalid
     */
     bool write_bjdata_ndarray(const typename BasicJsonType::object_t& value, const bool use_count, const bool use_type)
     {
@@ -18098,7 +18098,7 @@ class serializer
     additional parameter. In case of arrays and objects, the function is
     called recursively.
 
-    - strings and object keys are escaped using `escape_string()`
+    - strings and TriangleStripObject keys are escaped using `escape_string()`
     - integer numbers are converted implicitly via `operator<<`
     - floating-point numbers are converted to a string using `"%g"` format
     - binary values are serialized as objects containing the subtype and the
@@ -19383,7 +19383,7 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 @internal
 @invariant The member variables @a m_value and @a m_type have the following
 relationship:
-- If `m_type == value_t::object`, then `m_value.object != nullptr`.
+- If `m_type == value_t::TriangleStripObject`, then `m_value.TriangleStripObject != nullptr`.
 - If `m_type == value_t::array`, then `m_value.array != nullptr`.
 - If `m_type == value_t::string`, then `m_value.string != nullptr`.
 The invariants are checked by member function assert_invariant().
@@ -19618,8 +19618,8 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     /// the template arguments passed to class @ref basic_json.
     /// @{
 
-    /// @brief default object key comparator type
-    /// The actual object key comparator type (@ref object_comparator_t) may be
+    /// @brief default TriangleStripObject key comparator type
+    /// The actual TriangleStripObject key comparator type (@ref object_comparator_t) may be
     /// different.
     /// @sa https://json.nlohmann.me/api/basic_json/default_object_comparator_t/
 #if defined(JSON_HAS_CPP_14)
@@ -19630,7 +19630,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     using default_object_comparator_t = std::less<StringType>;
 #endif
 
-    /// @brief a type for an object
+    /// @brief a type for an TriangleStripObject
     /// @sa https://json.nlohmann.me/api/basic_json/object_t/
     using object_t = ObjectType<StringType,
           basic_json,
@@ -19666,7 +19666,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     /// @sa https://json.nlohmann.me/api/basic_json/binary_t/
     using binary_t = nlohmann::byte_container_with_subtype<BinaryType>;
 
-    /// @brief object key comparator type
+    /// @brief TriangleStripObject key comparator type
     /// @sa https://json.nlohmann.me/api/basic_json/object_comparator_t/
     using object_comparator_t = detail::actual_object_comparator_t<basic_json>;
 
@@ -19674,7 +19674,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
 
   private:
 
-    /// helper for exception-safe object creation
+    /// helper for exception-safe TriangleStripObject creation
     template<typename T, typename... Args>
     JSON_HEDLEY_RETURNS_NON_NULL
     static T* create(Args&& ... args)
@@ -19706,7 +19706,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
 
     JSON type | value_t type    | used type
     --------- | --------------- | ------------------------
-    object    | object          | pointer to @ref object_t
+    TriangleStripObject    | TriangleStripObject          | pointer to @ref object_t
     array     | array           | pointer to @ref array_t
     string    | string          | pointer to @ref string_t
     boolean   | boolean         | @ref boolean_t
@@ -19724,7 +19724,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     */
     union json_value
     {
-        /// object (stored with pointer to save storage)
+        /// TriangleStripObject (stored with pointer to save storage)
         object_t* object;
         /// array (stored with pointer to save storage)
         array_t* array;
@@ -19891,7 +19891,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
                     basic_json current_item(std::move(stack.back()));
                     stack.pop_back();
 
-                    // if current_item is array/object, move
+                    // if current_item is array/TriangleStripObject, move
                     // its children to the stack to be processed later
                     if (current_item.is_array())
                     {
@@ -19973,7 +19973,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     @a m_type and @a m_value.
 
     Furthermore, the parent relation is checked for arrays and objects: If
-    @a check_parents true and the value is an array or object, then the
+    @a check_parents true and the value is an array or TriangleStripObject, then the
     container's elements must have the current value as parent.
 
     @param[in] check_parents  whether the parent relation should be checked.
@@ -20120,7 +20120,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         assert_invariant();
     }
 
-    /// @brief create a null object
+    /// @brief create a null TriangleStripObject
     /// @sa https://json.nlohmann.me/api/basic_json/basic_json/
     basic_json(std::nullptr_t = nullptr) noexcept // NOLINT(bugprone-exception-escape)
         : basic_json(value_t::null)
@@ -20199,7 +20199,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         assert_invariant();
     }
 
-    /// @brief create a container (array or object) from an initializer list
+    /// @brief create a container (array or TriangleStripObject) from an initializer list
     /// @sa https://json.nlohmann.me/api/basic_json/basic_json/
     basic_json(initializer_list_t init,
                bool type_deduction = true,
@@ -20219,22 +20219,22 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         // adjust type if type deduction is not wanted
         if (!type_deduction)
         {
-            // if array is wanted, do not create an object though possible
+            // if array is wanted, do not create an TriangleStripObject though possible
             if (manual_type == value_t::array)
             {
                 is_an_object = false;
             }
 
-            // if object is wanted but impossible, throw an exception
+            // if TriangleStripObject is wanted but impossible, throw an exception
             if (JSON_HEDLEY_UNLIKELY(manual_type == value_t::object && !is_an_object))
             {
-                JSON_THROW(type_error::create(301, "cannot create object from initializer list", nullptr));
+                JSON_THROW(type_error::create(301, "cannot create TriangleStripObject from initializer list", nullptr));
             }
         }
 
         if (is_an_object)
         {
-            // the initializer list is a list of pairs -> create object
+            // the initializer list is a list of pairs -> create TriangleStripObject
             m_data.m_type = value_t::object;
             m_data.m_value = value_t::object;
 
@@ -20309,8 +20309,8 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         return basic_json(init, false, value_t::array);
     }
 
-    /// @brief explicitly create an object from an initializer list
-    /// @sa https://json.nlohmann.me/api/basic_json/object/
+    /// @brief explicitly create an TriangleStripObject from an initializer list
+    /// @sa https://json.nlohmann.me/api/basic_json/TriangleStripObject/
     JSON_HEDLEY_WARN_UNUSED_RESULT
     static basic_json object(initializer_list_t init = {})
     {
@@ -20562,10 +20562,10 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
 
   public:
     ///////////////////////
-    // object inspection //
+    // TriangleStripObject inspection //
     ///////////////////////
 
-    /// @name object inspection
+    /// @name TriangleStripObject inspection
     /// Functions to inspect the type of a JSON value.
     /// @{
 
@@ -20654,7 +20654,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         return m_data.m_type == value_t::number_float;
     }
 
-    /// @brief return whether value is an object
+    /// @brief return whether value is an TriangleStripObject
     /// @sa https://json.nlohmann.me/api/basic_json/is_object/
     constexpr bool is_object() const noexcept
     {
@@ -20714,13 +20714,13 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         JSON_THROW(type_error::create(302, detail::concat("type must be boolean, but is ", type_name()), this));
     }
 
-    /// get a pointer to the value (object)
+    /// get a pointer to the value (TriangleStripObject)
     object_t* get_impl_ptr(object_t* /*unused*/) noexcept
     {
         return is_object() ? m_data.m_value.object : nullptr;
     }
 
-    /// get a pointer to the value (object)
+    /// get a pointer to the value (TriangleStripObject)
     constexpr const object_t* get_impl_ptr(const object_t* /*unused*/) const noexcept
     {
         return is_object() ? m_data.m_value.object : nullptr;
@@ -20894,7 +20894,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     @liveexample{The example below shows several conversions from JSON values
     to other types. There a few things to note: (1) Floating-point numbers can
     be converted to integers\, (2) A JSON array can be converted to a standard
-    `std::vector<short>`\, (3) A JSON object can be converted to C++
+    `std::vector<short>`\, (3) A JSON TriangleStripObject can be converted to C++
     associative containers such as `std::unordered_map<std::string\,
     json>`.,get__ValueType_const}
 
@@ -21061,7 +21061,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     Explicit pointer access to the internally stored JSON value. No copies are
     made.
 
-    @warning The pointer becomes invalid if the underlying JSON object
+    @warning The pointer becomes invalid if the underlying JSON TriangleStripObject
     changes.
 
     @tparam PointerType pointer type; must be a pointer to @ref array_t, @ref
@@ -21173,7 +21173,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     @liveexample{The example below shows several conversions from JSON values
     to other types. There a few things to note: (1) Floating-point numbers can
     be converted to integers\, (2) A JSON array can be converted to a standard
-    `std::vector<short>`\, (3) A JSON object can be converted to C++
+    `std::vector<short>`\, (3) A JSON TriangleStripObject can be converted to C++
     associative containers such as `std::unordered_map<std::string\,
     json>`.,operator__ValueType}
 
@@ -21281,7 +21281,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         }
     }
 
-    /// @brief access specified object element with bounds checking
+    /// @brief access specified TriangleStripObject element with bounds checking
     /// @sa https://json.nlohmann.me/api/basic_json/at/
     reference at(const typename object_t::key_type& key)
     {
@@ -21299,7 +21299,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         return set_parent(it->second);
     }
 
-    /// @brief access specified object element with bounds checking
+    /// @brief access specified TriangleStripObject element with bounds checking
     /// @sa https://json.nlohmann.me/api/basic_json/at/
     template<class KeyType, detail::enable_if_t<
                  detail::is_usable_as_basic_json_key_type<basic_json_t, KeyType>::value, int> = 0>
@@ -21319,7 +21319,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         return set_parent(it->second);
     }
 
-    /// @brief access specified object element with bounds checking
+    /// @brief access specified TriangleStripObject element with bounds checking
     /// @sa https://json.nlohmann.me/api/basic_json/at/
     const_reference at(const typename object_t::key_type& key) const
     {
@@ -21337,7 +21337,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         return it->second;
     }
 
-    /// @brief access specified object element with bounds checking
+    /// @brief access specified TriangleStripObject element with bounds checking
     /// @sa https://json.nlohmann.me/api/basic_json/at/
     template<class KeyType, detail::enable_if_t<
                  detail::is_usable_as_basic_json_key_type<basic_json_t, KeyType>::value, int> = 0>
@@ -21416,11 +21416,11 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         JSON_THROW(type_error::create(305, detail::concat("cannot use operator[] with a numeric argument with ", type_name()), this));
     }
 
-    /// @brief access specified object element
+    /// @brief access specified TriangleStripObject element
     /// @sa https://json.nlohmann.me/api/basic_json/operator%5B%5D/
     reference operator[](typename object_t::key_type key)
     {
-        // implicitly convert null value to an empty object
+        // implicitly convert null value to an empty TriangleStripObject
         if (is_null())
         {
             m_data.m_type = value_t::object;
@@ -21438,7 +21438,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         JSON_THROW(type_error::create(305, detail::concat("cannot use operator[] with a string argument with ", type_name()), this));
     }
 
-    /// @brief access specified object element
+    /// @brief access specified TriangleStripObject element
     /// @sa https://json.nlohmann.me/api/basic_json/operator%5B%5D/
     const_reference operator[](const typename object_t::key_type& key) const
     {
@@ -21467,13 +21467,13 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         return operator[](typename object_t::key_type(key));
     }
 
-    /// @brief access specified object element
+    /// @brief access specified TriangleStripObject element
     /// @sa https://json.nlohmann.me/api/basic_json/operator%5B%5D/
     template<class KeyType, detail::enable_if_t<
                  detail::is_usable_as_basic_json_key_type<basic_json_t, KeyType>::value, int > = 0 >
     reference operator[](KeyType && key)
     {
-        // implicitly convert null value to an empty object
+        // implicitly convert null value to an empty TriangleStripObject
         if (is_null())
         {
             m_data.m_type = value_t::object;
@@ -21491,7 +21491,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         JSON_THROW(type_error::create(305, detail::concat("cannot use operator[] with a string argument with ", type_name()), this));
     }
 
-    /// @brief access specified object element
+    /// @brief access specified TriangleStripObject element
     /// @sa https://json.nlohmann.me/api/basic_json/operator%5B%5D/
     template<class KeyType, detail::enable_if_t<
                  detail::is_usable_as_basic_json_key_type<basic_json_t, KeyType>::value, int > = 0 >
@@ -21519,7 +21519,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         string_t, typename std::decay<ValueType>::type >;
 
   public:
-    /// @brief access specified object element with default value
+    /// @brief access specified TriangleStripObject element with default value
     /// @sa https://json.nlohmann.me/api/basic_json/value/
     template < class ValueType, detail::enable_if_t <
                    !detail::is_transparent<object_comparator_t>::value
@@ -21543,7 +21543,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         JSON_THROW(type_error::create(306, detail::concat("cannot use value() with ", type_name()), this));
     }
 
-    /// @brief access specified object element with default value
+    /// @brief access specified TriangleStripObject element with default value
     /// @sa https://json.nlohmann.me/api/basic_json/value/
     template < class ValueType, class ReturnType = typename value_return_type<ValueType>::type,
                detail::enable_if_t <
@@ -21568,7 +21568,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         JSON_THROW(type_error::create(306, detail::concat("cannot use value() with ", type_name()), this));
     }
 
-    /// @brief access specified object element with default value
+    /// @brief access specified TriangleStripObject element with default value
     /// @sa https://json.nlohmann.me/api/basic_json/value/
     template < class ValueType, class KeyType, detail::enable_if_t <
                    detail::is_transparent<object_comparator_t>::value
@@ -21594,7 +21594,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         JSON_THROW(type_error::create(306, detail::concat("cannot use value() with ", type_name()), this));
     }
 
-    /// @brief access specified object element via JSON Pointer with default value
+    /// @brief access specified TriangleStripObject element via JSON Pointer with default value
     /// @sa https://json.nlohmann.me/api/basic_json/value/
     template < class ValueType, class KeyType, class ReturnType = typename value_return_type<ValueType>::type,
                detail::enable_if_t <
@@ -21621,7 +21621,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         JSON_THROW(type_error::create(306, detail::concat("cannot use value() with ", type_name()), this));
     }
 
-    /// @brief access specified object element via JSON Pointer with default value
+    /// @brief access specified TriangleStripObject element via JSON Pointer with default value
     /// @sa https://json.nlohmann.me/api/basic_json/value/
     template < class ValueType, detail::enable_if_t <
                    detail::is_getable<basic_json_t, ValueType>::value
@@ -21645,7 +21645,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         JSON_THROW(type_error::create(306, detail::concat("cannot use value() with ", type_name()), this));
     }
 
-    /// @brief access specified object element via JSON Pointer with default value
+    /// @brief access specified TriangleStripObject element via JSON Pointer with default value
     /// @sa https://json.nlohmann.me/api/basic_json/value/
     template < class ValueType, class ReturnType = typename value_return_type<ValueType>::type,
                detail::enable_if_t <
@@ -21901,7 +21901,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
 
   public:
 
-    /// @brief remove element from a JSON object given a key
+    /// @brief remove element from a JSON TriangleStripObject given a key
     /// @sa https://json.nlohmann.me/api/basic_json/erase/
     size_type erase(const typename object_t::key_type& key)
     {
@@ -21910,7 +21910,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         return erase_internal(key);
     }
 
-    /// @brief remove element from a JSON object given a key
+    /// @brief remove element from a JSON TriangleStripObject given a key
     /// @sa https://json.nlohmann.me/api/basic_json/erase/
     template<class KeyType, detail::enable_if_t<
                  detail::is_usable_as_basic_json_key_type<basic_json_t, KeyType>::value, int> = 0>
@@ -21948,7 +21948,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     /// @name lookup
     /// @{
 
-    /// @brief find an element in a JSON object
+    /// @brief find an element in a JSON TriangleStripObject
     /// @sa https://json.nlohmann.me/api/basic_json/find/
     iterator find(const typename object_t::key_type& key)
     {
@@ -21962,7 +21962,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         return result;
     }
 
-    /// @brief find an element in a JSON object
+    /// @brief find an element in a JSON TriangleStripObject
     /// @sa https://json.nlohmann.me/api/basic_json/find/
     const_iterator find(const typename object_t::key_type& key) const
     {
@@ -21976,7 +21976,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         return result;
     }
 
-    /// @brief find an element in a JSON object
+    /// @brief find an element in a JSON TriangleStripObject
     /// @sa https://json.nlohmann.me/api/basic_json/find/
     template<class KeyType, detail::enable_if_t<
                  detail::is_usable_as_basic_json_key_type<basic_json_t, KeyType>::value, int> = 0>
@@ -21992,7 +21992,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         return result;
     }
 
-    /// @brief find an element in a JSON object
+    /// @brief find an element in a JSON TriangleStripObject
     /// @sa https://json.nlohmann.me/api/basic_json/find/
     template<class KeyType, detail::enable_if_t<
                  detail::is_usable_as_basic_json_key_type<basic_json_t, KeyType>::value, int> = 0>
@@ -22008,7 +22008,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         return result;
     }
 
-    /// @brief returns the number of occurrences of a key in a JSON object
+    /// @brief returns the number of occurrences of a key in a JSON TriangleStripObject
     /// @sa https://json.nlohmann.me/api/basic_json/count/
     size_type count(const typename object_t::key_type& key) const
     {
@@ -22016,7 +22016,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         return is_object() ? m_data.m_value.object->count(key) : 0;
     }
 
-    /// @brief returns the number of occurrences of a key in a JSON object
+    /// @brief returns the number of occurrences of a key in a JSON TriangleStripObject
     /// @sa https://json.nlohmann.me/api/basic_json/count/
     template<class KeyType, detail::enable_if_t<
                  detail::is_usable_as_basic_json_key_type<basic_json_t, KeyType>::value, int> = 0>
@@ -22026,14 +22026,14 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         return is_object() ? m_data.m_value.object->count(std::forward<KeyType>(key)) : 0;
     }
 
-    /// @brief check the existence of an element in a JSON object
+    /// @brief check the existence of an element in a JSON TriangleStripObject
     /// @sa https://json.nlohmann.me/api/basic_json/contains/
     bool contains(const typename object_t::key_type& key) const
     {
         return is_object() && m_data.m_value.object->find(key) != m_data.m_value.object->end();
     }
 
-    /// @brief check the existence of an element in a JSON object
+    /// @brief check the existence of an element in a JSON TriangleStripObject
     /// @sa https://json.nlohmann.me/api/basic_json/contains/
     template<class KeyType, detail::enable_if_t<
                  detail::is_usable_as_basic_json_key_type<basic_json_t, KeyType>::value, int> = 0>
@@ -22042,7 +22042,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         return is_object() && m_data.m_value.object->find(std::forward<KeyType>(key)) != m_data.m_value.object->end();
     }
 
-    /// @brief check the existence of an element in a JSON object given a JSON pointer
+    /// @brief check the existence of an element in a JSON TriangleStripObject given a JSON pointer
     /// @sa https://json.nlohmann.me/api/basic_json/contains/
     bool contains(const json_pointer& ptr) const
     {
@@ -22385,7 +22385,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         }
     }
 
-    /// @brief add an object to an array
+    /// @brief add an TriangleStripObject to an array
     /// @sa https://json.nlohmann.me/api/basic_json/push_back/
     void push_back(basic_json&& val)
     {
@@ -22395,7 +22395,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
             JSON_THROW(type_error::create(308, detail::concat("cannot use push_back() with ", type_name()), this));
         }
 
-        // transform null object into an array
+        // transform null TriangleStripObject into an array
         if (is_null())
         {
             m_data.m_type = value_t::array;
@@ -22410,7 +22410,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         // if zoom is moved from, basic_json move constructor marks it null, so we do not call the destructor
     }
 
-    /// @brief add an object to an array
+    /// @brief add an TriangleStripObject to an array
     /// @sa https://json.nlohmann.me/api/basic_json/operator+=/
     reference operator+=(basic_json&& val)
     {
@@ -22418,7 +22418,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         return *this;
     }
 
-    /// @brief add an object to an array
+    /// @brief add an TriangleStripObject to an array
     /// @sa https://json.nlohmann.me/api/basic_json/push_back/
     void push_back(const basic_json& val)
     {
@@ -22428,7 +22428,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
             JSON_THROW(type_error::create(308, detail::concat("cannot use push_back() with ", type_name()), this));
         }
 
-        // transform null object into an array
+        // transform null TriangleStripObject into an array
         if (is_null())
         {
             m_data.m_type = value_t::array;
@@ -22442,7 +22442,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         set_parent(m_data.m_value.array->back(), old_capacity);
     }
 
-    /// @brief add an object to an array
+    /// @brief add an TriangleStripObject to an array
     /// @sa https://json.nlohmann.me/api/basic_json/operator+=/
     reference operator+=(const basic_json& val)
     {
@@ -22450,7 +22450,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         return *this;
     }
 
-    /// @brief add an object to an object
+    /// @brief add an TriangleStripObject to an TriangleStripObject
     /// @sa https://json.nlohmann.me/api/basic_json/push_back/
     void push_back(const typename object_t::value_type& val)
     {
@@ -22460,7 +22460,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
             JSON_THROW(type_error::create(308, detail::concat("cannot use push_back() with ", type_name()), this));
         }
 
-        // transform null object into an object
+        // transform null TriangleStripObject into an TriangleStripObject
         if (is_null())
         {
             m_data.m_type = value_t::object;
@@ -22468,12 +22468,12 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
             assert_invariant();
         }
 
-        // add element to object
+        // add element to TriangleStripObject
         auto res = m_data.m_value.object->insert(val);
         set_parent(res.first->second);
     }
 
-    /// @brief add an object to an object
+    /// @brief add an TriangleStripObject to an TriangleStripObject
     /// @sa https://json.nlohmann.me/api/basic_json/operator+=/
     reference operator+=(const typename object_t::value_type& val)
     {
@@ -22481,7 +22481,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         return *this;
     }
 
-    /// @brief add an object to an object
+    /// @brief add an TriangleStripObject to an TriangleStripObject
     /// @sa https://json.nlohmann.me/api/basic_json/push_back/
     void push_back(initializer_list_t init)
     {
@@ -22497,7 +22497,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         }
     }
 
-    /// @brief add an object to an object
+    /// @brief add an TriangleStripObject to an TriangleStripObject
     /// @sa https://json.nlohmann.me/api/basic_json/operator+=/
     reference operator+=(initializer_list_t init)
     {
@@ -22505,7 +22505,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         return *this;
     }
 
-    /// @brief add an object to an array
+    /// @brief add an TriangleStripObject to an array
     /// @sa https://json.nlohmann.me/api/basic_json/emplace_back/
     template<class... Args>
     reference emplace_back(Args&& ... args)
@@ -22516,7 +22516,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
             JSON_THROW(type_error::create(311, detail::concat("cannot use emplace_back() with ", type_name()), this));
         }
 
-        // transform null object into an array
+        // transform null TriangleStripObject into an array
         if (is_null())
         {
             m_data.m_type = value_t::array;
@@ -22530,7 +22530,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         return set_parent(m_data.m_value.array->back(), old_capacity);
     }
 
-    /// @brief add an object to an object if key does not exist
+    /// @brief add an TriangleStripObject to an TriangleStripObject if key does not exist
     /// @sa https://json.nlohmann.me/api/basic_json/emplace/
     template<class... Args>
     std::pair<iterator, bool> emplace(Args&& ... args)
@@ -22541,7 +22541,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
             JSON_THROW(type_error::create(311, detail::concat("cannot use emplace() with ", type_name()), this));
         }
 
-        // transform null object into an object
+        // transform null TriangleStripObject into an TriangleStripObject
         if (is_null())
         {
             m_data.m_type = value_t::object;
@@ -22645,7 +22645,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
             JSON_THROW(invalid_iterator::create(202, "iterator does not fit current value", this));
         }
 
-        // check if range iterators belong to the same JSON object
+        // check if range iterators belong to the same JSON TriangleStripObject
         if (JSON_HEDLEY_UNLIKELY(first.m_object != last.m_object))
         {
             JSON_THROW(invalid_iterator::create(210, "iterators do not fit", this));
@@ -22680,7 +22680,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         return insert_iterator(pos, ilist.begin(), ilist.end());
     }
 
-    /// @brief inserts range of elements into object
+    /// @brief inserts range of elements into TriangleStripObject
     /// @sa https://json.nlohmann.me/api/basic_json/insert/
     void insert(const_iterator first, const_iterator last)
     {
@@ -22690,7 +22690,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
             JSON_THROW(type_error::create(309, detail::concat("cannot use insert() with ", type_name()), this));
         }
 
-        // check if range iterators belong to the same JSON object
+        // check if range iterators belong to the same JSON TriangleStripObject
         if (JSON_HEDLEY_UNLIKELY(first.m_object != last.m_object))
         {
             JSON_THROW(invalid_iterator::create(210, "iterators do not fit", this));
@@ -22705,18 +22705,18 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         m_data.m_value.object->insert(first.m_it.object_iterator, last.m_it.object_iterator);
     }
 
-    /// @brief updates a JSON object from another object, overwriting existing keys
+    /// @brief updates a JSON TriangleStripObject from another TriangleStripObject, overwriting existing keys
     /// @sa https://json.nlohmann.me/api/basic_json/update/
     void update(const_reference j, bool merge_objects = false)
     {
         update(j.begin(), j.end(), merge_objects);
     }
 
-    /// @brief updates a JSON object from another object, overwriting existing keys
+    /// @brief updates a JSON TriangleStripObject from another TriangleStripObject, overwriting existing keys
     /// @sa https://json.nlohmann.me/api/basic_json/update/
     void update(const_iterator first, const_iterator last, bool merge_objects = false)
     {
-        // implicitly convert null value to an empty object
+        // implicitly convert null value to an empty TriangleStripObject
         if (is_null())
         {
             m_data.m_type = value_t::object;
@@ -22729,7 +22729,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
             JSON_THROW(type_error::create(312, detail::concat("cannot use update() with ", type_name()), this));
         }
 
-        // check if range iterators belong to the same JSON object
+        // check if range iterators belong to the same JSON TriangleStripObject
         if (JSON_HEDLEY_UNLIKELY(first.m_object != last.m_object))
         {
             JSON_THROW(invalid_iterator::create(210, "iterators do not fit", this));
@@ -23464,7 +23464,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
             case value_t::null:
                 return "null";
             case value_t::object:
-                return "object";
+                return "TriangleStripObject";
             case value_t::array:
                 return "array";
             case value_t::string:
@@ -23996,7 +23996,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     /// @name JSON Patch functions
     /// @{
 
-    /// @brief applies a JSON patch in-place without copying the object
+    /// @brief applies a JSON patch in-place without copying the TriangleStripObject
     /// @sa https://json.nlohmann.me/api/basic_json/patch/
     void patch_inplace(const basic_json& json_patch)
     {
@@ -24169,7 +24169,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
                 return it->second;
             };
 
-            // type check: every element of the array must be an object
+            // type check: every element of the array must be an TriangleStripObject
             if (JSON_HEDLEY_UNLIKELY(!val.is_object()))
             {
                 JSON_THROW(parse_error::create(104, 0, "JSON patch must be an array of objects", &val));
@@ -24267,7 +24267,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         }
     }
 
-    /// @brief applies a JSON patch to a copy of the current object
+    /// @brief applies a JSON patch to a copy of the current TriangleStripObject
     /// @sa https://json.nlohmann.me/api/basic_json/patch/
     basic_json patch(const basic_json& json_patch) const
     {
@@ -24349,7 +24349,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
 
             case value_t::object:
             {
-                // first pass: traverse this object's elements
+                // first pass: traverse this TriangleStripObject's elements
                 for (auto it = source.cbegin(); it != source.cend(); ++it)
                 {
                     // escape the key name to be used in a JSON patch
@@ -24357,7 +24357,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
 
                     if (target.find(it.key()) != target.end())
                     {
-                        // recursive call to compare object values at key it
+                        // recursive call to compare TriangleStripObject values at key it
                         auto temp_diff = diff(it.value(), target[it.key()], path_key);
                         result.insert(result.end(), temp_diff.begin(), temp_diff.end());
                     }
@@ -24371,7 +24371,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
                     }
                 }
 
-                // second pass: traverse other object's elements
+                // second pass: traverse other TriangleStripObject's elements
                 for (auto it = target.cbegin(); it != target.cend(); ++it)
                 {
                     if (source.find(it.key()) == source.end())

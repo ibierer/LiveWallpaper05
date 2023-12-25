@@ -167,7 +167,7 @@ using json = basic_json<>;
 template<class Key, class T, class IgnoredLess, class Allocator>
 struct ordered_map;
 
-/// @brief specialization that maintains the insertion order of object keys
+/// @brief specialization that maintains the insertion order of TriangleStripObject keys
 /// @sa https://json.nlohmann.me/api/ordered_json/
 using ordered_json = basic_json<nlohmann::ordered_map>;
 
