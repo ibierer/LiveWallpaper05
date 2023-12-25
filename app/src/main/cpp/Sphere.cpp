@@ -8,9 +8,9 @@ Sphere::Sphere(const float& radius, const int& resolution) {
     const double twoPi = 2.0 * M_PI;
     const int horizontalSegments = resolution;
     const int verticalSegments = 2 * horizontalSegments;
-    float theta;
-    float phi;
-    float sineOfPhi;
+    double theta;
+    double phi;
+    double sineOfPhi;
 
     vertices = (VertexNormal*)malloc(2 * horizontalSegments * (verticalSegments + 1) * sizeof(VertexNormal));
     numVertices = 0;
@@ -18,10 +18,10 @@ Sphere::Sphere(const float& radius, const int& resolution) {
     for(int i = 0; i < horizontalSegments; i++) {
         for (int j = 0; j <= verticalSegments; j++) {
             theta = twoPi * j / verticalSegments;
-            sineOfPhi = sinf(phi = twoPi * i / verticalSegments);
-            vertices[numVertices++].v = vec3(sineOfPhi * cosf(theta), sineOfPhi * sinf(theta), cosf(phi));
-            sineOfPhi = sinf(phi = twoPi * (i + 1) / verticalSegments);
-            vertices[numVertices++].v = vec3(sineOfPhi * cosf(theta), sineOfPhi * sinf(theta), cosf(phi));
+            sineOfPhi = sin(phi = twoPi * i / verticalSegments);
+            vertices[numVertices++].v = vec3(sineOfPhi * cos(theta), sineOfPhi * sin(theta), cos(phi));
+            sineOfPhi = sin(phi = twoPi * (i + 1) / verticalSegments);
+            vertices[numVertices++].v = vec3(sineOfPhi * cos(theta), sineOfPhi * sin(theta), cos(phi));
         }
     }
 
