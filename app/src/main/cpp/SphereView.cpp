@@ -4,16 +4,20 @@
 
 #include "SphereView.h"
 
-SphereView::SphereView() : View() {
-    mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
+class Sphere{
+public:
+    static object generateSphere(const float& radius, const int& resolution);
+};
 
+object Sphere::generateSphere(const float& radius, const int& resolution){
     const double twoPi = 2.0 * M_PI;
-    const float radius = 1.0f;
-    const int horizontalSegments = 50;
+    const int horizontalSegments = resolution;
     const int verticalSegments = 2 * horizontalSegments;
     float theta;
     float phi;
     float sineOfPhi;
+
+    object sphere;
 
     sphere.vertices = (VertexNormal*)malloc(2 * horizontalSegments * (verticalSegments + 1) * sizeof(VertexNormal));
     sphere.numVertices = 0;
@@ -33,6 +37,13 @@ SphereView::SphereView() : View() {
         sphere.vertices[i].n = sphere.vertices[i].v;
         sphere.vertices[i].v *= radius;
     }
+
+    return sphere;
+}
+
+SphereView::SphereView() : View() {
+    mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
+    sphere = Sphere::generateSphere(1.0f, 100);
 }
 
 SphereView::~SphereView(){
@@ -60,20 +71,6 @@ void SphereView::render(){
             1,
             GL_FALSE,
             (GLfloat*)&mvp);
-
-
-    /*VertexNormal vertices[3] = {
-            {vec3(1.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f)},
-            {vec3(0.0f, 1.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f)},
-            {vec3(1.0f, 0.0f, 1.0f), vec3(1.0f, 0.0f, 0.0f)}
-    };
-    for(int i = 0; i < sizeof(vertices) / sizeof(VertexNormal); i++){
-        vertices[i].n = normalize(cross(vertices[2].v - vertices[1].v, vertices[1].v - vertices[0].v));
-    }*/
-
-    uvec3 indices[1] = {
-            uvec3(0, 1, 2)
-    };
 
     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
