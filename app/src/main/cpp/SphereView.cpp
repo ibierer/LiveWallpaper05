@@ -37,6 +37,7 @@ SphereView::SphereView() : View() {
 
 SphereView::~SphereView(){
     glDeleteProgram(mProgram);
+    free(sphere.vertices);
 }
 
 void SphereView::render(){
