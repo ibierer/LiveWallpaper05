@@ -4,26 +4,31 @@
 
 #include "BoxView.h"
 
-BoxView::BoxView() : View(){
-    mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
-
+GLuint BoxView::generateVAO(Vertex* vertices, const size_t& size){
+    GLuint mVBO[1];
     glGenBuffers(1, mVBO);
-    glGenVertexArrays(1, &mVAO);
-
     glBindBuffer(GL_ARRAY_BUFFER, mVBO[0]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(box), &box[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
+    GLuint mVAO;
+    glGenVertexArrays(1, &mVAO);
     glBindVertexArray(mVAO);
     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)offsetof(Vertex, v));
     glBindVertexArray(0);
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+    return mVAO;
+}
+
+BoxView::BoxView() : View(){
+    mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
+    mVAO = generateVAO(box, sizeof(box));
 }
 
 BoxView::~BoxView(){
     glDeleteProgram(mProgram);
     glDeleteVertexArrays(1, &mVAO);
-    glDeleteBuffers(1, mVBO);
+    //glDeleteBuffers(1, mVBO);
 }
 
 void BoxView::render(){

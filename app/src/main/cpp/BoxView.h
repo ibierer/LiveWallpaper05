@@ -13,8 +13,6 @@ public:
 
     GLuint mProgram;
 
-    GLuint mVBO[1];
-
     GLuint mVAO;
 
     const string VERTEX_SHADER =
@@ -42,6 +40,8 @@ public:
     void render() override;
 
 private:
+
+    GLuint generateVAO(Vertex *vertices, const size_t &size);
 
 };
 

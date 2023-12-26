@@ -43,7 +43,7 @@ public:
 
     Matrix4<float> orientationAdjustedPerspective;
 
-    Vertex* box[24] = {
+    Vertex box[24] = {
             // FRONT
             {{-0.5f, -0.5f,  0.5f}},
             {{ 0.5f, -0.5f,  0.5f}},
