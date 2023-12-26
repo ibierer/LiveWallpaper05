@@ -77,7 +77,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
             free(view);
         }
         if(type == "box"){
-            view = new BoxView();
+            //view = new BoxView();
             //view = new TriangleWithNormalsView();
             //view = new CubeMapView();
             //view = new SphereMapView();
@@ -85,7 +85,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
             //view = new RenderToTextureView();
             //view = new RenderToCubeMapView();
             //view = new DrawWithFragmentShaderView();
-            //view = new SphereView();
+            view = new SphereView();
         }else if(type == "naive"){
             view = new NaiveView();
         }else if(type == "picflip"){

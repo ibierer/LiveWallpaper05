@@ -35,11 +35,7 @@ void SphereView::render(){
             GL_FALSE,
             (GLfloat*)&mvp);
 
-    glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
-    glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
-    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), (const GLvoid*)&sphere.getVertices()[0].v);
-    glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), (const GLvoid*)&sphere.getVertices()[0].n);
+    glBindVertexArray(sphereVAO.getArrayObjectId());
     glDrawArrays(GL_TRIANGLE_STRIP, 0, sphere.getNumVertices());
-    glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
-    glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
+    glBindVertexArray(0);
 }
