@@ -17,6 +17,8 @@ public:
 
     VertexArrayObject(Vertex* vertices, const size_t& size);
 
+    VertexArrayObject(VertexNormal* vertices, const size_t& size);
+
     // Copy constructor
     VertexArrayObject(const VertexArrayObject& other);
 

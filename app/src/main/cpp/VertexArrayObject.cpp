@@ -21,6 +21,22 @@ VertexArrayObject::VertexArrayObject(Vertex* vertices, const size_t& size) {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+VertexArrayObject::VertexArrayObject(VertexNormal* vertices, const size_t& size) {
+    glGenBuffers(1, &mVBO);
+    glGenVertexArrays(1, &mVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+    glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
+    glBindVertexArray(mVAO);
+    glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+    glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
+    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), (const GLvoid*)offsetof(VertexNormal, v));
+    glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), (const GLvoid*)offsetof(VertexNormal, n));
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+    glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
+}
+
 // Copy constructor
 VertexArrayObject::VertexArrayObject(const VertexArrayObject& other) {
     mVAO = other.mVAO;
