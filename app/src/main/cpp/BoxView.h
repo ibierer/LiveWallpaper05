@@ -14,7 +14,7 @@ public:
 
     GLuint mProgram;
 
-    VertexArrayObject mVertexArrayObject;
+    VertexArrayObject mBoxVAO;
 
     const string VERTEX_SHADER =
             ES_VERSION +

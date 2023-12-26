@@ -6,7 +6,7 @@
 
 BoxView::BoxView() : View(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
-    mVertexArrayObject = VertexArrayObject(box, sizeof(box));
+    mBoxVAO = VertexArrayObject(box, sizeof(box));
 }
 
 BoxView::~BoxView(){
@@ -29,7 +29,7 @@ void BoxView::render(){
             1,
             GL_FALSE,
             (GLfloat*)&mvp);
-    glBindVertexArray(mVertexArrayObject.getArrayObjectId());
+    glBindVertexArray(mBoxVAO.getArrayObjectId());
     glUniform4f(glGetUniformLocation(mProgram, "color"), 1.0f, 0.0f, 0.0f, 1.0f);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     glDrawArrays(GL_TRIANGLE_STRIP, 4, 4);
