@@ -13,9 +13,9 @@ public:
 
     GLuint mProgram;
 
-    GLuint mVB[1];
+    GLuint mVBO[1];
 
-    GLuint mVBState;
+    GLuint mVAO;
 
     const string VERTEX_SHADER =
             ES_VERSION +

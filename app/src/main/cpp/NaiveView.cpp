@@ -12,7 +12,7 @@ NaiveView::NaiveView() : SimulationView(){
 
     glGenBuffers(1, mVB);
     glBindBuffer(GL_ARRAY_BUFFER, mVB[0]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(BOX), &BOX[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(box), &box[0], GL_STATIC_DRAW);
 
     glGenVertexArrays(1, &mVBState);
     glBindVertexArray(mVBState);

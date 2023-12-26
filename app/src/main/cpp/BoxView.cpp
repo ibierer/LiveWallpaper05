@@ -7,20 +7,23 @@
 BoxView::BoxView() : View(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
 
-    glGenBuffers(1, mVB);
-    glBindBuffer(GL_ARRAY_BUFFER, mVB[0]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(BOX), &BOX[0], GL_STATIC_DRAW);
+    glGenBuffers(1, mVBO);
+    glGenVertexArrays(1, &mVAO);
 
-    glGenVertexArrays(1, &mVBState);
-    glBindVertexArray(mVBState);
-
+    glBindBuffer(GL_ARRAY_BUFFER, mVBO[0]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(box), &box[0], GL_STATIC_DRAW);
+    glBindVertexArray(mVAO);
+    glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)offsetof(Vertex, v));
+    glBindVertexArray(0);
+    glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 BoxView::~BoxView(){
     glDeleteProgram(mProgram);
-    glDeleteVertexArrays(1, &mVBState);
-    glDeleteBuffers(1, mVB);
+    glDeleteVertexArrays(1, &mVAO);
+    glDeleteBuffers(1, mVBO);
 }
 
 void BoxView::render(){
@@ -39,7 +42,7 @@ void BoxView::render(){
             1,
             GL_FALSE,
             (GLfloat*)&mvp);
-    glBindVertexArray(mVBState);
+    glBindVertexArray(mVAO);
     glUniform4f(glGetUniformLocation(mProgram, "color"), 1.0f, 0.0f, 0.0f, 1.0f);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     glDrawArrays(GL_TRIANGLE_STRIP, 4, 4);
@@ -50,7 +53,7 @@ void BoxView::render(){
     glDrawArrays(GL_TRIANGLE_STRIP, 16, 4);
     glDrawArrays(GL_TRIANGLE_STRIP, 20, 4);
 
-    glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+    glBindVertexArray(0);
 
     checkGlError("Renderer::render");
 }
