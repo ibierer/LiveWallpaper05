@@ -16,7 +16,6 @@ BoxView::~BoxView(){
 void BoxView::render(){
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
-    glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(mProgram);
