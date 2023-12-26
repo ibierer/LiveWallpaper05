@@ -48,6 +48,7 @@
 #include "SphereView.cpp"
 #include "TriangleStripObject.cpp"
 #include "Sphere.cpp"
+#include "VertexArrayObject.cpp"
 
 using std::string;
 using nlohmann::json;

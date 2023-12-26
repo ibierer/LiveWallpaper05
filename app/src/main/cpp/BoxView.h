@@ -7,13 +7,14 @@
 
 
 #include "View.h"
+#include "VertexArrayObject.h"
 
 class BoxView : public View {
 public:
 
     GLuint mProgram;
 
-    GLuint mVAO;
+    VertexArrayObject mVertexArrayObject;
 
     const string VERTEX_SHADER =
             ES_VERSION +
@@ -40,8 +41,6 @@ public:
     void render() override;
 
 private:
-
-    GLuint generateVAO(Vertex *vertices, const size_t &size);
 
 };
 
