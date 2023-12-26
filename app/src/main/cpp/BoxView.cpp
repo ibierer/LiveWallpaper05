@@ -14,8 +14,7 @@ BoxView::BoxView() : View(){
     glGenVertexArrays(1, &mVBState);
     glBindVertexArray(mVBState);
 
-    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                          (const GLvoid*)offsetof(Vertex, v));
+    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)offsetof(Vertex, v));
 }
 
 BoxView::~BoxView(){
