@@ -9,6 +9,11 @@
 class TriangleStripObject {
 public:
 
+    enum AttributeType {
+        VERTEX,
+        VERTEX_NORMAL
+    };
+
     TriangleStripObject();
 
     TriangleStripObject(const TriangleStripObject& other);
@@ -23,6 +28,8 @@ public:
     T* getVertices();
 
 protected:
+
+    AttributeType attributeType;
 
     void* vertices;
 

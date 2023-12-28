@@ -5,10 +5,10 @@
 #include "Cube.h"
 
 Cube::Cube(const float& size) {
-
     const int numVertices = 18;
     const float radius = size / 2;
     this->numVertices = numVertices;
+    attributeType = VERTEX;
     vertices = (Vertex*)malloc(numVertices * sizeof(Vertex));
 
     Vertex vertices[] = {

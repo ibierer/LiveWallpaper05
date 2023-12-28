@@ -4,6 +4,10 @@
 
 #include "Vertex.h"
 
+Vertex::Vertex() {
+
+}
+
 Vertex::Vertex(const vec3& position) {
     this->v = position;
 }

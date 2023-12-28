@@ -10,6 +10,8 @@
 
 class Vertex : public Attributes{
 public:
+    Vertex();
+
     Vertex(const vec3& position);
 };
 

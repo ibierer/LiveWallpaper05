@@ -14,6 +14,7 @@ Sphere::Sphere(const float& radius, const int& resolution) {
 
     vertices = (VertexNormal*)malloc(2 * horizontalSegments * (verticalSegments + 1) * sizeof(VertexNormal));
     numVertices = 0;
+    attributeType = VERTEX_NORMAL;
 
     for(int i = 0; i < horizontalSegments; i++) {
         for (int j = 0; j <= verticalSegments; j++) {

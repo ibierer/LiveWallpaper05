@@ -4,6 +4,10 @@
 
 #include "VertexNormal.h"
 
+VertexNormal::VertexNormal() {
+
+}
+
 VertexNormal::VertexNormal(const vec3& position, const vec3& normal) {
     this->v = position;
     this->n = normal;
