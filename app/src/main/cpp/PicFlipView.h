@@ -12,9 +12,9 @@
 class PicFlipView : public SimulationView{
 public:
 
-    GLuint mVB[1];
+    Cube cube;
 
-    GLuint mVBState;
+    VertexArrayObject cubeVAO;
 
     const string VERTEX_SHADER =
             ES_VERSION +

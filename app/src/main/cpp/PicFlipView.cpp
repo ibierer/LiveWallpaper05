@@ -6,17 +6,8 @@
 
 PicFlipView::PicFlipView() : SimulationView(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
-
-    glGenBuffers(1, mVB);
-    glBindBuffer(GL_ARRAY_BUFFER, mVB[0]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(box), &box[0], GL_STATIC_DRAW);
-
-    glGenVertexArrays(1, &mVBState);
-    glBindVertexArray(mVBState);
-
-    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                          (const GLvoid*)offsetof(Vertex, v));
-
+    cube = Cube(1.0f);
+    cubeVAO = VertexArrayObject(cube);
     setupScene();
 }
 
@@ -124,7 +115,6 @@ void PicFlipView::render() {
                 1,
                 GL_FALSE,
                 (GLfloat *) &mvp);
-        glBindVertexArray(mVBState);
         vec4 color = vec4(
                 0.5f * fluid->particleVel[i].x + 0.5f,
                 -0.5f * fluid->particleVel[i].y + 0.5f,
@@ -132,15 +122,10 @@ void PicFlipView::render() {
                 1.0f
         );
         glUniform4fv(glGetUniformLocation(mProgram, "color"), 1, color.v);
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-        glDrawArrays(GL_TRIANGLE_STRIP, 4, 4);
-        glDrawArrays(GL_TRIANGLE_STRIP, 8, 4);
-        glDrawArrays(GL_TRIANGLE_STRIP, 12, 4);
-        glDrawArrays(GL_TRIANGLE_STRIP, 16, 4);
-        glDrawArrays(GL_TRIANGLE_STRIP, 20, 4);
+        glBindVertexArray(cubeVAO.getArrayObjectId());
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, cube.getNumVertices());
+        glBindVertexArray(0);
     }
-
-    glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
 
     for (int i = 0; i < 2; i++) {
         if (distance(accelerometerVector) == 0.0f) {
