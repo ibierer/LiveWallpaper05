@@ -7,7 +7,6 @@
 
 
 #include "View.h"
-#include "Sphere.h"
 
 class CubeView : public View {
 public:

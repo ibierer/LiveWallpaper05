@@ -7,7 +7,6 @@
 
 
 #include "View.h"
-#include "Sphere.h"
 
 class SphereView : public View {
 public:

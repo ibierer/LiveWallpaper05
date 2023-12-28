@@ -22,6 +22,12 @@
 #include "Vertex.cpp"
 #include "VertexNormal.cpp"
 #include "View.cpp"
+#include "TriangleStripObject.cpp"
+#include "VertexArrayObject.cpp"
+#include "Sphere.cpp"
+#include "SphereView.cpp"
+#include "Cube.cpp"
+#include "CubeView.cpp"
 #include "BoxView.cpp"
 #include "TriangleView.cpp"
 #include "TriangleWithNormalsView.cpp"
@@ -45,12 +51,6 @@
 #include "FBO.cpp"
 #include "CubeMapFBO.cpp"
 #include "DrawWithFragmentShaderView.cpp"
-#include "SphereView.cpp"
-#include "TriangleStripObject.cpp"
-#include "Sphere.cpp"
-#include "VertexArrayObject.cpp"
-#include "Cube.cpp"
-#include "CubeView.cpp"
 
 using std::string;
 using nlohmann::json;
@@ -87,8 +87,8 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
             //view = new RenderToTextureView();
             //view = new RenderToCubeMapView();
             //view = new DrawWithFragmentShaderView();
-            view = new SphereView();
-            //view = new CubeView();
+            //view = new SphereView();
+            view = new CubeView();
         }else if(type == "naive"){
             view = new NaiveView();
         }else if(type == "picflip"){
