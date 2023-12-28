@@ -19,16 +19,16 @@ Sphere::Sphere(const float& radius, const int& resolution) {
         for (int j = 0; j <= verticalSegments; j++) {
             theta = twoPi * j / verticalSegments;
             sineOfPhi = sin(phi = twoPi * i / verticalSegments);
-            vertices[numVertices++].v = vec3(sineOfPhi * cos(theta), sineOfPhi * sin(theta), cos(phi));
+            ((VertexNormal*)vertices)[numVertices++].v = vec3(sineOfPhi * cos(theta), sineOfPhi * sin(theta), cos(phi));
             sineOfPhi = sin(phi = twoPi * (i + 1) / verticalSegments);
-            vertices[numVertices++].v = vec3(sineOfPhi * cos(theta), sineOfPhi * sin(theta), cos(phi));
+            ((VertexNormal*)vertices)[numVertices++].v = vec3(sineOfPhi * cos(theta), sineOfPhi * sin(theta), cos(phi));
         }
     }
 
     // Set normals and set scale according to radius parameter.
     for(int i = 0; i < getNumVertices(); i++) {
-        vertices[i].n = vertices[i].v;
-        vertices[i].v *= radius;
+        ((VertexNormal*)vertices)[i].n = ((VertexNormal*)vertices)[i].v;
+        ((VertexNormal*)vertices)[i].v *= radius;
     }
 }
 

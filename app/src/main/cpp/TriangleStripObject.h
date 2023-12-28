@@ -19,15 +19,13 @@ public:
 
     int getNumVertices();
 
-    VertexNormal* getVertices();
+    void* getVertices();
 
 protected:
 
-    VertexNormal* vertices;
+    void* vertices;
 
     int numVertices;
-
-
 
 private:
 

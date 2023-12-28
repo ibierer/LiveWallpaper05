@@ -11,7 +11,7 @@ TriangleStripObject::TriangleStripObject() {
 TriangleStripObject::TriangleStripObject(const TriangleStripObject& other) : numVertices(other.numVertices) {
     vertices = (VertexNormal*)malloc(numVertices * sizeof(VertexNormal));
     // Copy the contents of the other object's vertices array
-    std::copy(other.vertices, other.vertices + numVertices, vertices);
+    std::copy((VertexNormal*)other.vertices, ((VertexNormal*)other.vertices) + numVertices, (VertexNormal*)vertices);
 }
 
 TriangleStripObject& TriangleStripObject::operator=(TriangleStripObject other) {
@@ -29,6 +29,6 @@ int TriangleStripObject::getNumVertices() {
     return numVertices;
 };
 
-VertexNormal* TriangleStripObject::getVertices() {
+void* TriangleStripObject::getVertices() {
     return vertices;
 }

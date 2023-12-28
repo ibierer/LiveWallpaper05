@@ -7,7 +7,7 @@
 CubeView::CubeView() : View() {
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     cube = Cube(1.0f, 100);
-    cubeVAO = VertexArrayObject(cube.getVertices(), cube.getNumVertices() * sizeof(VertexNormal));
+    cubeVAO = VertexArrayObject((VertexNormal*)cube.getVertices(), cube.getNumVertices() * sizeof(VertexNormal));
 }
 
 CubeView::~CubeView(){

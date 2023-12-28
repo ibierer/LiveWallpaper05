@@ -7,7 +7,7 @@
 SphereView::SphereView() : View() {
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     sphere = Sphere(1.0f, 100);
-    sphereVAO = VertexArrayObject(sphere.getVertices(), sphere.getNumVertices() * sizeof(VertexNormal));
+    sphereVAO = VertexArrayObject((VertexNormal*)sphere.getVertices(), sphere.getNumVertices() * sizeof(VertexNormal));
 }
 
 SphereView::~SphereView(){
