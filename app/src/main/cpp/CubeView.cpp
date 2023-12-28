@@ -7,7 +7,7 @@
 CubeView::CubeView() : View() {
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     cube = Cube(1.0f, 100);
-    sphereVAO = VertexArrayObject(cube.getVertices(), cube.getNumVertices() * sizeof(VertexNormal));
+    cubeVAO = VertexArrayObject(cube.getVertices(), cube.getNumVertices() * sizeof(VertexNormal));
 }
 
 CubeView::~CubeView(){
@@ -35,7 +35,7 @@ void CubeView::render(){
             GL_FALSE,
             (GLfloat*)&mvp);
 
-    glBindVertexArray(sphereVAO.getArrayObjectId());
+    glBindVertexArray(cubeVAO.getArrayObjectId());
     glDrawArrays(GL_TRIANGLE_STRIP, 0, cube.getNumVertices());
     glBindVertexArray(0);
 }

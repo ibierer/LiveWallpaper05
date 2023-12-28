@@ -14,7 +14,7 @@ public:
 
     Cube cube;
 
-    VertexArrayObject sphereVAO;
+    VertexArrayObject cubeVAO;
 
     const string VERTEX_SHADER =
             ES_VERSION +

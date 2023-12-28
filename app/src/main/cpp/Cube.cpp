@@ -5,30 +5,65 @@
 #include "Cube.h"
 
 Cube::Cube(const float& radius, const int& resolution) {
-    const double twoPi = 2.0 * M_PI;
-    const int horizontalSegments = resolution;
-    const int verticalSegments = 2 * horizontalSegments;
-    double theta;
-    double phi;
-    double sineOfPhi;
 
-    vertices = (VertexNormal*)malloc(2 * horizontalSegments * (verticalSegments + 1) * sizeof(VertexNormal));
-    numVertices = 0;
+    const int numVertices = 18;
+    this->numVertices = numVertices;
+    vertices = (VertexNormal*)malloc(numVertices * sizeof(VertexNormal));
 
-    for(int i = 0; i < horizontalSegments; i++) {
-        for (int j = 0; j <= verticalSegments; j++) {
-            theta = twoPi * j / verticalSegments;
-            sineOfPhi = sin(phi = twoPi * i / verticalSegments);
-            vertices[numVertices++].v = vec3(sineOfPhi * cos(theta), sineOfPhi * sin(theta), cos(phi));
-            sineOfPhi = sin(phi = twoPi * (i + 1) / verticalSegments);
-            vertices[numVertices++].v = vec3(sineOfPhi * cos(theta), sineOfPhi * sin(theta), cos(phi));
-        }
-    }
+    // FRONT
+    /*{{-0.5f, -0.5f,  0.5f}},
+    {{ 0.5f, -0.5f,  0.5f}},
+    {{-0.5f,  0.5f,  0.5f}},
+    {{ 0.5f,  0.5f,  0.5f}},
+    // BACK
+    {{-0.5f, -0.5f, -0.5f}},
+    {{-0.5f,  0.5f, -0.5f}},
+    {{ 0.5f, -0.5f, -0.5f}},
+    {{ 0.5f,  0.5f, -0.5f}},
+    // LEFT
+    {{-0.5f, -0.5f,  0.5f}},
+    {{-0.5f,  0.5f,  0.5f}},
+    {{-0.5f, -0.5f, -0.5f}},
+    {{-0.5f,  0.5f, -0.5f}},
+    // RIGHT
+    {{ 0.5f, -0.5f, -0.5f}},
+    {{ 0.5f,  0.5f, -0.5f}},
+    {{ 0.5f, -0.5f,  0.5f}},
+    {{ 0.5f,  0.5f,  0.5f}},
+    // TOP
+    {{-0.5f,  0.5f,  0.5f}},
+    {{ 0.5f,  0.5f,  0.5f}},
+    {{-0.5f,  0.5f, -0.5f}},
+    {{ 0.5f,  0.5f, -0.5f}},
+    // BOTTOM
+    {{-0.5f, -0.5f,  0.5f}},
+    {{-0.5f, -0.5f, -0.5f}},
+    {{ 0.5f, -0.5f,  0.5f}},
+    {{ 0.5f, -0.5f, -0.5f}}*/
 
-    // Set normals and set scale according to radius parameter.
-    for(int i = 0; i < getNumVertices(); i++) {
-        vertices[i].n = vertices[i].v;
-        vertices[i].v *= radius;
+    VertexNormal vertices[] = {
+            VertexNormal(vec3(-radius, -radius,  radius), vec3(0.0f, 0.0f, 1.0f)),
+            VertexNormal(vec3( radius, -radius,  radius), vec3(0.0f, 0.0f, 1.0f)),
+            VertexNormal(vec3(-radius,  radius,  radius), vec3(0.0f, 0.0f, 1.0f)),
+            VertexNormal(vec3( radius,  radius,  radius), vec3(0.0f, 0.0f, 1.0f)),
+            VertexNormal(vec3(-radius,  radius, -radius), vec3(0.0f, 0.0f, 1.0f)),
+            VertexNormal(vec3( radius,  radius, -radius), vec3(0.0f, 0.0f, 1.0f)),
+            VertexNormal(vec3(-radius, -radius, -radius), vec3(0.0f, 0.0f, 1.0f)),
+            VertexNormal(vec3( radius, -radius, -radius), vec3(0.0f, 0.0f, 1.0f)),
+            VertexNormal(vec3( radius, -radius, -radius), vec3(0.0f, 0.0f, 1.0f)),
+            VertexNormal(vec3( radius, radius, -radius), vec3(0.0f, 0.0f, 1.0f)),
+            VertexNormal(vec3( radius, radius, -radius), vec3(0.0f, 0.0f, 1.0f)),
+            VertexNormal(vec3( radius, radius, radius), vec3(0.0f, 0.0f, 1.0f)),
+            VertexNormal(vec3( radius, -radius, -radius), vec3(0.0f, 0.0f, 1.0f)),
+            VertexNormal(vec3( radius, -radius, radius), vec3(0.0f, 0.0f, 1.0f)),
+            VertexNormal(vec3( -radius, -radius, -radius), vec3(0.0f, 0.0f, 1.0f)),
+            VertexNormal(vec3( -radius, -radius, radius), vec3(0.0f, 0.0f, 1.0f)),
+            VertexNormal(vec3( -radius, radius, -radius), vec3(0.0f, 0.0f, 1.0f)),
+            VertexNormal(vec3( -radius, radius, radius), vec3(0.0f, 0.0f, 1.0f)),
+    };
+
+    for(int i = 0; i < numVertices; i++) {
+        this->vertices[i] = vertices[i];
     }
 }
 
