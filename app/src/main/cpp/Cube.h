@@ -13,7 +13,7 @@ public:
 
     Cube();
 
-    Cube(const float& radius, const int& resolution);
+    Cube(const float& size);
 
 };
 

@@ -4,35 +4,36 @@
 
 #include "Cube.h"
 
-Cube::Cube(const float& radius, const int& resolution) {
+Cube::Cube(const float& size) {
 
     const int numVertices = 18;
+    const float radius = size / 2;
     this->numVertices = numVertices;
-    vertices = (VertexNormal*)malloc(numVertices * sizeof(VertexNormal));
+    vertices = (Vertex*)malloc(numVertices * sizeof(Vertex));
 
-    VertexNormal vertices[] = {
-            VertexNormal(vec3(-radius, -radius,  radius), vec3(0.0f, 0.0f, 1.0f)),
-            VertexNormal(vec3( radius, -radius,  radius), vec3(0.0f, 0.0f, 1.0f)),
-            VertexNormal(vec3(-radius,  radius,  radius), vec3(0.0f, 0.0f, 1.0f)),
-            VertexNormal(vec3( radius,  radius,  radius), vec3(0.0f, 0.0f, 1.0f)),
-            VertexNormal(vec3(-radius,  radius, -radius), vec3(0.0f, 0.0f, 1.0f)),
-            VertexNormal(vec3( radius,  radius, -radius), vec3(0.0f, 0.0f, 1.0f)),
-            VertexNormal(vec3(-radius, -radius, -radius), vec3(0.0f, 0.0f, 1.0f)),
-            VertexNormal(vec3( radius, -radius, -radius), vec3(0.0f, 0.0f, 1.0f)),
-            VertexNormal(vec3( radius, -radius, -radius), vec3(0.0f, 0.0f, 1.0f)),
-            VertexNormal(vec3( radius, radius, -radius), vec3(0.0f, 0.0f, 1.0f)),
-            VertexNormal(vec3( radius, radius, -radius), vec3(0.0f, 0.0f, 1.0f)),
-            VertexNormal(vec3( radius, radius, radius), vec3(0.0f, 0.0f, 1.0f)),
-            VertexNormal(vec3( radius, -radius, -radius), vec3(0.0f, 0.0f, 1.0f)),
-            VertexNormal(vec3( radius, -radius, radius), vec3(0.0f, 0.0f, 1.0f)),
-            VertexNormal(vec3( -radius, -radius, -radius), vec3(0.0f, 0.0f, 1.0f)),
-            VertexNormal(vec3( -radius, -radius, radius), vec3(0.0f, 0.0f, 1.0f)),
-            VertexNormal(vec3( -radius, radius, -radius), vec3(0.0f, 0.0f, 1.0f)),
-            VertexNormal(vec3( -radius, radius, radius), vec3(0.0f, 0.0f, 1.0f)),
+    Vertex vertices[] = {
+            Vertex(vec3(-radius, -radius,  radius)),
+            Vertex(vec3( radius, -radius,  radius)),
+            Vertex(vec3(-radius,  radius,  radius)),
+            Vertex(vec3( radius,  radius,  radius)),
+            Vertex(vec3(-radius,  radius, -radius)),
+            Vertex(vec3( radius,  radius, -radius)),
+            Vertex(vec3(-radius, -radius, -radius)),
+            Vertex(vec3( radius, -radius, -radius)),
+            Vertex(vec3( radius, -radius, -radius)),
+            Vertex(vec3( radius,  radius, -radius)),
+            Vertex(vec3( radius,  radius, -radius)),
+            Vertex(vec3( radius,  radius,  radius)),
+            Vertex(vec3( radius, -radius, -radius)),
+            Vertex(vec3( radius, -radius,  radius)),
+            Vertex(vec3(-radius, -radius, -radius)),
+            Vertex(vec3(-radius, -radius,  radius)),
+            Vertex(vec3(-radius,  radius, -radius)),
+            Vertex(vec3(-radius,  radius,  radius)),
     };
 
     for(int i = 0; i < numVertices; i++) {
-        ((VertexNormal*)this->vertices)[i] = vertices[i];
+        ((Vertex*)this->vertices)[i] = vertices[i];
     }
 }
 
