@@ -66,7 +66,8 @@ GLuint VertexArrayObject::getBufferObjectId() {
 }
 
 VertexArrayObject::VertexArrayObject(const TriangleStripObject &triangleStripObject) {
-    switch(triangleStripObject.getAttributeType()){
+    TriangleStripObject::AttributeType attributeType = triangleStripObject.getAttributeType();
+    switch(attributeType){
         case TriangleStripObject::AttributeType::VERTEX:
             *this = VertexArrayObject(triangleStripObject.getVertices<Vertex>(), triangleStripObject.getNumVertices() * sizeof(Vertex));
             break;

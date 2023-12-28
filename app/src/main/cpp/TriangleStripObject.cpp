@@ -8,7 +8,8 @@ TriangleStripObject::TriangleStripObject() {
 
 }
 
-TriangleStripObject::TriangleStripObject(const TriangleStripObject& other) : numVertices(other.numVertices) {
+TriangleStripObject::TriangleStripObject(const TriangleStripObject& other) {
+    numVertices = other.numVertices;
     attributeType = other.attributeType;
     switch(attributeType){
         case VERTEX:
@@ -25,10 +26,20 @@ TriangleStripObject::TriangleStripObject(const TriangleStripObject& other) : num
 }
 
 TriangleStripObject& TriangleStripObject::operator=(TriangleStripObject other) {
-    // Swap the content of 'this' and 'other'
-    std::swap(numVertices, other.numVertices);
-    std::swap(vertices, other.vertices);
+    numVertices = other.numVertices;
     attributeType = other.attributeType;
+    switch(attributeType){
+        case VERTEX:
+            vertices = (Vertex*)malloc(numVertices * sizeof(Vertex));
+            // Copy the contents of the other object's vertices array
+            std::copy((Vertex*)other.vertices, ((Vertex*)other.vertices) + numVertices, (Vertex*)vertices);
+            break;
+        case VERTEX_NORMAL:
+            vertices = (VertexNormal*)malloc(numVertices * sizeof(VertexNormal));
+            // Copy the contents of the other object's vertices array
+            std::copy((VertexNormal*)other.vertices, ((VertexNormal*)other.vertices) + numVertices, (VertexNormal*)vertices);
+            break;
+    }
     return *this;
 }
 

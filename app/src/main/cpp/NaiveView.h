@@ -11,10 +11,6 @@
 class NaiveView : public SimulationView{
 public:
 
-    GLuint mVB[1];
-
-    GLuint mVBState;
-
     Cube cube;
 
     VertexArrayObject cubeVAO;
