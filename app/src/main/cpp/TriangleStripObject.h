@@ -22,10 +22,12 @@ public:
 
     ~TriangleStripObject();
 
-    int getNumVertices();
+    int getNumVertices() const;
 
     template<class T>
-    T* getVertices();
+    T* getVertices() const;
+
+    AttributeType getAttributeType() const;
 
 protected:
 

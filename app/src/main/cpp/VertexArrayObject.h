@@ -19,6 +19,8 @@ public:
 
     VertexArrayObject(VertexNormal* vertices, const size_t& size);
 
+    VertexArrayObject(const TriangleStripObject& triangleStripObject);
+
     // Copy constructor
     VertexArrayObject(const VertexArrayObject& other);
 

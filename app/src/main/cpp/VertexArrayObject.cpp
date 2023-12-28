@@ -64,3 +64,14 @@ GLuint VertexArrayObject::getArrayObjectId() {
 GLuint VertexArrayObject::getBufferObjectId() {
     return mVBO;
 }
+
+VertexArrayObject::VertexArrayObject(const TriangleStripObject &triangleStripObject) {
+    switch(triangleStripObject.getAttributeType()){
+        case TriangleStripObject::AttributeType::VERTEX:
+            *this = VertexArrayObject(triangleStripObject.getVertices<Vertex>(), triangleStripObject.getNumVertices() * sizeof(Vertex));
+            break;
+        case TriangleStripObject::AttributeType::VERTEX_NORMAL:
+            *this = VertexArrayObject(triangleStripObject.getVertices<VertexNormal>(), triangleStripObject.getNumVertices() * sizeof(VertexNormal));
+            break;
+    }
+}

@@ -36,11 +36,15 @@ TriangleStripObject::~TriangleStripObject() {
     free(vertices);
 };
 
-int TriangleStripObject::getNumVertices() {
+int TriangleStripObject::getNumVertices() const {
     return numVertices;
+}
+
+TriangleStripObject::AttributeType TriangleStripObject::getAttributeType() const {
+    return attributeType;
 };
 
 template<class T>
-T* TriangleStripObject::getVertices() {
+T* TriangleStripObject::getVertices() const {
     return (T*)vertices;
 }
