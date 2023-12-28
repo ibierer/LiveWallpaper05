@@ -29,6 +29,7 @@ int TriangleStripObject::getNumVertices() {
     return numVertices;
 };
 
-void* TriangleStripObject::getVertices() {
-    return vertices;
+template<class T>
+T* TriangleStripObject::getVertices() {
+    return (T*)vertices;
 }

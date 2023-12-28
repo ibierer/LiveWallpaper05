@@ -19,7 +19,8 @@ public:
 
     int getNumVertices();
 
-    void* getVertices();
+    template<class T>
+    T* getVertices();
 
 protected:
 
