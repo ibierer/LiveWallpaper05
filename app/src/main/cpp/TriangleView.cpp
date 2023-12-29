@@ -6,6 +6,12 @@
 
 TriangleView::TriangleView() : View(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
+    Vertex vertices[3] = {
+            {vec3(1.0f, 0.0f, 0.0f)},
+            {vec3(0.0f, 1.0f, 0.0f)},
+            {vec3(1.0f, 0.0f, 1.0f)}
+    };
+    triangleVAO = VertexArrayObject(vertices, sizeof(vertices) / sizeof(Vertex));
 }
 
 TriangleView::~TriangleView(){
@@ -31,16 +37,7 @@ void TriangleView::render(){
             GL_FALSE,
             (GLfloat*)&mvp);
 
-    Vertex vertices[3] = {
-            {vec3(1.0f, 0.0f, 0.0f)},
-            {vec3(0.0f, 1.0f, 0.0f)},
-            {vec3(1.0f, 0.0f, 1.0f)}
-    };
-    uvec3 indices[1] = {
-            uvec3(0, 1, 2)
-    };
-    glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
-    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)&vertices[0].v);
-    glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(unsigned int), GL_UNSIGNED_INT, indices);
-    glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+    triangleVAO.draw();
+
+    glDisable(GL_DEPTH_TEST);
 }
