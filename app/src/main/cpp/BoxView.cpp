@@ -6,6 +6,38 @@
 
 BoxView::BoxView() : View(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
+    Vertex box[24] = {
+            // FRONT
+            {{-0.5f, -0.5f,  0.5f}},
+            {{ 0.5f, -0.5f,  0.5f}},
+            {{-0.5f,  0.5f,  0.5f}},
+            {{ 0.5f,  0.5f,  0.5f}},
+            // BACK
+            {{-0.5f, -0.5f, -0.5f}},
+            {{-0.5f,  0.5f, -0.5f}},
+            {{ 0.5f, -0.5f, -0.5f}},
+            {{ 0.5f,  0.5f, -0.5f}},
+            // LEFT
+            {{-0.5f, -0.5f,  0.5f}},
+            {{-0.5f,  0.5f,  0.5f}},
+            {{-0.5f, -0.5f, -0.5f}},
+            {{-0.5f,  0.5f, -0.5f}},
+            // RIGHT
+            {{ 0.5f, -0.5f, -0.5f}},
+            {{ 0.5f,  0.5f, -0.5f}},
+            {{ 0.5f, -0.5f,  0.5f}},
+            {{ 0.5f,  0.5f,  0.5f}},
+            // TOP
+            {{-0.5f,  0.5f,  0.5f}},
+            {{ 0.5f,  0.5f,  0.5f}},
+            {{-0.5f,  0.5f, -0.5f}},
+            {{ 0.5f,  0.5f, -0.5f}},
+            // BOTTOM
+            {{-0.5f, -0.5f,  0.5f}},
+            {{-0.5f, -0.5f, -0.5f}},
+            {{ 0.5f, -0.5f,  0.5f}},
+            {{ 0.5f, -0.5f, -0.5f}}
+    };
     mBoxVAO = VertexArrayObject(box, sizeof(box) / sizeof(float));
 }
 

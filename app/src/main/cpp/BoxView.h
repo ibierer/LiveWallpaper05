@@ -12,8 +12,6 @@
 class BoxView : public View {
 public:
 
-    GLuint mProgram;
-
     VertexArrayObject mBoxVAO;
 
     const string VERTEX_SHADER =

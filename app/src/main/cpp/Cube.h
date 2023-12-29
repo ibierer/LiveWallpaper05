@@ -15,6 +15,8 @@ public:
 
     Cube(const float& size);
 
+    static const Vertex box[24];
+
 };
 
 
