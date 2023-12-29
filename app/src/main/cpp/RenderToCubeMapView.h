@@ -13,6 +13,10 @@ public:
 
     GLuint mPlanesProgram;
 
+    VertexArrayObject tilesVAO;
+
+    VertexArrayObject environmentTriangleVAO;
+
     Texture texture;
 
     CubeMapFBO cubeMapFBO;

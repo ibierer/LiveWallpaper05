@@ -15,6 +15,8 @@ public:
 
     GLuint mProgram;
 
+    VertexArrayObject tilesVAO;
+
     Texture texture;
 
     FBO fbo;

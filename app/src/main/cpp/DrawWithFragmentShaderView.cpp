@@ -5,6 +5,19 @@
 #include "DrawWithFragmentShaderView.h"
 
 DrawWithFragmentShaderView::DrawWithFragmentShaderView() : View() {
+    Vertex vertices[] = {
+            Vertex(vec3(0.0f, 0.0f, 0.0f)),
+            Vertex(vec3(0.0f, 1.0f, 0.0f)),
+            Vertex(vec3(1.0f, 0.0f, 0.0f)),
+            Vertex(vec3(1.0f, 1.0f, 0.0f)),
+            Vertex(vec3(1.0f, 1.0f, 0.0f)),
+            Vertex(vec3(0.0f, 0.0f, 1.0f)),
+            Vertex(vec3(0.0f, 0.0f, 1.0f)),
+            Vertex(vec3(0.0f, 1.0f, 1.0f)),
+            Vertex(vec3(1.0f, 0.0f, 1.0f)),
+            Vertex(vec3(1.0f, 1.0f, 1.0f))
+    };
+    tilesVAO = VertexArrayObject(vertices, sizeof(vertices) / sizeof(Vertex));
     texture = Texture::staticallyGenerateMandelbrotWithVertexShader(Texture(GL_RGB, 16384, 16384, 0, GL_LINEAR), this);
     fbo = FBO(&texture, NO, NO);
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
@@ -41,30 +54,6 @@ void DrawWithFragmentShaderView::render(){
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, texture.getTextureId());
     glUniform1i(glGetUniformLocation(mProgram, "image"), 1);
-
-    Vertex vertices[8] = {
-            {vec3(0.0f, 0.0f, 0.0f)},
-            {vec3(0.0f, 1.0f, 0.0f)},
-            {vec3(1.0f, 0.0f, 0.0f)},
-            {vec3(1.0f, 1.0f, 0.0f)},
-            {vec3(0.0f, 0.0f, 1.0f)},
-            {vec3(0.0f, 1.0f, 1.0f)},
-            {vec3(1.0f, 0.0f, 1.0f)},
-            {vec3(1.0f, 1.0f, 1.0f)}
-    };
-    uvec3 indices[4] = {
-            uvec3(0, 2, 1),
-            uvec3(1, 3, 2),
-            uvec3(4, 6, 5),
-            uvec3(5, 7, 6)
-    };
-
-    glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
-    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                          (const GLvoid *) &vertices[0].v);
-    glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(unsigned int), GL_UNSIGNED_INT,
-                   indices);
-
-    glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+    tilesVAO.draw();
     glBindTexture(GL_TEXTURE_2D, 0);
 }
