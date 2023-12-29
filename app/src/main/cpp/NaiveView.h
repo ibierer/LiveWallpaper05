@@ -11,8 +11,6 @@
 class NaiveView : public SimulationView{
 public:
 
-    Cube cube;
-
     VertexArrayObject cubeVAO;
 
     const string VERTEX_SHADER =

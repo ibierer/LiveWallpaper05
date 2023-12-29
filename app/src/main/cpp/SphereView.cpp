@@ -6,8 +6,7 @@
 
 SphereView::SphereView() : View() {
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
-    sphere = Sphere(1.0f, 100);
-    sphereVAO = VertexArrayObject(sphere);
+    sphereVAO = VertexArrayObject(Sphere(1.0f, 100));
 }
 
 SphereView::~SphereView(){
@@ -35,7 +34,5 @@ void SphereView::render(){
             GL_FALSE,
             (GLfloat*)&mvp);
 
-    glBindVertexArray(sphereVAO.getArrayObjectId());
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, sphere.getNumVertices());
-    glBindVertexArray(0);
+    sphereVAO.draw();
 }

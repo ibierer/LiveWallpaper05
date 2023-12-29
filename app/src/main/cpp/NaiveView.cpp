@@ -9,8 +9,7 @@ using std::max;
 
 NaiveView::NaiveView() : SimulationView(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
-    cube = Cube(1.0f);
-    cubeVAO = VertexArrayObject(cube);
+    cubeVAO = VertexArrayObject(Cube(1.0f));
     seed(15.0f);
 }
 

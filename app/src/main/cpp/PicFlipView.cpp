@@ -6,8 +6,7 @@
 
 PicFlipView::PicFlipView() : SimulationView(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
-    cube = Cube(1.0f);
-    cubeVAO = VertexArrayObject(cube);
+    cubeVAO = VertexArrayObject(Cube(1.0f));
     setupScene();
 }
 

@@ -11,8 +11,6 @@
 class SphereView : public View {
 public:
 
-    Sphere sphere;
-
     VertexArrayObject sphereVAO;
 
     const string VERTEX_SHADER =
