@@ -13,6 +13,8 @@
 class RenderToTextureView : public View {
 public:
 
+    VertexArrayObject tilesVAO;
+
     Texture texture;
 
     FBO fbo;
