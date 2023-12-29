@@ -8,25 +8,25 @@ VertexArrayObject::VertexArrayObject() {
 
 }
 
-VertexArrayObject::VertexArrayObject(Vertex* vertices, const size_t& size) {
+VertexArrayObject::VertexArrayObject(Vertex* vertices, const int& count) {
     glGenBuffers(1, &mVBO);
     glGenVertexArrays(1, &mVAO);
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-    glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, count * sizeof(Vertex), vertices, GL_STATIC_DRAW);
     glBindVertexArray(mVAO);
     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)offsetof(Vertex, v));
     glBindVertexArray(0);
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    numVertices = size / sizeof(Vertex);
+    numVertices = count;
 }
 
-VertexArrayObject::VertexArrayObject(VertexNormal* vertices, const size_t& size) {
+VertexArrayObject::VertexArrayObject(VertexNormal* vertices, const int& count) {
     glGenBuffers(1, &mVBO);
     glGenVertexArrays(1, &mVAO);
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-    glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, count * sizeof(VertexNormal), vertices, GL_STATIC_DRAW);
     glBindVertexArray(mVAO);
     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
@@ -36,7 +36,7 @@ VertexArrayObject::VertexArrayObject(VertexNormal* vertices, const size_t& size)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
-    numVertices = size / sizeof(Vertex);
+    numVertices = count;
 }
 
 // Copy constructor
@@ -73,10 +73,10 @@ VertexArrayObject::VertexArrayObject(const TriangleStripObject &triangleStripObj
     TriangleStripObject::AttributeType attributeType = triangleStripObject.getAttributeType();
     switch(attributeType){
         case TriangleStripObject::AttributeType::VERTEX:
-            *this = VertexArrayObject(triangleStripObject.getVertices<Vertex>(), triangleStripObject.getNumVertices() * sizeof(Vertex));
+            *this = VertexArrayObject(triangleStripObject.getVertices<Vertex>(), triangleStripObject.getNumVertices());
             break;
         case TriangleStripObject::AttributeType::VERTEX_NORMAL:
-            *this = VertexArrayObject(triangleStripObject.getVertices<VertexNormal>(), triangleStripObject.getNumVertices() * sizeof(VertexNormal));
+            *this = VertexArrayObject(triangleStripObject.getVertices<VertexNormal>(), triangleStripObject.getNumVertices());
             break;
     }
 }

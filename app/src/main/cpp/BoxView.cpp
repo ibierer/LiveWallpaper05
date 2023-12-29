@@ -6,7 +6,7 @@
 
 BoxView::BoxView() : View(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
-    mBoxVAO = VertexArrayObject(box, sizeof(box));
+    mBoxVAO = VertexArrayObject(box, sizeof(box) / sizeof(float));
 }
 
 BoxView::~BoxView(){

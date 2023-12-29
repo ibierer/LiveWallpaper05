@@ -15,9 +15,9 @@ public:
 
     VertexArrayObject();
 
-    VertexArrayObject(Vertex* vertices, const size_t& size);
+    VertexArrayObject(Vertex* vertices, const int& count);
 
-    VertexArrayObject(VertexNormal* vertices, const size_t& size);
+    VertexArrayObject(VertexNormal* vertices, const int& count);
 
     VertexArrayObject(const TriangleStripObject& triangleStripObject);
 
