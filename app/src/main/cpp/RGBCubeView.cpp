@@ -6,7 +6,6 @@
 
 RGBCubeView::RGBCubeView() : View(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
-    float radius = 0.5f;
     mBoxVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::RGB_CUBE));
 }
 
