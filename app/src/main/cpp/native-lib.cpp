@@ -52,6 +52,7 @@
 #include "FBO.cpp"
 #include "CubeMapFBO.cpp"
 #include "DrawWithFragmentShaderView.cpp"
+#include "SphereWithRefractionView.cpp"
 
 using std::string;
 using nlohmann::json;
@@ -80,7 +81,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
             free(view);
         }
         if(type == "box"){
-            view = new RGBCubeView();
+            //view = new RGBCubeView();
             //view = new TriangleView();
             //view = new TriangleWithNormalsView();
             //view = new CubeMapView();
@@ -91,6 +92,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
             //view = new DrawWithFragmentShaderView();
             //view = new SphereView();
             //view = new CubeView();
+            view = new SphereWithRefractionView();
         }else if(type == "naive"){
             view = new NaiveView();
         }else if(type == "picflip"){
