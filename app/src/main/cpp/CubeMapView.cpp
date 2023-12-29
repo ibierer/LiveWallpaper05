@@ -16,7 +16,7 @@ CubeMapView::~CubeMapView(){
 
 void CubeMapView::render(){
     glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT);
 
     Matrix4<float> rotation = Matrix4<float>(quaternionTo3x3(rotationVector));
     Matrix4<float> inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();

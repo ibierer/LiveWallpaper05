@@ -161,7 +161,7 @@ Texture& Texture::dynamicallyGenerateMandelbrotWithVertexShader(FBO& fbo, View* 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_DEPTH_TEST);
 
     const string VERTEX_SHADER =
             view->ES_VERSION +

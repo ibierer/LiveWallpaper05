@@ -13,6 +13,8 @@ public:
 
     VertexArrayObject sphereVAO;
 
+    VertexArrayObject environmentTriangleVAO;
+
     CubeMap cubeMap;
 
     const string VERTEX_SHADER =
@@ -33,6 +35,46 @@ public:
             "out vec4 outColor;\n"
             "void main() {\n"
             "    outColor = vec4(1.0f, 0.0f, 0.0f, 1.0f); \n"
+            "}\n";
+
+    const string REFLECTION_VERTEX_SHADER =
+            ES_VERSION +
+            "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
+            "uniform mat4 inverseViewProjection;\n"
+            "out vec3 direction;\n"
+            "void main() {\n"
+            "    gl_Position = vec4(pos, 1.0);\n"
+            "    direction = (inverseViewProjection * vec4(pos, 1.0f)).xyz;\n"
+            "}\n";
+
+    const string REFLECTION_FRAGMENT_SHADER =
+            ES_VERSION +
+            "precision mediump float;\n"
+            "uniform samplerCube environmentTexture;\n"
+            "in vec3 direction;\n"
+            "out vec4 outColor;\n"
+            "void main() {\n"
+            "    outColor = texture(environmentTexture, direction); \n"
+            "}\n";
+
+    const string BACKGROUND_VERTEX_SHADER =
+            ES_VERSION +
+            "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
+            "uniform mat4 inverseViewProjection;\n"
+            "out vec3 direction;\n"
+            "void main() {\n"
+            "    gl_Position = vec4(pos, 1.0);\n"
+            "    direction = (inverseViewProjection * vec4(pos, 1.0f)).xyz;\n"
+            "}\n";
+
+    const string BACKGROUND_FRAGMENT_SHADER =
+            ES_VERSION +
+            "precision mediump float;\n"
+            "uniform samplerCube environmentTexture;\n"
+            "in vec3 direction;\n"
+            "out vec4 outColor;\n"
+            "void main() {\n"
+            "    outColor = texture(environmentTexture, direction); \n"
             "}\n";
 
     SphereWithReflectionView();

@@ -18,9 +18,7 @@ SphereMapView::~SphereMapView(){
 
 void SphereMapView::render(){
     glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    glEnable(GL_DEPTH_TEST);
+    glClear(GL_COLOR_BUFFER_BIT);
 
     calculatePerspectiveSetViewport(60.0f * (1.0f - zoom));
     Matrix4<float> rotation = Matrix4<float>(quaternionTo3x3(rotationVector));

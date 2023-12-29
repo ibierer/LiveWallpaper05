@@ -6,8 +6,9 @@
 
 SphereWithReflectionView::SphereWithReflectionView() : View() {
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
-    sphereVAO = VertexArrayObject(Sphere(1.0f, 100));
     cubeMap = CubeMap::createSimpleTextureCubemap();
+    sphereVAO = VertexArrayObject(Sphere(1.0f, 100));
+    environmentTriangleVAO = VertexArrayObject(cubeMap.environmentTriangleVertices, sizeof(cubeMap.environmentTriangleVertices) / sizeof(PositionXYZ));
 }
 
 SphereWithReflectionView::~SphereWithReflectionView(){
