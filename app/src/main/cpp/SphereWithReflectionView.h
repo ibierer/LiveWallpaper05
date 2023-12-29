@@ -1,15 +1,14 @@
-
 //
 // Created by Immanuel Bierer on 12/29/2023.
 //
 
-#ifndef LIVEWALLPAPER05_SPHEREWITHREFRACTIONVIEW_H
-#define LIVEWALLPAPER05_SPHEREWITHREFRACTIONVIEW_H
+#ifndef LIVEWALLPAPER05_SPHEREWITHREFLECTIONVIEW_H
+#define LIVEWALLPAPER05_SPHEREWITHREFLECTIONVIEW_H
 
 
 #include "View.h"
 
-class SphereWithRefractionView : public View {
+class SphereWithReflectionView : public View {
 public:
 
     VertexArrayObject sphereVAO;
@@ -36,9 +35,9 @@ public:
             "    outColor = vec4(1.0f, 0.0f, 0.0f, 1.0f); \n"
             "}\n";
 
-    SphereWithRefractionView();
+    SphereWithReflectionView();
 
-    ~SphereWithRefractionView();
+    ~SphereWithReflectionView();
 
     void render() override;
 
@@ -47,4 +46,4 @@ private:
 };
 
 
-#endif //LIVEWALLPAPER05_SPHEREWITHREFRACTIONVIEW_H
+#endif //LIVEWALLPAPER05_SPHEREWITHREFLECTIONVIEW_H

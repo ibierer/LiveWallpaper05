@@ -2,19 +2,19 @@
 // Created by Immanuel Bierer on 12/29/2023.
 //
 
-#include "SphereWithRefractionView.h"
+#include "SphereWithReflectionView.h"
 
-SphereWithRefractionView::SphereWithRefractionView() : View() {
+SphereWithReflectionView::SphereWithReflectionView() : View() {
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     sphereVAO = VertexArrayObject(Sphere(1.0f, 100));
     cubeMap = CubeMap::createSimpleTextureCubemap();
 }
 
-SphereWithRefractionView::~SphereWithRefractionView(){
+SphereWithReflectionView::~SphereWithReflectionView(){
     glDeleteProgram(mProgram);
 }
 
-void SphereWithRefractionView::render(){
+void SphereWithReflectionView::render(){
     glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
