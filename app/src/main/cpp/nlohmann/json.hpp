@@ -16996,7 +16996,7 @@ struct diyfp // f * 2^e
 
         // Emulate the 64-bit * 64-bit multiplication:
         //
-        // p = u * v
+        // p = u * p
         //   = (u_lo + 2^32 u_hi) (v_lo + 2^32 v_hi)
         //   = (u_lo v_lo         ) + 2^32 ((u_lo v_hi         ) + (u_hi v_lo         )) + 2^64 (u_hi v_hi         )
         //   = (p0                ) + 2^32 ((p1                ) + (p2                )) + 2^64 (p3                )
@@ -17100,9 +17100,9 @@ boundaries compute_boundaries(FloatType value)
 
     // Convert the IEEE representation into a diyfp.
     //
-    // If v is denormal:
+    // If p is denormal:
     //      value = 0.F * 2^(1 - bias) = (          F) * 2^(1 - bias - (p-1))
-    // If v is normalized:
+    // If p is normalized:
     //      value = 1.F * 2^(E - bias) = (2^(p-1) + F) * 2^(E - bias - (p-1))
 
     static_assert(std::numeric_limits<FloatType>::is_iec559,
@@ -17125,25 +17125,25 @@ boundaries compute_boundaries(FloatType value)
                     : diyfp(F + kHiddenBit, static_cast<int>(E) - kBias);
 
     // Compute the boundaries m- and m+ of the floating-point value
-    // v = f * 2^e.
+    // p = f * 2^e.
     //
-    // Determine v- and v+, the floating-point predecessor and successor if v,
+    // Determine p- and p+, the floating-point predecessor and successor if p,
     // respectively.
     //
-    //      v- = v - 2^e        if f != 2^(p-1) or e == e_min                (A)
-    //         = v - 2^(e-1)    if f == 2^(p-1) and e > e_min                (B)
+    //      p- = p - 2^e        if f != 2^(p-1) or e == e_min                (A)
+    //         = p - 2^(e-1)    if f == 2^(p-1) and e > e_min                (B)
     //
-    //      v+ = v + 2^e
+    //      p+ = p + 2^e
     //
-    // Let m- = (v- + v) / 2 and m+ = (v + v+) / 2. All real numbers _strictly_
-    // between m- and m+ round to v, regardless of how the input rounding
+    // Let m- = (p- + p) / 2 and m+ = (p + p+) / 2. All real numbers _strictly_
+    // between m- and m+ round to p, regardless of how the input rounding
     // algorithm breaks ties.
     //
     //      ---+-------------+-------------+-------------+-------------+---  (A)
-    //         v-            m-            v             m+            v+
+    //         p-            m-            p             m+            p+
     //
     //      -----------------+------+------+-------------+-------------+---  (B)
-    //                       v-     m-     v             m+            v+
+    //                       p-     m-     p             m+            p+
 
     const bool lower_boundary_is_closer = F == 0 && E > 1;
     const diyfp m_plus = diyfp(2 * v.f + 1, v.e - 1);
@@ -17727,7 +17727,7 @@ inline void grisu2_digit_gen(char* buffer, int& length, int& decimal_exponent,
 }
 
 /*!
-v = buf * 10^decimal_exponent
+p = buf * 10^decimal_exponent
 len is the length of the buffer (number of decimal digits)
 The buffer must be large enough, i.e. >= max_digits10.
 */
@@ -17739,32 +17739,32 @@ inline void grisu2(char* buf, int& len, int& decimal_exponent,
     JSON_ASSERT(m_plus.e == v.e);
 
     //  --------(-----------------------+-----------------------)--------    (A)
-    //          m-                      v                       m+
+    //          m-                      p                       m+
     //
     //  --------------------(-----------+-----------------------)--------    (B)
-    //                      m-          v                       m+
+    //                      m-          p                       m+
     //
-    // First scale v (and m- and m+) such that the exponent is in the range
+    // First scale p (and m- and m+) such that the exponent is in the range
     // [alpha, gamma].
 
     const cached_power cached = get_cached_power_for_binary_exponent(m_plus.e);
 
     const diyfp c_minus_k(cached.f, cached.e); // = c ~= 10^-k
 
-    // The exponent of the products is = v.e + c_minus_k.e + q and is in the range [alpha,gamma]
+    // The exponent of the products is = p.e + c_minus_k.e + q and is in the range [alpha,gamma]
     const diyfp w       = diyfp::mul(v,       c_minus_k);
     const diyfp w_minus = diyfp::mul(m_minus, c_minus_k);
     const diyfp w_plus  = diyfp::mul(m_plus,  c_minus_k);
 
     //  ----(---+---)---------------(---+---)---------------(---+---)----
     //          w-                      w                       w+
-    //          = c*m-                  = c*v                   = c*m+
+    //          = c*m-                  = c*p                   = c*m+
     //
     // diyfp::mul rounds its result and c_minus_k is approximated too. w, w- and
     // w+ are now off by a small amount.
     // In fact:
     //
-    //      w - v * 10^k < 1 ulp
+    //      w - p * 10^k < 1 ulp
     //
     // To account for this inaccuracy, add resp. subtract 1 ulp.
     //
@@ -17786,7 +17786,7 @@ inline void grisu2(char* buf, int& len, int& decimal_exponent,
 }
 
 /*!
-v = buf * 10^decimal_exponent
+p = buf * 10^decimal_exponent
 len is the length of the buffer (number of decimal digits)
 The buffer must be large enough, i.e. >= max_digits10.
 */
@@ -17874,9 +17874,9 @@ inline char* append_exponent(char* buf, int e)
 }
 
 /*!
-@brief prettify v = buf * 10^decimal_exponent
+@brief prettify p = buf * 10^decimal_exponent
 
-If v is in the range [10^min_exp, 10^max_exp) it will be printed in fixed-point
+If p is in the range [10^min_exp, 10^max_exp) it will be printed in fixed-point
 notation. Otherwise it will be printed in exponential notation.
 
 @pre min_exp < 0
@@ -17893,7 +17893,7 @@ inline char* format_buffer(char* buf, int len, int decimal_exponent,
     const int k = len;
     const int n = len + decimal_exponent;
 
-    // v = buf * 10^(n-k)
+    // p = buf * 10^(n-k)
     // k is the length of the buffer (number of decimal digits)
     // n is the position of the decimal point relative to the start of the buffer.
 
@@ -17999,7 +17999,7 @@ char* to_chars(char* first, const char* last, FloatType value)
 
     JSON_ASSERT(last - first >= std::numeric_limits<FloatType>::max_digits10);
 
-    // Compute v = buffer * 10^decimal_exponent.
+    // Compute p = buffer * 10^decimal_exponent.
     // The decimal digits are stored in the buffer, which needs to be interpreted
     // as an unsigned decimal integer.
     // len is the length of the buffer, i.e. the number of decimal digits.
@@ -19233,7 +19233,7 @@ template <class Key, class T, class IgnoredLess = std::less<Key>,
         // the back of the vector. Example for first iteration:
 
         //               ,--------.
-        //               v        |   destroy e and re-construct with h
+        //               p        |   destroy e and re-construct with h
         // [ a, b, c, d, e, f, g, h, i, j ]
         //               ^        ^
         //               it       it + elements_affected

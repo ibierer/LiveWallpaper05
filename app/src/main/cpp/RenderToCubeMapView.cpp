@@ -7,14 +7,14 @@
 RenderToCubeMapView::RenderToCubeMapView() : View() {
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     mPlanesProgram = createProgram(PLANES_VERTEX_SHADER.c_str(), PLANES_FRAGMENT_SHADER.c_str());
-    tilesVAO = VertexArrayObject(tilesVertices, sizeof(tilesVertices) / sizeof(Vertex));
+    tilesVAO = VertexArrayObject(tilesVertices, sizeof(tilesVertices) / sizeof(PositionXYZ));
     //texture = Texture(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
     texture = Texture(Texture::DefaultImages::MANDELBROT, 16384, 16384, this);
     cubeMapFBO = CubeMapFBO(
             CubeMap(GL_RGB, GL_LINEAR, 256, 0),
             YES,
             NO);
-    environmentTriangleVAO = VertexArrayObject(cubeMapFBO.cubeMap.environmentTriangleVertices, sizeof(cubeMapFBO.cubeMap.environmentTriangleVertices) / sizeof(Vertex));
+    environmentTriangleVAO = VertexArrayObject(cubeMapFBO.cubeMap.environmentTriangleVertices, sizeof(cubeMapFBO.cubeMap.environmentTriangleVertices) / sizeof(PositionXYZ));
 }
 
 RenderToCubeMapView::~RenderToCubeMapView(){

@@ -12,24 +12,24 @@ Sphere::Sphere(const float& radius, const int& resolution) {
     double phi;
     double sineOfPhi;
 
-    vertices = (VertexNormal*)malloc(2 * horizontalSegments * (verticalSegments + 1) * sizeof(VertexNormal));
+    vertices = (PositionXYZNormalXYZ*)malloc(2 * horizontalSegments * (verticalSegments + 1) * sizeof(PositionXYZNormalXYZ));
     numVertices = 0;
-    attributeType = VERTEX_NORMAL;
+    attributeType = POSITION_XYZ_NORMAL_XYZ;
 
     for(int i = 0; i < horizontalSegments; i++) {
         for (int j = 0; j <= verticalSegments; j++) {
             theta = twoPi * j / verticalSegments;
             sineOfPhi = sin(phi = twoPi * i / verticalSegments);
-            ((VertexNormal*)vertices)[numVertices++].v = vec3(sineOfPhi * cos(theta), sineOfPhi * sin(theta), cos(phi));
+            ((PositionXYZNormalXYZ*)vertices)[numVertices++].p = vec3(sineOfPhi * cos(theta), sineOfPhi * sin(theta), cos(phi));
             sineOfPhi = sin(phi = twoPi * (i + 1) / verticalSegments);
-            ((VertexNormal*)vertices)[numVertices++].v = vec3(sineOfPhi * cos(theta), sineOfPhi * sin(theta), cos(phi));
+            ((PositionXYZNormalXYZ*)vertices)[numVertices++].p = vec3(sineOfPhi * cos(theta), sineOfPhi * sin(theta), cos(phi));
         }
     }
 
     // Set normals and set scale according to radius parameter.
     for(int i = 0; i < getNumVertices(); i++) {
-        ((VertexNormal*)vertices)[i].n = ((VertexNormal*)vertices)[i].v;
-        ((VertexNormal*)vertices)[i].v *= radius;
+        ((PositionXYZNormalXYZ*)vertices)[i].n = ((PositionXYZNormalXYZ*)vertices)[i].p;
+        ((PositionXYZNormalXYZ*)vertices)[i].p *= radius;
     }
 }
 

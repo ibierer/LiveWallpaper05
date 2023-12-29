@@ -10,9 +10,9 @@ class TriangleStripObject {
 public:
 
     enum AttributeType {
-        VERTEX,
-        VERTEX_NORMAL,
-        VERTEX_COLOR
+        POSITION_XYZ,
+        POSITION_XYZ_NORMAL_XYZ,
+        POSITION_XYZ_COLOR_RGB
     };
 
     TriangleStripObject();

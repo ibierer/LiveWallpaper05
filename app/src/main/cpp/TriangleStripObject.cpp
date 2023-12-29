@@ -12,20 +12,20 @@ TriangleStripObject::TriangleStripObject(const TriangleStripObject& other) {
     numVertices = other.numVertices;
     attributeType = other.attributeType;
     switch(attributeType){
-        case VERTEX:
-            vertices = (Vertex*)malloc(numVertices * sizeof(Vertex));
+        case POSITION_XYZ:
+            vertices = (PositionXYZ*)malloc(numVertices * sizeof(PositionXYZ));
             // Copy the contents of the other object's environmentTriangleVertices array
-            std::copy((Vertex*)other.vertices, ((Vertex*)other.vertices) + numVertices, (Vertex*)vertices);
+            std::copy((PositionXYZ*)other.vertices, ((PositionXYZ*)other.vertices) + numVertices, (PositionXYZ*)vertices);
             break;
-        case VERTEX_NORMAL:
-            vertices = (VertexNormal*)malloc(numVertices * sizeof(VertexNormal));
+        case POSITION_XYZ_NORMAL_XYZ:
+            vertices = (PositionXYZNormalXYZ*)malloc(numVertices * sizeof(PositionXYZNormalXYZ));
             // Copy the contents of the other object's environmentTriangleVertices array
-            std::copy((VertexNormal*)other.vertices, ((VertexNormal*)other.vertices) + numVertices, (VertexNormal*)vertices);
+            std::copy((PositionXYZNormalXYZ*)other.vertices, ((PositionXYZNormalXYZ*)other.vertices) + numVertices, (PositionXYZNormalXYZ*)vertices);
             break;
-        case VERTEX_COLOR:
-            vertices = (VertexColor*)malloc(numVertices * sizeof(VertexColor));
+        case POSITION_XYZ_COLOR_RGB:
+            vertices = (PositionXYZColorRGB*)malloc(numVertices * sizeof(PositionXYZColorRGB));
             // Copy the contents of the other object's environmentTriangleVertices array
-            std::copy((VertexColor*)other.vertices, ((VertexColor*)other.vertices) + numVertices, (VertexColor*)vertices);
+            std::copy((PositionXYZColorRGB*)other.vertices, ((PositionXYZColorRGB*)other.vertices) + numVertices, (PositionXYZColorRGB*)vertices);
             break;
     }
 }
@@ -35,20 +35,20 @@ TriangleStripObject& TriangleStripObject::operator=(TriangleStripObject other) {
         numVertices = other.numVertices;
         attributeType = other.attributeType;
         switch (attributeType) {
-            case VERTEX:
-                vertices = (Vertex*) malloc(numVertices * sizeof(Vertex));
+            case POSITION_XYZ:
+                vertices = (PositionXYZ*) malloc(numVertices * sizeof(PositionXYZ));
                 // Copy the contents of the other object's environmentTriangleVertices array
-                std::copy((Vertex*) other.vertices, ((Vertex*) other.vertices) + numVertices, (Vertex*) vertices);
+                std::copy((PositionXYZ*) other.vertices, ((PositionXYZ*) other.vertices) + numVertices, (PositionXYZ*) vertices);
                 break;
-            case VERTEX_NORMAL:
-                vertices = (VertexNormal*) malloc(numVertices * sizeof(VertexNormal));
+            case POSITION_XYZ_NORMAL_XYZ:
+                vertices = (PositionXYZNormalXYZ*) malloc(numVertices * sizeof(PositionXYZNormalXYZ));
                 // Copy the contents of the other object's environmentTriangleVertices array
-                std::copy((VertexNormal*) other.vertices, ((VertexNormal*) other.vertices) + numVertices, (VertexNormal*) vertices);
+                std::copy((PositionXYZNormalXYZ*) other.vertices, ((PositionXYZNormalXYZ*) other.vertices) + numVertices, (PositionXYZNormalXYZ*) vertices);
                 break;
-            case VERTEX_COLOR:
-                vertices = (VertexColor*) malloc(numVertices * sizeof(VertexColor));
+            case POSITION_XYZ_COLOR_RGB:
+                vertices = (PositionXYZColorRGB*) malloc(numVertices * sizeof(PositionXYZColorRGB));
                 // Copy the contents of the other object's environmentTriangleVertices array
-                std::copy((VertexColor*) other.vertices, ((VertexColor*) other.vertices) + numVertices, (VertexColor*) vertices);
+                std::copy((PositionXYZColorRGB*) other.vertices, ((PositionXYZColorRGB*) other.vertices) + numVertices, (PositionXYZColorRGB*) vertices);
                 break;
         }
     }

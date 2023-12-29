@@ -10,57 +10,57 @@ Cube::Cube(const float& size, const ColorOption& colorOption) {
     this->numVertices = numVertices;
     switch(colorOption){
         case SOLID:{
-            attributeType = VERTEX;
-            Vertex vertices[numVertices] = {
-                    Vertex(vec3(-radius, -radius,  radius)),
-                    Vertex(vec3( radius, -radius,  radius)),
-                    Vertex(vec3(-radius,  radius,  radius)),
-                    Vertex(vec3( radius,  radius,  radius)),
-                    Vertex(vec3(-radius,  radius, -radius)),
-                    Vertex(vec3( radius,  radius, -radius)),
-                    Vertex(vec3(-radius, -radius, -radius)),
-                    Vertex(vec3( radius, -radius, -radius)),
-                    Vertex(vec3( radius, -radius, -radius)),
-                    Vertex(vec3( radius,  radius, -radius)),
-                    Vertex(vec3( radius,  radius, -radius)),
-                    Vertex(vec3( radius,  radius,  radius)),
-                    Vertex(vec3( radius, -radius, -radius)),
-                    Vertex(vec3( radius, -radius,  radius)),
-                    Vertex(vec3(-radius, -radius, -radius)),
-                    Vertex(vec3(-radius, -radius,  radius)),
-                    Vertex(vec3(-radius,  radius, -radius)),
-                    Vertex(vec3(-radius,  radius,  radius))
+            attributeType = POSITION_XYZ;
+            PositionXYZ vertices[numVertices] = {
+                    PositionXYZ(vec3(-radius, -radius, radius)),
+                    PositionXYZ(vec3(radius, -radius, radius)),
+                    PositionXYZ(vec3(-radius, radius, radius)),
+                    PositionXYZ(vec3(radius, radius, radius)),
+                    PositionXYZ(vec3(-radius, radius, -radius)),
+                    PositionXYZ(vec3(radius, radius, -radius)),
+                    PositionXYZ(vec3(-radius, -radius, -radius)),
+                    PositionXYZ(vec3(radius, -radius, -radius)),
+                    PositionXYZ(vec3(radius, -radius, -radius)),
+                    PositionXYZ(vec3(radius, radius, -radius)),
+                    PositionXYZ(vec3(radius, radius, -radius)),
+                    PositionXYZ(vec3(radius, radius, radius)),
+                    PositionXYZ(vec3(radius, -radius, -radius)),
+                    PositionXYZ(vec3(radius, -radius, radius)),
+                    PositionXYZ(vec3(-radius, -radius, -radius)),
+                    PositionXYZ(vec3(-radius, -radius, radius)),
+                    PositionXYZ(vec3(-radius, radius, -radius)),
+                    PositionXYZ(vec3(-radius, radius, radius))
             };
-            this->vertices = (Vertex*)malloc(numVertices * sizeof(Vertex));
+            this->vertices = (PositionXYZ*)malloc(numVertices * sizeof(PositionXYZ));
             for(int i = 0; i < numVertices; i++) {
-                ((Vertex*)this->vertices)[i] = vertices[i];
+                ((PositionXYZ*)this->vertices)[i] = vertices[i];
             }
             break;}
         case RGB_CUBE:{
-            attributeType = VERTEX_COLOR;
-            VertexColor vertices[numVertices] = {
-                    VertexColor(vec3(-radius, -radius,  radius), vec3(0.0f, 0.0f, 1.0f)),
-                    VertexColor(vec3( radius, -radius,  radius), vec3(1.0f, 0.0f, 1.0f)),
-                    VertexColor(vec3(-radius,  radius,  radius), vec3(0.0f, 1.0f, 1.0f)),
-                    VertexColor(vec3( radius,  radius,  radius), vec3(1.0f, 1.0f, 1.0f)),
-                    VertexColor(vec3(-radius,  radius, -radius), vec3(0.0f, 1.0f, 0.0f)),
-                    VertexColor(vec3( radius,  radius, -radius), vec3(1.0f, 1.0f, 0.0f)),
-                    VertexColor(vec3(-radius, -radius, -radius), vec3(0.0f, 0.0f, 0.0f)),
-                    VertexColor(vec3( radius, -radius, -radius), vec3(1.0f, 0.0f, 0.0f)),
-                    VertexColor(vec3( radius, -radius, -radius), vec3(1.0f, 0.0f, 0.0f)),
-                    VertexColor(vec3( radius,  radius, -radius), vec3(1.0f, 1.0f, 0.0f)),
-                    VertexColor(vec3( radius,  radius, -radius), vec3(1.0f, 1.0f, 0.0f)),
-                    VertexColor(vec3( radius,  radius,  radius), vec3(1.0f, 1.0f, 1.0f)),
-                    VertexColor(vec3( radius, -radius, -radius), vec3(1.0f, 0.0f, 0.0f)),
-                    VertexColor(vec3( radius, -radius,  radius), vec3(1.0f, 0.0f, 1.0f)),
-                    VertexColor(vec3(-radius, -radius, -radius), vec3(0.0f, 0.0f, 0.0f)),
-                    VertexColor(vec3(-radius, -radius,  radius), vec3(0.0f, 0.0f, 1.0f)),
-                    VertexColor(vec3(-radius,  radius, -radius), vec3(0.0f, 1.0f, 0.0f)),
-                    VertexColor(vec3(-radius,  radius,  radius), vec3(0.0f, 1.0f, 1.0f))
+            attributeType = POSITION_XYZ_COLOR_RGB;
+            PositionXYZColorRGB vertices[numVertices] = {
+                    PositionXYZColorRGB(vec3(-radius, -radius, radius), vec3(0.0f, 0.0f, 1.0f)),
+                    PositionXYZColorRGB(vec3(radius, -radius, radius), vec3(1.0f, 0.0f, 1.0f)),
+                    PositionXYZColorRGB(vec3(-radius, radius, radius), vec3(0.0f, 1.0f, 1.0f)),
+                    PositionXYZColorRGB(vec3(radius, radius, radius), vec3(1.0f, 1.0f, 1.0f)),
+                    PositionXYZColorRGB(vec3(-radius, radius, -radius), vec3(0.0f, 1.0f, 0.0f)),
+                    PositionXYZColorRGB(vec3(radius, radius, -radius), vec3(1.0f, 1.0f, 0.0f)),
+                    PositionXYZColorRGB(vec3(-radius, -radius, -radius), vec3(0.0f, 0.0f, 0.0f)),
+                    PositionXYZColorRGB(vec3(radius, -radius, -radius), vec3(1.0f, 0.0f, 0.0f)),
+                    PositionXYZColorRGB(vec3(radius, -radius, -radius), vec3(1.0f, 0.0f, 0.0f)),
+                    PositionXYZColorRGB(vec3(radius, radius, -radius), vec3(1.0f, 1.0f, 0.0f)),
+                    PositionXYZColorRGB(vec3(radius, radius, -radius), vec3(1.0f, 1.0f, 0.0f)),
+                    PositionXYZColorRGB(vec3(radius, radius, radius), vec3(1.0f, 1.0f, 1.0f)),
+                    PositionXYZColorRGB(vec3(radius, -radius, -radius), vec3(1.0f, 0.0f, 0.0f)),
+                    PositionXYZColorRGB(vec3(radius, -radius, radius), vec3(1.0f, 0.0f, 1.0f)),
+                    PositionXYZColorRGB(vec3(-radius, -radius, -radius), vec3(0.0f, 0.0f, 0.0f)),
+                    PositionXYZColorRGB(vec3(-radius, -radius, radius), vec3(0.0f, 0.0f, 1.0f)),
+                    PositionXYZColorRGB(vec3(-radius, radius, -radius), vec3(0.0f, 1.0f, 0.0f)),
+                    PositionXYZColorRGB(vec3(-radius, radius, radius), vec3(0.0f, 1.0f, 1.0f))
             };
-            this->vertices = (VertexColor*)malloc(numVertices * sizeof(VertexColor));
+            this->vertices = (PositionXYZColorRGB*)malloc(numVertices * sizeof(PositionXYZColorRGB));
             for(int i = 0; i < numVertices; i++) {
-                ((VertexColor*)this->vertices)[i] = vertices[i];
+                ((PositionXYZColorRGB*)this->vertices)[i] = vertices[i];
             }
             break;}
     }

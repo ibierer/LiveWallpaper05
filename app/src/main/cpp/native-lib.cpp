@@ -19,9 +19,9 @@
 
 #include "nlohmann/json.hpp"
 #include "vectors.cpp"
-#include "Vertex.cpp"
-#include "VertexNormal.cpp"
-#include "VertexColor.cpp"
+#include "PositionXYZ.cpp"
+#include "PositionXYZNormalXYZ.cpp"
+#include "PositionXYZColorRGB.cpp"
 #include "View.cpp"
 #include "TriangleStripObject.cpp"
 #include "VertexArrayObject.cpp"

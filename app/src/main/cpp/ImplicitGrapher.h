@@ -7,7 +7,7 @@
 
 
 #include <GLES3/gl32.h>
-#include "VertexNormal.h"
+#include "PositionXYZNormalXYZ.h"
 
 class ImplicitGrapher {
 
@@ -236,7 +236,7 @@ public:
 
     ~ImplicitGrapher();
 
-    VertexNormal* vertices;
+    PositionXYZNormalXYZ* vertices;
 
     uvec3* indices;
 
@@ -244,7 +244,7 @@ public:
 
     static float fOfXYZ(ImplicitGrapher& graph, vec3 _, const float& t, const vec3& offset, const float& zoom);
 
-    void calculateSurfaceOnCPU(float (*fOfXYZ)(ImplicitGrapher&, vec3, const float&, const vec3&, const float&), const float& timeVariable, const uint& iterations, const vec3& offset, const float& zoom, const bool& vectorPointsPositive, const bool& clipEdges, VertexNormal* _vertices, uvec3* _indices, GLuint& _numIndices);
+    void calculateSurfaceOnCPU(float (*fOfXYZ)(ImplicitGrapher&, vec3, const float&, const vec3&, const float&), const float& timeVariable, const uint& iterations, const vec3& offset, const float& zoom, const bool& vectorPointsPositive, const bool& clipEdges, PositionXYZNormalXYZ* _vertices, uvec3* _indices, GLuint& _numIndices);
 
     // Assignment Constructor
     ImplicitGrapher(const ImplicitGrapher& other);

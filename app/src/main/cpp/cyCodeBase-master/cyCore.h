@@ -248,10 +248,10 @@ template <typename T> CY_NODISCARD inline T Sqrt     ( T v ) { return (T) std::s
 template <typename T> CY_NODISCARD inline T SqrtSafe ( T v ) { return (T) std::sqrt(Max(v,T(0))); }
 
 #ifdef _INCLUDED_IMM
-template<> CY_NODISCARD inline float  Sqrt    <float> ( float  v ) { return _mm_cvtss_f32(_mm_sqrt_ss(_mm_set_ps1(v))); }
-template<> CY_NODISCARD inline float  SqrtSafe<float> ( float  v ) { return _mm_cvtss_f32(_mm_sqrt_ss(_mm_set_ps1(Max(v,0.0f)))); }
-template<> CY_NODISCARD inline double Sqrt    <double>( double v ) { __m128d t=_mm_set1_pd(v);          return _mm_cvtsd_f64(_mm_sqrt_sd(t,t)); }
-template<> CY_NODISCARD inline double SqrtSafe<double>( double v ) { __m128d t=_mm_set1_pd(Max(v,0.0)); return _mm_cvtsd_f64(_mm_sqrt_sd(t,t)); }
+template<> CY_NODISCARD inline float  Sqrt    <float> ( float  p ) { return _mm_cvtss_f32(_mm_sqrt_ss(_mm_set_ps1(p))); }
+template<> CY_NODISCARD inline float  SqrtSafe<float> ( float  p ) { return _mm_cvtss_f32(_mm_sqrt_ss(_mm_set_ps1(Max(p,0.0f)))); }
+template<> CY_NODISCARD inline double Sqrt    <double>( double p ) { __m128d t=_mm_set1_pd(p);          return _mm_cvtsd_f64(_mm_sqrt_sd(t,t)); }
+template<> CY_NODISCARD inline double SqrtSafe<double>( double p ) { __m128d t=_mm_set1_pd(Max(p,0.0)); return _mm_cvtsd_f64(_mm_sqrt_sd(t,t)); }
 #endif
 
 template<typename T> inline T Pi  () { return T(3.141592653589793238462643383279502884197169); }

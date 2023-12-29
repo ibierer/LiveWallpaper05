@@ -6,7 +6,7 @@
 
 TriangleWithNormalsView::TriangleWithNormalsView() : View(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
-    triangleWithNormalsVAO = VertexArrayObject(triangleVerticesNormals, sizeof(triangleVerticesNormals) / sizeof(VertexNormal));
+    triangleWithNormalsVAO = VertexArrayObject(triangleVerticesNormals, sizeof(triangleVerticesNormals) / sizeof(PositionXYZNormalXYZ));
 }
 
 TriangleWithNormalsView::~TriangleWithNormalsView(){

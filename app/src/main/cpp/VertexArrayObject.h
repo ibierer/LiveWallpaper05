@@ -15,11 +15,11 @@ public:
 
     VertexArrayObject();
 
-    VertexArrayObject(Vertex* vertices, const int& count);
+    VertexArrayObject(PositionXYZ* vertices, const int& count);
 
-    VertexArrayObject(VertexNormal* vertices, const int& count);
+    VertexArrayObject(PositionXYZNormalXYZ* vertices, const int& count);
 
-    VertexArrayObject(VertexColor* vertices, const int &count);
+    VertexArrayObject(PositionXYZColorRGB* vertices, const int &count);
 
     VertexArrayObject(const TriangleStripObject& triangleStripObject);
 

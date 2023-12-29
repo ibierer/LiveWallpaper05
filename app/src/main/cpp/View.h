@@ -11,8 +11,8 @@
 #include <EGL/egl.h>
 #include <GLES3/gl32.h>
 #include <string>
-#include "Vertex.h"
-#include "VertexNormal.h"
+#include "PositionXYZ.h"
+#include "PositionXYZNormalXYZ.h"
 #include "cyCodeBase-master/cyMatrix.h"
 
 using std::string;
@@ -43,36 +43,36 @@ public:
 
     Matrix4<float> orientationAdjustedPerspective;
 
-    Vertex triangleVertices[3] = {
-            Vertex(vec3(1.0f, 0.0f, 0.0f)),
-            Vertex(vec3(0.0f, 1.0f, 0.0f)),
-            Vertex(vec3(1.0f, 0.0f, 1.0f))
+    PositionXYZ triangleVertices[3] = {
+            PositionXYZ(vec3(1.0f, 0.0f, 0.0f)),
+            PositionXYZ(vec3(0.0f, 1.0f, 0.0f)),
+            PositionXYZ(vec3(1.0f, 0.0f, 1.0f))
     };
 
-    VertexNormal triangleVerticesNormals[3] = {
-            VertexNormal(vec3(1.0f, 0.0f, 0.0f), vec3(sqrtf(3.0f), sqrt(3.0f), sqrt(3.0f))),
-            VertexNormal(vec3(0.0f, 1.0f, 0.0f), vec3(sqrtf(3.0f), sqrt(3.0f), sqrt(3.0f))),
-            VertexNormal(vec3(1.0f, 0.0f, 1.0f), vec3(sqrtf(3.0f), sqrt(3.0f), sqrt(3.0f)))
+    PositionXYZNormalXYZ triangleVerticesNormals[3] = {
+            PositionXYZNormalXYZ(vec3(1.0f, 0.0f, 0.0f), vec3(sqrtf(3.0f), sqrt(3.0f), sqrt(3.0f))),
+            PositionXYZNormalXYZ(vec3(0.0f, 1.0f, 0.0f), vec3(sqrtf(3.0f), sqrt(3.0f), sqrt(3.0f))),
+            PositionXYZNormalXYZ(vec3(1.0f, 0.0f, 1.0f), vec3(sqrtf(3.0f), sqrt(3.0f), sqrt(3.0f)))
     };
 
-    Vertex tileVertices[4] = {
-            Vertex(vec3(0.0f, 0.0f, 0.0f)),
-            Vertex(vec3(0.0f, 1.0f, 0.0f)),
-            Vertex(vec3(1.0f, 0.0f, 0.0f)),
-            Vertex(vec3(1.0f, 1.0f, 0.0f))
+    PositionXYZ tileVertices[4] = {
+            PositionXYZ(vec3(0.0f, 0.0f, 0.0f)),
+            PositionXYZ(vec3(0.0f, 1.0f, 0.0f)),
+            PositionXYZ(vec3(1.0f, 0.0f, 0.0f)),
+            PositionXYZ(vec3(1.0f, 1.0f, 0.0f))
     };
 
-    Vertex tilesVertices[10] = {
-            Vertex(vec3(0.0f, 0.0f, 0.0f)),
-            Vertex(vec3(0.0f, 1.0f, 0.0f)),
-            Vertex(vec3(1.0f, 0.0f, 0.0f)),
-            Vertex(vec3(1.0f, 1.0f, 0.0f)),
-            Vertex(vec3(1.0f, 1.0f, 0.0f)),
-            Vertex(vec3(0.0f, 0.0f, 1.0f)),
-            Vertex(vec3(0.0f, 0.0f, 1.0f)),
-            Vertex(vec3(0.0f, 1.0f, 1.0f)),
-            Vertex(vec3(1.0f, 0.0f, 1.0f)),
-            Vertex(vec3(1.0f, 1.0f, 1.0f))
+    PositionXYZ tilesVertices[10] = {
+            PositionXYZ(vec3(0.0f, 0.0f, 0.0f)),
+            PositionXYZ(vec3(0.0f, 1.0f, 0.0f)),
+            PositionXYZ(vec3(1.0f, 0.0f, 0.0f)),
+            PositionXYZ(vec3(1.0f, 1.0f, 0.0f)),
+            PositionXYZ(vec3(1.0f, 1.0f, 0.0f)),
+            PositionXYZ(vec3(0.0f, 0.0f, 1.0f)),
+            PositionXYZ(vec3(0.0f, 0.0f, 1.0f)),
+            PositionXYZ(vec3(0.0f, 1.0f, 1.0f)),
+            PositionXYZ(vec3(1.0f, 0.0f, 1.0f)),
+            PositionXYZ(vec3(1.0f, 1.0f, 1.0f))
     };
 
     View();

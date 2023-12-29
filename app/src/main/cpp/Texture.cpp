@@ -254,7 +254,7 @@ Texture& Texture::dynamicallyGenerateMandelbrotWithVertexShader(FBO& fbo, View* 
     glUniform1i(glGetUniformLocation(mProgram, "WIDTH"), fbo.getWidth());
     glUniform1i(glGetUniformLocation(mProgram, "HEIGHT"), fbo.getHeight());
 
-    Vertex vertices[4] = {
+    PositionXYZ vertices[4] = {
             {vec3(-1.0f, -1.0f, 0.0f)},
             {vec3(-1.0f, 1.0f, 0.0f)},
             {vec3(1.0f, -1.0f, 0.0f)},
@@ -266,7 +266,7 @@ Texture& Texture::dynamicallyGenerateMandelbrotWithVertexShader(FBO& fbo, View* 
     };
 
     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
-    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid *) &vertices[0].v);
+    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZ), (const GLvoid *) &vertices[0].p);
     glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(unsigned int), GL_UNSIGNED_INT, indices);
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
 

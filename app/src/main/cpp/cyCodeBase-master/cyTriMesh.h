@@ -360,7 +360,7 @@ inline bool TriMesh::LoadFromFileObj( char const *filename, bool loadMtl, std::o
 	bool hasTextures=false, hasNormals=false;
 
 	while ( int rb = buffer.ReadLine(fp) ) {
-		if ( buffer.IsCommand("v") ) {
+		if ( buffer.IsCommand("p") ) {
 			Vec3f vertex;
 			buffer.ReadVertex(vertex);
 			_v.push_back(vertex);
@@ -558,7 +558,7 @@ inline bool TriMesh::SaveToFileObj( char const *filename, std::ostream *outStrea
 	}
 
 	for ( unsigned int i=0; i<nv; i++ ) {
-		fprintf(fp,"v %f %f %f\n",v[i].x, v[i].y, v[i].z);
+		fprintf(fp,"p %f %f %f\n",v[i].x, v[i].y, v[i].z);
 	}
 	for ( unsigned int i=0; i<nvt; i++ ) {
 		fprintf(fp,"vt %f %f %f\n",vt[i].x, vt[i].y, vt[i].z);

@@ -6,7 +6,7 @@
 
 TextureView::TextureView() : View(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
-    tileVAO = VertexArrayObject(tileVertices, sizeof(tileVertices) / sizeof(Vertex));
+    tileVAO = VertexArrayObject(tileVertices, sizeof(tileVertices) / sizeof(PositionXYZ));
     //texture = Texture(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
     texture = Texture(Texture::DefaultImages::MANDELBROT, 16384, 16384, this);
 }

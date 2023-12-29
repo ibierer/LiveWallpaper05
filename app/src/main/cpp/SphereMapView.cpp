@@ -9,7 +9,7 @@ SphereMapView::SphereMapView() : View() {
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     //sphereMap = SphereMap(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
     sphereMap = SphereMap(Texture::DefaultImages::MANDELBROT, 16384, 16384, this);
-    environmentTriangleVAO = VertexArrayObject(sphereMap.environmentTriangleVertices, sizeof(sphereMap.environmentTriangleVertices) / sizeof(Vertex));
+    environmentTriangleVAO = VertexArrayObject(sphereMap.environmentTriangleVertices, sizeof(sphereMap.environmentTriangleVertices) / sizeof(PositionXYZ));
 }
 
 SphereMapView::~SphereMapView(){

@@ -1,34 +1,34 @@
 // cyCodeBase by Cem Yuksel
 // [www.cemyuksel.com]
 //-------------------------------------------------------------------------------
-//! \file   cyMatrix.h 
+//! \file   cyMatrix.h
 //! \author Cem Yuksel
-//! 
+//!
 //! \brief  2x2, 3x3, 3x4, and 4x4 matrix classes
-//! 
+//!
 //-------------------------------------------------------------------------------
 //
 // Copyright (c) 2016, Cem Yuksel <cem@cemyuksel.com>
 // All rights reserved.
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy 
-// of this software and associated documentation files (the "Software"), to deal 
-// in the Software without restriction, including without limitation the rights 
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
-// copies of the Software, and to permit persons to whom the Software is 
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all 
+//
+// The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-// 
+//
 //-------------------------------------------------------------------------------
 
 #ifndef _CY_MATRIX_H_INCLUDED_
@@ -99,7 +99,7 @@ public:
 	Matrix2() CY_CLASS_FUNCTION_DEFAULT										//!< Default constructor
 	template <typename TT> explicit Matrix2<T>( const Matrix2<TT> &matrix ) { MemConvert(cell,matrix.cell,4); }	//!< Copy constructor for different types
 	explicit Matrix2( T const * restrict values ) { Set(values); }			//!< Initialize the matrix using an array of 4 values
-	explicit Matrix2( T v )                       { SetScale(v); }			//!< Initialize the matrix as identity scaled by v
+	explicit Matrix2( T v )                       { SetScale(v); }			//!< Initialize the matrix as identity scaled by p
 	explicit Matrix2( Vec2<T> const &x, Vec2<T> const &y ) { Set(x,y); }	//!< Initialize the matrix using two vectors as columns
 	explicit Matrix2( Matrix3 <T> const &m );
 	explicit Matrix2( Matrix34<T> const &m );
@@ -198,7 +198,7 @@ public:
 	}
 
 	//! Returns the average scale factor
-	CY_NODISCARD T GetAvrgScale() const 
+	CY_NODISCARD T GetAvrgScale() const
 	{
 		T det = cell[0]*cell[3]-cell[2]*cell[1];
 		T s = Sqrt( std::abs(det) );
@@ -221,7 +221,7 @@ public:
 	CY_NODISCARD T const & operator () ( int ri, int ci ) const { assert( ri>=0 && ri<2 && ci>=0 && ci<2 ); return cell[ ci*2 + ri ]; }	//!< constant subscript operator
 	CY_NODISCARD T&        operator [] ( int i )                { assert( i>=0 && i<4 ); return cell[i]; }								//!< subscript operator
 	CY_NODISCARD T const & operator [] ( int i )          const { assert( i>=0 && i<4 ); return cell[i]; }								//!< constant subscript operator
-	
+
 	//////////////////////////////////////////////////////////////////////////
 	//!@name Unary and Binary Operators
 
@@ -382,7 +382,7 @@ public:
 	}
 
 	//! Singular value decomposition (SVD).
-	//! Returns the SVD of the matrix, where U and V are orthogonal matrices and 
+	//! Returns the SVD of the matrix, where U and V are orthogonal matrices and
 	//! S is the diagonal elements of a diagonal matrix (including zeros),
 	//! such that this matrix A = U S V^T.
 	void SingularValueDecomposition( Matrix2<T> &U, Vec2<T> &S, Matrix2<T> &V )
@@ -461,7 +461,7 @@ public:
 	Matrix3() CY_CLASS_FUNCTION_DEFAULT															//!< Default constructor
 	template <typename TT> explicit Matrix3<T>( Matrix3<TT> const &matrix ) { MemConvert(cell,matrix.cell,9); }	//!< Copy constructor for different types
 	explicit Matrix3( T const * restrict values ) { Set(values); }								//!< Initialize the matrix using an array of 9 values
-	explicit Matrix3( T v )                       { SetScale(v); }								//!< Initialize the matrix as identity scaled by v
+	explicit Matrix3( T v )                       { SetScale(v); }								//!< Initialize the matrix as identity scaled by p
 	explicit Matrix3( Vec3<T> const &x, Vec3<T> const &y, Vec3<T> const &z ) { Set(x,y,z); }	//!< Initialize the matrix using x,y,z vectors as columns
 	explicit Matrix3( Matrix2 <T> const &m ) { Column(0).Set(m.Column(0),0); Column(1).Set(m.Column(1),0); Column(2).Set(0,0,1); }
 	explicit Matrix3( Matrix34<T> const &m );
@@ -506,8 +506,8 @@ public:
 	//! Sets a scale matrix
 	void SetScale( T scaleX, T scaleY, T scaleZ )
 	{
-		cell[0] = scaleX; cell[1] = 0;      cell[2]=0;     
-		cell[3] = 0;      cell[4] = scaleY; cell[5]=0;     
+		cell[0] = scaleX; cell[1] = 0;      cell[2]=0;
+		cell[3] = 0;      cell[4] = scaleY; cell[5]=0;
 		cell[6] = 0;      cell[7] = 0;      cell[8]=scaleZ;
 	}
 	//! Sets a scale matrix
@@ -517,7 +517,7 @@ public:
 	//! Set as rotation matrix around x axis by cos and sin of angle
 	void SetRotationX( T sinAngle, T cosAngle )
 	{
-		cell[0] = T(1);   cell[1] =  T(0);    cell[2] = T(0); 
+		cell[0] = T(1);   cell[1] =  T(0);    cell[2] = T(0);
 		cell[3] = T(0);   cell[4] =  cosAngle;   cell[5] = sinAngle;
 		cell[6] = T(0);   cell[7] = -sinAngle;   cell[8] = cosAngle;
 	}
@@ -527,7 +527,7 @@ public:
 	void SetRotationY( T sinAngle, T cosAngle )
 	{
 		cell[0] = cosAngle;   cell[1] = T(0);   cell[2] = -sinAngle;
-		cell[3] = T(0);       cell[4] = T(1);   cell[5] =  T(0); 
+		cell[3] = T(0);       cell[4] = T(1);   cell[5] =  T(0);
 		cell[6] = sinAngle;   cell[7] = T(0);   cell[8] =  cosAngle;
 	}
 	//! Set as rotation matrix around z axis
@@ -548,7 +548,7 @@ public:
 		T cy = std::cos(angleY);
 		T sz = std::sin(angleZ);
 		T cz = std::cos(angleZ);
-		cell[0] = cy*cz; 		      cell[1] = cy*sz; 			    cell[2] =-sy;   
+		cell[0] = cy*cz; 		      cell[1] = cy*sz; 			    cell[2] =-sy;
 		cell[3] = cz*sx*sy - cx*sz;   cell[4] = cx*cz + sx*sy*sz;   cell[5] = cy*sx;
 		cell[6] = cx*cz*sy + sx*sz;   cell[7] =-cz*sx + cx*sy*sz;   cell[8] = cx*cy;
 	}
@@ -632,7 +632,7 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	//!@name Get Row, Column, or Diagonal
-	
+
 #ifdef __cpp_unrestricted_unions
 	CY_NODISCARD Vec3<T>       * Columns()               { return column; }
 	CY_NODISCARD Vec3<T> const * Columns()         const { return column; }
@@ -666,10 +666,10 @@ public:
 	}
 
 	//! Returns the average scale factor
-	CY_NODISCARD T GetAvrgScale() const 
+	CY_NODISCARD T GetAvrgScale() const
 	{
-		T det = cell[0] * ( cell[4] * cell[8] - cell[5] * cell[7] ) + 
-		        cell[1] * ( cell[5] * cell[6] - cell[3] * cell[8] ) + 
+		T det = cell[0] * ( cell[4] * cell[8] - cell[5] * cell[7] ) +
+		        cell[1] * ( cell[5] * cell[6] - cell[3] * cell[8] ) +
 		        cell[2] * ( cell[3] * cell[7] - cell[4] * cell[6] );
 		T s = std::pow( std::abs(det), T(1)/T(3) );
 		return det >= 0 ? s : -s;
@@ -679,7 +679,7 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	//!@name Get Sub-matrix cell
-	
+
 	CY_NODISCARD Matrix2<T> GetSubMatrix2() const { Matrix2<T> m; MemCopy(m.cell,cell,2); MemCopy(m.cell+2,cell+3,2); return m; }	//!< Returns the 2x2 portion of the matrix
 
 
@@ -697,7 +697,7 @@ public:
 	CY_NODISCARD T const & operator () ( int ri, int ci ) const { assert( ri>=0 && ri<3 && ci>=0 && ci<3 ); return cell[ ci*3 + ri ]; }	//!< constant subscript operator
 	CY_NODISCARD T&        operator [] ( int i )                { assert( i>=0 && i<9 ); return cell[i]; }								//!< subscript operator
 	CY_NODISCARD T const & operator [] ( int i )          const { assert( i>=0 && i<9 ); return cell[i]; }								//!< constant subscript operator
-	
+
 
 	//////////////////////////////////////////////////////////////////////////
 	//!@name Unary and Binary Operators
@@ -729,7 +729,7 @@ public:
 	CY_NODISCARD Vec3<T> operator * ( Vec3<T> const &p ) const
 	{
 		_CY_INIT_MATRIX3_VECTORIZATION;
-		//return Vec3<T>( p.x*cell[0] + p.y*cell[3] + p.z*cell[6], 
+		//return Vec3<T>( p.x*cell[0] + p.y*cell[3] + p.z*cell[6],
 		//                p.x*cell[1] + p.y*cell[4] + p.z*cell[7],
 		//                p.x*cell[2] + p.y*cell[5] + p.z*cell[8] );
 		T a[4], b[4], c[4], d[4], r[4];
@@ -737,7 +737,7 @@ public:
 		_CY_IVDEP_FOR ( int i=0; i<N; ++i ) b[i] = p[1] * cell[3+i];
 		_CY_IVDEP_FOR ( int i=0; i<N; ++i ) c[i] = p[2] * cell_6[i];
 		_CY_IVDEP_FOR ( int i=0; i<N; ++i ) d[i] = a[i] + b[i];
-		_CY_IVDEP_FOR ( int i=0; i<N; ++i ) r[i] = d[i] + c[i];	
+		_CY_IVDEP_FOR ( int i=0; i<N; ++i ) r[i] = d[i] + c[i];
 		return Vec3<T>(r);
 	}
 
@@ -799,7 +799,7 @@ public:
 	//! Multiply the give vector with the transpose of the matrix
 	CY_NODISCARD Vec3<T> TransposeMult( Vec3<T> const &p ) const
 	{
-		return Vec3<T>( p.x*cell[0] + p.y*cell[1] + p.z*cell[2], 
+		return Vec3<T>( p.x*cell[0] + p.y*cell[1] + p.z*cell[2],
 		                p.x*cell[3] + p.y*cell[4] + p.z*cell[5],
 		                p.x*cell[6] + p.y*cell[7] + p.z*cell[8] );
 	}
@@ -837,17 +837,17 @@ public:
 
 	CY_NODISCARD T GetDeterminant() const {	//!< Get the determinant of this matrix
 		// 0 (4 8 - 5 7) + 1 (5 6 - 3 8) + 2 (3 7 - 4 6)
-		return cell[0] * ( cell[4] * cell[8] - cell[5] * cell[7] ) + 
-		       cell[1] * ( cell[5] * cell[6] - cell[3] * cell[8] ) + 
+		return cell[0] * ( cell[4] * cell[8] - cell[5] * cell[7] ) +
+		       cell[1] * ( cell[5] * cell[6] - cell[3] * cell[8] ) +
 		       cell[2] * ( cell[3] * cell[7] - cell[4] * cell[6] );
 	}
 
 	void Invert() { *this = GetInverse(); }	//!< Invert this matrix
 	CY_NODISCARD Matrix3 GetInverse() const	//!< Get the inverse of this matrix
 	{
-		//  ( 4 8 - 5 7    5 6 - 3 8    3 7 - 4 6 ) 
+		//  ( 4 8 - 5 7    5 6 - 3 8    3 7 - 4 6 )
 		//  ( 2 7 - 1 8    0 8 - 2 6    1 6 - 0 7 )  / det
-		//  ( 1 5 - 2 4    2 3 - 0 5    0 4 - 1 3 ) 
+		//  ( 1 5 - 2 4    2 3 - 0 5    0 4 - 1 3 )
 
 		Matrix3 inverse;
 
@@ -906,7 +906,7 @@ public:
 	//! Returns if the matrix is identity within the given error tollerance.
 	bool IsIdentity( T tollerance=T(_CY_VEC_DEFAULT_ERROR_TOLERANCE) ) const
 	{
-		return std::abs(cell[0]-T(1)) < tollerance && std::abs(cell[1])      < tollerance && std::abs(cell[2])      < tollerance && 
+		return std::abs(cell[0]-T(1)) < tollerance && std::abs(cell[1])      < tollerance && std::abs(cell[2])      < tollerance &&
 		       std::abs(cell[3])      < tollerance && std::abs(cell[4]-T(1)) < tollerance && std::abs(cell[5])      < tollerance &&
 		       std::abs(cell[6])      < tollerance && std::abs(cell[7])      < tollerance && std::abs(cell[8]-T(1)) < tollerance;
 	}
@@ -993,7 +993,7 @@ public:
 	}
 
 	//! Singular value decomposition (SVD)
-	//! Returns the SVD of the matrix, where U and V are orthogonal matrices and 
+	//! Returns the SVD of the matrix, where U and V are orthogonal matrices and
 	//! S is the diagonal elements of a diagonal matrix (including zeros),
 	//! such that this matrix A = U S V^T.
 	//! The given tollerance is used for checking whether the eigenvalues are the same.
@@ -1092,7 +1092,7 @@ public:
 	Matrix34() CY_CLASS_FUNCTION_DEFAULT												//!< Default constructor
 	template <typename TT> explicit Matrix34<T>( Matrix34<TT> const &matrix ) { MemConvert(cell,matrix.cell,12); }	//!< Copy constructor for different types
 	explicit Matrix34( T const * restrict values ) { Set(values); }						//!< Initialize the matrix using an array of 9 values
-	explicit Matrix34( T v )                       { SetScale(v); }						//!< Initialize the matrix as identity scaled by v
+	explicit Matrix34( T v )                       { SetScale(v); }						//!< Initialize the matrix as identity scaled by p
 	explicit Matrix34( Vec3<T> const &x, Vec3<T> const &y, Vec3<T> const &z, Vec3<T> const &pos ) { Set(x,y,z,pos); }	//!< Initialize the matrix using x,y,z vectors and coordinate center
 	explicit Matrix34( Matrix3<T> const &m ) { MemCopy(cell,m.cell,9); Column(3).Zero(); }
 	explicit Matrix34( Matrix3<T> const &m, Vec3<T> const &pos ) { MemCopy(cell,m.cell,9); Column(3)=pos; }
@@ -1141,7 +1141,7 @@ public:
 	//! Set as rotation matrix around x axis by cos and sin of angle
 	void SetRotationX( T sinAngle, T cosAngle )
 	{
-		cell[0] = T(1);   cell[1] = T(0);        cell[2] = T(0); 
+		cell[0] = T(1);   cell[1] = T(0);        cell[2] = T(0);
 		cell[3] = T(0);   cell[4] = cosAngle;    cell[5] = sinAngle;
 		cell[6] = T(0);   cell[7] = -sinAngle;   cell[8] = cosAngle;
 		MemClear(cell+9,3);
@@ -1151,9 +1151,9 @@ public:
 	//! Set as rotation matrix around y axis by cos and sin of angle
 	void SetRotationY( T sinAngle, T cosAngle )
 	{
-		cell[0] = cosAngle;   cell[1] = T(0);   cell[2] = -sinAngle;  
-		cell[3] = T(0);       cell[4] = T(1);   cell[5] = T(0);  
-		cell[6] = sinAngle;   cell[7] = T(0);   cell[8] = cosAngle; 
+		cell[0] = cosAngle;   cell[1] = T(0);   cell[2] = -sinAngle;
+		cell[3] = T(0);       cell[4] = T(1);   cell[5] = T(0);
+		cell[6] = sinAngle;   cell[7] = T(0);   cell[8] = cosAngle;
 		MemClear(cell+9,3);
 	}
 	//! Set as rotation matrix around z axis
@@ -1162,7 +1162,7 @@ public:
 	void SetRotationZ( T sinAngle, T cosAngle )
 	{
 		cell[0] =  cosAngle;   cell[1] = sinAngle;   cell[2] = T(0);
-		cell[3] = -sinAngle;   cell[4] = cosAngle;   cell[5] = T(0); 
+		cell[3] = -sinAngle;   cell[4] = cosAngle;   cell[5] = T(0);
 		cell[6] =  T(0);       cell[7] = T(0);       cell[8] = T(1);
 		MemClear(cell+9,3);
 	}
@@ -1175,8 +1175,8 @@ public:
 		T cy = std::cos(angleY);
 		T sz = std::sin(angleZ);
 		T cz = std::cos(angleZ);
-		cell[0] = cy*cz; 		      cell[1] = cy*sz; 			    cell[2] =-sy;   
-		cell[3] = cz*sx*sy - cx*sz;   cell[4] = cx*cz + sx*sy*sz;   cell[5] = cy*sx; 
+		cell[0] = cy*cz; 		      cell[1] = cy*sz; 			    cell[2] =-sy;
+		cell[3] = cz*sx*sy - cx*sz;   cell[4] = cx*cz + sx*sy*sz;   cell[5] = cy*sx;
 		cell[6] = cx*cz*sy + sx*sz;   cell[7] =-cz*sx + cx*sy*sz;   cell[8] = cx*cy;
 		MemClear(cell+9,3);
 	}
@@ -1189,8 +1189,8 @@ public:
 		T cy = std::cos(angleY);
 		T sz = std::sin(angleZ);
 		T cz = std::cos(angleZ);
-		cell[0] = cy*cz;   cell[1] = cx*sz + sx*sy*cz;   cell[2] = sx*sz - cx*sy*cz;            
-		cell[3] =-cy*sz;   cell[4] = cx*cz - sx*sy*sz;   cell[5] = sx*cz + cx*sy*sz;            
+		cell[0] = cy*cz;   cell[1] = cx*sz + sx*sy*cz;   cell[2] = sx*sz - cx*sy*cz;
+		cell[3] =-cy*sz;   cell[4] = cx*cz - sx*sy*sz;   cell[5] = sx*cz + cx*sy*sz;
 		cell[6] = sy;      cell[7] =-sx*cy;			     cell[8] = cx*cy;
 		MemClear(cell+9,3);
 	}
@@ -1298,10 +1298,10 @@ public:
 	CY_NODISCARD Matrix3<T> GetScale      () const { Matrix3<T> m(*this); return m.GetScale   (); }		//!< Returns the scale portion of the transformation.
 
 	//! Returns the average scale factor of the 3 by 3 sub-matrix
-	T GetAvrgScale() const 
+	T GetAvrgScale() const
 	{
-		T det = cell[0] * ( cell[4] * cell[8] - cell[5] * cell[7] ) + 
-		        cell[1] * ( cell[5] * cell[6] - cell[3] * cell[8] ) + 
+		T det = cell[0] * ( cell[4] * cell[8] - cell[5] * cell[7] ) +
+		        cell[1] * ( cell[5] * cell[6] - cell[3] * cell[8] ) +
 		        cell[2] * ( cell[3] * cell[7] - cell[4] * cell[6] );
 		T s = std::pow( std::abs(det), T(1)/T(3) );
 		return det >= 0 ? s : -s;
@@ -1373,7 +1373,7 @@ public:
 	CY_NODISCARD Vec3<T> operator * ( Vec3<T> const &p ) const
 	{
 		_CY_INIT_MATRIX34_VECTORIZATION;
-		//return Vec3<T>( p.x*cell[0] + p.y*cell[3] + p.z*cell[6] + cell[ 9], 
+		//return Vec3<T>( p.x*cell[0] + p.y*cell[3] + p.z*cell[6] + cell[ 9],
 		//                p.x*cell[1] + p.y*cell[4] + p.z*cell[7] + cell[10],
 		//                p.x*cell[2] + p.y*cell[5] + p.z*cell[8] + cell[11] );
 		T a[4], b[4], c[4], d[4], e[4], r[4];
@@ -1416,7 +1416,7 @@ public:
 	CY_NODISCARD Vec3<T> VectorTransform( Vec3<T> const &p ) const
 	{
 		_CY_INIT_MATRIX34_VECTORIZATION;
-		//return Vec3<T>( p.x*cell[0] + p.y*cell[3] + p.z*cell[6], 
+		//return Vec3<T>( p.x*cell[0] + p.y*cell[3] + p.z*cell[6],
 		//                p.x*cell[1] + p.y*cell[4] + p.z*cell[7],
 		//                p.x*cell[2] + p.y*cell[5] + p.z*cell[8] );
 		T a[4], b[4], c[4], d[4], r[4];
@@ -1431,7 +1431,7 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	//!@name Assignment Operators
-	
+
 	Matrix34 const & operator += ( Matrix34   const &right ) { _CY_FOR_12i( cell[i] += right.cell[i] );        return *this; }	//!< add two Matrices modify this
 	Matrix34 const & operator -= ( Matrix34   const &right ) { _CY_FOR_12i( cell[i] -= right.cell[i] );        return *this; }	//!< subtract one Matrix4 from another matrix and modify this matrix
 	Matrix34 const & operator *= ( Matrix34   const &right ) { *this = operator*(right);                       return *this; }	//!< multiply a matrix with another matrix and modify this matrix
@@ -1463,7 +1463,7 @@ public:
 	//! Multiply the give vector with the transpose of the matrix
 	CY_NODISCARD Vec4<T> TransposeMult( Vec3<T> const &p ) const
 	{
-		return Vec4<T>( p.x*cell[ 0] + p.y*cell[ 1] + p.z*cell[ 2], 
+		return Vec4<T>( p.x*cell[ 0] + p.y*cell[ 1] + p.z*cell[ 2],
 		                p.x*cell[ 3] + p.y*cell[ 4] + p.z*cell[ 5],
 		                p.x*cell[ 6] + p.y*cell[ 7] + p.z*cell[ 8],
 		                p.x*cell[ 9] + p.y*cell[10] + p.z*cell[11] + T(1) );
@@ -1472,7 +1472,7 @@ public:
 	//! Multiply the give vector with the transpose of the matrix
 	CY_NODISCARD Vec4<T> TransposeMult( Vec4<T> const &p ) const
 	{
-		return Vec4<T>( p.x*cell[ 0] + p.y*cell[ 1] + p.z*cell[ 2], 
+		return Vec4<T>( p.x*cell[ 0] + p.y*cell[ 1] + p.z*cell[ 2],
 		                p.x*cell[ 3] + p.y*cell[ 4] + p.z*cell[ 5],
 		                p.x*cell[ 6] + p.y*cell[ 7] + p.z*cell[ 8],
 		                p.x*cell[ 9] + p.y*cell[10] + p.z*cell[11] + p.w );
@@ -1481,8 +1481,8 @@ public:
 	CY_NODISCARD T GetDeterminant() const	//!< Get the determinant of this matrix
 	{
 		// 0 (4 8 - 5 7) + 1 (5 6 - 3 8) + 2 (3 7 - 4 6)
-		return cell[0] * ( cell[4] * cell[8] - cell[5] * cell[7] ) + 
-		       cell[1] * ( cell[5] * cell[6] - cell[3] * cell[8] ) + 
+		return cell[0] * ( cell[4] * cell[8] - cell[5] * cell[7] ) +
+		       cell[1] * ( cell[5] * cell[6] - cell[3] * cell[8] ) +
 		       cell[2] * ( cell[3] * cell[7] - cell[4] * cell[6] );
 	}
 	void Invert() { *this = GetInverse(); }		//!< Invert this matrix
@@ -1512,7 +1512,7 @@ public:
 
 		inverse.cell[ 9] = cell[3] * data_8_10__7_11 + cell[4] * data_6_11__8__9 + cell[5] * data_7__9__6_10;
 		inverse.cell[10] = cell[0] *-data_8_10__7_11 + cell[1] *-data_6_11__8__9 + cell[2] *-data_7__9__6_10;
-		inverse.cell[11] = cell[0] * (cell[5] * cell[10] - cell[4] * cell[11]) + 
+		inverse.cell[11] = cell[0] * (cell[5] * cell[10] - cell[4] * cell[11]) +
 		                   cell[1] * (cell[3] * cell[11] - cell[5] * cell[ 9]) +
 		                   cell[2] * (cell[4] * cell[ 9] - cell[3] * cell[10]);
 
@@ -1558,7 +1558,7 @@ public:
 	//! Returns if the matrix is identity within the given error tollerance.
 	bool IsIdentity( T tollerance=T(_CY_VEC_DEFAULT_ERROR_TOLERANCE) ) const
 	{
-		return std::abs(cell[0]-T(1)) < tollerance && std::abs(cell[ 1])      < tollerance && std::abs(cell[ 2])      < tollerance && 
+		return std::abs(cell[0]-T(1)) < tollerance && std::abs(cell[ 1])      < tollerance && std::abs(cell[ 2])      < tollerance &&
 			   std::abs(cell[3])      < tollerance && std::abs(cell[ 4]-T(1)) < tollerance && std::abs(cell[ 5])      < tollerance &&
 			   std::abs(cell[6])      < tollerance && std::abs(cell[ 7])      < tollerance && std::abs(cell[ 8]-T(1)) < tollerance &&
 			   std::abs(cell[9])      < tollerance && std::abs(cell[10])      < tollerance && std::abs(cell[11])      < tollerance;
@@ -1567,7 +1567,7 @@ public:
 	//! Returns if the matrix is symmetric within the given error tollerance.
 	bool IsSymmetric( T tollerance=T(_CY_VEC_DEFAULT_ERROR_TOLERANCE) ) const
 	{
-		return std::abs(cell[ 1] - cell[3]) < tollerance && 
+		return std::abs(cell[ 1] - cell[3]) < tollerance &&
 			   std::abs(cell[ 2] - cell[6]) < tollerance &&
 			   std::abs(cell[ 5] - cell[7]) < tollerance &&
 			   std::abs(cell[ 9])           < tollerance &&
@@ -1684,7 +1684,7 @@ public:
 	Matrix4() CY_CLASS_FUNCTION_DEFAULT																					//!< Default constructor
 	template <typename TT> explicit Matrix4<T>( Matrix4<TT> const &matrix ) { MemConvert(cell,matrix.cell,16); }		//!< Copy constructor for different types
 	explicit Matrix4( T const * restrict values ) { Set(values); }														//!< Initialize the matrix using an array of 9 values
-	explicit Matrix4( T v )                      { SetScale(v); }														//!< Initialize the matrix as identity scaled by v
+	explicit Matrix4( T v )                      { SetScale(v); }														//!< Initialize the matrix as identity scaled by p
 	explicit Matrix4( Vec3<T> const &x, Vec3<T> const &y, Vec3<T> const &z, Vec3<T> const &pos ) { Set(x,y,z,pos); }	//!< Initialize the matrix using x,y,z vectors and coordinate center
 	explicit Matrix4( Vec4<T> const &x, Vec4<T> const &y, Vec4<T> const &z, Vec4<T> const &w   ) { Set(x,y,z,w);   }	//!< Initialize the matrix using x,y,z vectors as columns
 	explicit Matrix4( Matrix34<T> const &m ) { Column(0).Set(m.Column(0),T(0)); Column(1).Set(m.Column(1),T(0)); Column(2).Set(m.Column(2),T(0)); Column(3).Set(m.Column(3),T(1)); }
@@ -1769,7 +1769,7 @@ public:
 	void SetRotationZ( T sinAngle, T cosAngle )
 	{
 		cell[ 0] =  cosAngle;  cell[ 1] = sinAngle;  cell[ 2] = T(0);  cell[ 3] = T(0);
-		cell[ 4] = -sinAngle;  cell[ 5] = cosAngle;  cell[ 6] = T(0);  cell[ 7] = T(0); 
+		cell[ 4] = -sinAngle;  cell[ 5] = cosAngle;  cell[ 6] = T(0);  cell[ 7] = T(0);
 		cell[ 8] =  T(0);      cell[ 9] = T(0);      cell[10] = T(1);
 		MemClear(cell+11,4);
 		cell[15] = T(1);
@@ -1798,8 +1798,8 @@ public:
 		T cy = std::cos(angleY);
 		T sz = std::sin(angleZ);
 		T cz = std::cos(angleZ);
-		cell[ 0] = cy*cz;  cell[ 1] = cx*sz + sx*sy*cz;  cell[ 2] = sx*sz - cx*sy*cz;  cell[ 3] = T(0);           
-		cell[ 4] =-cy*sz;  cell[ 5] = cx*cz - sx*sy*sz;  cell[ 6] = sx*cz + cx*sy*sz;  cell[ 7] = T(0);           
+		cell[ 0] = cy*cz;  cell[ 1] = cx*sz + sx*sy*cz;  cell[ 2] = sx*sz - cx*sy*cz;  cell[ 3] = T(0);
+		cell[ 4] =-cy*sz;  cell[ 5] = cx*cz - sx*sy*sz;  cell[ 6] = sx*cz + cx*sy*sz;  cell[ 7] = T(0);
 		cell[ 8] = sy;     cell[ 9] =-sx*cy;             cell[10] = cx*cy;
 		MemClear(cell+11,4);
 		cell[15] = T(1);
@@ -1929,10 +1929,10 @@ public:
 	CY_NODISCARD Matrix3<T>  GetScale      () const { Matrix3<T> m(*this); return m.GetScale   (); }	//!< Returns the scale portion of the transformation.
 
 	//! Returns the average scale factor of the 3 by 3 sub-matrix
-	CY_NODISCARD T GetAvrgScale() const 
+	CY_NODISCARD T GetAvrgScale() const
 	{
-		T det = cell[0] * ( cell[5] * cell[10] - cell[6] * cell[ 9] ) + 
-		        cell[1] * ( cell[6] * cell[ 8] - cell[4] * cell[10] ) + 
+		T det = cell[0] * ( cell[5] * cell[10] - cell[6] * cell[ 9] ) +
+		        cell[1] * ( cell[6] * cell[ 8] - cell[4] * cell[10] ) +
 		        cell[2] * ( cell[4] * cell[ 9] - cell[5] * cell[ 8] );
 		T s = std::pow( std::abs(det), T(1)/T(3) );
 		return det >= 0 ? s : -s;
@@ -1942,7 +1942,7 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	//!@name Comparison Operators
-	
+
 	CY_NODISCARD bool operator == ( Matrix4 const &right ) const { _CY_FOR_16i( if ( cell[i] != right.cell[i] ) return false ); return true;  } //!< compare equal
 	CY_NODISCARD bool operator != ( Matrix4 const &right ) const { _CY_FOR_16i( if ( cell[i] != right.cell[i] ) return true  ); return false; } //!< compare not equal
 
@@ -2021,9 +2021,9 @@ public:
 		MemCopy( rm.cell+12, cell+12, 4 );
 		return rm;
 	}
-	CY_NODISCARD Vec4<T> operator * ( Vec3<T> const &p ) const 
+	CY_NODISCARD Vec4<T> operator * ( Vec3<T> const &p ) const
 	{
-		//return Vec4<T>( p.x*cell[0] + p.y*cell[4] + p.z*cell[ 8] + cell[12], 
+		//return Vec4<T>( p.x*cell[0] + p.y*cell[4] + p.z*cell[ 8] + cell[12],
 		//                p.x*cell[1] + p.y*cell[5] + p.z*cell[ 9] + cell[13],
 		//                p.x*cell[2] + p.y*cell[6] + p.z*cell[10] + cell[14],
 		//                p.x*cell[3] + p.y*cell[7] + p.z*cell[11] + cell[15] );
@@ -2037,7 +2037,7 @@ public:
 		_CY_IVDEP_FOR ( int i=0; i<4; ++i ) r[i] = d[i] + e[i];
 		return r;
 	}
-	CY_NODISCARD Vec4<T> operator * ( Vec4<T> const &p ) const 
+	CY_NODISCARD Vec4<T> operator * ( Vec4<T> const &p ) const
 	{
 		//return Vec4<T>( p.x*cell[0] + p.y*cell[4] + p.z*cell[ 8] + p.w*cell[12],
 		//                p.x*cell[1] + p.y*cell[5] + p.z*cell[ 9] + p.w*cell[13],
@@ -2061,7 +2061,7 @@ public:
 	//! Transforms the vector by multiplying it with the matrix, ignoring the translation component.
 	CY_NODISCARD Vec4<T> VectorTransform( Vec3<T> const &p ) const
 	{
-		//return Vec4<T>( p.x*cell[0] + p.y*cell[4] + p.z*cell[ 8], 
+		//return Vec4<T>( p.x*cell[0] + p.y*cell[4] + p.z*cell[ 8],
 		//                p.x*cell[1] + p.y*cell[5] + p.z*cell[ 9],
 		//                p.x*cell[2] + p.y*cell[6] + p.z*cell[10],
 		//                p.x*cell[3] + p.y*cell[7] + p.z*cell[11] );
@@ -2114,7 +2114,7 @@ public:
 	CY_NODISCARD Vec4<T> TransposeMult( Vec3<T> const &p ) const { return TransposeMult( Vec4<T>(p.x, p.y, p.z, T(1)) ); }
 
 	//! Multiply the give vector with the transpose of the matrix
-	CY_NODISCARD Vec4<T> TransposeMult( Vec4<T> const &p ) const 
+	CY_NODISCARD Vec4<T> TransposeMult( Vec4<T> const &p ) const
 	{
 		//return Vec4<T>(	p.x*cell[ 0] + p.y*cell[ 1] + p.z*cell[ 2] + p.w*cell[ 3],
 		//						p.x*cell[ 4] + p.y*cell[ 5] + p.z*cell[ 6] + p.w*cell[ 7],
@@ -2169,10 +2169,10 @@ public:
 
 	CY_NODISCARD T GetDeterminant() const	//!< Get the determinant of this matrix
 	{
-		// 0 (                      5 ( 10 15 - 11 14) + 6 ( 11 13 -  9 15) + 7 (  9 14 - 10 13)) +  
-		// 1 ( 4 ( 11 14 - 10 15) +                      6 (  8 15 - 11 12) + 7 ( 10 12 -  8 14)) +  
-		// 2 ( 4 (  9 15 - 11 13) + 5 ( 11 12 -  8 15) +                      7 (  8 13 -  9 12)) + 
-		// 3 ( 4 ( 10 13 -  9 14) + 5 (  8 14 - 10 12) + 6 (  9 12 -  8 13)) 
+		// 0 (                      5 ( 10 15 - 11 14) + 6 ( 11 13 -  9 15) + 7 (  9 14 - 10 13)) +
+		// 1 ( 4 ( 11 14 - 10 15) +                      6 (  8 15 - 11 12) + 7 ( 10 12 -  8 14)) +
+		// 2 ( 4 (  9 15 - 11 13) + 5 ( 11 12 -  8 15) +                      7 (  8 13 -  9 12)) +
+		// 3 ( 4 ( 10 13 -  9 14) + 5 (  8 14 - 10 12) + 6 (  9 12 -  8 13))
 
 		T data_11_14__10_15 = cell[11] * cell[14] - cell[10] * cell[15];
 		T data__9_15__11_13 = cell[ 9] * cell[15] - cell[11] * cell[13];
@@ -2180,9 +2180,9 @@ public:
 		T data_11_12___8_15 = cell[11] * cell[12] - cell[ 8] * cell[15];
 		T data__8_14__10_12 = cell[ 8] * cell[14] - cell[10] * cell[12];
 		T data__9_12___8_13 = cell[ 9] * cell[12] - cell[ 8] * cell[13];
-		return cell[0] * ( cell[5] * (-data_11_14__10_15 ) + cell[6] * (-data__9_15__11_13 ) + cell[7] * (-data_10_13___9_14 ) ) +  
-		       cell[1] * ( cell[4] * ( data_11_14__10_15 ) + cell[6] * (-data_11_12___8_15 ) + cell[7] * (-data__8_14__10_12 ) ) +  
-		       cell[2] * ( cell[4] * ( data__9_15__11_13 ) + cell[5] * ( data_11_12___8_15 ) + cell[7] * (-data__9_12___8_13 ) ) + 
+		return cell[0] * ( cell[5] * (-data_11_14__10_15 ) + cell[6] * (-data__9_15__11_13 ) + cell[7] * (-data_10_13___9_14 ) ) +
+		       cell[1] * ( cell[4] * ( data_11_14__10_15 ) + cell[6] * (-data_11_12___8_15 ) + cell[7] * (-data__8_14__10_12 ) ) +
+		       cell[2] * ( cell[4] * ( data__9_15__11_13 ) + cell[5] * ( data_11_12___8_15 ) + cell[7] * (-data__9_12___8_13 ) ) +
 		       cell[3] * ( cell[4] * ( data_10_13___9_14 ) + cell[5] * ( data__8_14__10_12 ) + cell[6] * ( data__9_12___8_13 ) );
 	}
 
@@ -2190,20 +2190,20 @@ public:
 	CY_NODISCARD Matrix4 GetInverse() const	//!< Get the inverse of this matrix
 	{
 		//                       5 ( 10 15 - 11 14 ) + 6 ( 11 13 -  9 15 ) + 7 (  9 14 - 10 13 )
-		//                       1 ( 11 14 - 10 15 ) + 2 (  9 15 - 11 13 ) + 3 ( 10 13 -  9 14 ) 
+		//                       1 ( 11 14 - 10 15 ) + 2 (  9 15 - 11 13 ) + 3 ( 10 13 -  9 14 )
 		//                       1 (  6 15 -  7 14 ) + 2 (  7 13 -  5 15 ) + 3 (  5 14 -  6 13 )
 		//                       1 (  7 10 -  6 11 ) + 2 (  5 11 -  7  9 ) + 3 (  6  9 -  5 10 )
-		//					 					   						 					   
+		//
 		// 4 ( 11 14 - 10 15 ) +                       6 (  8 15 - 11 12 ) + 7 ( 10 12 -  8 14 )
 		// 0 ( 10 15 - 11 14 ) +                       2 ( 11 12 -  8 15 ) + 3 (  8 14 - 10 12 )
 		// 0 (  7 14 -  6 15 ) +                       2 (  4 15 -  7 12 ) + 3 (  6 12 -  4 14 )      / det
 		// 0 (  6 11 -  7 10 ) +                       2 (  8  7 -  4 11 ) + 3 (  4 10 -  6  8 )
-		//					 					   						 					   
-		// 4 (  9 15 - 11 13 ) + 5 ( 11 12 -  8 15 ) +                       7 (  8 13 -  9 12 ) 
+		//
+		// 4 (  9 15 - 11 13 ) + 5 ( 11 12 -  8 15 ) +                       7 (  8 13 -  9 12 )
 		// 0 ( 11 13 -  9 15 ) + 1 (  8 15 - 11 12 ) +                       3 (  9 12 -  8 13 )
 		// 0 (  5 15 -  7 13 ) + 1 (  7 12 -  4 15 ) +                       3 (  4 13 -  5 12 )
 		// 0 (  7  9 -  5 11 ) + 1 (  4 11 -  7  8 ) +                       3 (  5  8 -  4  9 )
-		//					 					   						 
+		//
 		// 4 ( 10 13 -  9 14 ) + 5 (  8 14 - 10 12 ) + 6 (  9 12 -  8 13 )
 		// 0 (  9 14 - 10 13 ) + 1 ( 10 12 -  8 14 ) + 2 (  8 13 -  9 12 )
 		// 0 (  6 13 -  5 14 ) + 1 (  4 14 -  6 12 ) + 2 (  5 12 -  4 13 )
@@ -2220,22 +2220,22 @@ public:
 		T data_11_13___9_15 = cell[11] * cell[13] - cell[ 9] * cell[15];
 		T data__5_15___7_13 = cell[ 5] * cell[15] - cell[ 7] * cell[13];
 		T data__7__9___5_11 = cell[ 7] * cell[ 9] - cell[ 5] * cell[11];
-		
+
 		T data_10_13___9_14 = cell[10] * cell[13] - cell[ 9] * cell[14];
 		T data__9_14__10_13 = cell[ 9] * cell[14] - cell[10] * cell[13];
 		T data__6_13___5_14 = cell[ 6] * cell[13] - cell[ 5] * cell[14];
 		T data__5_10___6__9 = cell[ 5] * cell[10] - cell[ 6] * cell[ 9];
-		
+
 		T data_11_12___8_15 = cell[11] * cell[12] - cell[ 8] * cell[15];
 		T data__8_15__11_12 = cell[ 8] * cell[15] - cell[11] * cell[12];
 		T data__7_12___4_15 = cell[ 7] * cell[12] - cell[ 4] * cell[15];
 		T data__4_11___7__8 = cell[ 4] * cell[11] - cell[ 7] * cell[ 8];
-		
+
 		T data__8_14__10_12 = cell[ 8] * cell[14] - cell[10] * cell[12];
 		T data_10_12___8_14 = cell[10] * cell[12] - cell[ 8] * cell[14];
 		T data__4_14___6_12 = cell[ 4] * cell[14] - cell[ 6] * cell[12];
 		T data__6__8___4_10 = cell[ 6] * cell[ 8] - cell[ 4] * cell[10];
-		
+
 		T data__9_12___8_13 = cell[ 9] * cell[12] - cell[ 8] * cell[13];
 		T data__8_13___9_12 = cell[ 8] * cell[13] - cell[ 9] * cell[12];
 		T data__5_12___4_13 = cell[ 5] * cell[12] - cell[ 4] * cell[13];
@@ -2245,12 +2245,12 @@ public:
 		inverse.cell[ 1] = cell[1] * (-data_10_15__11_14) + cell[2] * (-data_11_13___9_15) + cell[3] * (-data__9_14__10_13);
 		inverse.cell[ 2] = cell[1] * (-data__7_14___6_15) + cell[2] * (-data__5_15___7_13) + cell[3] * (-data__6_13___5_14);
 		inverse.cell[ 3] = cell[1] * (-data__6_11___7_10) + cell[2] * (-data__7__9___5_11) + cell[3] * (-data__5_10___6__9);
-		
+
 		inverse.cell[ 4] = cell[4] * ( data_11_14__10_15) + cell[6] * (-data_11_12___8_15) + cell[7] * (-data__8_14__10_12);
 		inverse.cell[ 5] = cell[0] * ( data_10_15__11_14) + cell[2] * (-data__8_15__11_12) + cell[3] * (-data_10_12___8_14);
 		inverse.cell[ 6] = cell[0] * ( data__7_14___6_15) + cell[2] * (-data__7_12___4_15) + cell[3] * (-data__4_14___6_12);
 		inverse.cell[ 7] = cell[0] * ( data__6_11___7_10) + cell[2] * (-data__4_11___7__8) + cell[3] * (-data__6__8___4_10);
-		
+
 		inverse.cell[ 8] = cell[4] * ( data__9_15__11_13) + cell[5] * ( data_11_12___8_15) + cell[7] * (-data__9_12___8_13);
 		inverse.cell[ 9] = cell[0] * ( data_11_13___9_15) + cell[1] * ( data__8_15__11_12) + cell[3] * (-data__8_13___9_12);
 		inverse.cell[10] = cell[0] * ( data__5_15___7_13) + cell[1] * ( data__7_12___4_15) + cell[3] * (-data__5_12___4_13);
@@ -2303,7 +2303,7 @@ public:
 	//! Returns if the matrix is identity within the given error tollerance.
 	CY_NODISCARD bool IsIdentity( T tollerance=T(_CY_VEC_DEFAULT_ERROR_TOLERANCE) ) const
 	{
-		return std::abs(cell[ 0]-T(1)) < tollerance && std::abs(cell[ 1])      < tollerance && std::abs(cell[ 2])      < tollerance && std::abs(cell[ 3])      < tollerance && 
+		return std::abs(cell[ 0]-T(1)) < tollerance && std::abs(cell[ 1])      < tollerance && std::abs(cell[ 2])      < tollerance && std::abs(cell[ 3])      < tollerance &&
 			   std::abs(cell[ 4])      < tollerance && std::abs(cell[ 5]-T(1)) < tollerance && std::abs(cell[ 6])      < tollerance && std::abs(cell[ 7])      < tollerance &&
 			   std::abs(cell[ 8])      < tollerance && std::abs(cell[ 9])      < tollerance && std::abs(cell[10]-T(1)) < tollerance && std::abs(cell[11])      < tollerance &&
 			   std::abs(cell[12])      < tollerance && std::abs(cell[13])      < tollerance && std::abs(cell[14])      < tollerance && std::abs(cell[15]-T(1)) < tollerance;
@@ -2312,7 +2312,7 @@ public:
 	//! Returns if the matrix is symmetric within the given error tollerance.
 	CY_NODISCARD bool IsSymmetric( T tollerance=T(_CY_VEC_DEFAULT_ERROR_TOLERANCE) ) const
 	{
-		return std::abs(cell[ 1] - cell[ 4]) < tollerance && 
+		return std::abs(cell[ 1] - cell[ 4]) < tollerance &&
 			   std::abs(cell[ 2] - cell[ 8]) < tollerance &&
 			   std::abs(cell[ 3] - cell[12]) < tollerance &&
 			   std::abs(cell[ 6] - cell[ 9]) < tollerance &&

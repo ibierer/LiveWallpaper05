@@ -8,30 +8,30 @@ VertexArrayObject::VertexArrayObject() {
 
 }
 
-VertexArrayObject::VertexArrayObject(Vertex* const vertices, const int& count) {
+VertexArrayObject::VertexArrayObject(PositionXYZ* const vertices, const int& count) {
     glGenBuffers(1, &mVBO);
     glGenVertexArrays(1, &mVAO);
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-    glBufferData(GL_ARRAY_BUFFER, count * sizeof(Vertex), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, count * sizeof(PositionXYZ), vertices, GL_STATIC_DRAW);
     glBindVertexArray(mVAO);
     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
-    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)offsetof(Vertex, v));
+    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZ), (const GLvoid*)offsetof(PositionXYZ, p));
     glBindVertexArray(0);
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     numVertices = count;
 }
 
-VertexArrayObject::VertexArrayObject(VertexNormal* const vertices, const int& count) {
+VertexArrayObject::VertexArrayObject(PositionXYZNormalXYZ* const vertices, const int& count) {
     glGenBuffers(1, &mVBO);
     glGenVertexArrays(1, &mVAO);
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-    glBufferData(GL_ARRAY_BUFFER, count * sizeof(VertexNormal), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, count * sizeof(PositionXYZNormalXYZ), vertices, GL_STATIC_DRAW);
     glBindVertexArray(mVAO);
     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
-    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), (const GLvoid*)offsetof(VertexNormal, v));
-    glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), (const GLvoid*)offsetof(VertexNormal, n));
+    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid*)offsetof(PositionXYZNormalXYZ, p));
+    glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid*)offsetof(PositionXYZNormalXYZ, n));
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
@@ -39,16 +39,16 @@ VertexArrayObject::VertexArrayObject(VertexNormal* const vertices, const int& co
     numVertices = count;
 }
 
-VertexArrayObject::VertexArrayObject(VertexColor* const vertices, const int& count) {
+VertexArrayObject::VertexArrayObject(PositionXYZColorRGB* const vertices, const int& count) {
     glGenBuffers(1, &mVBO);
     glGenVertexArrays(1, &mVAO);
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-    glBufferData(GL_ARRAY_BUFFER, count * sizeof(VertexColor), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, count * sizeof(PositionXYZColorRGB), vertices, GL_STATIC_DRAW);
     glBindVertexArray(mVAO);
     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glEnableVertexAttribArray(COLOR_ATTRIBUTE_LOCATION);
-    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(VertexColor), (const GLvoid*)offsetof(VertexColor, v));
-    glVertexAttribPointer(COLOR_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(VertexColor), (const GLvoid*)offsetof(VertexColor, c));
+    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZColorRGB), (const GLvoid*)offsetof(PositionXYZColorRGB, p));
+    glVertexAttribPointer(COLOR_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZColorRGB), (const GLvoid*)offsetof(PositionXYZColorRGB, c));
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
@@ -89,14 +89,14 @@ GLuint VertexArrayObject::getBufferObjectId() {
 VertexArrayObject::VertexArrayObject(const TriangleStripObject &triangleStripObject) {
     TriangleStripObject::AttributeType attributeType = triangleStripObject.getAttributeType();
     switch(attributeType){
-        case TriangleStripObject::AttributeType::VERTEX:
-            *this = VertexArrayObject(triangleStripObject.getVertices<Vertex>(), triangleStripObject.getNumVertices());
+        case TriangleStripObject::AttributeType::POSITION_XYZ:
+            *this = VertexArrayObject(triangleStripObject.getVertices<PositionXYZ>(), triangleStripObject.getNumVertices());
             break;
-        case TriangleStripObject::AttributeType::VERTEX_NORMAL:
-            *this = VertexArrayObject(triangleStripObject.getVertices<VertexNormal>(), triangleStripObject.getNumVertices());
+        case TriangleStripObject::AttributeType::POSITION_XYZ_NORMAL_XYZ:
+            *this = VertexArrayObject(triangleStripObject.getVertices<PositionXYZNormalXYZ>(), triangleStripObject.getNumVertices());
             break;
-        case TriangleStripObject::AttributeType::VERTEX_COLOR:
-            *this = VertexArrayObject(triangleStripObject.getVertices<VertexColor>(), triangleStripObject.getNumVertices());
+        case TriangleStripObject::AttributeType::POSITION_XYZ_COLOR_RGB:
+            *this = VertexArrayObject(triangleStripObject.getVertices<PositionXYZColorRGB>(), triangleStripObject.getNumVertices());
             break;
     }
 }
