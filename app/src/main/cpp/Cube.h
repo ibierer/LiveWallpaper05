@@ -11,9 +11,14 @@
 class Cube : public TriangleStripObject {
 public:
 
+    enum ColorOption {
+        SOLID,
+        RGB_CUBE
+    };
+
     Cube();
 
-    Cube(const float& size);
+    Cube(const float& size, const ColorOption& colorOption);
 
     static const Vertex box[24];
 
