@@ -42,7 +42,7 @@ private:
     int numVertices;
 
     template<class T>
-    void part1(T *const vertices, const int &count);
+    void intializeBuffers(T *const vertices, const int &count);
 };
 
 
