@@ -13,7 +13,7 @@ public:
 
     CubeMap cubeMap;
 
-    VertexArrayObject cubeVAO;
+    VertexArrayObject environmentTriangleVAO;
 
     const string VERTEX_SHADER =
             ES_VERSION +

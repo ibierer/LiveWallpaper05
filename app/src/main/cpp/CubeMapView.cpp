@@ -12,7 +12,7 @@ CubeMapView::CubeMapView() : View(){
             {vec3( 3.0f, -1.0f, 0.999f)},
             {vec3(-1.0f,  3.0f, 0.999f)}
     };
-    cubeVAO = VertexArrayObject(vertices, sizeof(vertices) / sizeof(Vertex));
+    environmentTriangleVAO = VertexArrayObject(vertices, sizeof(vertices) / sizeof(Vertex));
 }
 
 CubeMapView::~CubeMapView(){
@@ -35,5 +35,5 @@ void CubeMapView::render(){
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap.getTextureId());
     //glActiveTexture(GL_TEXTURE0);
 
-    cubeVAO.draw();
+    environmentTriangleVAO.draw();
 }
