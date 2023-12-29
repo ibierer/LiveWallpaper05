@@ -31,24 +31,26 @@ TriangleStripObject::TriangleStripObject(const TriangleStripObject& other) {
 }
 
 TriangleStripObject& TriangleStripObject::operator=(TriangleStripObject other) {
-    numVertices = other.numVertices;
-    attributeType = other.attributeType;
-    switch(attributeType){
-        case VERTEX:
-            vertices = (Vertex*)malloc(numVertices * sizeof(Vertex));
-            // Copy the contents of the other object's environmentTriangleVertices array
-            std::copy((Vertex*)other.vertices, ((Vertex*)other.vertices) + numVertices, (Vertex*)vertices);
-            break;
-        case VERTEX_NORMAL:
-            vertices = (VertexNormal*)malloc(numVertices * sizeof(VertexNormal));
-            // Copy the contents of the other object's environmentTriangleVertices array
-            std::copy((VertexNormal*)other.vertices, ((VertexNormal*)other.vertices) + numVertices, (VertexNormal*)vertices);
-            break;
-        case VERTEX_COLOR:
-            vertices = (VertexColor*)malloc(numVertices * sizeof(VertexColor));
-            // Copy the contents of the other object's environmentTriangleVertices array
-            std::copy((VertexColor*)other.vertices, ((VertexColor*)other.vertices) + numVertices, (VertexColor*)vertices);
-            break;
+    if (this != &other) {
+        numVertices = other.numVertices;
+        attributeType = other.attributeType;
+        switch (attributeType) {
+            case VERTEX:
+                vertices = (Vertex*) malloc(numVertices * sizeof(Vertex));
+                // Copy the contents of the other object's environmentTriangleVertices array
+                std::copy((Vertex*) other.vertices, ((Vertex*) other.vertices) + numVertices, (Vertex*) vertices);
+                break;
+            case VERTEX_NORMAL:
+                vertices = (VertexNormal*) malloc(numVertices * sizeof(VertexNormal));
+                // Copy the contents of the other object's environmentTriangleVertices array
+                std::copy((VertexNormal*) other.vertices, ((VertexNormal*) other.vertices) + numVertices, (VertexNormal*) vertices);
+                break;
+            case VERTEX_COLOR:
+                vertices = (VertexColor*) malloc(numVertices * sizeof(VertexColor));
+                // Copy the contents of the other object's environmentTriangleVertices array
+                std::copy((VertexColor*) other.vertices, ((VertexColor*) other.vertices) + numVertices, (VertexColor*) vertices);
+                break;
+        }
     }
     return *this;
 }
