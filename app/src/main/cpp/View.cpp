@@ -16,7 +16,7 @@ void View::render(){
 
 }
 
-void View::calculatePerspective(const float& maxViewDegrees) {
+void View::calculatePerspectiveSetViewport(const float& maxViewDegrees) {
     float aspect = (float)width / (float)height;
     float zNear = 0.1f;
     float zFar = 1000.0f;
@@ -38,6 +38,7 @@ void View::calculatePerspective(const float& maxViewDegrees) {
             break;
     }
     orientationAdjustedPerspective = perspective * rotation;
+    glViewport(0, 0, width, height);
 }
 
 string View::jstringToString(JNIEnv *env, jstring jStr) {

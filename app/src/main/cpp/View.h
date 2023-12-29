@@ -89,7 +89,7 @@ public:
 
     static void printGlString(const char* const name, const GLenum& s);
 
-    void calculatePerspective(const float& maxViewDegrees);
+    void calculatePerspectiveSetViewport(const float& maxViewDegrees);
 
     const string ES_VERSION = supportsES32() ? "#version 320 es\n" : "#version 310 es\n";
 

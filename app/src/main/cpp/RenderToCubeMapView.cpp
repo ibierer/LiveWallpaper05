@@ -23,15 +23,6 @@ RenderToCubeMapView::~RenderToCubeMapView(){
 
 template<class T>
 Vec3<T> transform(Matrix3<T> matrix, const Vec3<T>& vector){
-    /*float ax = matrix.GetRow(0)[0] * vector.x;
-    float by = matrix.GetRow(0)[1] * vector.y;
-    float cz = matrix.GetRow(0)[2] * vector.z;
-    float dx = matrix.GetRow(1)[0] * vector.x;
-    float ey = matrix.GetRow(1)[1] * vector.y;
-    float fz = matrix.GetRow(1)[2] * vector.z;
-    float gx = matrix.GetRow(2)[0] * vector.x;
-    float hy = matrix.GetRow(2)[1] * vector.y;
-    float iz = matrix.GetRow(2)[2] * vector.z;*/
     Vec3<T> result = Vec3<T>((T)0, (T)0, (T)0);
     for(int i = 0; i < 3; i++){
         for(int j = 0; j < 3; j++){
@@ -49,8 +40,7 @@ void RenderToCubeMapView::render(){
     width = cubeMapFBO.getResolution();
     int storeHeight = height;
     height = cubeMapFBO.getResolution();
-    calculatePerspective(90.0f);
-    glViewport(0, 0, width, height);
+    calculatePerspectiveSetViewport(90.0f);
 
     Matrix4<float> rotation;
 
@@ -112,12 +102,12 @@ void RenderToCubeMapView::render(){
 
     width = storeWidth;
     height = storeHeight;
-    calculatePerspective(60.0f);
-    glViewport(0, 0, width, height);
+    calculatePerspectiveSetViewport(60.0f);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glDisable(GL_DEPTH_TEST);
 
     rotation = Matrix4<float>(quaternionTo3x3(rotationVector));
     Matrix4<float> inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();
@@ -132,6 +122,5 @@ void RenderToCubeMapView::render(){
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapFBO.cubeMap.getTextureId());
     glUniform1i(glGetUniformLocation(mProgram, "environmentTexture"), 1);
 
-    glDisable(GL_DEPTH_TEST);
     environmentTriangleVAO.draw();
 }
