@@ -11,6 +11,10 @@
 class SphereWithReflectionView : public View {
 public:
 
+    GLuint mReflectionProgram;
+
+    GLuint mBackgroundProgram;
+
     VertexArrayObject sphereVAO;
 
     VertexArrayObject environmentTriangleVAO;
@@ -40,11 +44,16 @@ public:
     const string REFLECTION_VERTEX_SHADER =
             ES_VERSION +
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
+            "layout(location = " STRV(NORMAL_ATTRIBUTE_LOCATION) ") in vec3 normal;\n"
+            "uniform mat4 mvp;\n"
             "uniform mat4 inverseViewProjection;\n"
+            "uniform mat3 inverse3x3Transpose;\n"
             "out vec3 direction;\n"
+            "out vec3 vNormal;\n"
             "void main() {\n"
-            "    gl_Position = vec4(pos, 1.0);\n"
+            "    gl_Position = mvp * vec4(pos, 1.0);\n"
             "    direction = (inverseViewProjection * vec4(pos, 1.0f)).xyz;\n"
+            "    vNormal = inverse3x3Transpose * normal;\n"
             "}\n";
 
     const string REFLECTION_FRAGMENT_SHADER =
@@ -52,6 +61,7 @@ public:
             "precision mediump float;\n"
             "uniform samplerCube environmentTexture;\n"
             "in vec3 direction;\n"
+            "in vec3 vNormal;\n"
             "out vec4 outColor;\n"
             "void main() {\n"
             "    outColor = texture(environmentTexture, direction); \n"
