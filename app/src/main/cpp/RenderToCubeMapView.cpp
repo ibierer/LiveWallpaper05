@@ -69,8 +69,6 @@ void RenderToCubeMapView::render(){
     calculatePerspective(90.0f);
     glViewport(0, 0, width, height);
 
-    glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
-
     Matrix4<float> rotation;
 
     glUseProgram(mPlanesProgram);
