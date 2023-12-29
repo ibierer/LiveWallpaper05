@@ -7,12 +7,7 @@
 CubeMapView::CubeMapView() : View(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     cubeMap = CubeMap::createSimpleTextureCubemap();
-    Vertex vertices[3] = {
-            {vec3(-1.0f, -1.0f, 0.999f)},
-            {vec3( 3.0f, -1.0f, 0.999f)},
-            {vec3(-1.0f,  3.0f, 0.999f)}
-    };
-    environmentTriangleVAO = VertexArrayObject(vertices, sizeof(vertices) / sizeof(Vertex));
+    environmentTriangleVAO = VertexArrayObject(cubeMap.environmentTriangleVertices, sizeof(cubeMap.environmentTriangleVertices) / sizeof(Vertex));
 }
 
 CubeMapView::~CubeMapView(){

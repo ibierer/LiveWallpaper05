@@ -104,19 +104,19 @@ public:
 	};
 
 protected:
-	Vec3f   *v;		//!< vertices
+	Vec3f   *v;		//!< environmentTriangleVertices
 	TriFace *f;		//!< faces
 	Vec3f   *vn;	//!< vertex normal
 	TriFace *fn;	//!< normal faces
-	Vec3f   *vt;	//!< texture vertices
+	Vec3f   *vt;	//!< texture environmentTriangleVertices
 	TriFace *ft;	//!< texture faces
 	Mtl     *m;		//!< materials
 	int     *mcfc;	//!< material cumulative face count
 
-	unsigned int nv;	//!< number of vertices
+	unsigned int nv;	//!< number of environmentTriangleVertices
 	unsigned int nf;	//!< number of faces
 	unsigned int nvn;	//!< number of vertex normals
-	unsigned int nvt;	//!< number of texture vertices
+	unsigned int nvt;	//!< number of texture environmentTriangleVertices
 	unsigned int nm;	//!< number of materials
 
 	Vec3f boundMin;	//!< Bounding box minimum bound
@@ -147,18 +147,18 @@ public:
 	Mtl const &     M (int i) const { return m[i]; }		//!< returns the i^th material
 	Mtl&            M (int i)       { return m[i]; }		//!< returns the i^th material
 
-	unsigned int NV () const { return nv; }		//!< returns the number of vertices
+	unsigned int NV () const { return nv; }		//!< returns the number of environmentTriangleVertices
 	unsigned int NF () const { return nf; }		//!< returns the number of faces
 	unsigned int NVN() const { return nvn; }	//!< returns the number of vertex normals
-	unsigned int NVT() const { return nvt; }	//!< returns the number of texture vertices
+	unsigned int NVT() const { return nvt; }	//!< returns the number of texture environmentTriangleVertices
 	unsigned int NM () const { return nm; }		//!< returns the number of materials
 
 	bool HasNormals() const { return NVN() > 0; }			//!< returns true if the mesh has vertex normals
-	bool HasTextureVertices() const { return NVT() > 0; }	//!< returns true if the mesh has texture vertices
+	bool HasTextureVertices() const { return NVT() > 0; }	//!< returns true if the mesh has texture environmentTriangleVertices
 
 	//!@name Set Component Count
 	void Clear() { SetNumVertex(0); SetNumFaces(0); SetNumNormals(0); SetNumTexVerts(0); SetNumMtls(0); boundMin.Set(1,1,1); boundMax.Zero(); }	//!< Deletes all components of the mesh
-	void SetNumVertex  ( unsigned int n ) { Allocate(n,v,nv); }															//!< Sets the number of vertices and allocates memory for vertex positions
+	void SetNumVertex  ( unsigned int n ) { Allocate(n,v,nv); }															//!< Sets the number of environmentTriangleVertices and allocates memory for vertex positions
 	void SetNumFaces   ( unsigned int n ) { Allocate(n,f,nf); if (fn||vn) Allocate(n,fn); if (ft||vt) Allocate(n,ft); }	//!< Sets the number of faces and allocates memory for face data. Normal faces and texture faces are also allocated, if they are used.
 	void SetNumNormals ( unsigned int n ) { Allocate(n,vn,nvn); Allocate(n==0?0:nf,fn); }									//!< Sets the number of normals and allocates memory for normals and normal faces.
 	void SetNumTexVerts( unsigned int n ) { Allocate(n,vt,nvt); Allocate(n==0?0:nf,ft); }									//!< Sets the number of texture coordinates and allocates memory for texture coordinates and texture faces.
@@ -347,11 +347,11 @@ inline bool TriMesh::LoadFromFileObj( char const *filename, bool loadMtl, std::o
 	};
 	MtlList mtlList;
 
-	std::vector<Vec3f>      _v;		// vertices
+	std::vector<Vec3f>      _v;		// environmentTriangleVertices
 	std::vector<TriFace>    _f;		// faces
 	std::vector<Vec3f>      _vn;	// vertex normal
 	std::vector<TriFace>    _fn;	// normal faces
-	std::vector<Vec3f>      _vt;	// texture vertices
+	std::vector<Vec3f>      _vt;	// texture environmentTriangleVertices
 	std::vector<TriFace>    _ft;	// texture faces
 	std::vector<MtlLibName> mtlFiles;
 	std::vector<int>        faceMtlIndex;
@@ -404,7 +404,7 @@ inline bool TriMesh::LoadFromFileObj( char const *filename, bool loadMtl, std::o
 								facevert++;
 								break;
 							case 2:
-								// copy the first two vertices from the previous face
+								// copy the first two environmentTriangleVertices from the previous face
 								_f.push_back(face);
 								face.v[1] = face.v[2];
 								if ( hasTextures ) {

@@ -7,14 +7,9 @@
 SphereMapView::SphereMapView() : View() {
     //sphereMap = SphereMap(Texture::staticallyGenerateMandelbrotWithVertexShader(Texture(GL_RGB, 16384, 16384, 0, GL_LINEAR), this));
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
-    Vertex vertices[3] = {
-            {vec3(-1.0f, -1.0f, 0.999f)},
-            {vec3( 3.0f, -1.0f, 0.999f)},
-            {vec3(-1.0f,  3.0f, 0.999f)}
-    };
-    environmentTriangleVAO = VertexArrayObject(vertices, sizeof(vertices) / sizeof(Vertex));
     //sphereMap = SphereMap(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
     sphereMap = SphereMap(Texture::DefaultImages::MANDELBROT, 16384, 16384, this);
+    environmentTriangleVAO = VertexArrayObject(sphereMap.environmentTriangleVertices, sizeof(sphereMap.environmentTriangleVertices) / sizeof(Vertex));
 }
 
 SphereMapView::~SphereMapView(){
@@ -40,16 +35,5 @@ void SphereMapView::render(){
     glBindTexture(GL_TEXTURE_2D, sphereMap.getTextureId());
     //glActiveTexture(GL_TEXTURE0);
 
-    Vertex vertices[3] = {
-            {vec3(-1.0f, -1.0f, 0.999f)},
-            {vec3( 3.0f, -1.0f, 0.999f)},
-            {vec3(-1.0f,  3.0f, 0.999f)}
-    };
-    uvec3 indices[1] = {
-            uvec3(0, 1, 2)
-    };
-    glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
-    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)&vertices[0].v);
-    glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(unsigned int), GL_UNSIGNED_INT, indices);
-    glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+    environmentTriangleVAO.draw();
 }
