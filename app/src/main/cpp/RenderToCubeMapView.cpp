@@ -76,6 +76,7 @@ void RenderToCubeMapView::render(){
         glFramebufferTexture2D(GL_FRAMEBUFFER, cubeMapFBO.drawBuffers[DRAW_BUFFER], GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubeMapFBO.cubeMap.getTextureId(), 0);
         glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glEnable(GL_DEPTH_TEST);
 
         Vec3<float> position = Vec3<float>(0.0f, 0.0f, 3.0f * (zoom - 1.0f));
         Matrix4<float> rotation2;
@@ -95,8 +96,6 @@ void RenderToCubeMapView::render(){
                 1,
                 GL_FALSE,
                 (GLfloat*)&mvp);
-        glEnable(GL_DEPTH_TEST);
-        glDepthMask(GL_TRUE);
         tilesVAO.draw();
     }
 
@@ -106,7 +105,7 @@ void RenderToCubeMapView::render(){
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT);
     glDisable(GL_DEPTH_TEST);
 
     rotation = Matrix4<float>(quaternionTo3x3(rotationVector));
