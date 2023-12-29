@@ -10,10 +10,15 @@
 
 class SimulationView : public View {
 public:
+
     int moleculeCount;
+
     int cbrtMoleculeCount;
+
     void setMoleculeCount(int n);
+
     vec3 compensateForOrientation(const vec3& acc);
+
 };
 
 

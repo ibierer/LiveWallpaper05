@@ -6,19 +6,7 @@
 
 RenderToTextureView::RenderToTextureView() : View() {
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
-    Vertex vertices[] = {
-            Vertex(vec3(0.0f, 0.0f, 0.0f)),
-            Vertex(vec3(0.0f, 1.0f, 0.0f)),
-            Vertex(vec3(1.0f, 0.0f, 0.0f)),
-            Vertex(vec3(1.0f, 1.0f, 0.0f)),
-            Vertex(vec3(1.0f, 1.0f, 0.0f)),
-            Vertex(vec3(0.0f, 0.0f, 1.0f)),
-            Vertex(vec3(0.0f, 0.0f, 1.0f)),
-            Vertex(vec3(0.0f, 1.0f, 1.0f)),
-            Vertex(vec3(1.0f, 0.0f, 1.0f)),
-            Vertex(vec3(1.0f, 1.0f, 1.0f))
-    };
-    tilesVAO = VertexArrayObject(vertices, sizeof(vertices) / sizeof(Vertex));
+    tilesVAO = VertexArrayObject(tilesVertices, sizeof(tilesVertices) / sizeof(Vertex));
     texture = Texture(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
     //texture = Texture::staticallyGenerateMandelbrotWithVertexShader(Texture(GL_RGB, 16384, 16384, 0, GL_LINEAR), this);
     fbo = FBO(

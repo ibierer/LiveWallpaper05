@@ -6,12 +6,7 @@
 
 TriangleView::TriangleView() : View(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
-    Vertex vertices[3] = {
-            {vec3(1.0f, 0.0f, 0.0f)},
-            {vec3(0.0f, 1.0f, 0.0f)},
-            {vec3(1.0f, 0.0f, 1.0f)}
-    };
-    triangleVAO = VertexArrayObject(vertices, sizeof(vertices) / sizeof(Vertex));
+    triangleVAO = VertexArrayObject(triangleVertices, sizeof(triangleVertices) / sizeof(Vertex));
 }
 
 TriangleView::~TriangleView(){

@@ -43,6 +43,38 @@ public:
 
     Matrix4<float> orientationAdjustedPerspective;
 
+    Vertex triangleVertices[3] = {
+            Vertex(vec3(1.0f, 0.0f, 0.0f)),
+            Vertex(vec3(0.0f, 1.0f, 0.0f)),
+            Vertex(vec3(1.0f, 0.0f, 1.0f))
+    };
+
+    VertexNormal triangleVerticesNormals[3] = {
+            VertexNormal(vec3(1.0f, 0.0f, 0.0f), vec3(sqrtf(3.0f), sqrt(3.0f), sqrt(3.0f))),
+            VertexNormal(vec3(0.0f, 1.0f, 0.0f), vec3(sqrtf(3.0f), sqrt(3.0f), sqrt(3.0f))),
+            VertexNormal(vec3(1.0f, 0.0f, 1.0f), vec3(sqrtf(3.0f), sqrt(3.0f), sqrt(3.0f)))
+    };
+
+    Vertex tileVertices[4] = {
+            Vertex(vec3(0.0f, 0.0f, 0.0f)),
+            Vertex(vec3(0.0f, 1.0f, 0.0f)),
+            Vertex(vec3(1.0f, 0.0f, 0.0f)),
+            Vertex(vec3(1.0f, 1.0f, 0.0f))
+    };
+
+    Vertex tilesVertices[10] = {
+            Vertex(vec3(0.0f, 0.0f, 0.0f)),
+            Vertex(vec3(0.0f, 1.0f, 0.0f)),
+            Vertex(vec3(1.0f, 0.0f, 0.0f)),
+            Vertex(vec3(1.0f, 1.0f, 0.0f)),
+            Vertex(vec3(1.0f, 1.0f, 0.0f)),
+            Vertex(vec3(0.0f, 0.0f, 1.0f)),
+            Vertex(vec3(0.0f, 0.0f, 1.0f)),
+            Vertex(vec3(0.0f, 1.0f, 1.0f)),
+            Vertex(vec3(1.0f, 0.0f, 1.0f)),
+            Vertex(vec3(1.0f, 1.0f, 1.0f))
+    };
+
     View();
 
     ~View();
