@@ -46,7 +46,7 @@ CubeMap CubeMap::createSimpleTextureCubemap() {
     for (uint i = 0; i < resolution; i++) {
         for (uint j = 0; j < resolution; j++) {
             uint texel = i * resolution + j;
-            cubeMapPixelBuffers[0][texel] = _vec3<GLubyte>(255 - j, 255, 255 - i);
+            cubeMapPixelBuffers[0][texel] = _vec3<GLubyte>(255 - j, 255 - i, 255);
             cubeMapPixelBuffers[1][texel] = _vec3<GLubyte>(j, 255 - i, 0);
             cubeMapPixelBuffers[2][texel] = _vec3<GLubyte>(i, 255, j);
             cubeMapPixelBuffers[3][texel] = _vec3<GLubyte>(255 - i, 0, j);

@@ -13,6 +13,8 @@ public:
 
     CubeMap cubeMap;
 
+    VertexArrayObject cubeVAO;
+
     const string VERTEX_SHADER =
             ES_VERSION +
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"

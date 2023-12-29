@@ -7,6 +7,12 @@
 CubeMapView::CubeMapView() : View(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     cubeMap = CubeMap::createSimpleTextureCubemap();
+    Vertex vertices[3] = {
+            {vec3(-1.0f, -1.0f, 0.999f)},
+            {vec3( 3.0f, -1.0f, 0.999f)},
+            {vec3(-1.0f,  3.0f, 0.999f)}
+    };
+    cubeVAO = VertexArrayObject(vertices, sizeof(vertices) / sizeof(Vertex));
 }
 
 CubeMapView::~CubeMapView(){
@@ -29,16 +35,5 @@ void CubeMapView::render(){
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap.getTextureId());
     //glActiveTexture(GL_TEXTURE0);
 
-    Vertex vertices[3] = {
-            {vec3(-1.0f, -1.0f, 0.999f)},
-            {vec3( 3.0f, -1.0f, 0.999f)},
-            {vec3(-1.0f,  3.0f, 0.999f)}
-    };
-    uvec3 indices[1] = {
-            uvec3(0, 1, 2)
-    };
-    glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
-    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)&vertices[0].v);
-    glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(unsigned int), GL_UNSIGNED_INT, indices);
-    glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+    cubeVAO.draw();
 }

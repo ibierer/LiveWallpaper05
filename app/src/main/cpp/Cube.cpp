@@ -11,7 +11,7 @@ Cube::Cube(const float& size, const ColorOption& colorOption) {
     switch(colorOption){
         case SOLID:{
             attributeType = VERTEX;
-            Vertex vertices[] = {
+            Vertex vertices[numVertices] = {
                     Vertex(vec3(-radius, -radius,  radius)),
                     Vertex(vec3( radius, -radius,  radius)),
                     Vertex(vec3(-radius,  radius,  radius)),
@@ -37,8 +37,8 @@ Cube::Cube(const float& size, const ColorOption& colorOption) {
             }
             break;}
         case RGB_CUBE:{
-            attributeType = VERTEX_NORMAL;
-            VertexColor vertices[18] = {
+            attributeType = VERTEX_COLOR;
+            VertexColor vertices[numVertices] = {
                     VertexColor(vec3(-radius, -radius,  radius), vec3(0.0f, 0.0f, 1.0f)),
                     VertexColor(vec3( radius, -radius,  radius), vec3(1.0f, 0.0f, 1.0f)),
                     VertexColor(vec3(-radius,  radius,  radius), vec3(0.0f, 1.0f, 1.0f)),
