@@ -14,8 +14,9 @@ class VertexNormal : public Attributes {
 public:
     VertexNormal();
 
-    vec3 n;
     VertexNormal(const vec3& position, const vec3& normal);
+
+    vec3 n;
 };
 
 

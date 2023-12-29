@@ -11,7 +11,8 @@ public:
 
     enum AttributeType {
         VERTEX,
-        VERTEX_NORMAL
+        VERTEX_NORMAL,
+        VERTEX_COLOR
     };
 
     TriangleStripObject();

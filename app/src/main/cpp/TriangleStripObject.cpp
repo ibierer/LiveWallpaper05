@@ -22,6 +22,11 @@ TriangleStripObject::TriangleStripObject(const TriangleStripObject& other) {
             // Copy the contents of the other object's vertices array
             std::copy((VertexNormal*)other.vertices, ((VertexNormal*)other.vertices) + numVertices, (VertexNormal*)vertices);
             break;
+        case VERTEX_COLOR:
+            vertices = (VertexColor*)malloc(numVertices * sizeof(VertexColor));
+            // Copy the contents of the other object's vertices array
+            std::copy((VertexColor*)other.vertices, ((VertexColor*)other.vertices) + numVertices, (VertexColor*)vertices);
+            break;
     }
 }
 
@@ -38,6 +43,11 @@ TriangleStripObject& TriangleStripObject::operator=(TriangleStripObject other) {
             vertices = (VertexNormal*)malloc(numVertices * sizeof(VertexNormal));
             // Copy the contents of the other object's vertices array
             std::copy((VertexNormal*)other.vertices, ((VertexNormal*)other.vertices) + numVertices, (VertexNormal*)vertices);
+            break;
+        case VERTEX_COLOR:
+            vertices = (VertexColor*)malloc(numVertices * sizeof(VertexColor));
+            // Copy the contents of the other object's vertices array
+            std::copy((VertexColor*)other.vertices, ((VertexColor*)other.vertices) + numVertices, (VertexColor*)vertices);
             break;
     }
     return *this;

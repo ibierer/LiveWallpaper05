@@ -19,6 +19,8 @@ public:
 
     VertexArrayObject(VertexNormal* vertices, const int& count);
 
+    VertexArrayObject(VertexColor *vertices, const int &count);
+
     VertexArrayObject(const TriangleStripObject& triangleStripObject);
 
     // Copy constructor

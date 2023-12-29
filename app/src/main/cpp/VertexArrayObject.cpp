@@ -39,6 +39,23 @@ VertexArrayObject::VertexArrayObject(VertexNormal* vertices, const int& count) {
     numVertices = count;
 }
 
+VertexArrayObject::VertexArrayObject(VertexColor* vertices, const int& count) {
+    glGenBuffers(1, &mVBO);
+    glGenVertexArrays(1, &mVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+    glBufferData(GL_ARRAY_BUFFER, count * sizeof(VertexColor), vertices, GL_STATIC_DRAW);
+    glBindVertexArray(mVAO);
+    glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+    glEnableVertexAttribArray(COLOR_ATTRIBUTE_LOCATION);
+    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(VertexColor), (const GLvoid*)offsetof(VertexColor, v));
+    glVertexAttribPointer(COLOR_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(VertexColor), (const GLvoid*)offsetof(VertexColor, c));
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+    glDisableVertexAttribArray(COLOR_ATTRIBUTE_LOCATION);
+    numVertices = count;
+}
+
 // Copy constructor
 VertexArrayObject::VertexArrayObject(const VertexArrayObject& other) {
     mVAO = other.mVAO;
@@ -77,6 +94,9 @@ VertexArrayObject::VertexArrayObject(const TriangleStripObject &triangleStripObj
             break;
         case TriangleStripObject::AttributeType::VERTEX_NORMAL:
             *this = VertexArrayObject(triangleStripObject.getVertices<VertexNormal>(), triangleStripObject.getNumVertices());
+            break;
+        case TriangleStripObject::AttributeType::VERTEX_COLOR:
+            *this = VertexArrayObject(triangleStripObject.getVertices<VertexColor>(), triangleStripObject.getNumVertices());
             break;
     }
 }

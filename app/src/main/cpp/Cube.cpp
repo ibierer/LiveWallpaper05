@@ -38,29 +38,29 @@ Cube::Cube(const float& size, const ColorOption& colorOption) {
             break;}
         case RGB_CUBE:{
             attributeType = VERTEX_NORMAL;
-            VertexNormal vertices[18] = {
-                    VertexNormal(vec3(-radius, -radius,  radius), vec3(0.0f, 0.0f, 1.0f)),
-                    VertexNormal(vec3( radius, -radius,  radius), vec3(1.0f, 0.0f, 1.0f)),
-                    VertexNormal(vec3(-radius,  radius,  radius), vec3(0.0f, 1.0f, 1.0f)),
-                    VertexNormal(vec3( radius,  radius,  radius), vec3(1.0f, 1.0f, 1.0f)),
-                    VertexNormal(vec3(-radius,  radius, -radius), vec3(0.0f, 1.0f, 0.0f)),
-                    VertexNormal(vec3( radius,  radius, -radius), vec3(1.0f, 1.0f, 0.0f)),
-                    VertexNormal(vec3(-radius, -radius, -radius), vec3(0.0f, 0.0f, 0.0f)),
-                    VertexNormal(vec3( radius, -radius, -radius), vec3(1.0f, 0.0f, 0.0f)),
-                    VertexNormal(vec3( radius, -radius, -radius), vec3(1.0f, 0.0f, 0.0f)),
-                    VertexNormal(vec3( radius,  radius, -radius), vec3(1.0f, 1.0f, 0.0f)),
-                    VertexNormal(vec3( radius,  radius, -radius), vec3(1.0f, 1.0f, 0.0f)),
-                    VertexNormal(vec3( radius,  radius,  radius), vec3(1.0f, 1.0f, 1.0f)),
-                    VertexNormal(vec3( radius, -radius, -radius), vec3(1.0f, 0.0f, 0.0f)),
-                    VertexNormal(vec3( radius, -radius,  radius), vec3(1.0f, 0.0f, 1.0f)),
-                    VertexNormal(vec3(-radius, -radius, -radius), vec3(0.0f, 0.0f, 0.0f)),
-                    VertexNormal(vec3(-radius, -radius,  radius), vec3(0.0f, 0.0f, 1.0f)),
-                    VertexNormal(vec3(-radius,  radius, -radius), vec3(0.0f, 1.0f, 0.0f)),
-                    VertexNormal(vec3(-radius,  radius,  radius), vec3(0.0f, 1.0f, 1.0f))
+            VertexColor vertices[18] = {
+                    VertexColor(vec3(-radius, -radius,  radius), vec3(0.0f, 0.0f, 1.0f)),
+                    VertexColor(vec3( radius, -radius,  radius), vec3(1.0f, 0.0f, 1.0f)),
+                    VertexColor(vec3(-radius,  radius,  radius), vec3(0.0f, 1.0f, 1.0f)),
+                    VertexColor(vec3( radius,  radius,  radius), vec3(1.0f, 1.0f, 1.0f)),
+                    VertexColor(vec3(-radius,  radius, -radius), vec3(0.0f, 1.0f, 0.0f)),
+                    VertexColor(vec3( radius,  radius, -radius), vec3(1.0f, 1.0f, 0.0f)),
+                    VertexColor(vec3(-radius, -radius, -radius), vec3(0.0f, 0.0f, 0.0f)),
+                    VertexColor(vec3( radius, -radius, -radius), vec3(1.0f, 0.0f, 0.0f)),
+                    VertexColor(vec3( radius, -radius, -radius), vec3(1.0f, 0.0f, 0.0f)),
+                    VertexColor(vec3( radius,  radius, -radius), vec3(1.0f, 1.0f, 0.0f)),
+                    VertexColor(vec3( radius,  radius, -radius), vec3(1.0f, 1.0f, 0.0f)),
+                    VertexColor(vec3( radius,  radius,  radius), vec3(1.0f, 1.0f, 1.0f)),
+                    VertexColor(vec3( radius, -radius, -radius), vec3(1.0f, 0.0f, 0.0f)),
+                    VertexColor(vec3( radius, -radius,  radius), vec3(1.0f, 0.0f, 1.0f)),
+                    VertexColor(vec3(-radius, -radius, -radius), vec3(0.0f, 0.0f, 0.0f)),
+                    VertexColor(vec3(-radius, -radius,  radius), vec3(0.0f, 0.0f, 1.0f)),
+                    VertexColor(vec3(-radius,  radius, -radius), vec3(0.0f, 1.0f, 0.0f)),
+                    VertexColor(vec3(-radius,  radius,  radius), vec3(0.0f, 1.0f, 1.0f))
             };
-            this->vertices = (VertexNormal*)malloc(numVertices * sizeof(VertexNormal));
+            this->vertices = (VertexColor*)malloc(numVertices * sizeof(VertexColor));
             for(int i = 0; i < numVertices; i++) {
-                ((VertexNormal*)this->vertices)[i] = vertices[i];
+                ((VertexColor*)this->vertices)[i] = vertices[i];
             }
             break;}
     }

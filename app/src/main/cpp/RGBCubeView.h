@@ -17,7 +17,7 @@ public:
     const string VERTEX_SHADER =
             ES_VERSION +
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
-            "layout(location = " STRV(NORMAL_ATTRIBUTE_LOCATION) ") in vec3 color;\n"
+            "layout(location = " STRV(COLOR_ATTRIBUTE_LOCATION) ") in vec3 color;\n"
             "uniform mat4 mvp;\n"
             "out vec4 vColor;\n"
             "void main() {\n"
