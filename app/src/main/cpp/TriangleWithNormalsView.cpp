@@ -6,6 +6,12 @@
 
 TriangleWithNormalsView::TriangleWithNormalsView() : View(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
+    VertexNormal vertices[3] = {
+            VertexNormal(vec3(1.0f, 0.0f, 0.0f), vec3(sqrtf(3.0f), sqrt(3.0f), sqrt(3.0f))),
+            VertexNormal(vec3(0.0f, 1.0f, 0.0f), vec3(sqrtf(3.0f), sqrt(3.0f), sqrt(3.0f))),
+            VertexNormal(vec3(1.0f, 0.0f, 1.0f), vec3(sqrtf(3.0f), sqrt(3.0f), sqrt(3.0f)))
+    };
+    triangleWithNormalsVAO = VertexArrayObject(vertices, sizeof(vertices) / sizeof(VertexNormal));
 }
 
 TriangleWithNormalsView::~TriangleWithNormalsView(){
@@ -31,19 +37,7 @@ void TriangleWithNormalsView::render(){
             GL_FALSE,
             (GLfloat*)&mvp);
 
-    VertexNormal vertices[3] = {
-            VertexNormal(vec3(1.0f, 0.0f, 0.0f), vec3(sqrtf(3.0f), sqrt(3.0f), sqrt(3.0f))),
-            VertexNormal(vec3(0.0f, 1.0f, 0.0f), vec3(sqrtf(3.0f), sqrt(3.0f), sqrt(3.0f))),
-            VertexNormal(vec3(1.0f, 0.0f, 1.0f), vec3(sqrtf(3.0f), sqrt(3.0f), sqrt(3.0f)))
-    };
-    uvec3 indices[1] = {
-            uvec3(0, 1, 2)
-    };
-    glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
-    glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
-    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), (const GLvoid*)&vertices[0].v);
-    glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), (const GLvoid*)&vertices[0].n);
-    glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(unsigned int), GL_UNSIGNED_INT, indices);
-    glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
-    glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
+    triangleWithNormalsVAO.draw();
+
+    glDisable(GL_DEPTH_TEST);
 }
