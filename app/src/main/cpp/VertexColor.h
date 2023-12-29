@@ -12,11 +12,13 @@
 
 class VertexColor : public Attributes {
 public:
+
     VertexColor();
 
     VertexColor(const vec3& position, const vec3& color);
 
     vec3 c;
+
 };
 
 

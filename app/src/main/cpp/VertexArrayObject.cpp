@@ -9,36 +9,51 @@ VertexArrayObject::VertexArrayObject() {
 }
 
 VertexArrayObject::VertexArrayObject(Vertex* const vertices, const int& count) {
-    intializeBuffers(vertices, count);
+    glGenBuffers(1, &mVBO);
+    glGenVertexArrays(1, &mVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+    glBufferData(GL_ARRAY_BUFFER, count * sizeof(Vertex), vertices, GL_STATIC_DRAW);
+    glBindVertexArray(mVAO);
     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
-    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), (const GLvoid*)offsetof(VertexNormal, v));
+    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)offsetof(Vertex, v));
     glBindVertexArray(0);
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+    numVertices = count;
 }
 
 VertexArrayObject::VertexArrayObject(VertexNormal* const vertices, const int& count) {
-    intializeBuffers(vertices, count);
+    glGenBuffers(1, &mVBO);
+    glGenVertexArrays(1, &mVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+    glBufferData(GL_ARRAY_BUFFER, count * sizeof(VertexNormal), vertices, GL_STATIC_DRAW);
+    glBindVertexArray(mVAO);
     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
     glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), (const GLvoid*)offsetof(VertexNormal, v));
     glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), (const GLvoid*)offsetof(VertexNormal, n));
     glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    numVertices = count;
 }
 
 VertexArrayObject::VertexArrayObject(VertexColor* const vertices, const int& count) {
-    intializeBuffers(vertices, count);
+    glGenBuffers(1, &mVBO);
+    glGenVertexArrays(1, &mVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+    glBufferData(GL_ARRAY_BUFFER, count * sizeof(VertexColor), vertices, GL_STATIC_DRAW);
+    glBindVertexArray(mVAO);
     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glEnableVertexAttribArray(COLOR_ATTRIBUTE_LOCATION);
     glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(VertexColor), (const GLvoid*)offsetof(VertexColor, v));
     glVertexAttribPointer(COLOR_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(VertexColor), (const GLvoid*)offsetof(VertexColor, c));
     glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glDisableVertexAttribArray(COLOR_ATTRIBUTE_LOCATION);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    numVertices = count;
 }
 
 // Copy constructor
@@ -61,16 +76,6 @@ VertexArrayObject& VertexArrayObject::operator=(const VertexArrayObject& other) 
 VertexArrayObject::~VertexArrayObject() {
     //glDeleteVertexArrays(1, &mVAO);
     //glDeleteBuffers(1, &mVBO);
-}
-
-template<class T>
-void VertexArrayObject::intializeBuffers(T* const vertices, const int& count) {
-    numVertices = count;
-    glGenBuffers(1, &mVBO);
-    glGenVertexArrays(1, &mVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-    glBufferData(GL_ARRAY_BUFFER, count * sizeof(T), vertices, GL_STATIC_DRAW);
-    glBindVertexArray(mVAO);
 }
 
 GLuint VertexArrayObject::getArrayObjectId() {
