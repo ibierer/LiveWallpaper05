@@ -29,12 +29,15 @@ public:
 
     ~VertexArrayObject();
 
+    void draw();
+
 private:
 
     GLuint mVAO;
 
     GLuint mVBO;
 
+    int numVertices;
 };
 
 

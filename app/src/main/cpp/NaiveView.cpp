@@ -42,9 +42,7 @@ void NaiveView::render(){
                 1.0f
         );
         glUniform4fv(glGetUniformLocation(mProgram, "color"), 1, color.v);
-        glBindVertexArray(cubeVAO.getArrayObjectId());
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, cube.getNumVertices());
-        glBindVertexArray(0);
+        cubeVAO.draw();
     }
 
     for(int i = 0; i < 5; i++){

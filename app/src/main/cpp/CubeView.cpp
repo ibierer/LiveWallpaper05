@@ -35,7 +35,5 @@ void CubeView::render(){
             GL_FALSE,
             (GLfloat*)&mvp);
 
-    glBindVertexArray(cubeVAO.getArrayObjectId());
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, cube.getNumVertices());
-    glBindVertexArray(0);
+    cubeVAO.draw();
 }

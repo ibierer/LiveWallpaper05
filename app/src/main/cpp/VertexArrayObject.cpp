@@ -19,6 +19,7 @@ VertexArrayObject::VertexArrayObject(Vertex* vertices, const size_t& size) {
     glBindVertexArray(0);
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+    numVertices = size / sizeof(Vertex);
 }
 
 VertexArrayObject::VertexArrayObject(VertexNormal* vertices, const size_t& size) {
@@ -35,12 +36,14 @@ VertexArrayObject::VertexArrayObject(VertexNormal* vertices, const size_t& size)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
+    numVertices = size / sizeof(Vertex);
 }
 
 // Copy constructor
 VertexArrayObject::VertexArrayObject(const VertexArrayObject& other) {
     mVAO = other.mVAO;
     mVBO = other.mVBO;
+    numVertices = other.numVertices;
 }
 
 // Assignment operator
@@ -48,6 +51,7 @@ VertexArrayObject& VertexArrayObject::operator=(const VertexArrayObject& other) 
     if (this != &other) {
         mVAO = other.mVAO;
         mVBO = other.mVBO;
+        numVertices = other.numVertices;
     }
     return *this;
 }
@@ -75,4 +79,10 @@ VertexArrayObject::VertexArrayObject(const TriangleStripObject &triangleStripObj
             *this = VertexArrayObject(triangleStripObject.getVertices<VertexNormal>(), triangleStripObject.getNumVertices() * sizeof(VertexNormal));
             break;
     }
+}
+
+void VertexArrayObject::draw(){
+    glBindVertexArray(mVAO);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, numVertices);
+    glBindVertexArray(0);
 }
