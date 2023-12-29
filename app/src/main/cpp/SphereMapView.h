@@ -11,6 +11,8 @@
 class SphereMapView : public View {
 public:
 
+    VertexArrayObject environmentTriangleVAO;
+
     SphereMap sphereMap;
 
     const string VERTEX_SHADER =

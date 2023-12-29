@@ -5,10 +5,16 @@
 #include "SphereMapView.h"
 
 SphereMapView::SphereMapView() : View() {
-    //sphereMap = SphereMap(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
-    sphereMap = SphereMap(Texture::DefaultImages::MANDELBROT, 16384, 16384, this);
     //sphereMap = SphereMap(Texture::staticallyGenerateMandelbrotWithVertexShader(Texture(GL_RGB, 16384, 16384, 0, GL_LINEAR), this));
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
+    Vertex vertices[3] = {
+            {vec3(-1.0f, -1.0f, 0.999f)},
+            {vec3( 3.0f, -1.0f, 0.999f)},
+            {vec3(-1.0f,  3.0f, 0.999f)}
+    };
+    environmentTriangleVAO = VertexArrayObject(vertices, sizeof(vertices) / sizeof(Vertex));
+    //sphereMap = SphereMap(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
+    sphereMap = SphereMap(Texture::DefaultImages::MANDELBROT, 16384, 16384, this);
 }
 
 SphereMapView::~SphereMapView(){
