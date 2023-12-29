@@ -11,6 +11,8 @@
 class TextureView : public View {
 public:
 
+    VertexArrayObject tileVAO;
+
     Texture texture;
 
     const string VERTEX_SHADER =
