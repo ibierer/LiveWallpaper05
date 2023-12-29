@@ -28,7 +28,6 @@ public:
     const string FRAGMENT_SHADER =
             ES_VERSION +
             "precision mediump float;\n"
-            "uniform vec4 color;\n"
             "in vec4 vColor;\n"
             "out vec4 outColor;\n"
             "void main() {\n"
