@@ -40,6 +40,9 @@ private:
     GLuint mVBO;
 
     int numVertices;
+
+    template<class T>
+    void part1(T *const vertices, const int &count);
 };
 
 

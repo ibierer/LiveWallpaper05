@@ -8,7 +8,7 @@
 
 #include "Attributes.h"
 
-#define COLOR_ATTRIBUTE_LOCATION 1
+#define COLOR_ATTRIBUTE_LOCATION 2
 
 class VertexColor : public Attributes {
 public:
