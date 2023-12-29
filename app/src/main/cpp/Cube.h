@@ -20,8 +20,6 @@ public:
 
     Cube(const float& size, const ColorOption& colorOption);
 
-    static const Vertex box[24];
-
 };
 
 
