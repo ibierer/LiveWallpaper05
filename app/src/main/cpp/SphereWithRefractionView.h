@@ -12,28 +12,87 @@
 class SphereWithRefractionView : public View {
 public:
 
+    GLuint sphereMapReflectionProgram;
+
+    GLuint sphereMapBackgroundProgram;
+
+    GLuint cubeMapReflectionProgram;
+
+    GLuint cubeMapBackgroundProgram;
+
     VertexArrayObject sphereVAO;
 
-    CubeMap cubeMap;
+    VertexArrayObject environmentTriangleVAO;
+
+    EnvironmentMap environmentMap;
 
     const string VERTEX_SHADER =
             ES_VERSION +
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
             "layout(location = " STRV(NORMAL_ATTRIBUTE_LOCATION) ") in vec3 normal;\n"
-            "out vec3 vNormal;\n"
             "uniform mat4 mvp;\n"
+            "uniform mat4 viewTransformation;\n"
+            "out vec3 direction;\n"
+            "out vec3 vNormal;\n"
             "void main() {\n"
             "    gl_Position = mvp * vec4(pos, 1.0);\n"
+            "    direction = (viewTransformation * vec4(pos, 1.0)).xyz;\n"
             "    vNormal = normal;\n"
             "}\n";
 
-    const string FRAGMENT_SHADER =
+    const string SPHERE_MAP_REFRACTION_FRAGMENT_SHADER =
             ES_VERSION +
             "precision mediump float;\n"
+            "uniform sampler2D environmentTexture;\n"
+            "in vec3 direction;\n"
+            "in vec3 vNormal;\n"
+            "out vec4 outColor;\n" +
+            directionToSphereMapUV +
+            "void main() {\n"
+            "    outColor = texture(environmentTexture, directionToSphereMapUV(refract(direction, normalize(vNormal), 0.75)));\n"
+            "}\n";
+
+    const string BACKGROUND_VERTEX_SHADER =
+            ES_VERSION +
+            "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
+            "uniform mat4 inverseViewProjection;\n"
+            "out vec3 direction;\n"
+            "uniform mat4 mvp;\n"
+            "void main() {\n"
+            "    gl_Position = vec4(pos, 1.0);\n"
+            "    direction = (inverseViewProjection * vec4(pos, 1.0f)).xyz;\n"
+            "}\n";
+
+    const string SPHERE_MAP_BACKGROUND_FRAGMENT_SHADER =
+            ES_VERSION +
+            "precision mediump float;\n"
+            "uniform sampler2D environmentTexture;\n"
+            "in vec3 direction;\n"
+            "out vec4 outColor;\n" +
+            directionToSphereMapUV +
+            "void main() {\n"
+            "    outColor = texture(environmentTexture, directionToSphereMapUV(direction));\n"
+            "}\n";
+
+    const string CUBE_MAP_REFRACTION_FRAGMENT_SHADER =
+            ES_VERSION +
+            "precision mediump float;\n"
+            "uniform samplerCube environmentTexture;\n"
+            "in vec3 direction;\n"
             "in vec3 vNormal;\n"
             "out vec4 outColor;\n"
             "void main() {\n"
-            "    outColor = vec4(1.0f, 0.0f, 0.0f, 1.0f); \n"
+            "    outColor = texture(environmentTexture, refract(direction, normalize(vNormal), 0.75));\n"
+            "}\n";
+
+    const string CUBE_MAP_BACKGROUND_FRAGMENT_SHADER =
+            ES_VERSION +
+            "precision mediump float;\n"
+            "uniform samplerCube environmentTexture;\n"
+            "in vec3 direction;\n"
+            "out vec4 outColor;\n"
+            "void main() {\n"
+            "    outColor = texture(environmentTexture, direction); \n"
             "}\n";
 
     SphereWithRefractionView();
