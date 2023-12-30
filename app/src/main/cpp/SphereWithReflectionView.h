@@ -53,7 +53,7 @@ public:
             "out vec3 vNormal;\n"
             "void main() {\n"
             "    gl_Position = mvp * vec4(pos, 1.0);\n"
-            "    direction = -(cameraTransformation * vec4(pos, 1.0)).xyz;\n"
+            "    direction = (cameraTransformation * vec4(pos, 1.0)).xyz;\n"
             "    vNormal = inverse3x3Transpose * normal;\n"
             "}\n";
 

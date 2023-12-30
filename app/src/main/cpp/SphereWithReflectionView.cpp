@@ -32,7 +32,7 @@ void SphereWithReflectionView::render(){
     Matrix3<float> inverse3x3Transpose;
     Matrix4<float> mvp = orientationAdjustedPerspective * translation * rotation;
     inverse3x3Transpose = mvp.GetSubMatrix3().GetInverse().GetTranspose();
-    Matrix4<float> cameraTransformation = rotation.GetInverse() * (-translation);
+    Matrix4<float> cameraTransformation = rotation.GetInverse() * translation;
     //inverse3x3Transpose = mvp.GetSubMatrix3();
 
     /*glUseProgram(mProgram);
