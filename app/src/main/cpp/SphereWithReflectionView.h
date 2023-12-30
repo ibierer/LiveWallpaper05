@@ -48,11 +48,12 @@ public:
             "uniform mat4 mvp;\n"
             "uniform mat4 inverseViewProjection;\n"
             "uniform mat3 inverse3x3Transpose;\n"
+            "uniform mat4 cameraTransformation;\n"
             "out vec3 direction;\n"
             "out vec3 vNormal;\n"
             "void main() {\n"
             "    gl_Position = mvp * vec4(pos, 1.0);\n"
-            "    direction = (inverseViewProjection * vec4(pos, 1.0f)).xyz;\n"
+            "    direction = -(cameraTransformation * vec4(pos, 1.0)).xyz;\n"
             "    vNormal = inverse3x3Transpose * normal;\n"
             "}\n";
 
@@ -64,7 +65,7 @@ public:
             "in vec3 vNormal;\n"
             "out vec4 outColor;\n"
             "void main() {\n"
-            "    outColor = texture(environmentTexture, direction); \n"
+            "    outColor = texture(environmentTexture, direction);\n"
             "}\n";
 
     const string BACKGROUND_VERTEX_SHADER =

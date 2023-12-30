@@ -32,6 +32,7 @@ void SphereWithReflectionView::render(){
     Matrix3<float> inverse3x3Transpose;
     Matrix4<float> mvp = orientationAdjustedPerspective * translation * rotation;
     inverse3x3Transpose = mvp.GetSubMatrix3().GetInverse().GetTranspose();
+    Matrix4<float> cameraTransformation = rotation.GetInverse() * (-translation);
     //inverse3x3Transpose = mvp.GetSubMatrix3();
 
     /*glUseProgram(mProgram);
@@ -56,6 +57,11 @@ void SphereWithReflectionView::render(){
             1,
             GL_FALSE,
             (GLfloat*)&inverse3x3Transpose);
+    glUniformMatrix4fv(
+            glGetUniformLocation(mReflectionProgram, "cameraTransformation"),
+            1,
+            GL_FALSE,
+            (GLfloat*)&cameraTransformation);
 
     sphereVAO.draw();
 
