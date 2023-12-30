@@ -5,10 +5,10 @@
 #include "SphereWithReflectionView.h"
 
 SphereWithReflectionView::SphereWithReflectionView() : View() {
-    mProgram = createProgram(_BACKGROUND_VERTEX_SHADER.c_str(), _BACKGROUND_FRAGMENT_SHADER.c_str());
-    _mProgram = createProgram(_REFLECTION_VERTEX_SHADER.c_str(), _REFLECTION_FRAGMENT_SHADER.c_str());
-    mReflectionProgram = createProgram(REFLECTION_VERTEX_SHADER.c_str(), REFLECTION_FRAGMENT_SHADER.c_str());
-    mBackgroundProgram = createProgram(BACKGROUND_VERTEX_SHADER.c_str(), BACKGROUND_FRAGMENT_SHADER.c_str());
+    sphereMapReflectionProgram = createProgram(VERTEX_SHADER.c_str(), SPHERE_MAP_REFLECTION_FRAGMENT_SHADER.c_str());
+    sphereMapBackgroundProgram = createProgram(BACKGROUND_VERTEX_SHADER.c_str(), SPHERE_MAP_BACKGROUND_FRAGMENT_SHADER.c_str());
+    cubeMapReflectionProgram = createProgram(VERTEX_SHADER.c_str(), CUBE_MAP_REFLECTION_FRAGMENT_SHADER.c_str());
+    cubeMapBackgroundProgram = createProgram(BACKGROUND_VERTEX_SHADER.c_str(), CUBE_MAP_BACKGROUND_FRAGMENT_SHADER.c_str());
     //environmentMap = CubeMap::createSimpleTextureCubemap();
     environmentMap = SphereMap(Texture::DefaultImages::MANDELBROT, 16384, 16384, this);
     sphereVAO = VertexArrayObject(Sphere(1.0f, 100));
@@ -36,14 +36,14 @@ void SphereWithReflectionView::render(){
     inverse3x3Transpose = rotation.GetSubMatrix3().Identity();
     Matrix4<float> cameraTransformation = rotation.GetInverse() * view;
 
-    glUseProgram(mReflectionProgram);
+    glUseProgram(cubeMapReflectionProgram);
     glUniformMatrix4fv(
-            glGetUniformLocation(mReflectionProgram, "mvp"),
+            glGetUniformLocation(cubeMapReflectionProgram, "mvp"),
             1,
             GL_FALSE,
             (GLfloat*)&mvp);
     glUniformMatrix4fv(
-            glGetUniformLocation(mReflectionProgram, "viewTransformation"),
+            glGetUniformLocation(cubeMapReflectionProgram, "viewTransformation"),
             1,
             GL_FALSE,
             (GLfloat*)&cameraTransformation);
@@ -53,9 +53,9 @@ void SphereWithReflectionView::render(){
 
     Matrix4<float> inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();
 
-    glUseProgram(mBackgroundProgram);
+    glUseProgram(cubeMapBackgroundProgram);
     glUniformMatrix4fv(
-            glGetUniformLocation(mBackgroundProgram, "inverseViewProjection"),
+            glGetUniformLocation(cubeMapBackgroundProgram, "inverseViewProjection"),
             1,
             GL_FALSE,
             (GLfloat*)&inverseViewProjection);
@@ -81,14 +81,14 @@ void SphereWithReflectionView::render(){
     inverse3x3Transpose = rotation.GetSubMatrix3().Identity();
     Matrix4<float> cameraTransformation = rotation.GetInverse() * view;
 
-    glUseProgram(_mProgram);
+    glUseProgram(sphereMapReflectionProgram);
     glUniformMatrix4fv(
-            glGetUniformLocation(_mProgram, "mvp"),
+            glGetUniformLocation(sphereMapReflectionProgram, "mvp"),
             1,
             GL_FALSE,
             (GLfloat*)&mvp);
     glUniformMatrix4fv(
-            glGetUniformLocation(_mProgram, "viewTransformation"),
+            glGetUniformLocation(sphereMapReflectionProgram, "viewTransformation"),
             1,
             GL_FALSE,
             (GLfloat*)&cameraTransformation);
@@ -98,9 +98,9 @@ void SphereWithReflectionView::render(){
 
     Matrix4<float> inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();
 
-    glUseProgram(mProgram);
+    glUseProgram(sphereMapBackgroundProgram);
     glUniformMatrix4fv(
-            glGetUniformLocation(mProgram, "inverseViewProjection"),
+            glGetUniformLocation(sphereMapBackgroundProgram, "inverseViewProjection"),
             1,
             GL_FALSE,
             (GLfloat*)&inverseViewProjection);
