@@ -25,19 +25,6 @@ public:
 
     EnvironmentMap environmentMap;
 
-    const string directionToSphereMapUV =
-            "vec2 directionToSphereMapUV(vec3 direction) {\n"
-            "    // Normalize the direction vector\n"
-            "    vec3 normalizedDirection = normalize(direction);\n"
-            "    // Calculate polar angle (theta) and azimuthal angle (phi)\n"
-            "    float theta = acos(normalizedDirection.z); // polar angle\n"
-            "    float phi = atan(normalizedDirection.y, normalizedDirection.x); // azimuthal angle\n"
-            "    // Map angles to UV coordinates\n"
-            "    float u = phi / (2.0 * 3.14159265359) + 0.5;\n"
-            "    float p = 1.0 - theta / 3.14159265359;\n"
-            "    return vec2(u, p);\n"
-            "}\n";
-
     const string VERTEX_SHADER =
             ES_VERSION +
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
@@ -58,10 +45,10 @@ public:
             "uniform sampler2D environmentTexture;\n"
             "in vec3 direction;\n"
             "in vec3 vNormal;\n"
-            "out vec4 outColor;\n"
-            + directionToSphereMapUV +
+            "out vec4 outColor;\n" +
+            directionToSphereMapUV +
             "void main() {\n"
-            "    outColor = texture(environmentTexture, directionToSphereMapUV(reflect(direction, vNormal)));\n"
+            "    outColor = texture(environmentTexture, directionToSphereMapUV(reflect(direction, normalize(vNormal))));\n"
             "}\n";
 
     const string BACKGROUND_VERTEX_SHADER =
@@ -80,8 +67,8 @@ public:
             "precision mediump float;\n"
             "uniform sampler2D environmentTexture;\n"
             "in vec3 direction;\n"
-            "out vec4 outColor;\n"
-            + directionToSphereMapUV +
+            "out vec4 outColor;\n" +
+            directionToSphereMapUV +
             "void main() {\n"
             "    outColor = texture(environmentTexture, directionToSphereMapUV(direction));\n"
             "}\n";
@@ -94,7 +81,7 @@ public:
             "in vec3 vNormal;\n"
             "out vec4 outColor;\n"
             "void main() {\n"
-            "    outColor = texture(environmentTexture, reflect(direction, vNormal));\n"
+            "    outColor = texture(environmentTexture, reflect(direction, normalize(vNormal)));\n"
             "}\n";
 
     const string CUBE_MAP_BACKGROUND_FRAGMENT_SHADER =
