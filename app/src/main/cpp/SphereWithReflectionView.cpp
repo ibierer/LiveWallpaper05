@@ -5,7 +5,6 @@
 #include "SphereWithReflectionView.h"
 
 SphereWithReflectionView::SphereWithReflectionView() : View() {
-    mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     mReflectionProgram = createProgram(REFLECTION_VERTEX_SHADER.c_str(), REFLECTION_FRAGMENT_SHADER.c_str());
     mBackgroundProgram = createProgram(BACKGROUND_VERTEX_SHADER.c_str(), BACKGROUND_FRAGMENT_SHADER.c_str());
     cubeMap = CubeMap::createSimpleTextureCubemap();
@@ -40,13 +39,8 @@ void SphereWithReflectionView::render(){
             1,
             GL_FALSE,
             (GLfloat*)&mvp);
-    glUniformMatrix3fv(
-            glGetUniformLocation(mReflectionProgram, "inverse3x3Transpose"),
-            1,
-            GL_FALSE,
-            (GLfloat*)&inverse3x3Transpose);
     glUniformMatrix4fv(
-            glGetUniformLocation(mReflectionProgram, "cameraTransformation"),
+            glGetUniformLocation(mReflectionProgram, "viewTransformation"),
             1,
             GL_FALSE,
             (GLfloat*)&cameraTransformation);
