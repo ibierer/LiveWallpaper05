@@ -75,10 +75,8 @@ void SphereWithReflectionView::render(){
     translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 10.0f * (zoom - 1.0f)));
     Matrix4<float> rotation;
     rotation = Matrix4<float>(quaternionTo3x3(rotationVector));
-    Matrix3<float> inverse3x3Transpose;
     Matrix4<float> view = translation * rotation;
     Matrix4<float> mvp = orientationAdjustedPerspective * view;
-    inverse3x3Transpose = rotation.GetSubMatrix3().Identity();
     Matrix4<float> cameraTransformation = rotation.GetInverse() * view;
 
     glUseProgram(sphereMapReflectionProgram);
