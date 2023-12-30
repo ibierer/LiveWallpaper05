@@ -28,30 +28,18 @@ void SphereWithReflectionView::render(){
     translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 10.0f * (zoom - 1.0f)));
     Matrix4<float> rotation;
     rotation = Matrix4<float>(quaternionTo3x3(rotationVector));
-    Matrix4<float> inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();
     Matrix3<float> inverse3x3Transpose;
-    Matrix4<float> mvp = orientationAdjustedPerspective * translation * rotation;
-    inverse3x3Transpose = mvp.GetSubMatrix3().GetInverse().GetTranspose();
-    Matrix4<float> cameraTransformation = rotation.GetInverse() * translation * rotation;
-    //inverse3x3Transpose = mvp.GetSubMatrix3();
+    Matrix4<float> view = translation * rotation;
+    Matrix4<float> mvp = orientationAdjustedPerspective * view;
+    inverse3x3Transpose = rotation.GetSubMatrix3().Identity();
+    Matrix4<float> cameraTransformation = rotation.GetInverse() * view;
 
-    /*glUseProgram(mProgram);
-    glUniformMatrix4fv(
-            glGetUniformLocation(mProgram, "mvp"),
-            1,
-            GL_FALSE,
-            (GLfloat*)&mvp);*/
     glUseProgram(mReflectionProgram);
     glUniformMatrix4fv(
             glGetUniformLocation(mReflectionProgram, "mvp"),
             1,
             GL_FALSE,
             (GLfloat*)&mvp);
-    glUniformMatrix4fv(
-            glGetUniformLocation(mReflectionProgram, "inverseViewProjection"),
-            1,
-            GL_FALSE,
-            (GLfloat*)&inverseViewProjection);
     glUniformMatrix3fv(
             glGetUniformLocation(mReflectionProgram, "inverse3x3Transpose"),
             1,
@@ -65,6 +53,8 @@ void SphereWithReflectionView::render(){
 
     sphereVAO.draw();
 
+
+    Matrix4<float> inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();
 
     glUseProgram(mBackgroundProgram);
     glUniformMatrix4fv(

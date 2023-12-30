@@ -46,7 +46,6 @@ public:
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
             "layout(location = " STRV(NORMAL_ATTRIBUTE_LOCATION) ") in vec3 normal;\n"
             "uniform mat4 mvp;\n"
-            "uniform mat4 inverseViewProjection;\n"
             "uniform mat3 inverse3x3Transpose;\n"
             "uniform mat4 cameraTransformation;\n"
             "out vec3 direction;\n"
@@ -54,7 +53,7 @@ public:
             "void main() {\n"
             "    gl_Position = mvp * vec4(pos, 1.0);\n"
             "    direction = (cameraTransformation * vec4(pos, 1.0)).xyz;\n"
-            "    vNormal = inverse3x3Transpose * normal;\n"
+            "    vNormal = normal;\n"
             "}\n";
 
     const string REFLECTION_FRAGMENT_SHADER =
@@ -65,7 +64,7 @@ public:
             "in vec3 vNormal;\n"
             "out vec4 outColor;\n"
             "void main() {\n"
-            "    outColor = texture(environmentTexture, direction);\n"
+            "    outColor = texture(environmentTexture, reflect(direction, vNormal));\n"
             "}\n";
 
     const string BACKGROUND_VERTEX_SHADER =
