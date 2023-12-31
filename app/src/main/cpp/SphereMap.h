@@ -10,7 +10,7 @@ class SphereMap : public EnvironmentMap {
 public:
 
     const string directionToSphereMapUV =
-            "vec2 directionToSphereMapUV(vec3 direction) {\n"
+            "vec2 SPHERE_MAP_TEXTURE_FUNCTION(vec3 direction) {\n"
             "    // Normalize the direction vector\n"
             "    vec3 normalizedDirection = normalize(direction);\n"
             "    // Calculate polar angle (theta) and azimuthal angle (phi)\n"

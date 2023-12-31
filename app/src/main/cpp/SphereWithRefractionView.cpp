@@ -5,9 +5,9 @@
 #include "SphereWithRefractionView.h"
 
 SphereWithRefractionView::SphereWithRefractionView() : View() {
-    sphereMapReflectionProgram = createProgram(VERTEX_SHADER.c_str(), SPHERE_MAP_REFRACTION_FRAGMENT_SHADER.c_str());
+    sphereMapRefractionProgram = createProgram(VERTEX_SHADER.c_str(), SPHERE_MAP_REFRACTION_FRAGMENT_SHADER.c_str());
     sphereMapBackgroundProgram = createProgram(BACKGROUND_VERTEX_SHADER.c_str(), SPHERE_MAP_BACKGROUND_FRAGMENT_SHADER.c_str());
-    cubeMapReflectionProgram = createProgram(VERTEX_SHADER.c_str(), CUBE_MAP_REFRACTION_FRAGMENT_SHADER.c_str());
+    cubeMapRefractionProgram = createProgram(VERTEX_SHADER.c_str(), CUBE_MAP_REFRACTION_FRAGMENT_SHADER.c_str());
     cubeMapBackgroundProgram = createProgram(BACKGROUND_VERTEX_SHADER.c_str(), CUBE_MAP_BACKGROUND_FRAGMENT_SHADER.c_str());
     //environmentMap = CubeMap::createSimpleTextureCubemap();
     environmentMap = SphereMap(Texture::DefaultImages::MANDELBROT, 16384, 16384, this);
@@ -36,14 +36,14 @@ void SphereWithRefractionView::render(){
     inverse3x3Transpose = rotation.GetSubMatrix3().Identity();
     Matrix4<float> cameraTransformation = rotation.GetInverse() * view;
 
-    glUseProgram(cubeMapReflectionProgram);
+    glUseProgram(cubeMapRefractionProgram);
     glUniformMatrix4fv(
-            glGetUniformLocation(cubeMapReflectionProgram, "mvp"),
+            glGetUniformLocation(cubeMapRefractionProgram, "mvp"),
             1,
             GL_FALSE,
             (GLfloat*)&mvp);
     glUniformMatrix4fv(
-            glGetUniformLocation(cubeMapReflectionProgram, "viewTransformation"),
+            glGetUniformLocation(cubeMapRefractionProgram, "viewTransformation"),
             1,
             GL_FALSE,
             (GLfloat*)&cameraTransformation);
@@ -79,14 +79,14 @@ void SphereWithRefractionView::render(){
     Matrix4<float> mvp = orientationAdjustedPerspective * view;
     Matrix4<float> cameraTransformation = rotation.GetInverse() * view;
 
-    glUseProgram(sphereMapReflectionProgram);
+    glUseProgram(sphereMapRefractionProgram);
     glUniformMatrix4fv(
-            glGetUniformLocation(sphereMapReflectionProgram, "mvp"),
+            glGetUniformLocation(sphereMapRefractionProgram, "mvp"),
             1,
             GL_FALSE,
             (GLfloat*)&mvp);
     glUniformMatrix4fv(
-            glGetUniformLocation(sphereMapReflectionProgram, "viewTransformation"),
+            glGetUniformLocation(sphereMapRefractionProgram, "viewTransformation"),
             1,
             GL_FALSE,
             (GLfloat*)&cameraTransformation);

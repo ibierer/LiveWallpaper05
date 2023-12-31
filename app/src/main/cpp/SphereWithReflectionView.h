@@ -46,9 +46,9 @@ public:
             "in vec3 direction;\n"
             "in vec3 vNormal;\n"
             "out vec4 outColor;\n" +
-            directionToSphereMapUV +
+            SPHERE_MAP_TEXTURE_FUNCTION +
             "void main() {\n"
-            "    outColor = texture(environmentTexture, directionToSphereMapUV(reflect(direction, normalize(vNormal))));\n"
+            "    outColor = Texture(environmentTexture, reflect(normalize(direction), normalize(vNormal)));\n"
             "}\n";
 
     const string BACKGROUND_VERTEX_SHADER =
@@ -68,9 +68,9 @@ public:
             "uniform sampler2D environmentTexture;\n"
             "in vec3 direction;\n"
             "out vec4 outColor;\n" +
-            directionToSphereMapUV +
+            SPHERE_MAP_TEXTURE_FUNCTION +
             "void main() {\n"
-            "    outColor = texture(environmentTexture, directionToSphereMapUV(direction));\n"
+            "    outColor = Texture(environmentTexture, direction);\n"
             "}\n";
 
     const string CUBE_MAP_REFLECTION_FRAGMENT_SHADER =
@@ -81,7 +81,7 @@ public:
             "in vec3 vNormal;\n"
             "out vec4 outColor;\n"
             "void main() {\n"
-            "    outColor = texture(environmentTexture, reflect(direction, normalize(vNormal)));\n"
+            "    outColor = texture(environmentTexture, reflect(normalize(direction), normalize(vNormal)));\n"
             "}\n";
 
     const string CUBE_MAP_BACKGROUND_FRAGMENT_SHADER =

@@ -32,9 +32,9 @@ public:
             "uniform sampler2D environmentTexture;\n"
             "in vec3 direction;\n"
             "out vec4 outColor;\n" +
-            directionToSphereMapUV +
+            SPHERE_MAP_TEXTURE_FUNCTION +
             "void main() {\n"
-            "    outColor = texture(environmentTexture, directionToSphereMapUV(direction));\n"
+            "    outColor = Texture(environmentTexture, direction);\n"
             "}\n";
 
     SphereMapView();

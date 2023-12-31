@@ -12,11 +12,11 @@
 class SphereWithRefractionView : public View {
 public:
 
-    GLuint sphereMapReflectionProgram;
+    GLuint sphereMapRefractionProgram;
 
     GLuint sphereMapBackgroundProgram;
 
-    GLuint cubeMapReflectionProgram;
+    GLuint cubeMapRefractionProgram;
 
     GLuint cubeMapBackgroundProgram;
 
@@ -47,9 +47,9 @@ public:
             "in vec3 direction;\n"
             "in vec3 vNormal;\n"
             "out vec4 outColor;\n" +
-            directionToSphereMapUV +
+            SPHERE_MAP_TEXTURE_FUNCTION +
             "void main() {\n"
-            "    outColor = texture(environmentTexture, directionToSphereMapUV(refract(direction, normalize(vNormal), 0.75)));\n"
+            "    outColor = Texture(environmentTexture, refract(normalize(direction), normalize(vNormal), 0.75));\n"
             "}\n";
 
     const string BACKGROUND_VERTEX_SHADER =
@@ -69,9 +69,9 @@ public:
             "uniform sampler2D environmentTexture;\n"
             "in vec3 direction;\n"
             "out vec4 outColor;\n" +
-            directionToSphereMapUV +
+            SPHERE_MAP_TEXTURE_FUNCTION +
             "void main() {\n"
-            "    outColor = texture(environmentTexture, directionToSphereMapUV(direction));\n"
+            "    outColor = Texture(environmentTexture, direction);\n"
             "}\n";
 
     const string CUBE_MAP_REFRACTION_FRAGMENT_SHADER =
@@ -82,7 +82,7 @@ public:
             "in vec3 vNormal;\n"
             "out vec4 outColor;\n"
             "void main() {\n"
-            "    outColor = texture(environmentTexture, refract(direction, normalize(vNormal), 0.75));\n"
+            "    outColor = texture(environmentTexture, refract(normalize(direction), normalize(vNormal), 0.75));\n"
             "}\n";
 
     const string CUBE_MAP_BACKGROUND_FRAGMENT_SHADER =

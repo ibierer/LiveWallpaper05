@@ -9,8 +9,8 @@ SphereWithReflectionView::SphereWithReflectionView() : View() {
     sphereMapBackgroundProgram = createProgram(BACKGROUND_VERTEX_SHADER.c_str(), SPHERE_MAP_BACKGROUND_FRAGMENT_SHADER.c_str());
     cubeMapReflectionProgram = createProgram(VERTEX_SHADER.c_str(), CUBE_MAP_REFLECTION_FRAGMENT_SHADER.c_str());
     cubeMapBackgroundProgram = createProgram(BACKGROUND_VERTEX_SHADER.c_str(), CUBE_MAP_BACKGROUND_FRAGMENT_SHADER.c_str());
-    //environmentMap = CubeMap::createSimpleTextureCubemap();
-    environmentMap = SphereMap(Texture::DefaultImages::MANDELBROT, 16384, 16384, this);
+    environmentMap = CubeMap::createSimpleTextureCubemap();
+    //environmentMap = SphereMap(Texture::DefaultImages::MANDELBROT, 16384, 16384, this);
     sphereVAO = VertexArrayObject(Sphere(1.0f, 100));
     environmentTriangleVAO = VertexArrayObject(environmentMap.environmentTriangleVertices, sizeof(environmentMap.environmentTriangleVertices) / sizeof(PositionXYZ));
 }
@@ -20,7 +20,7 @@ SphereWithReflectionView::~SphereWithReflectionView(){
 }
 
 void SphereWithReflectionView::render(){
-    /*glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
+    glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -62,10 +62,10 @@ void SphereWithReflectionView::render(){
     glBindTexture(GL_TEXTURE_CUBE_MAP, environmentMap.getTextureId());
     //glActiveTexture(GL_TEXTURE0);
 
-    environmentTriangleVAO.draw();*/
+    environmentTriangleVAO.draw();
 
 
-    glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
+    /*glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -105,5 +105,5 @@ void SphereWithReflectionView::render(){
     glBindTexture(GL_TEXTURE_2D, environmentMap.getTextureId());
     //glActiveTexture(GL_TEXTURE0);
 
-    environmentTriangleVAO.draw();
+    environmentTriangleVAO.draw();*/
 }
