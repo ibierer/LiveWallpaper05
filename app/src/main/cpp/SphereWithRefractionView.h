@@ -111,7 +111,7 @@ public:
             "out vec4 outColor;\n" +
             DOUBLE_REFRACT_FUNCTION +
             "void main() {\n"
-            "    outColor = texture(environmentTexture, refract(normalize(direction), normalize(vNormal), 0.75));\n"
+            "    outColor = texture(environmentTexture, doubleRefract(normalize(direction), normalize(vNormal), 0.75));\n"
             "}\n";
 
     const string CUBE_MAP_BACKGROUND_FRAGMENT_SHADER =
