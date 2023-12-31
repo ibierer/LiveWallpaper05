@@ -190,7 +190,7 @@ void SphereWithRefractionView::render(){
             1,
             GL_FALSE,
             (GLfloat*)&inverseViewProjection);
-    glBindTexture(GL_TEXTURE_2D, environmentMap.getTextureId());
+    glBindTexture(GL_TEXTURE_CUBE_MAP, environmentMap.getTextureId());
     //glActiveTexture(GL_TEXTURE0);
 
     environmentTriangleVAO.draw();*/
