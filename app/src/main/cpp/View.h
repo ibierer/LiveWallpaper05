@@ -106,6 +106,17 @@ public:
             "    return texture(sampler, vec2(u, p));\n"
             "}\n";
 
+    const string DOUBLE_REFRACT_FUNCTION =
+            "vec3 doubleRefract(vec3 I, vec3 N, float eta) {\n"
+            "    vec3 R;\n"
+            "    float k = 1.0 - eta * eta * (1.0 - dot(N, I) * dot(N, I));\n"
+            "    if (k < 0.0)\n"
+            "        return(R = vec3(0.0));\n"
+            "    else\n"
+            "        R = eta * I - (eta * dot(N, I) + sqrt(k)) * N;\n"
+            "    return 2.0f * dot(I, R) * R - I;\n"
+            "}\n";
+
     static string jstringToString(JNIEnv *env, jstring jStr);
 
     void incrementFrameCount();

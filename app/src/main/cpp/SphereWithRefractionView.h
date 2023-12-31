@@ -64,15 +64,7 @@ public:
             "in vec3 vNormal;\n"
             "out vec4 outColor;\n" +
             SPHERE_MAP_TEXTURE_FUNCTION +
-            "vec3 doubleRefract(vec3 I, vec3 N, float eta) {\n"
-            "    vec3 R;\n"
-            "    float k = 1.0 - eta * eta * (1.0 - dot(N, I) * dot(N, I));\n"
-            "    if (k < 0.0)\n"
-            "        return(R = vec3(0.0));\n"
-            "    else\n"
-            "        R = eta * I - (eta * dot(N, I) + sqrt(k)) * N;\n"
-            "    return 2.0f * dot(I, R) * R - I;\n"
-            "}\n"
+            DOUBLE_REFRACT_FUNCTION +
             "void main() {\n"
             "    outColor = Texture(environmentTexture, doubleRefract(normalize(direction), normalize(vNormal), 0.75));\n"
             "}\n";
@@ -116,7 +108,8 @@ public:
             "uniform samplerCube environmentTexture;\n"
             "in vec3 direction;\n"
             "in vec3 vNormal;\n"
-            "out vec4 outColor;\n"
+            "out vec4 outColor;\n" +
+            DOUBLE_REFRACT_FUNCTION +
             "void main() {\n"
             "    outColor = texture(environmentTexture, refract(normalize(direction), normalize(vNormal), 0.75));\n"
             "}\n";
