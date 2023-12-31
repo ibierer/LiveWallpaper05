@@ -22,7 +22,7 @@ SphereWithRefractionView::~SphereWithRefractionView(){
 }
 
 void SphereWithRefractionView::render(){
-    /*glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
+    glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -37,8 +37,9 @@ void SphereWithRefractionView::render(){
     Matrix4<float> mvp = orientationAdjustedPerspective * view;
     inverse3x3Transpose = rotation.GetSubMatrix3().Identity();
     Matrix4<float> cameraTransformation = rotation.GetInverse() * view;
+    Matrix4<float> inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();
 
-    glUseProgram(cubeMapRefractionProgram);
+    /*glUseProgram(cubeMapRefractionProgram);
     glUniformMatrix4fv(
             glGetUniformLocation(cubeMapRefractionProgram, "mvp"),
             1,
@@ -52,9 +53,6 @@ void SphereWithRefractionView::render(){
 
     sphereVAO.draw();
 
-
-    Matrix4<float> inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();
-
     glUseProgram(cubeMapBackgroundProgram);
     glUniformMatrix4fv(
             glGetUniformLocation(cubeMapBackgroundProgram, "inverseViewProjection"),
@@ -67,21 +65,7 @@ void SphereWithRefractionView::render(){
     environmentTriangleVAO.draw();*/
 
 
-    /*glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-
-    Matrix4<float> translation;
-    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 10.0f * (zoom - 1.0f)));
-    Matrix4<float> rotation;
-    rotation = Matrix4<float>(quaternionTo3x3(rotationVector));
-    Matrix4<float> view = translation * rotation;
-    Matrix4<float> mvp = orientationAdjustedPerspective * view;
-    Matrix4<float> cameraTransformation = rotation.GetInverse() * view;
-
-    glUseProgram(sphereMapRefractionProgram);
+    /*glUseProgram(sphereMapRefractionProgram);
     glUniformMatrix4fv(
             glGetUniformLocation(sphereMapRefractionProgram, "mvp"),
             1,
@@ -96,8 +80,6 @@ void SphereWithRefractionView::render(){
     sphereVAO.draw();
 
 
-    Matrix4<float> inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();
-
     glUseProgram(sphereMapBackgroundProgram);
     glUniformMatrix4fv(
             glGetUniformLocation(sphereMapBackgroundProgram, "inverseViewProjection"),
@@ -109,20 +91,6 @@ void SphereWithRefractionView::render(){
 
     environmentTriangleVAO.draw();*/
 
-
-    glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-
-    Matrix4<float> translation;
-    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 10.0f * (zoom - 1.0f)));
-    Matrix4<float> rotation;
-    rotation = Matrix4<float>(quaternionTo3x3(rotationVector));
-    Matrix4<float> view = translation * rotation;
-    Matrix4<float> mvp = orientationAdjustedPerspective * view;
-    Matrix4<float> cameraTransformation = rotation.GetInverse() * view;
 
     glUseProgram(sphereMapDoubleRefractionProgram);
     glUniformMatrix4fv(
@@ -139,8 +107,6 @@ void SphereWithRefractionView::render(){
     sphereVAO.draw();
 
 
-    Matrix4<float> inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();
-
     glUseProgram(sphereMapBackgroundProgram);
     glUniformMatrix4fv(
             glGetUniformLocation(sphereMapBackgroundProgram, "inverseViewProjection"),
@@ -153,21 +119,7 @@ void SphereWithRefractionView::render(){
     environmentTriangleVAO.draw();
 
 
-    /*glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-
-    Matrix4<float> translation;
-    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 10.0f * (zoom - 1.0f)));
-    Matrix4<float> rotation;
-    rotation = Matrix4<float>(quaternionTo3x3(rotationVector));
-    Matrix4<float> view = translation * rotation;
-    Matrix4<float> mvp = orientationAdjustedPerspective * view;
-    Matrix4<float> cameraTransformation = rotation.GetInverse() * view;
-
-    glUseProgram(cubeMapDoubleRefractionProgram);
+    /*glUseProgram(cubeMapDoubleRefractionProgram);
     glUniformMatrix4fv(
             glGetUniformLocation(cubeMapDoubleRefractionProgram, "mvp"),
             1,
@@ -181,8 +133,6 @@ void SphereWithRefractionView::render(){
 
     sphereVAO.draw();
 
-
-    Matrix4<float> inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();
 
     glUseProgram(cubeMapBackgroundProgram);
     glUniformMatrix4fv(
