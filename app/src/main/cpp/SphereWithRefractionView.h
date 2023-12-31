@@ -14,7 +14,11 @@ public:
 
     GLuint sphereMapRefractionProgram;
 
+    GLuint cubeMapDoubleRefractionProgram;
+
     GLuint sphereMapBackgroundProgram;
+
+    GLuint sphereMapDoubleRefractionProgram;
 
     GLuint cubeMapRefractionProgram;
 
@@ -52,6 +56,28 @@ public:
             "    outColor = Texture(environmentTexture, refract(normalize(direction), normalize(vNormal), 0.75));\n"
             "}\n";
 
+    const string SPHERE_MAP_DOUBLE_REFRACTION_FRAGMENT_SHADER =
+            ES_VERSION +
+            "precision mediump float;\n"
+            "uniform sampler2D environmentTexture;\n"
+            "in vec3 direction;\n"
+            "in vec3 vNormal;\n"
+            "out vec4 outColor;\n" +
+            SPHERE_MAP_TEXTURE_FUNCTION +
+            "vec3 doubleRefract(vec3 I, vec3 N, float eta) {\n"
+            "    vec3 R;\n"
+            "    float k = 1.0 - eta * eta * (1.0 - dot(N, I) * dot(N, I));\n"
+            "    if (k < 0.0)\n"
+            "        R = vec3(0.0);\n"
+            "    else\n"
+            "        R = eta * I - (eta * dot(N, I) + sqrt(k)) * N;\n"
+            "    \n"
+            "    return R;\n"
+            "}\n"
+            "void main() {\n"
+            "    outColor = Texture(environmentTexture, doubleRefract(normalize(direction), normalize(vNormal), 0.75));\n"
+            "}\n";
+
     const string BACKGROUND_VERTEX_SHADER =
             ES_VERSION +
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
@@ -75,6 +101,17 @@ public:
             "}\n";
 
     const string CUBE_MAP_REFRACTION_FRAGMENT_SHADER =
+            ES_VERSION +
+            "precision mediump float;\n"
+            "uniform samplerCube environmentTexture;\n"
+            "in vec3 direction;\n"
+            "in vec3 vNormal;\n"
+            "out vec4 outColor;\n"
+            "void main() {\n"
+            "    outColor = texture(environmentTexture, refract(normalize(direction), normalize(vNormal), 0.75));\n"
+            "}\n";
+
+    const string CUBE_MAP_DOUBLE_REFRACTION_FRAGMENT_SHADER =
             ES_VERSION +
             "precision mediump float;\n"
             "uniform samplerCube environmentTexture;\n"
