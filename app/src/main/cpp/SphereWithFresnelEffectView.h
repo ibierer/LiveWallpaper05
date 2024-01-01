@@ -60,7 +60,7 @@ public:
             "    float dotNI = dot(normalizedDirection, normalizedNormal);\n"
             "    vec4 reflectedColor = Texture(environmentTexture, reflect2(normalizedDirection, normalizedNormal, dotNI));\n"
             "    vec4 refractedColor = Texture(environmentTexture, refract2(normalizedDirection, normalizedNormal, 0.75, dotNI));\n"
-            "    outColor = mix(refractedColor, reflectedColor, fresnel(dot(normalizedDirection, normalizedNormal)));\n"
+            "    outColor = mix(refractedColor, reflectedColor, fresnel(dotNI));\n"
             "}\n";
 
     const string SPHERE_MAP_DOUBLE_REFRACTION_FRAGMENT_SHADER =
@@ -80,7 +80,7 @@ public:
             "    float dotNI = dot(normalizedDirection, normalizedNormal);\n"
             "    vec4 reflectedColor = Texture(environmentTexture, reflect2(normalizedDirection, normalizedNormal, dotNI));\n"
             "    vec4 refractedColor = Texture(environmentTexture, doubleRefract2(normalizedDirection, normalizedNormal, 0.75, dotNI));\n"
-            "    outColor = mix(refractedColor, reflectedColor, fresnel(dot(normalizedDirection, normalizedNormal)));\n"
+            "    outColor = mix(refractedColor, reflectedColor, fresnel(dotNI));\n"
             "}\n";
 
     const string BACKGROUND_VERTEX_SHADER =
@@ -121,7 +121,7 @@ public:
             "    float dotNI = dot(normalizedDirection, normalizedNormal);\n"
             "    vec4 reflectedColor = texture(environmentTexture, reflect2(normalizedDirection, normalizedNormal, dotNI));\n"
             "    vec4 refractedColor = texture(environmentTexture, refract2(normalizedDirection, normalizedNormal, 0.75, dotNI));\n"
-            "    outColor = mix(refractedColor, reflectedColor, fresnel(dot(normalizedDirection, normalizedNormal)));\n"
+            "    outColor = mix(refractedColor, reflectedColor, fresnel(dotNI));\n"
             "}\n";
 
     const string CUBE_MAP_DOUBLE_REFRACTION_FRAGMENT_SHADER =
@@ -140,7 +140,7 @@ public:
             "    float dotNI = dot(normalizedDirection, normalizedNormal);\n"
             "    vec4 reflectedColor = texture(environmentTexture, reflect2(normalizedDirection, normalizedNormal, dotNI));\n"
             "    vec4 refractedColor = texture(environmentTexture, doubleRefract2(normalizedDirection, normalizedNormal, 0.75, dotNI));\n"
-            "    outColor = mix(refractedColor, reflectedColor, fresnel(dot(normalizedDirection, normalizedNormal)));\n"
+            "    outColor = mix(refractedColor, reflectedColor, fresnel(dotNI));\n"
             "}\n";
 
     const string CUBE_MAP_BACKGROUND_FRAGMENT_SHADER =
