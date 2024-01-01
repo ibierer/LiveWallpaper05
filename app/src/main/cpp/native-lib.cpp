@@ -54,6 +54,7 @@
 #include "DrawWithFragmentShaderView.cpp"
 #include "SphereWithRefractionView.cpp"
 #include "SphereWithReflectionView.cpp"
+#include "SphereWithFresnelEffectView.cpp"
 
 using std::string;
 using nlohmann::json;
@@ -94,7 +95,8 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
             //view = new SphereView();
             //view = new CubeView();
             //view = new SphereWithReflectionView();
-            view = new SphereWithRefractionView();
+            //view = new SphereWithRefractionView();
+            view = new SphereWithFresnelEffectView();
         }else if(type == "naive"){
             view = new NaiveView();
         }else if(type == "picflip"){

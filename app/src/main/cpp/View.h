@@ -106,6 +106,22 @@ public:
             "    return texture(sampler, vec2(u, p));\n"
             "}\n";
 
+    const string REFLECT2_FUNCTION =
+            "vec3 reflect2(vec3 I, vec3 N, float dotNI) {\n"
+            "    return I - 2.0 * dotNI * N;\n"
+            "}\n";
+
+    const string REFRACT2_FUNCTION =
+            "vec3 refract2(vec3 I, vec3 N, float eta, float dotNI) {\n"
+            "    vec3 R;\n"
+            "    float k = 1.0 - eta * eta * (1.0 - dotNI * dotNI);\n"
+            "    if (k < 0.0)\n"
+            "        return(R = vec3(0.0));\n"
+            "    else\n"
+            "        R = eta * I - (eta * dotNI + sqrt(k)) * N;\n"
+            "    return R;\n"
+            "}\n";
+
     const string DOUBLE_REFRACT_FUNCTION =
             "vec3 doubleRefract(vec3 I, vec3 N, float eta) {\n"
             "    vec3 R;\n"
@@ -116,6 +132,22 @@ public:
             "        R = eta * I - (eta * dot(N, I) + sqrt(k)) * N;\n"
             "    return 2.0f * dot(I, R) * R - I;\n"
             "}\n";
+
+    const string DOUBLE_REFRACT2_FUNCTION =
+            "vec3 doubleRefract2(vec3 I, vec3 N, float eta, float dotNI) {\n"
+            "    vec3 R;\n"
+            "    float k = 1.0 - eta * eta * (1.0 - dotNI * dotNI);\n"
+            "    if (k < 0.0)\n"
+            "        return(R = vec3(0.0));\n"
+            "    else\n"
+            "        R = eta * I - (eta * dotNI + sqrt(k)) * N;\n"
+            "    return 2.0f * dot(I, R) * R - I;\n"
+            "}\n";
+
+    const string FRESNEL_EFFECT_FUNCTION =
+            "float fresnel(float dotNI){ \n"
+            "    return pow(1.0 + dotNI, 3.0); \n"
+            "} \n";
 
     static string jstringToString(JNIEnv *env, jstring jStr);
 
