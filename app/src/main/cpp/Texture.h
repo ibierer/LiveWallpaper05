@@ -17,6 +17,8 @@ public:
         MANDELBROT
     };
 
+    static const string FETCH_FROM_SPECTRUM_FUNCTION;
+
     Texture(const GLuint &texture, const int& w, const int& h);
 
     Texture(const GLint& internalFormat, const int &width, const int &height, const float *pixelBuffer, const GLenum param);
