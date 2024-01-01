@@ -14,7 +14,7 @@ RenderToCubeMapView::RenderToCubeMapView() : View() {
             CubeMap(GL_RGB, GL_LINEAR, 256, 0),
             YES,
             NO);
-    environmentTriangleVAO = VertexArrayObject(cubeMapFBO.cubeMap.environmentTriangleVertices, sizeof(cubeMapFBO.cubeMap.environmentTriangleVertices) / sizeof(PositionXYZ));
+    environmentTriangleVAO = VertexArrayObject(CubeMap::environmentTriangleVertices, sizeof(cubeMapFBO.cubeMap.environmentTriangleVertices) / sizeof(PositionXYZ));
 }
 
 RenderToCubeMapView::~RenderToCubeMapView(){

@@ -91,13 +91,13 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
             //view = new SphereMapView();
             //view = new TextureView();
             //view = new RenderToTextureView();
-            //view = new RenderToCubeMapView();
+            view = new RenderToCubeMapView();
             //view = new DrawWithFragmentShaderView();
             //view = new SphereView();
             //view = new CubeView();
             //view = new SphereWithReflectionView();
             //view = new SphereWithRefractionView();
-            view = new SphereWithFresnelEffectView();
+            //view = new SphereWithFresnelEffectView();
         }else if(type == "naive"){
             view = new NaiveView();
         }else if(type == "picflip"){

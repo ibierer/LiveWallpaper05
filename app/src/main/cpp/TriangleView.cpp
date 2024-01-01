@@ -7,7 +7,7 @@
 
 TriangleView::TriangleView() : View(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
-    triangleVAO = VertexArrayObject(View::triangleVertices, sizeof(View::triangleVertices) / sizeof(PositionXYZ));
+    triangleVAO = VertexArrayObject(triangleVertices, sizeof(triangleVertices) / sizeof(PositionXYZ));
 }
 
 TriangleView::~TriangleView(){

@@ -12,7 +12,7 @@ SphereWithReflectionView::SphereWithReflectionView() : View() {
     environmentMap = CubeMap::createSimpleTextureCubemap();
     //environmentMap = SphereMap(Texture::DefaultImages::MANDELBROT, 16384, 16384, this);
     sphereVAO = VertexArrayObject(Sphere(1.0f, 100));
-    environmentTriangleVAO = VertexArrayObject(environmentMap.environmentTriangleVertices, sizeof(environmentMap.environmentTriangleVertices) / sizeof(PositionXYZ));
+    environmentTriangleVAO = VertexArrayObject(EnvironmentMap::environmentTriangleVertices, sizeof(environmentMap.environmentTriangleVertices) / sizeof(PositionXYZ));
 }
 
 SphereWithReflectionView::~SphereWithReflectionView(){

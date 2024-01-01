@@ -21,19 +21,6 @@ public:
 
     CubeMapFBO cubeMapFBO;
 
-    PositionXYZ tilesVertices[10] = {
-            PositionXYZ(vec3(0.0f, 0.0f, 0.0f)),
-            PositionXYZ(vec3(0.0f, 1.0f, 0.0f)),
-            PositionXYZ(vec3(1.0f, 0.0f, 0.0f)),
-            PositionXYZ(vec3(1.0f, 1.0f, 0.0f)),
-            PositionXYZ(vec3(1.0f, 1.0f, 0.0f)),
-            PositionXYZ(vec3(0.0f, 0.0f, 1.0f)),
-            PositionXYZ(vec3(0.0f, 0.0f, 1.0f)),
-            PositionXYZ(vec3(0.0f, 1.0f, 1.0f)),
-            PositionXYZ(vec3(1.0f, 0.0f, 1.0f)),
-            PositionXYZ(vec3(1.0f, 1.0f, 1.0f))
-    };
-
     const string VERTEX_SHADER =
             ES_VERSION +
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
