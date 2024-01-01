@@ -4,6 +4,38 @@
 
 #include "View.h"
 
+const PositionXYZ View::triangleVertices[3] = {
+        PositionXYZ(vec3(1.0f, 0.0f, 0.0f)),
+        PositionXYZ(vec3(0.0f, 1.0f, 0.0f)),
+        PositionXYZ(vec3(1.0f, 0.0f, 1.0f))
+};
+
+const PositionXYZNormalXYZ View::triangleVerticesNormals[3] = {
+        PositionXYZNormalXYZ(vec3(1.0f, 0.0f, 0.0f), vec3(sqrtf(3.0f), sqrt(3.0f), sqrt(3.0f))),
+        PositionXYZNormalXYZ(vec3(0.0f, 1.0f, 0.0f), vec3(sqrtf(3.0f), sqrt(3.0f), sqrt(3.0f))),
+        PositionXYZNormalXYZ(vec3(1.0f, 0.0f, 1.0f), vec3(sqrtf(3.0f), sqrt(3.0f), sqrt(3.0f)))
+};
+
+const PositionXYZ View::tileVertices[4] = {
+        PositionXYZ(vec3(0.0f, 0.0f, 0.0f)),
+        PositionXYZ(vec3(0.0f, 1.0f, 0.0f)),
+        PositionXYZ(vec3(1.0f, 0.0f, 0.0f)),
+        PositionXYZ(vec3(1.0f, 1.0f, 0.0f))
+};
+
+const PositionXYZ View::tilesVertices[10] = {
+        PositionXYZ(vec3(0.0f, 0.0f, 0.0f)),
+        PositionXYZ(vec3(0.0f, 1.0f, 0.0f)),
+        PositionXYZ(vec3(1.0f, 0.0f, 0.0f)),
+        PositionXYZ(vec3(1.0f, 1.0f, 0.0f)),
+        PositionXYZ(vec3(1.0f, 1.0f, 0.0f)),
+        PositionXYZ(vec3(0.0f, 0.0f, 1.0f)),
+        PositionXYZ(vec3(0.0f, 0.0f, 1.0f)),
+        PositionXYZ(vec3(0.0f, 1.0f, 1.0f)),
+        PositionXYZ(vec3(1.0f, 0.0f, 1.0f)),
+        PositionXYZ(vec3(1.0f, 1.0f, 1.0f))
+};
+
 const string View::ES_VERSION = supportsES32() ? "#version 320 es\n" : "#version 310 es\n";
 
 const string View::SPHERE_MAP_TEXTURE_FUNCTION =

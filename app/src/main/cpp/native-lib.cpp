@@ -19,6 +19,7 @@
 
 #include "nlohmann/json.hpp"
 #include "vectors.cpp"
+#include "VertexAttributesArray.cpp"
 #include "PositionXYZ.cpp"
 #include "PositionXYZNormalXYZ.cpp"
 #include "PositionXYZColorRGB.cpp"

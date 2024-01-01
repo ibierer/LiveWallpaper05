@@ -6,6 +6,8 @@
 #define LIVEWALLPAPER05_VERTEXARRAYOBJECT_H
 
 
+#include <GLES3/gl32.h>
+
 class VertexArrayObject {
 public:
 
@@ -15,11 +17,11 @@ public:
 
     VertexArrayObject();
 
-    VertexArrayObject(PositionXYZ* vertices, const int& count);
+    VertexArrayObject(const PositionXYZ* vertices, const int& count);
 
-    VertexArrayObject(PositionXYZNormalXYZ* vertices, const int& count);
+    VertexArrayObject(const PositionXYZNormalXYZ* vertices, const int& count);
 
-    VertexArrayObject(PositionXYZColorRGB* vertices, const int &count);
+    VertexArrayObject(const PositionXYZColorRGB* vertices, const int &count);
 
     VertexArrayObject(const TriangleStripObject& triangleStripObject);
 

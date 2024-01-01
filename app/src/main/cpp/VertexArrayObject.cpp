@@ -8,7 +8,7 @@ VertexArrayObject::VertexArrayObject() {
 
 }
 
-VertexArrayObject::VertexArrayObject(PositionXYZ* const vertices, const int& count) {
+VertexArrayObject::VertexArrayObject(const PositionXYZ* const vertices, const int& count) {
     glGenBuffers(1, &mVBO);
     glGenVertexArrays(1, &mVAO);
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
@@ -22,7 +22,7 @@ VertexArrayObject::VertexArrayObject(PositionXYZ* const vertices, const int& cou
     numVertices = count;
 }
 
-VertexArrayObject::VertexArrayObject(PositionXYZNormalXYZ* const vertices, const int& count) {
+VertexArrayObject::VertexArrayObject(const PositionXYZNormalXYZ* const vertices, const int& count) {
     glGenBuffers(1, &mVBO);
     glGenVertexArrays(1, &mVAO);
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
@@ -39,7 +39,7 @@ VertexArrayObject::VertexArrayObject(PositionXYZNormalXYZ* const vertices, const
     numVertices = count;
 }
 
-VertexArrayObject::VertexArrayObject(PositionXYZColorRGB* const vertices, const int& count) {
+VertexArrayObject::VertexArrayObject(const PositionXYZColorRGB* const vertices, const int& count) {
     glGenBuffers(1, &mVBO);
     glGenVertexArrays(1, &mVAO);
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);

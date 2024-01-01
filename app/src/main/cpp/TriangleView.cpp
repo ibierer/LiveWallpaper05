@@ -3,10 +3,11 @@
 //
 
 #include "TriangleView.h"
+#include "VertexArrayObject.h"
 
 TriangleView::TriangleView() : View(){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
-    triangleVAO = VertexArrayObject(triangleVertices, sizeof(triangleVertices) / sizeof(PositionXYZ));
+    triangleVAO = VertexArrayObject(View::triangleVertices, sizeof(View::triangleVertices) / sizeof(PositionXYZ));
 }
 
 TriangleView::~TriangleView(){

@@ -43,37 +43,13 @@ public:
 
     Matrix4<float> orientationAdjustedPerspective;
 
-    PositionXYZ triangleVertices[3] = {
-            PositionXYZ(vec3(1.0f, 0.0f, 0.0f)),
-            PositionXYZ(vec3(0.0f, 1.0f, 0.0f)),
-            PositionXYZ(vec3(1.0f, 0.0f, 1.0f))
-    };
+    static const PositionXYZ triangleVertices[3];
 
-    PositionXYZNormalXYZ triangleVerticesNormals[3] = {
-            PositionXYZNormalXYZ(vec3(1.0f, 0.0f, 0.0f), vec3(sqrtf(3.0f), sqrt(3.0f), sqrt(3.0f))),
-            PositionXYZNormalXYZ(vec3(0.0f, 1.0f, 0.0f), vec3(sqrtf(3.0f), sqrt(3.0f), sqrt(3.0f))),
-            PositionXYZNormalXYZ(vec3(1.0f, 0.0f, 1.0f), vec3(sqrtf(3.0f), sqrt(3.0f), sqrt(3.0f)))
-    };
+    static const PositionXYZNormalXYZ triangleVerticesNormals[3];
 
-    PositionXYZ tileVertices[4] = {
-            PositionXYZ(vec3(0.0f, 0.0f, 0.0f)),
-            PositionXYZ(vec3(0.0f, 1.0f, 0.0f)),
-            PositionXYZ(vec3(1.0f, 0.0f, 0.0f)),
-            PositionXYZ(vec3(1.0f, 1.0f, 0.0f))
-    };
+    static const PositionXYZ tileVertices[4];
 
-    PositionXYZ tilesVertices[10] = {
-            PositionXYZ(vec3(0.0f, 0.0f, 0.0f)),
-            PositionXYZ(vec3(0.0f, 1.0f, 0.0f)),
-            PositionXYZ(vec3(1.0f, 0.0f, 0.0f)),
-            PositionXYZ(vec3(1.0f, 1.0f, 0.0f)),
-            PositionXYZ(vec3(1.0f, 1.0f, 0.0f)),
-            PositionXYZ(vec3(0.0f, 0.0f, 1.0f)),
-            PositionXYZ(vec3(0.0f, 0.0f, 1.0f)),
-            PositionXYZ(vec3(0.0f, 1.0f, 1.0f)),
-            PositionXYZ(vec3(1.0f, 0.0f, 1.0f)),
-            PositionXYZ(vec3(1.0f, 1.0f, 1.0f))
-    };
+    static const PositionXYZ tilesVertices[10];
 
     View();
 
