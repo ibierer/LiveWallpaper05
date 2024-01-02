@@ -10,6 +10,41 @@
 #include "PositionXYZNormalXYZ.h"
 
 class ImplicitGrapher {
+private:
+
+    static const int maxNumOfEquations = 1024;
+
+public:
+
+    static string memoryEquations[maxNumOfEquations][2];
+
+    static void processEquation(const int& i);
+
+    static int numOfEquationsInMemory;
+
+    static int surfaceEquation;
+
+    explicit ImplicitGrapher(const ivec3& radius);
+
+    ~ImplicitGrapher();
+
+    static PositionXYZNormalXYZ* vertices;
+
+    static uvec3* indices;
+
+    static uint numIndices;
+
+    static float fOfXYZ(vec3 _, const float& t, const vec3& offset, const float& zoom);
+
+    static void calculateSurfaceOnCPU(float (*fOfXYZ)(vec3, const float&, const vec3&, const float&), const float& timeVariable, const uint& iterations, const vec3& offset, const float& zoom, const bool& vectorPointsPositive, const bool& clipEdges, PositionXYZNormalXYZ* _vertices, uvec3* _indices, GLuint& _numIndices);
+
+    // Assignment Constructor
+    ImplicitGrapher(const ImplicitGrapher& other);
+
+    // Copy Constructor
+    ImplicitGrapher& operator=(const ImplicitGrapher& other);
+
+private:
 
     static const char pi = 5;
 
@@ -81,8 +116,6 @@ class ImplicitGrapher {
 
     static const int maxEquationLength = 4096;
 
-    static const int maxNumOfEquations = 1024;
-
     static const int numOfDefaultEquations = 41;
 
     static const int numOfFunctions = 17;
@@ -91,59 +124,59 @@ class ImplicitGrapher {
 
     static const string functions[numOfFunctions];
 
-    string debug_string;
+    static string debug_string;
 
-    double t;
+    static double t;
 
-    bool* plusMinus;
+    static bool* plusMinus;
 
-    bool* withinGraphRadius;
+    static bool* withinGraphRadius;
 
-    ivec3* xyzLineIndex;
+    static ivec3* xyzLineIndex;
 
-    ivec3* groupSegments;
+    static ivec3* groupSegments;
 
-    int constant[maxNumOfEquations][maxEquationLength];
+    static int constant[maxNumOfEquations][maxEquationLength];
 
-    int valuesCounter[maxNumOfEquations];
+    static int valuesCounter[maxNumOfEquations];
 
-    float values[maxEquationLength];
+    static float values[maxEquationLength];
 
-    float equationValues[maxNumOfEquations][maxEquationLength];
+    static float equationValues[maxNumOfEquations][maxEquationLength];
 
-    int sequences[maxNumOfEquations][maxEquationLength][3];
+    static int sequences[maxNumOfEquations][maxEquationLength][3];
 
-    int sequenceLengths[maxNumOfEquations];
+    static int sequenceLengths[maxNumOfEquations];
 
-    ivec3 radius;
+    static ivec3 radius;
 
-    ivec3 radiusPlusOne;
+    static ivec3 radiusPlusOne;
 
-    ivec3 size;
+    static ivec3 size;
 
-    ivec3 sizePlus2;
+    static ivec3 sizePlus2;
 
-    ivec3 sizePlus3;
+    static ivec3 sizePlus3;
 
-    vec3 defaultOffset;
+    static vec3 defaultOffset;
 
-    vec3 currentOffset;
+    static vec3 currentOffset;
 
-    int maxSolutionCount;
+    static int maxSolutionCount;
 
-    inline int node0(const int& i, const int& j, const int& k, const int& l);
+    static inline int node0(const int& i, const int& j, const int& k, const int& l);
 
-    inline int node1(const int& i, const int& j, const int& k, const int& l);
+    static inline int node1(const int& i, const int& j, const int& k, const int& l);
 
-    inline int node2(const int& i, const int& j, const int& k, const int& l);
+    static inline int node2(const int& i, const int& j, const int& k, const int& l);
 
-    inline int node3(const int& i, const int& j, const int& k, const int& l);
+    static inline int node3(const int& i, const int& j, const int& k, const int& l);
 
-    int solutionCount;
+    static int solutionCount;
 
-    int groupSegmentCounter;
+    static int groupSegmentCounter;
 
-    string decode(const int* const codedEquation, const int& length, const float* const values);
+    static string decode(const int* const codedEquation, const int& length, const float* const values);
 
     static bool aDigit(const char& character);
 
@@ -151,45 +184,16 @@ class ImplicitGrapher {
 
     static string charToString(const char* const characters, const int& length);
 
-    void writeDefaultEquationsToMemory();
+    static void writeDefaultEquationsToMemory();
 
-    void writeUserEquationsToMemory();
+    static void writeUserEquationsToMemory();
 
-    bool getPlusMinus(const int& i, const int& j, const int& k);
+    static bool getPlusMinus(const int& i, const int& j, const int& k);
 
-    inline ivec3 getXYZLineIndex(const int& i, const int& j, const int& k);
+    static inline ivec3 getXYZLineIndex(const int& i, const int& j, const int& k);
 
-    void refactor(const ivec3& inputRadius);
+    static void refactor(const ivec3& inputRadius);
 
-public:
-
-    string memoryEquations[maxNumOfEquations][2];
-
-    void processEquation(const int& i);
-
-    int numOfEquationsInMemory;
-
-    int surfaceEquation;
-
-    explicit ImplicitGrapher(const ivec3& radius);
-
-    ~ImplicitGrapher();
-
-    PositionXYZNormalXYZ* vertices;
-
-    uvec3* indices;
-
-    uint numIndices;
-
-    static float fOfXYZ(ImplicitGrapher& graph, vec3 _, const float& t, const vec3& offset, const float& zoom);
-
-    void calculateSurfaceOnCPU(float (*fOfXYZ)(ImplicitGrapher&, vec3, const float&, const vec3&, const float&), const float& timeVariable, const uint& iterations, const vec3& offset, const float& zoom, const bool& vectorPointsPositive, const bool& clipEdges, PositionXYZNormalXYZ* _vertices, uvec3* _indices, GLuint& _numIndices);
-
-    // Assignment Constructor
-    ImplicitGrapher(const ImplicitGrapher& other);
-
-    // Copy Constructor
-    ImplicitGrapher& operator=(const ImplicitGrapher& other);
 };
 
 

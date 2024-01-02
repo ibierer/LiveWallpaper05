@@ -6,15 +6,15 @@
 
 GraphView::GraphView() : View(), implicitGrapher(ImplicitGrapher(20)){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
-    implicitGrapher.surfaceEquation = 1;
+    ImplicitGrapher::surfaceEquation = 1;
 }
 
 GraphView::GraphView(const string& equation) : View(), implicitGrapher(ImplicitGrapher(20)){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
-    implicitGrapher.surfaceEquation = implicitGrapher.numOfEquationsInMemory;
-    implicitGrapher.memoryEquations[implicitGrapher.numOfEquationsInMemory][1] = equation;
-    implicitGrapher.processEquation(implicitGrapher.numOfEquationsInMemory);
-    implicitGrapher.numOfEquationsInMemory++;
+    ImplicitGrapher::surfaceEquation = ImplicitGrapher::numOfEquationsInMemory;
+    implicitGrapher.memoryEquations[ImplicitGrapher::numOfEquationsInMemory][1] = equation;
+    implicitGrapher.processEquation(ImplicitGrapher::numOfEquationsInMemory);
+    ImplicitGrapher::numOfEquationsInMemory++;
 }
 
 GraphView::~GraphView(){
@@ -40,13 +40,13 @@ void GraphView::render(){
             GL_FALSE,
             (GLfloat*)&mvp);
 
-    implicitGrapher.calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, false, false, &implicitGrapher.vertices[0], implicitGrapher.indices, implicitGrapher.numIndices);
+    implicitGrapher.calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, false, false, &ImplicitGrapher::vertices[0], ImplicitGrapher::indices, ImplicitGrapher::numIndices);
 
     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
-    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid*)&implicitGrapher.vertices[0].p);
-    glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid*)&implicitGrapher.vertices[0].n);
-    glDrawElements(GL_TRIANGLES, implicitGrapher.numIndices, GL_UNSIGNED_INT, implicitGrapher.indices);
+    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid*)&ImplicitGrapher::vertices[0].p);
+    glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid*)&ImplicitGrapher::vertices[0].n);
+    glDrawElements(GL_TRIANGLES, ImplicitGrapher::numIndices, GL_UNSIGNED_INT, ImplicitGrapher::indices);
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
 }

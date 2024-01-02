@@ -4,6 +4,62 @@
 
 #include "ImplicitGrapher.h"
 
+int ImplicitGrapher::surfaceEquation = 0;
+
+int ImplicitGrapher::numOfEquationsInMemory = 0;
+
+PositionXYZNormalXYZ* ImplicitGrapher::vertices = nullptr;
+
+uvec3* ImplicitGrapher::indices = nullptr;
+
+uint ImplicitGrapher::numIndices = 0;
+
+string ImplicitGrapher::memoryEquations[maxNumOfEquations][2] = {};
+
+double ImplicitGrapher::t = 0.0;
+
+bool* ImplicitGrapher::plusMinus = nullptr;
+
+int ImplicitGrapher::constant[maxNumOfEquations][maxEquationLength] = {};
+
+int ImplicitGrapher::valuesCounter[maxNumOfEquations] = {};
+
+string ImplicitGrapher::debug_string = "";
+
+float ImplicitGrapher::equationValues[maxNumOfEquations][maxEquationLength] = {};
+
+float ImplicitGrapher::values[maxEquationLength] = {};
+
+int ImplicitGrapher::sequences[maxNumOfEquations][maxEquationLength][3] = {};
+
+int ImplicitGrapher::sequenceLengths[maxNumOfEquations] = {};
+
+vec3 ImplicitGrapher::currentOffset = vec3(0.0f);
+
+vec3 ImplicitGrapher::defaultOffset = vec3(0.0f);
+
+int ImplicitGrapher::solutionCount = 0;
+
+int ImplicitGrapher::groupSegmentCounter = 0;
+
+ivec3 ImplicitGrapher::radius = ivec3(0);
+
+ivec3 ImplicitGrapher::radiusPlusOne = ivec3(0);
+
+ivec3 ImplicitGrapher::size = ivec3(0);
+
+ivec3 ImplicitGrapher::sizePlus2 = ivec3(0);
+
+ivec3 ImplicitGrapher::sizePlus3 = ivec3(0);
+
+ivec3* ImplicitGrapher::xyzLineIndex = nullptr;
+
+ivec3* ImplicitGrapher::groupSegments = nullptr;
+
+bool* ImplicitGrapher::withinGraphRadius = nullptr;
+
+int ImplicitGrapher::maxSolutionCount = 0;
+
 const string ImplicitGrapher::defaultEquations[numOfDefaultEquations][2] = {
         {"Two Toroids",                  "1/((sqrt(x^2 + y^2) - 2 + 1.25cos(t))^2 + (z - 1.5sin(t))^2) + 1/((sqrt(x^2 + y^2) - 2 - 1.25cos(t))^2 + (z + 1.5sin(t))^2) = 1.9"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        },
         {"Three Toroids",                "1/((sqrt(x^2 + y^2) - 1.5 + sin(t))^2 + (z + cos(t))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 2/3))^2 + (z + cos(t + 2/3))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 4/3))^2 + (z + cos(t + 4/3))^2) = 5"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                },
@@ -75,8 +131,8 @@ ImplicitGrapher::ImplicitGrapher(const ivec3& radius) {
     xyzLineIndex = (ivec3*)malloc(sizePlus3.x * sizePlus3.y * sizePlus3.z * sizeof(ivec3));
     groupSegments = (ivec3*)malloc(maxSolutionCount * sizeof(ivec3));
     withinGraphRadius = (bool*)malloc(maxSolutionCount * sizeof(bool));
-    vertices = (PositionXYZNormalXYZ*)malloc(maxSolutionCount * sizeof(PositionXYZNormalXYZ));
-    indices = (uvec3*)malloc(3 * maxSolutionCount * sizeof(uvec3));
+    ImplicitGrapher::vertices = (PositionXYZNormalXYZ*)malloc(maxSolutionCount * sizeof(PositionXYZNormalXYZ));
+    ImplicitGrapher::indices = (uvec3*)malloc(3 * maxSolutionCount * sizeof(uvec3));
     writeDefaultEquationsToMemory();
     // writeUserEquationsToMemory();
     for (int i = 0; i < numOfEquationsInMemory; i++) {
@@ -85,19 +141,12 @@ ImplicitGrapher::ImplicitGrapher(const ivec3& radius) {
 }
 
 ImplicitGrapher::~ImplicitGrapher(){
-    free(plusMinus);
-    free(xyzLineIndex);
-    free(groupSegments);
-    free(withinGraphRadius);
-    free(vertices);
-    free(indices);
+
 }
 
 // Assignment Constructor
 ImplicitGrapher::ImplicitGrapher(const ImplicitGrapher& other) {
     // Copy primitive types
-    debug_string = other.debug_string;
-    t = other.t;
     maxSolutionCount = other.maxSolutionCount;
     surfaceEquation = other.surfaceEquation;
     solutionCount = other.solutionCount;
@@ -111,7 +160,6 @@ ImplicitGrapher::ImplicitGrapher(const ImplicitGrapher& other) {
     memcpy(groupSegments, other.groupSegments, maxNumOfEquations * sizeof(ivec3));
 
     for (int i = 0; i < maxNumOfEquations; ++i) {
-        memcpy(constant[i], other.constant[i], maxEquationLength * sizeof(int));
         valuesCounter[i] = other.valuesCounter[i];
         memcpy(values, other.values, maxEquationLength * sizeof(float));
         memcpy(equationValues[i], other.equationValues[i], maxEquationLength * sizeof(float));
@@ -855,25 +903,25 @@ inline int ImplicitGrapher::node3(const int& i, const int& j, const int& k, cons
 }
 
 // Calculates the difference between f(x, y, z) and 0.
-float ImplicitGrapher::fOfXYZ(ImplicitGrapher &graph, vec3 _, const float &t, const vec3 &offset, const float &zoom) {
+float ImplicitGrapher::fOfXYZ(vec3 _, const float &t, const vec3 &offset, const float &zoom) {
     _ -= offset;
     _ *= zoom;
-    for (int i = 0; i < graph.valuesCounter[graph.surfaceEquation]; i++) {
-        switch (graph.constant[graph.surfaceEquation][i]) {
-            case 0: graph.values[i] = graph.equationValues[graph.surfaceEquation][i]; break;
-            case X: graph.values[i] = _.x; break;
-            case Y: graph.values[i] = _.y; break;
-            case Z: graph.values[i] = _.z; break;
-            case T: graph.values[i] = t; break;
-            case E: graph.values[i] = M_E; break;
-            case PI: graph.values[i] = M_PI; break;
+    for (int i = 0; i < valuesCounter[surfaceEquation]; i++) {
+        switch (constant[surfaceEquation][i]) {
+            case 0: values[i] = equationValues[surfaceEquation][i]; break;
+            case X: values[i] = _.x; break;
+            case Y: values[i] = _.y; break;
+            case Z: values[i] = _.z; break;
+            case T: values[i] = t; break;
+            case E: values[i] = M_E; break;
+            case PI: values[i] = M_PI; break;
         }
     }
     // A better solution to below may be near the bottom of the following web page: https://www.cplusplus.com/doc/tutorial/pointers/
-    int e = graph.surfaceEquation;
-    float* v = graph.values;
-    for (int i = 0; i < graph.sequenceLengths[e]; i++) {
-        int* s = graph.sequences[e][i];
+    int e = surfaceEquation;
+    float* v = values;
+    for (int i = 0; i < sequenceLengths[e]; i++) {
+        int* s = sequences[e][i];
         switch (s[0]) {
             case ADD: v[s[1]] += v[s[2]]; break;
             case SUBTRACT: v[s[1]] -= v[s[2]]; break;
@@ -902,7 +950,7 @@ float ImplicitGrapher::fOfXYZ(ImplicitGrapher &graph, vec3 _, const float &t, co
     return v[0];
 }
 
-void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(ImplicitGrapher& graph, vec3, const float&, const vec3&, const float&), const float& timeVariable, const uint& iterations, const vec3& offset, const float& zoom, const bool& vectorPointsPositive, const bool& clipEdges, PositionXYZNormalXYZ* _vertices, uvec3* _indices, GLuint& _numIndices) {
+void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(vec3, const float&, const vec3&, const float&), const float& timeVariable, const uint& iterations, const vec3& offset, const float& zoom, const bool& vectorPointsPositive, const bool& clipEdges, PositionXYZNormalXYZ* _vertices, uvec3* _indices, GLuint& _numIndices) {
     t = timeVariable;
     currentOffset = defaultOffset + offset;
     // Erase normals
@@ -917,7 +965,7 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(ImplicitGrapher& gra
     for (int i = 0; i < sizePlus3.x; i++) {
         for (int j = 0; j < sizePlus3.y; j++) {
             for (int k = 0; k < sizePlus3.z; k++) {
-                plusMinus[(i * sizePlus3.y + j) * sizePlus3.z + k] = fOfXYZ(*this, vec3(i, j, k), t, currentOffset, zoom) > 0.0f;
+                plusMinus[(i * sizePlus3.y + j) * sizePlus3.z + k] = fOfXYZ(vec3(i, j, k), t, currentOffset, zoom) > 0.0f;
                 uvec3 ijk(i, j, k);
                 for (int l = 0; l < 3; l++) {
                     if (ijk[l] == 0) {
@@ -941,7 +989,7 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(ImplicitGrapher& gra
                     float scan = 0.5f;
                     for (int m = 0; m < iterations; m++) {// Maybe use a do-while loop here to reduce the scan operations by 1.
                         _vertices[solutionCount].p[l] += scan;
-                        if (sign == POSITIVE ^ fOfXYZ(*this, _vertices[solutionCount].p, t, currentOffset, zoom) > 0.0f) {
+                        if (sign == POSITIVE ^ fOfXYZ(_vertices[solutionCount].p, t, currentOffset, zoom) > 0.0f) {
                             scan *= 0.5f;
                         }else{
                             sign *= -1;
@@ -1020,7 +1068,7 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(ImplicitGrapher& gra
                             int _node1 = node1(i, j, k, l);
                             int _node2 = node2(i, j, k, l);
                             int _node3 = node3(i, j, k, l);
-                            if (fOfXYZ(*this, (_vertices[_node0].p + _vertices[_node1].p + _vertices[_node2].p + _vertices[_node3].p) * 0.25f, t, currentOffset, zoom) > 0.0f) {
+                            if (fOfXYZ((_vertices[_node0].p + _vertices[_node1].p + _vertices[_node2].p + _vertices[_node3].p) * 0.25f, t, currentOffset, zoom) > 0.0f) {
                                 if (l % 2 != vectorPointsPositive){
                                     groupSegments[groupSegmentCounter++] = ivec3(_node1, _node0, -1);
                                     groupSegments[groupSegmentCounter++] = ivec3(_node2, _node3, -1);
@@ -1056,7 +1104,7 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(ImplicitGrapher& gra
                             int _node1 = node1(i, j, k, l);
                             int _node2 = node2(i, j, k, l);
                             int _node3 = node3(i, j, k, l);
-                            if (fOfXYZ(*this, (_vertices[_node0].p + _vertices[_node1].p + _vertices[_node2].p + _vertices[_node3].p) * 0.25f, t, currentOffset, zoom) > 0.0f) {
+                            if (fOfXYZ((_vertices[_node0].p + _vertices[_node1].p + _vertices[_node2].p + _vertices[_node3].p) * 0.25f, t, currentOffset, zoom) > 0.0f) {
                                 if (l % 2 != vectorPointsPositive) {
                                     groupSegments[groupSegmentCounter++] = ivec3(_node0, _node2, -1);
                                     groupSegments[groupSegmentCounter++] = ivec3(_node3, _node1, -1);
