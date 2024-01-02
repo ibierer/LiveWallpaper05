@@ -5,12 +5,11 @@
 #include "GraphView.h"
 
 GraphView::GraphView() : View() {
-    implicitGrapher = ImplicitGrapher(15.0f);
-    mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
-    ImplicitGrapher::surfaceEquation = 1;
+
 }
 
-GraphView::GraphView(const string& equation) : View(), implicitGrapher(ImplicitGrapher(20)){
+GraphView::GraphView(const string& equation) : View() {
+    implicitGrapher = ImplicitGrapher(29);
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     ImplicitGrapher::surfaceEquation = ImplicitGrapher::numOfEquationsInMemory;
     ImplicitGrapher::memoryEquations[ImplicitGrapher::numOfEquationsInMemory][1] = equation;

@@ -16,6 +16,8 @@ class GraphView : public View {
 
 public:
 
+    ImplicitGrapher implicitGrapher;
+
     const string VERTEX_SHADER =
             ES_VERSION +
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
@@ -46,8 +48,6 @@ public:
     ~GraphView();
 
     void render() override;
-
-    ImplicitGrapher implicitGrapher;
 
 private:
 
