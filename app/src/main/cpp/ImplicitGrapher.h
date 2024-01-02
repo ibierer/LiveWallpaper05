@@ -37,6 +37,8 @@ public:
 
     static void calculateSurfaceOnCPU(float (*fOfXYZ)(vec3, const float&, const vec3&, const float&), const float& timeVariable, const uint& iterations, const vec3& offset, const float& zoom, const bool& vectorPointsPositive, const bool& clipEdges, PositionXYZNormalXYZ* _vertices, uvec3* _indices, GLuint& _numIndices);
 
+    ImplicitGrapher();
+
     // Assignment Constructor
     ImplicitGrapher(const ImplicitGrapher& other);
 

@@ -125,6 +125,10 @@ const string ImplicitGrapher::functions[numOfFunctions] = {
         "cbrt(_",
 };
 
+ImplicitGrapher::ImplicitGrapher() {
+
+}
+
 ImplicitGrapher::ImplicitGrapher(const ivec3& radius) {
     refactor(radius);
     plusMinus = (bool*)malloc(sizePlus3.x * sizePlus3.y * sizePlus3.z * sizeof(bool));
