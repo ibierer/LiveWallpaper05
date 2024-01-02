@@ -9,7 +9,7 @@ GraphView::GraphView() : View() {
 }
 
 GraphView::GraphView(const string& equation) : View() {
-    implicitGrapher = ImplicitGrapher(29);
+    implicitGrapher = ImplicitGrapher(ivec3(29));
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     ImplicitGrapher::surfaceEquation = ImplicitGrapher::numOfEquationsInMemory;
     ImplicitGrapher::memoryEquations[ImplicitGrapher::numOfEquationsInMemory][1] = equation;
