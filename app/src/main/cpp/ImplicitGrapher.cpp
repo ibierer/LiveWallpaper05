@@ -864,21 +864,20 @@ inline int ImplicitGrapher::node3(const int& i, const int& j, const int& k, cons
 }
 
 // Calculates the difference between f(x, y, z) and 0.
-float ImplicitGrapher::fOfXYZ(vec3 _, const float &t, const vec3 &offset, const float &zoom) {
-    _ -= offset;
-    _ *= zoom;
+float ImplicitGrapher::fOfXYZ(vec3 position, const float &t, const vec3 &offset, const float &zoom) {
+    position -= offset;
+    position *= zoom;
     for (int i = 0; i < valuesCounter[surfaceEquation]; i++) {
         switch (constant[surfaceEquation][i]) {
             case 0: values[i] = equationValues[surfaceEquation][i]; break;
-            case X: values[i] = _.x; break;
-            case Y: values[i] = _.y; break;
-            case Z: values[i] = _.z; break;
+            case X: values[i] = position.x; break;
+            case Y: values[i] = position.y; break;
+            case Z: values[i] = position.z; break;
             case T: values[i] = t; break;
             case E: values[i] = M_E; break;
             case PI: values[i] = M_PI; break;
         }
     }
-    // A better solution to below may be near the bottom of the following web page: https://www.cplusplus.com/doc/tutorial/pointers/
     int e = surfaceEquation;
     float* v = values;
     for (int i = 0; i < sequenceLengths[e]; i++) {

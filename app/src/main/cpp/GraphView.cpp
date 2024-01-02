@@ -12,8 +12,8 @@ GraphView::GraphView() : View(), implicitGrapher(ImplicitGrapher(20)){
 GraphView::GraphView(const string& equation) : View(), implicitGrapher(ImplicitGrapher(20)){
     mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     ImplicitGrapher::surfaceEquation = ImplicitGrapher::numOfEquationsInMemory;
-    implicitGrapher.memoryEquations[ImplicitGrapher::numOfEquationsInMemory][1] = equation;
-    implicitGrapher.processEquation(ImplicitGrapher::numOfEquationsInMemory);
+    ImplicitGrapher::memoryEquations[ImplicitGrapher::numOfEquationsInMemory][1] = equation;
+    ImplicitGrapher::processEquation(ImplicitGrapher::numOfEquationsInMemory);
     ImplicitGrapher::numOfEquationsInMemory++;
 }
 
@@ -40,7 +40,7 @@ void GraphView::render(){
             GL_FALSE,
             (GLfloat*)&mvp);
 
-    implicitGrapher.calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, false, false, &ImplicitGrapher::vertices[0], ImplicitGrapher::indices, ImplicitGrapher::numIndices);
+    ImplicitGrapher::calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, false, false, &ImplicitGrapher::vertices[0], ImplicitGrapher::indices, ImplicitGrapher::numIndices);
 
     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);

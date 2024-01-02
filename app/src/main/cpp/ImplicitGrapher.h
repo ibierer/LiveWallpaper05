@@ -34,7 +34,7 @@ public:
 
     static uint numIndices;
 
-    static float fOfXYZ(vec3 _, const float& t, const vec3& offset, const float& zoom);
+    static float fOfXYZ(vec3 position, const float& t, const vec3& offset, const float& zoom);
 
     static void calculateSurfaceOnCPU(float (*fOfXYZ)(vec3, const float&, const vec3&, const float&), const float& timeVariable, const uint& iterations, const vec3& offset, const float& zoom, const bool& vectorPointsPositive, const bool& clipEdges, PositionXYZNormalXYZ* _vertices, uvec3* _indices, GLuint& _numIndices);
 
