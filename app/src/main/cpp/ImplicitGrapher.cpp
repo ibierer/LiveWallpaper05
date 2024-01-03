@@ -332,8 +332,7 @@ void ImplicitGrapher::processEquation(const int& i) {
     for (int j = 0; j < length; j++) {
         equation[j] = memoryEquations[i][EQUATION].at(j);
     }
-    // Remove spaces
-    // Remove spaces and fill remainder with underscores");
+    // Remove spaces and fill remainder with underscores
     if (i == numOfEquationsInMemory - 1 && debugEquation) {
         debug_string = "Remove spaces and fill remainder with underscores:";
     }
@@ -352,13 +351,12 @@ void ImplicitGrapher::processEquation(const int& i) {
     for (int j = length; j < 2 * maxEquationLength; j++) {
         equation[j] = '_';
     }
-    // equation = " + charToString(equation));
+
     if (i == numOfEquationsInMemory - 1 && debugEquation) {
         debug_string += charToString(equation, length);
     }
 
-    //Isolate and convert '=' to '-'
-    // Isolate and convert '=' to '-'");
+    // Isolate and convert '=' to '-'
     if (i == numOfEquationsInMemory - 1 && debugEquation) {
         debug_string += "Isolate and convert '=' to '-':";
     }
@@ -378,32 +376,30 @@ void ImplicitGrapher::processEquation(const int& i) {
     }
     equation[0] = '(';
     length += 4;
-    // equation = " + charToString(equation));
+
     if (i == numOfEquationsInMemory - 1 && debugEquation) {
         debug_string += charToString(equation, length);
     }
 
-    //Add parentheses to ends
-    // Add parentheses to ends");
+    // Add parentheses to ends
     if (i == numOfEquationsInMemory - 1 && debugEquation) {
         debug_string += "Add parentheses to ends:";
     }
-    //Insert close parenthesis
+    // Insert close parenthesis
     equation[length + 1] = ')';
-    //Move characters
+    // Move characters
     for (int j = length; j > 0; j--) {
         equation[j] = equation[j - 1];
     }
     length += 2;
-    //Insert open parenthesis
+    // Insert open parenthesis
     equation[0] = '(';
-    // equation = " + charToString(equation));
+
     if (i == numOfEquationsInMemory - 1 && debugEquation) {
         debug_string += charToString(equation, length);
     }
 
-    //Add parentheses to functions
-    // Add parentheses to functions:");
+    // Add parentheses to functions
     if (i == numOfEquationsInMemory - 1 && debugEquation) {
         debug_string += "Add parentheses to functions:";
     }
@@ -442,13 +438,12 @@ void ImplicitGrapher::processEquation(const int& i) {
             }
         }
     }
-    // equation = " + charToString(equation));
+
     if (i == numOfEquationsInMemory - 1 && debugEquation) {
         debug_string += charToString(equation, length);
     }
 
-    //Add multiplication signs to close terms
-    // Add multiplication signs to close terms:");
+    // Add multiplication signs to close terms
     if (i == numOfEquationsInMemory - 1 && debugEquation) {
         debug_string += "Add multiplication signs to close terms:";
     }
@@ -485,34 +480,32 @@ void ImplicitGrapher::processEquation(const int& i) {
             length++;
         }
     }
-    // equation = " + charToString(equation));
+
     if (i == numOfEquationsInMemory - 1 && debugEquation) {
         debug_string += charToString(equation, length);
     }
 
-    //Convert (-x to (0-x or (-1 to (0-1
-    // Convert (-x to ((0-x) or (-1 to ((0-1)");
+    // Convert (-x to (0-x or (-1 to (0-1
     if (i == numOfEquationsInMemory - 1 && debugEquation) {
         debug_string += "Convert (-x to ((0-x) or (-1 to ((0-1):";
     }
     for (int j = 0; j < length; j++) {
         if (equation[j] == '(' && equation[j + 1] == '-') {
-            //Move characters
+            // Move characters
             length++;
             for (int k = length - 1; k > j + 1; k--) {
                 equation[k] = equation[k - 1];
             }
-            //Insert zero
+            // Insert zero
             equation[j + 1] = '0';
         }
     }
-    // equation = " + charToString(equation));
+
     if (i == numOfEquationsInMemory - 1 && debugEquation) {
         debug_string += charToString(equation, length);
     }
 
-    //Add parentheses to symbol functions
-    // Add parentheses to symbol functions");
+    // Add parentheses to symbol functions
     if (i == numOfEquationsInMemory - 1 && debugEquation) {
         debug_string += "Add parentheses to symbol functions:";
     }
@@ -580,29 +573,28 @@ void ImplicitGrapher::processEquation(const int& i) {
                 }
                 if (!(equation[positions[1]] == '(' && equation[positions[0]] == ')')) {
                     length += 2;
-                    //Move characters
+                    // Move characters
                     for (int k = length - 1; k > positions[0] + 1; k--) {
                         equation[k] = equation[k - 2];
                     }
-                    //Insert close parenthesis
+                    // Insert close parenthesis
                     equation[positions[0] + 1] = ')';
-                    //Move characters
+                    // Move characters
                     for (int k = positions[0]; k > positions[1]; k--) {
                         equation[k] = equation[k - 1];
                     }
-                    //Insert close parenthesis
+                    // Insert close parenthesis
                     equation[positions[1] + 1] = '(';
                 }
             }
         }
     }
-    // equation = " + charToString(equation));
+
     if (i == numOfEquationsInMemory - 1 && debugEquation) {
         debug_string += charToString(equation, length) + ", ";
     }
 
-    //Convert to coded equation
-    // Convert to coded equation");
+    // Convert to coded equation
     if (i == numOfEquationsInMemory - 1 && debugEquation) {
         debug_string += "Convert to coded equation:";
     }
@@ -762,25 +754,21 @@ void ImplicitGrapher::processEquation(const int& i) {
             j += numberSize - 1;
         }
     }
-    //Display equation
-    // original equation = " + PlotterSettings.defaultEquations[i][EQUATION]);
-    // array = " + charToString(equation));
-    // coded equation = " + decode(codedEquation, values));
+    // Display equation
     if (i == numOfEquationsInMemory - 1 && debugEquation) {
         debug_string += decode(codedEquation, codedEquationCounter, values);
     }
 
-    //Convert 0-2 to -2
-    //Convert 2-0 to 2
-    //Convert 0+2 to 2
-    //Convert 2+0 to 2
-    //Convert 0*2 to 0
-    //Convert 2*0 to 0
-    //Convert 0/2 to 0
-    //Convert 2/0 to error
+    // Convert 0-2 to -2
+    // Convert 2-0 to 2
+    // Convert 0+2 to 2
+    // Convert 2+0 to 2
+    // Convert 0*2 to 0
+    // Convert 2*0 to 0
+    // Convert 0/2 to 0
+    // Convert 2/0 to error
 
-    //Create Sequence Table destroying coded equation
-    // Create Sequence Table destroying coded equation:");
+    // Create Sequence Table destroying coded equation
     for (int j = 0, counter = 0; j < codedEquationCounter; j++) {
         if (codedEquation[j] > -1) {
             counter++;
@@ -790,7 +778,7 @@ void ImplicitGrapher::processEquation(const int& i) {
             counter++;
         }
     }
-    // coded equation = " + decode(codedEquation, values));
+
     bool end = false;
     for (sequenceLengths[i] = 0; !end; ) {
         for (int j = 0, openParenthesis = 0; j < codedEquationCounter; j++) {
@@ -833,7 +821,7 @@ void ImplicitGrapher::processEquation(const int& i) {
                             sequenceLengths[i]++; }
                             break;
                     }
-                    // coded equation = " + decode(codedEquation, values));
+
                     j = codedEquationCounter - 1;
                     break;
             }

@@ -37,7 +37,7 @@ void GraphView::render(){
         int numIndices;
         bool padding[2008];
     };*/
-    /*for(int i = 0; i < 1024; i++) {
+    for(int i = 0; i < 1024; i++) {
         for(int j = 0; j < 32; j++) {
             ImplicitGrapher::data->chunks[i].plusMinus[j] = false;
             ImplicitGrapher::data->chunks[i].xyzLineIndex[j] = ivec3(0);
@@ -53,7 +53,7 @@ void GraphView::render(){
         for(int j = 0; j < sizeof(ImplicitGrapher::chunk::padding); j++) {
             ImplicitGrapher::data->chunks[i].padding[j] = false;
         }
-    }*/
+    }
     /*struct GPUdata {
         chunk chunks[1024];
         ivec3 sequence[maxEquationLength];
@@ -61,7 +61,7 @@ void GraphView::render(){
         float equationValues[maxEquationLength];
         int valuesCounter;
     };*/
-    /*for(int i = 0; i < ImplicitGrapher::sequenceLengths[ImplicitGrapher::surfaceEquation]; i++) {
+    for(int i = 0; i < ImplicitGrapher::sequenceLengths[ImplicitGrapher::surfaceEquation]; i++) {
         ImplicitGrapher::data->sequence[i] = ImplicitGrapher::sequences[ImplicitGrapher::surfaceEquation][i];
     }
     for(int i = 0; i < ImplicitGrapher::valuesCounter[ImplicitGrapher::surfaceEquation]; i++) {
@@ -95,9 +95,9 @@ void GraphView::render(){
     glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    ImplicitGrapher::calculateSurfaceOnGPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, false, false, &ImplicitGrapher::vertices[0], ImplicitGrapher::indices, ImplicitGrapher::numIndices);*/
+    ImplicitGrapher::calculateSurfaceOnGPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, false, false, &ImplicitGrapher::vertices[0], ImplicitGrapher::indices, ImplicitGrapher::numIndices);
 
-    ImplicitGrapher::calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, false, false, &ImplicitGrapher::vertices[0], ImplicitGrapher::indices, ImplicitGrapher::numIndices);
+    //ImplicitGrapher::calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, false, false, &ImplicitGrapher::vertices[0], ImplicitGrapher::indices, ImplicitGrapher::numIndices);
 
     Matrix4<float> translation;
     translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 60.0f * (zoom - 1.0f)));
@@ -112,7 +112,7 @@ void GraphView::render(){
             GL_FALSE,
             (GLfloat*)&mvp);
 
-    /*glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+    glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
     for(int i = 0; i < 1024; i++) {
         glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid*)&ImplicitGrapher::data->chunks[i].vertices[0].p);
@@ -120,13 +120,13 @@ void GraphView::render(){
         glDrawElements(GL_TRIANGLES, ImplicitGrapher::data->chunks[i].numIndices, GL_UNSIGNED_INT, ImplicitGrapher::data->chunks[i].indices);
     }
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
-    glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);*/
+    glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
 
-    glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+    /*glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
     glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid*)&ImplicitGrapher::vertices[0].p);
     glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid*)&ImplicitGrapher::vertices[0].n);
     glDrawElements(GL_TRIANGLES, ImplicitGrapher::numIndices, GL_UNSIGNED_INT, ImplicitGrapher::indices);
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
-    glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
+    glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);*/
 }
