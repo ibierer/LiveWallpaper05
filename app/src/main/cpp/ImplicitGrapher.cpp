@@ -30,7 +30,7 @@ float ImplicitGrapher::equationValues[maxNumOfEquations][maxEquationLength] = {}
 
 float ImplicitGrapher::values[maxEquationLength] = {};
 
-int ImplicitGrapher::sequences[maxNumOfEquations][maxEquationLength][3] = {};
+ivec3 ImplicitGrapher::sequences[maxNumOfEquations][maxEquationLength] = {};
 
 int ImplicitGrapher::sequenceLengths[maxNumOfEquations] = {};
 
@@ -68,7 +68,15 @@ GLuint ImplicitGrapher::computeShaderProgram = 0;
 
 GLuint ImplicitGrapher::computeShaderVBO = 0;
 
+GLuint ImplicitGrapher::indexBufferBinding = 0;
+
 float ImplicitGrapher::zoom = 0.0f;
+
+bool ImplicitGrapher::vectorPointsPositive = false;
+
+bool ImplicitGrapher::clipEdges = false;
+
+ImplicitGrapher::GPUdata* ImplicitGrapher::data = nullptr;
 
 const string ImplicitGrapher::defaultEquations[numOfDefaultEquations][2] = {
         {"Two Toroids",                  "1/((sqrt(x^2 + y^2) - 2 + 1.25cos(t))^2 + (z - 1.5sin(t))^2) + 1/((sqrt(x^2 + y^2) - 2 - 1.25cos(t))^2 + (z + 1.5sin(t))^2) = 1.9"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        },
@@ -155,6 +163,7 @@ ImplicitGrapher::ImplicitGrapher(const ivec3& radius) {
 
     computeShaderProgram = generateComputeShader(View::stringArrayToString((string*)computeShaderCode, 1000).c_str());
     glGenBuffers(1, &computeShaderVBO);
+    data = (GPUdata*)malloc(sizeof(GPUdata));
 }
 
 ImplicitGrapher::~ImplicitGrapher(){
@@ -898,7 +907,7 @@ float ImplicitGrapher::fOfXYZ(vec3 position) {
     int e = surfaceEquation;
     float* v = values;
     for (int i = 0; i < sequenceLengths[e]; i++) {
-        int* s = sequences[e][i];
+        int* s = sequences[e][i].v;
         switch (s[0]) {
             case ADD: v[s[1]] += v[s[2]]; break;
             case SUBTRACT: v[s[1]] -= v[s[2]]; break;
@@ -930,6 +939,7 @@ float ImplicitGrapher::fOfXYZ(vec3 position) {
 void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(vec3), const float& timeVariable, const uint& iterations, const vec3& offset, const float& zoom, const bool& vectorPointsPositive, const bool& clipEdges, PositionXYZNormalXYZ* _vertices, uvec3* _indices, GLuint& _numIndices) {
     ImplicitGrapher::zoom = zoom;
     ImplicitGrapher::iterations = iterations;
+    ImplicitGrapher::vectorPointsPositive = vectorPointsPositive;
     t = timeVariable;
     currentOffset = defaultOffset + offset;
     // Erase normals
@@ -966,7 +976,7 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(vec3), const float& 
                     float scan = 0.5f;
                     for (int m = 0; m < iterations; m++) {// Maybe use a do-while loop here to reduce the scan operations by 1.
                         _vertices[solutionCount].p[l] += scan;
-                        if (sign == POSITIVE ^ fOfXYZ(_vertices[solutionCount].p) > 0.0f) {
+                        if ((sign == POSITIVE) != (fOfXYZ(_vertices[solutionCount].p) > 0.0f)) {
                             scan *= 0.5f;
                         }else{
                             sign *= -1;
@@ -1196,7 +1206,7 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(vec3), const float& 
     }
     //Normalize
     for (int i = 0; i < solutionCount; i++) {
-        float length = (vectorPointsPositive) ? -distance(vec3(_vertices[i].n)) : distance(vec3(_vertices[i].n));
+        float length = vectorPointsPositive ? -distance(vec3(_vertices[i].n)) : distance(vec3(_vertices[i].n));
         _vertices[i].n /= length;
     }
     //Create TriangleView Primitives
@@ -1216,6 +1226,7 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(vec3), const float& 
 void ImplicitGrapher::calculateSurfaceOnGPU(float (*fOfXYZ)(vec3), const float& timeVariable, const uint& iterations, const vec3& offset, const float& zoom, const bool& vectorPointsPositive, const bool& clipEdges, PositionXYZNormalXYZ* _vertices, uvec3* _indices, GLuint& _numIndices) {
     ImplicitGrapher::zoom = zoom;
     ImplicitGrapher::iterations = iterations;
+    ImplicitGrapher::vectorPointsPositive = vectorPointsPositive;
     t = timeVariable;
     currentOffset = defaultOffset + offset;
     // Erase normals
@@ -1252,7 +1263,7 @@ void ImplicitGrapher::calculateSurfaceOnGPU(float (*fOfXYZ)(vec3), const float& 
                     float scan = 0.5f;
                     for (int m = 0; m < iterations; m++) {// Maybe use a do-while loop here to reduce the scan operations by 1.
                         _vertices[solutionCount].p[l] += scan;
-                        if (sign == POSITIVE ^ fOfXYZ(_vertices[solutionCount].p) > 0.0f) {
+                        if ((sign == POSITIVE) != (fOfXYZ(_vertices[solutionCount].p) > 0.0f)) {
                             scan *= 0.5f;
                         }else{
                             sign *= -1;
@@ -1482,7 +1493,7 @@ void ImplicitGrapher::calculateSurfaceOnGPU(float (*fOfXYZ)(vec3), const float& 
     }
     //Normalize
     for (int i = 0; i < solutionCount; i++) {
-        float length = (vectorPointsPositive) ? -distance(vec3(_vertices[i].n)) : distance(vec3(_vertices[i].n));
+        float length = vectorPointsPositive ? -distance(vec3(_vertices[i].n)) : distance(vec3(_vertices[i].n));
         _vertices[i].n /= length;
     }
     //Create TriangleView Primitives

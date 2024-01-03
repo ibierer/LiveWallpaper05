@@ -63,26 +63,27 @@ public:
 
     static GLuint computeShaderVBO;
 
+    static GLuint indexBufferBinding;
+
     struct chunk {
         bool plusMinus[32];
         ivec3 xyzLineIndex[32];
-        ivec3 groupSegments[3 * 32];
-        bool withinGraphRadius[3 * 32];
         PositionXYZNormalXYZ vertices[3 * 32];
         uvec3 indices[3 * 3 * 32];
         int solutionCount;
         int numIndices;
-        int groupSegmentCounter;
-        bool padding[756];
+        bool padding[2008];
     };
 
-    struct data {
+    struct GPUdata {
         chunk chunks[1024];
-        int sequence[maxEquationLength][3];
+        ivec3 sequence[maxEquationLength];
         int constants[maxEquationLength];
         float equationValues[maxEquationLength];
         int valuesCounter;
     };
+
+    static GPUdata* data;
 
     const string computeShaderCode[1000] = {
             View::ES_VERSION,
@@ -126,18 +127,15 @@ public:
             "struct chunk {\n",
             "    bool plusMinus[32];\n",
             "    ivec3 xyzLineIndex[32];\n",
-            "    ivec3 groupSegments[3 * 32];\n",
-            "    bool withinGraphRadius[3 * 32];\n",
             "    PositionXYZNormalXYZ vertices[3 * 32];\n",
             "    uvec3 indices[3 * 3 * 32];\n",
             "    int solutionCount;\n",
             "    int numIndices;\n",
-            "    int groupSegmentCounter;\n",
-            "    bool padding[756];\n",
+            "    bool padding[2008];\n",
             "};\n",
             "layout(packed, binding = 0) buffer destBuffer {\n",
             "    chunk chunks[1024];\n",
-            "    int sequence[4096][3];\n",
+            "    ivec3 sequence[4096];\n",
             "    int constants[4096];\n",
             "    float equationValues[4096];\n",
             "    int valuesCounter;\n",
@@ -149,8 +147,68 @@ public:
             "uniform int sequenceLength;\n",
             "uniform int surfaceEquation;\n",
             "uniform int iterations;\n",
-            "const ivec3 sizePlus3 = ivec3(32);\n",
+            "uniform int vectorPointsPositive;\n",
+            "uniform int clipEdges;\n",
+            "const uvec3 sizePlus3 = uvec3(32u);\n",
+            "const uvec3 sizePlus2 = uvec3(31u);\n",
             "float values[4096];\n",
+            "ivec3 groupSegments[3 * 32];\n",
+            "bool withinGraphRadius[3 * 32];\n",
+            "uint task;\n",
+            "layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;\n",
+            "float dist(vec3 coordinates) {\n",
+            "    return sqrt(dot(coordinates, coordinates));\n",
+            "}\n",
+            "int getPlusMinus(uint i, uint j, uint k){\n",
+            "    return int(outBuffer.chunks[gl_WorkGroupSize.x * j + i].plusMinus[k]);\n",
+            "}\n",
+            "ivec3 getXYZLineIndex(uint i, uint j, uint k){\n",
+            "    return outBuffer.chunks[gl_WorkGroupSize.x * j + i].xyzLineIndex[k];\n",
+            "}\n",
+            "int node0(uint i, uint j, uint k, uint l) {\n",
+            "    switch (l) {\n",
+            "        case 0: return getXYZLineIndex(i - 1u, j, k - 1u)[0]; break;//XY-plane[Yz]\n",
+            "        case 1: return getXYZLineIndex(i - 1u, j, k)[0]; break;//XY-plane[YZ]\n",
+            "        case 2: return getXYZLineIndex(i - 1u, j - 1u, k)[1]; break;//YZ-plane[xZ]\n",
+            "        case 3: return getXYZLineIndex(i, j - 1u, k)[1]; break;//YZ-plane[XZ]\n",
+            "        case 4: return getXYZLineIndex(i, j - 1u, k - 1u)[2]; break;//ZX-plane[Xy]\n",
+            "        case 5: return getXYZLineIndex(i, j, k - 1u)[2]; break;//ZX-plane[XY]\n",
+            "        default: return 0;\n",
+            "    }\n",
+            "}\n",
+            "int node1(uint i, uint j, uint k, uint l) {\n",
+            "    switch (l) {\n",
+            "        case 0: return getXYZLineIndex(i - 1u, j - 1u, k - 1u)[1]; break;//XY-plane[xz]\n",
+            "        case 1: return getXYZLineIndex(i - 1u, j - 1u, k)[1]; break;//XY-plane[xZ]\n",
+            "        case 2: return getXYZLineIndex(i - 1u, j - 1u, k - 1u)[2]; break;//YZ-plane[xy]\n",
+            "        case 3: return getXYZLineIndex(i, j - 1u, k - 1u)[2]; break;//YZ-plane[Xy]\n",
+            "        case 4: return getXYZLineIndex(i - 1u, j - 1u, k - 1u)[0]; break;//ZX-plane[yz]\n",
+            "        case 5: return getXYZLineIndex(i - 1u, j, k - 1u)[0]; break;//ZX-plane[Yz]\n",
+            "        default: return 0;\n",
+            "    }\n",
+            "}\n",
+            "int node2(uint i, uint j, uint k, uint l) {\n",
+            "    switch (l) {\n",
+            "        case 0: return getXYZLineIndex(i, j - 1u, k - 1u)[1]; break;//XY-plane[Xz]\n",
+            "        case 1: return getXYZLineIndex(i, j - 1u, k)[1]; break;//XY-plane[XZ]\n",
+            "        case 2: return getXYZLineIndex(i - 1u, j, k - 1u)[2]; break;//YZ-plane[xY]\n",
+            "        case 3: return getXYZLineIndex(i, j, k - 1u)[2]; break;//YZ-plane[XY]\n",
+            "        case 4: return getXYZLineIndex(i - 1u, j - 1u, k)[0]; break;//ZX-plane[yZ]\n",
+            "        case 5: return getXYZLineIndex(i - 1u, j, k)[0]; break;//ZX-plane[YZ]\n",
+            "        default: return 0;\n",
+            "    }\n",
+            "}\n",
+            "int node3(uint i, uint j, uint k, uint l) {\n",
+            "    switch (l) {\n",
+            "        case 0: return getXYZLineIndex(i - 1u, j - 1u, k - 1u)[0]; break;//XY-plane[yz]\n",
+            "        case 1: return getXYZLineIndex(i - 1u, j - 1u, k)[0]; break;//XY-plane[yZ]\n",
+            "        case 2: return getXYZLineIndex(i - 1u, j - 1u, k - 1u)[1]; break;//YZ-plane[xz]\n",
+            "        case 3: return getXYZLineIndex(i, j - 1u, k - 1u)[1]; break;//YZ-plane[Xz]\n",
+            "        case 4: return getXYZLineIndex(i - 1u, j - 1u, k - 1u)[2]; break;//ZX-plane[xy]\n",
+            "        case 5: return getXYZLineIndex(i - 1u, j, k - 1u)[2]; break;//ZX-plane[xY]\n",
+            "        default: return 0;\n",
+            "    }\n",
+            "}\n",
             "float fOfXYZ(vec3 position) {\n",
             "    position -= currentOffset;\n",
             "    position *= zoom;\n",
@@ -193,19 +251,18 @@ public:
             "    }\n",
             "    return values[0];\n",
             "}\n",
-            "layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;\n",
             "void main() {\n",
-            "    uint task = gl_WorkGroupSize.x * gl_LocalInvocationID.y + gl_LocalInvocationID.y;\n",
+            "    task = gl_WorkGroupSize.x * gl_LocalInvocationID.y + gl_LocalInvocationID.x;\n",
             "    // Erase normals\n",
             "    for (int i = 0; i < outBuffer.chunks[task].solutionCount; i++) {\n",
             "        outBuffer.chunks[task].vertices[i].n = vec3(0.0f);\n",
             "    }\n",
             "    // Reset solution count\n",
-            "    outBuffer.chunks[task].solutionCount = 0;\n",
+            "    outBuffer.chunks[task].solutionCount = int(3u * 32u * task);\n",
             "    // Reset group segment counter\n",
-            "    outBuffer.chunks[task].groupSegmentCounter = 0;\n",
+            "    int groupSegmentCounter = 0;\n",
             "    // Calculate plusMinusAmounts and approximate solutions\n",
-            "    for (int k = 0; k < sizePlus3.z; k++) {\n",
+            "    for (uint k = 0u; gl_LocalInvocationID.x < sizePlus3.x && gl_LocalInvocationID.y < sizePlus3.y && k < sizePlus3.z; k++) {\n",
             "        outBuffer.chunks[task].plusMinus[k] = fOfXYZ(vec3(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k)) > 0.0f;\n",
             "        uvec3 ijk = uvec3(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k);\n",
             "        for (int l = 0; l < 3; l++) {\n",
@@ -227,29 +284,29 @@ public:
             "            }\n",
             "            float scan = 0.5f;\n",
             "            for (int m = 0; m < iterations; m++) {// Maybe use a do-while loop here to reduce the scan operations by 1.\n",
-            "                _vertices[solutionCount].p[l] += scan;\n",
-            "                if (sign == POSITIVE ^ fOfXYZ(_vertices[solutionCount].p) > 0.0f) {\n",
+            "                outBuffer.chunks[task].vertices[outBuffer.chunks[task].solutionCount].p[l] += scan;\n",
+            "                if ((sign == POSITIVE) != (fOfXYZ(outBuffer.chunks[task].vertices[outBuffer.chunks[task].solutionCount].p) > 0.0f)) {\n",
             "                    scan *= 0.5f;\n",
             "                }else{\n",
             "                    sign *= -1;\n",
             "                    scan *= -0.5f;\n",
             "                }\n",
             "            }\n",
-            "            solutionCount++;\n",
+            "            outBuffer.chunks[task].solutionCount++;\n",
             "        }\n",
-            "        if (i == 0 || j == 0 || k == 0) {\n",
+            "        if (gl_LocalInvocationID.x == 0u || gl_LocalInvocationID.y == 0u || k == 0u) {\n",
             "            continue;\n",
             "        }\n",
             "        int groupSegmentStartIndex = groupSegmentCounter;\n",
-            "        bool xyz = getPlusMinus(i - 1, j - 1, k - 1);\n",
-            "        bool xyZ = getPlusMinus(i - 1, j - 1, k);\n",
-            "        bool xYz = getPlusMinus(i - 1, j, k - 1);\n",
-            "        bool xYZ = getPlusMinus(i - 1, j, k);\n",
-            "        bool Xyz = getPlusMinus(i, j - 1, k - 1);\n",
-            "        bool XyZ = getPlusMinus(i, j - 1, k);\n",
-            "        bool XYz = getPlusMinus(i, j, k - 1);\n",
-            "        bool XYZ = getPlusMinus(i, j, k);\n",
-            "        for (int l = 0; l < 6; l++) {\n",
+            "        int xyz = getPlusMinus(gl_LocalInvocationID.x - 1u, gl_LocalInvocationID.y - 1u, k - 1u);\n",
+            "        int xyZ = getPlusMinus(gl_LocalInvocationID.x - 1u, gl_LocalInvocationID.y - 1u, k);\n",
+            "        int xYz = getPlusMinus(gl_LocalInvocationID.x - 1u, gl_LocalInvocationID.y, k - 1u);\n",
+            "        int xYZ = getPlusMinus(gl_LocalInvocationID.x - 1u, gl_LocalInvocationID.y, k);\n",
+            "        int Xyz = getPlusMinus(gl_LocalInvocationID.x, gl_LocalInvocationID.y - gl_LocalInvocationID.y, k - 1u);\n",
+            "        int XyZ = getPlusMinus(gl_LocalInvocationID.x, gl_LocalInvocationID.y - gl_LocalInvocationID.y, k);\n",
+            "        int XYz = getPlusMinus(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k - 1u);\n",
+            "        int XYZ = getPlusMinus(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k);\n",
+            "        for (uint l = 0u; l < 6u; l++) {\n",
             "            int combo = 0;\n",
             "            switch (l) {\n",
             "                case 0://XY\n",
@@ -274,41 +331,41 @@ public:
             "            switch (combo) {\n",
             "                case 0: break;//0000\n",
             "                case 1://0001\n",
-            "                    if (l % 2 != vectorPointsPositive)\n",
-            "                        groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node2(i, j, k, l), -1);\n",
+            "                    if (int(l % 2u) != vectorPointsPositive)\n",
+            "                        groupSegments[groupSegmentCounter++] = ivec3(node3(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), node2(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), -1);\n",
             "                    else\n",
-            "                        groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node3(i, j, k, l), -1);\n",
+            "                        groupSegments[groupSegmentCounter++] = ivec3(node2(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), node3(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), -1);\n",
             "                    break;\n",
             "                case 2://0010\n",
-            "                    if (l % 2 != vectorPointsPositive)\n",
-            "                        groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node3(i, j, k, l), -1);\n",
+            "                    if (int(l % 2u) != vectorPointsPositive)\n",
+            "                        groupSegments[groupSegmentCounter++] = ivec3(node1(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), node3(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), -1);\n",
             "                    else\n",
-            "                        groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node1(i, j, k, l), -1);\n",
+            "                        groupSegments[groupSegmentCounter++] = ivec3(node3(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), node1(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), -1);\n",
             "                    break;\n",
             "                case 3://0011\n",
-            "                    if (l % 2 != vectorPointsPositive)\n",
-            "                        groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node2(i, j, k, l), -1);\n",
+            "                    if (int(l % 2u) != vectorPointsPositive)\n",
+            "                        groupSegments[groupSegmentCounter++] = ivec3(node1(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), node2(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), -1);\n",
             "                    else\n",
-            "                        groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node1(i, j, k, l), -1); break;\n",
+            "                        groupSegments[groupSegmentCounter++] = ivec3(node2(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), node1(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), -1); break;\n",
             "                case 4://0100\n",
-            "                    if (l % 2 != vectorPointsPositive)\n",
-            "                        groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node0(i, j, k, l), -1);\n",
+            "                    if (int(l % 2u) != vectorPointsPositive)\n",
+            "                        groupSegments[groupSegmentCounter++] = ivec3(node2(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), node0(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), -1);\n",
             "                    else\n",
-            "                        groupSegments[groupSegmentCounter++] = ivec3(node0(i, j, k, l), node2(i, j, k, l), -1);\n",
+            "                        groupSegments[groupSegmentCounter++] = ivec3(node0(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), node2(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), -1);\n",
             "                    break;\n",
             "                case 5://0101\n",
-            "                    if(l % 2 != vectorPointsPositive)\n",
-            "                        groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node0(i, j, k, l), -1);\n",
+            "                    if(int(l % 2u) != vectorPointsPositive)\n",
+            "                        groupSegments[groupSegmentCounter++] = ivec3(node3(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), node0(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), -1);\n",
             "                    else\n",
-            "                        groupSegments[groupSegmentCounter++] = ivec3(node0(i, j, k, l), node3(i, j, k, l), -1);\n",
+            "                        groupSegments[groupSegmentCounter++] = ivec3(node0(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), node3(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), -1);\n",
             "                    break;\n",
             "                case 6: {//0110\n",
-            "                    int _node0 = node0(i, j, k, l);\n",
-            "                    int _node1 = node1(i, j, k, l);\n",
-            "                    int _node2 = node2(i, j, k, l);\n",
-            "                    int _node3 = node3(i, j, k, l);\n",
-            "                    if (fOfXYZ((_vertices[_node0].p + _vertices[_node1].p + _vertices[_node2].p + _vertices[_node3].p) * 0.25f) > 0.0f) {\n",
-            "                        if (l % 2 != vectorPointsPositive){\n",
+            "                    int _node0 = node0(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l);\n",
+            "                    int _node1 = node1(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l);\n",
+            "                    int _node2 = node2(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l);\n",
+            "                    int _node3 = node3(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l);\n",
+            "                    if (fOfXYZ((outBuffer.chunks[task].vertices[_node0].p + outBuffer.chunks[task].vertices[_node1].p + outBuffer.chunks[task].vertices[_node2].p + outBuffer.chunks[task].vertices[_node3].p) * 0.25f) > 0.0f) {\n",
+            "                        if (int(l % 2u) != vectorPointsPositive){\n",
             "                            groupSegments[groupSegmentCounter++] = ivec3(_node1, _node0, -1);\n",
             "                            groupSegments[groupSegmentCounter++] = ivec3(_node2, _node3, -1);\n",
             "                        } else {\n",
@@ -316,7 +373,7 @@ public:
             "                            groupSegments[groupSegmentCounter++] = ivec3(_node3, _node2, -1);\n",
             "                        }\n",
             "                    } else {\n",
-            "                        if (l % 2 != vectorPointsPositive) {\n",
+            "                        if (int(l % 2u) != vectorPointsPositive) {\n",
             "                            groupSegments[groupSegmentCounter++] = ivec3(_node2, _node0, -1);\n",
             "                            groupSegments[groupSegmentCounter++] = ivec3(_node1, _node3, -1);\n",
             "                        } else {\n",
@@ -327,24 +384,24 @@ public:
             "                    break;\n",
             "                }\n",
             "                case 7://0111\n",
-            "                    if (l % 2 != vectorPointsPositive)\n",
-            "                        groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node0(i, j, k, l), -1);\n",
+            "                    if (int(l % 2u) != vectorPointsPositive)\n",
+            "                        groupSegments[groupSegmentCounter++] = ivec3(node1(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), node0(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), -1);\n",
             "                    else\n",
-            "                        groupSegments[groupSegmentCounter++] = ivec3(node0(i, j, k, l), node1(i, j, k, l), -1);\n",
+            "                        groupSegments[groupSegmentCounter++] = ivec3(node0(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), node1(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), -1);\n",
             "                    break;\n",
             "                case 8://1000\n",
-            "                    if (l % 2 != vectorPointsPositive)\n",
-            "                        groupSegments[groupSegmentCounter++] = ivec3(node0(i, j, k, l), node1(i, j, k, l), -1);\n",
+            "                    if (int(l % 2u) != vectorPointsPositive)\n",
+            "                        groupSegments[groupSegmentCounter++] = ivec3(node0(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), node1(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), -1);\n",
             "                    else\n",
-            "                        groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node0(i, j, k, l), -1);\n",
+            "                        groupSegments[groupSegmentCounter++] = ivec3(node1(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), node0(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), -1);\n",
             "                    break;\n",
             "                case 9: {//1001\n",
-            "                    int _node0 = node0(i, j, k, l);\n",
-            "                    int _node1 = node1(i, j, k, l);\n",
-            "                    int _node2 = node2(i, j, k, l);\n",
-            "                    int _node3 = node3(i, j, k, l);\n",
-            "                    if (fOfXYZ((_vertices[_node0].p + _vertices[_node1].p + _vertices[_node2].p + _vertices[_node3].p) * 0.25f) > 0.0f) {\n",
-            "                        if (l % 2 != vectorPointsPositive) {\n",
+            "                    int _node0 = node0(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l);\n",
+            "                    int _node1 = node1(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l);\n",
+            "                    int _node2 = node2(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l);\n",
+            "                    int _node3 = node3(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l);\n",
+            "                    if (fOfXYZ((outBuffer.chunks[task].vertices[_node0].p + outBuffer.chunks[task].vertices[_node1].p + outBuffer.chunks[task].vertices[_node2].p + outBuffer.chunks[task].vertices[_node3].p) * 0.25f) > 0.0f) {\n",
+            "                        if (int(l % 2u) != vectorPointsPositive) {\n",
             "                            groupSegments[groupSegmentCounter++] = ivec3(_node0, _node2, -1);\n",
             "                            groupSegments[groupSegmentCounter++] = ivec3(_node3, _node1, -1);\n",
             "                        } else {\n",
@@ -352,7 +409,7 @@ public:
             "                            groupSegments[groupSegmentCounter++] = ivec3(_node1, _node3, -1);\n",
             "                        }\n",
             "                    } else {\n",
-            "                        if (l % 2 != vectorPointsPositive) {\n",
+            "                        if (int(l % 2u) != vectorPointsPositive) {\n",
             "                            groupSegments[groupSegmentCounter++] = ivec3(_node3, _node2, -1);\n",
             "                            groupSegments[groupSegmentCounter++] = ivec3(_node0, _node1, -1);\n",
             "                        } else {\n",
@@ -363,30 +420,30 @@ public:
             "                    break;\n",
             "                }\n",
             "                case 10://1010\n",
-            "                    if (l % 2 != vectorPointsPositive)\n",
-            "                        groupSegments[groupSegmentCounter++] = ivec3(node0(i, j, k, l), node3(i, j, k, l), -1);\n",
+            "                    if (int(l % 2u) != vectorPointsPositive)\n",
+            "                        groupSegments[groupSegmentCounter++] = ivec3(node0(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), node3(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), -1);\n",
             "                    else\n",
-            "                        groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node0(i, j, k, l), -1); break;\n",
+            "                        groupSegments[groupSegmentCounter++] = ivec3(node3(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), node0(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), -1); break;\n",
             "                case 11://1011\n",
-            "                    if (l % 2 != vectorPointsPositive)\n",
-            "                        groupSegments[groupSegmentCounter++] = ivec3(node0(i, j, k, l), node2(i, j, k, l), -1);\n",
+            "                    if (int(l % 2u) != vectorPointsPositive)\n",
+            "                        groupSegments[groupSegmentCounter++] = ivec3(node0(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), node2(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), -1);\n",
             "                    else\n",
-            "                        groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node0(i, j, k, l), -1); break;\n",
+            "                        groupSegments[groupSegmentCounter++] = ivec3(node2(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), node0(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), -1); break;\n",
             "                case 12://1100\n",
-            "                    if (l % 2 != vectorPointsPositive)\n",
-            "                        groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node1(i, j, k, l), -1);\n",
+            "                    if (int(l % 2u) != vectorPointsPositive)\n",
+            "                        groupSegments[groupSegmentCounter++] = ivec3(node2(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), node1(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), -1);\n",
             "                    else\n",
-            "                        groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node2(i, j, k, l), -1); break;\n",
+            "                        groupSegments[groupSegmentCounter++] = ivec3(node1(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), node2(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), -1); break;\n",
             "                case 13://1101\n",
-            "                    if (l % 2 != vectorPointsPositive)\n",
-            "                        groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node1(i, j, k, l), -1);\n",
+            "                    if (int(l % 2u) != vectorPointsPositive)\n",
+            "                        groupSegments[groupSegmentCounter++] = ivec3(node3(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), node1(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), -1);\n",
             "                    else\n",
-            "                        groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node3(i, j, k, l), -1); break;\n",
+            "                        groupSegments[groupSegmentCounter++] = ivec3(node1(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), node3(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), -1); break;\n",
             "                case 14://1110\n",
-            "                    if (l % 2 != vectorPointsPositive)\n",
-            "                        groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node3(i, j, k, l), -1);\n",
+            "                    if (int(l % 2u) != vectorPointsPositive)\n",
+            "                        groupSegments[groupSegmentCounter++] = ivec3(node2(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), node3(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), -1);\n",
             "                    else\n",
-            "                        groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node2(i, j, k, l), -1); break;\n",
+            "                        groupSegments[groupSegmentCounter++] = ivec3(node3(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), node2(gl_LocalInvocationID.x, gl_LocalInvocationID.y, k, l), -1); break;\n",
             "                case 15:\n",
             "                    break;//1111\n",
             "            }\n",
@@ -400,9 +457,9 @@ public:
             "        //{54}{97}{0}    {97}{54}{0}    {97}{54}{0}\n",
             "        //{80}{73}{0}    {54}{21}{0}    {54}{21}{0}\n",
             "        int segPerGroup = 1;\n",
-            "        if (clipEdges) {\n",
+            "        if (bool(clipEdges)) {\n",
             "            for (int l = groupSegmentStartIndex; l < groupSegmentCounter; l++) {\n",
-            "                withinGraphRadius[l] = i > 1 && j > 1 && k > 1 && i < sizePlus2.x && j < sizePlus2.y && k < sizePlus2.z;\n",
+            "                withinGraphRadius[l] = gl_LocalInvocationID.x > 1u && gl_LocalInvocationID.y > 1u && k > 1u && gl_LocalInvocationID.x < sizePlus2.x && gl_LocalInvocationID.y < sizePlus2.y && k < sizePlus2.z;\n",
             "            }\n",
             "        }\n",
             "        for (int l = groupSegmentStartIndex; l < groupSegmentCounter - 1; l++) {\n",
@@ -426,13 +483,13 @@ public:
             "                    groupSegments[l - 1][2] = groupSegments[l][1];\n",
             "                }\n",
             "                else {\n",
-            "                    vec3 sum(0.0f);\n",
+            "                    vec3 sum = vec3(0.0f);\n",
             "                    for (int _n = l - segPerGroup + 2; _n < l + 2; _n++) {\n",
-            "                        sum += _vertices[groupSegments[_n][0]].p;\n",
-            "                        groupSegments[_n][2] = solutionCount;\n",
+            "                        sum += outBuffer.chunks[task].vertices[groupSegments[_n][0]].p;\n",
+            "                        groupSegments[_n][2] = outBuffer.chunks[task].solutionCount;\n",
             "                    }\n",
-            "                    _vertices[solutionCount].p = sum / segPerGroup;\n",
-            "                    solutionCount++;\n",
+            "                    outBuffer.chunks[task].vertices[outBuffer.chunks[task].solutionCount].p = sum / float(segPerGroup);\n",
+            "                    outBuffer.chunks[task].solutionCount++;\n",
             "                }\n",
             "                segPerGroup = 1;\n",
             "                l++;\n",
@@ -444,32 +501,32 @@ public:
             "    // Calculate face normals and add them to the per-solution normals.\n",
             "    for (int i = 0; i < groupSegmentCounter; i++) {\n",
             "        if (groupSegments[i][2] > -1) {\n",
-            "            vec3 vectorA = _vertices[groupSegments[i][0]].p - _vertices[groupSegments[i][2]].p;\n",
-            "            vec3 vectorB = _vertices[groupSegments[i][1]].p - _vertices[groupSegments[i][2]].p;\n",
+            "            vec3 vectorA = outBuffer.chunks[task].vertices[groupSegments[i][0]].p - outBuffer.chunks[task].vertices[groupSegments[i][2]].p;\n",
+            "            vec3 vectorB = outBuffer.chunks[task].vertices[groupSegments[i][1]].p - outBuffer.chunks[task].vertices[groupSegments[i][2]].p;\n",
             "            vec3 crossProduct = cross(vectorA, vectorB);\n",
-            "            float length = distance(crossProduct);\n",
+            "            float length = dist(crossProduct);\n",
             "            vec3 normalizedCrossProduct = crossProduct / length;\n",
-            "            _vertices[groupSegments[i][0]].n += normalizedCrossProduct;\n",
-            "            _vertices[groupSegments[i][1]].n += normalizedCrossProduct;\n",
-            "            _vertices[groupSegments[i][2]].n += normalizedCrossProduct;\n",
+            "            outBuffer.chunks[task].vertices[groupSegments[i][0]].n += normalizedCrossProduct;\n",
+            "            outBuffer.chunks[task].vertices[groupSegments[i][1]].n += normalizedCrossProduct;\n",
+            "            outBuffer.chunks[task].vertices[groupSegments[i][2]].n += normalizedCrossProduct;\n",
             "        }\n",
             "    }\n",
             "    //Normalize\n",
-            "    for (int i = 0; i < solutionCount; i++) {\n",
-            "        float length = (vectorPointsPositive) ? -distance(vec3(_vertices[i].n)) : distance(vec3(_vertices[i].n));\n",
-            "        _vertices[i].n /= length;\n",
+            "    for (int i = int(3u * 32u * task); i < outBuffer.chunks[task].solutionCount; i++) {\n",
+            "        float length = bool(vectorPointsPositive) ? -dist(vec3(outBuffer.chunks[task].vertices[i].n)) : dist(vec3(outBuffer.chunks[task].vertices[i].n));\n",
+            "        outBuffer.chunks[task].vertices[i].n /= length;\n",
             "    }\n",
             "    //Create TriangleView Primitives\n",
-            "    _numIndices = 0;\n",
+            "    outBuffer.chunks[task].numIndices = 0;\n",
             "    int triangleCount = 0;\n",
             "    for (int i = 0; i < groupSegmentCounter; i++) {\n",
-            "        if (groupSegments[i][2] > -1 && (!clipEdges || withinGraphRadius[i])) {\n",
-            "            _indices[triangleCount++] = groupSegments[i];\n",
-            "            _numIndices += 3;\n",
+            "        if (groupSegments[i][2] > -1 && (!bool(clipEdges) || withinGraphRadius[i])) {\n",
+            "            outBuffer.chunks[task].indices[triangleCount++] = uvec3(groupSegments[i]);\n",
+            "            outBuffer.chunks[task].numIndices += 3;\n",
             "        }\n",
             "    }\n",
-            "    for (int i = 0; i < solutionCount; i++) {\n",
-            "        _vertices[i].p -= currentOffset;\n",
+            "    for (int i = int(3u * 32u * task); i < outBuffer.chunks[task].solutionCount; i++) {\n",
+            "        outBuffer.chunks[task].vertices[i].p -= currentOffset;\n",
             "    }\n",
             "}"};
 
@@ -523,9 +580,25 @@ public:
 
     static uint iterations;
 
+    static bool vectorPointsPositive;
+
+    static bool clipEdges;
+
     static int valuesCounter[maxNumOfEquations];
 
     static int sequenceLengths[maxNumOfEquations];
+
+    static int constants[maxNumOfEquations][maxEquationLength];
+
+    static float values[maxEquationLength];
+
+    static float equationValues[maxNumOfEquations][maxEquationLength];
+
+    static ivec3 sequences[maxNumOfEquations][maxEquationLength];
+
+    static const int numOfDefaultEquations = 41;
+
+    static const string defaultEquations[numOfDefaultEquations][2];
 
 private:
 
@@ -601,11 +674,7 @@ private:
 
     static const int NEGATIVE = -1;
 
-    static const int numOfDefaultEquations = 41;
-
     static const int numOfFunctions = 17;
-
-    static const string defaultEquations[numOfDefaultEquations][2];
 
     static const string functions[numOfFunctions];
 
@@ -620,14 +689,6 @@ private:
     static ivec3* xyzLineIndex;
 
     static ivec3* groupSegments;
-
-    static int constants[maxNumOfEquations][maxEquationLength];
-
-    static float values[maxEquationLength];
-
-    static float equationValues[maxNumOfEquations][maxEquationLength];
-
-    static int sequences[maxNumOfEquations][maxEquationLength][3];
 
     static ivec3 radius;
 
