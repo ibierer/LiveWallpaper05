@@ -83,6 +83,8 @@ public:
 
     static string jstringToString(JNIEnv *env, jstring jStr);
 
+    static string stringArrayToString(string* const strings, const int& count);
+
     void incrementFrameCount();
 
     int getFrameCount();

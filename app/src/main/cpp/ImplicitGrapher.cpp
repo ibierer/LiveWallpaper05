@@ -20,7 +20,7 @@ double ImplicitGrapher::t = 0.0;
 
 bool* ImplicitGrapher::plusMinus = nullptr;
 
-int ImplicitGrapher::constant[maxNumOfEquations][maxEquationLength] = {};
+int ImplicitGrapher::constants[maxNumOfEquations][maxEquationLength] = {};
 
 int ImplicitGrapher::valuesCounter[maxNumOfEquations] = {};
 
@@ -34,9 +34,13 @@ int ImplicitGrapher::sequences[maxNumOfEquations][maxEquationLength][3] = {};
 
 int ImplicitGrapher::sequenceLengths[maxNumOfEquations] = {};
 
-vec3 ImplicitGrapher::currentOffset = vec3(0.0f);
-
 vec3 ImplicitGrapher::defaultOffset = vec3(0.0f);
+
+vec3 ImplicitGrapher::offset = vec3(0.0f);
+
+uint ImplicitGrapher::iterations = 0;
+
+vec3 ImplicitGrapher::currentOffset = vec3(0.0f);
 
 int ImplicitGrapher::solutionCount = 0;
 
@@ -59,6 +63,12 @@ ivec3* ImplicitGrapher::groupSegments = nullptr;
 bool* ImplicitGrapher::withinGraphRadius = nullptr;
 
 int ImplicitGrapher::maxSolutionCount = 0;
+
+GLuint ImplicitGrapher::computeShaderProgram = 0;
+
+GLuint ImplicitGrapher::computeShaderVBO = 0;
+
+float ImplicitGrapher::zoom = 0.0f;
 
 const string ImplicitGrapher::defaultEquations[numOfDefaultEquations][2] = {
         {"Two Toroids",                  "1/((sqrt(x^2 + y^2) - 2 + 1.25cos(t))^2 + (z - 1.5sin(t))^2) + 1/((sqrt(x^2 + y^2) - 2 - 1.25cos(t))^2 + (z + 1.5sin(t))^2) = 1.9"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        },
@@ -142,6 +152,9 @@ ImplicitGrapher::ImplicitGrapher(const ivec3& radius) {
     for (int i = 0; i < numOfEquationsInMemory; i++) {
         processEquation(i);
     }
+
+    computeShaderProgram = generateComputeShader(View::stringArrayToString((string*)computeShaderCode, 1000).c_str());
+    glGenBuffers(1, &computeShaderVBO);
 }
 
 ImplicitGrapher::~ImplicitGrapher(){
@@ -300,7 +313,7 @@ void ImplicitGrapher::writeUserEquationsToMemory() {
 void ImplicitGrapher::processEquation(const int& i) {
     bool debugEquation = false;
     for (int j = 0; j < maxEquationLength; j++) {
-        constant[i][j] = 0;
+        constants[i][j] = 0;
     }
 
     char equation[2 * maxEquationLength];
@@ -590,27 +603,27 @@ void ImplicitGrapher::processEquation(const int& i) {
     for (int j = 0; j < length; j++, codedEquationCounter++) {
         if (equation[j] != '.' && !aDigit(equation[j])) {
             if (equation[j] == 'x') {
-                codedEquation[codedEquationCounter] = constant[i][valuesCounter[i]] = X;
+                codedEquation[codedEquationCounter] = constants[i][valuesCounter[i]] = X;
                 valuesCounter[i]++;
             }
             else if (equation[j] == 'y') {
-                codedEquation[codedEquationCounter] = constant[i][valuesCounter[i]] = Y;
+                codedEquation[codedEquationCounter] = constants[i][valuesCounter[i]] = Y;
                 valuesCounter[i]++;
             }
             else if (equation[j] == 'z') {
-                codedEquation[codedEquationCounter] = constant[i][valuesCounter[i]] = Z;
+                codedEquation[codedEquationCounter] = constants[i][valuesCounter[i]] = Z;
                 valuesCounter[i]++;
             }
             else if (equation[j] == 't' && equation[j + 1] != 'a') {
-                codedEquation[codedEquationCounter] = constant[i][valuesCounter[i]] = T;
+                codedEquation[codedEquationCounter] = constants[i][valuesCounter[i]] = T;
                 valuesCounter[i]++;
             }
             else if (equation[j] == 'e') {
-                codedEquation[codedEquationCounter] = constant[i][valuesCounter[i]] = E;
+                codedEquation[codedEquationCounter] = constants[i][valuesCounter[i]] = E;
                 valuesCounter[i]++;
             }
             else if (equation[j] == pi) {
-                codedEquation[codedEquationCounter] = constant[i][valuesCounter[i]] = PI;
+                codedEquation[codedEquationCounter] = constants[i][valuesCounter[i]] = PI;
                 valuesCounter[i]++;
             }
             else if (equation[j] == '(') {
@@ -868,11 +881,11 @@ inline int ImplicitGrapher::node3(const int& i, const int& j, const int& k, cons
 }
 
 // Calculates the difference between f(x, y, z) and 0.
-float ImplicitGrapher::fOfXYZ(vec3 position, const float &t, const vec3 &offset, const float &zoom) {
-    position -= offset;
+float ImplicitGrapher::fOfXYZ(vec3 position) {
+    position -= currentOffset;
     position *= zoom;
     for (int i = 0; i < valuesCounter[surfaceEquation]; i++) {
-        switch (constant[surfaceEquation][i]) {
+        switch (constants[surfaceEquation][i]) {
             case 0: values[i] = equationValues[surfaceEquation][i]; break;
             case X: values[i] = position.x; break;
             case Y: values[i] = position.y; break;
@@ -914,7 +927,9 @@ float ImplicitGrapher::fOfXYZ(vec3 position, const float &t, const vec3 &offset,
     return v[0];
 }
 
-void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(vec3, const float&, const vec3&, const float&), const float& timeVariable, const uint& iterations, const vec3& offset, const float& zoom, const bool& vectorPointsPositive, const bool& clipEdges, PositionXYZNormalXYZ* _vertices, uvec3* _indices, GLuint& _numIndices) {
+void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(vec3), const float& timeVariable, const uint& iterations, const vec3& offset, const float& zoom, const bool& vectorPointsPositive, const bool& clipEdges, PositionXYZNormalXYZ* _vertices, uvec3* _indices, GLuint& _numIndices) {
+    ImplicitGrapher::zoom = zoom;
+    ImplicitGrapher::iterations = iterations;
     t = timeVariable;
     currentOffset = defaultOffset + offset;
     // Erase normals
@@ -929,23 +944,21 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(vec3, const float&, 
     for (int i = 0; i < sizePlus3.x; i++) {
         for (int j = 0; j < sizePlus3.y; j++) {
             for (int k = 0; k < sizePlus3.z; k++) {
-                plusMinus[(i * sizePlus3.y + j) * sizePlus3.z + k] = fOfXYZ(vec3(i, j, k), t, currentOffset, zoom) > 0.0f;
-                uvec3 ijk(i, j, k);
+                plusMinus[(i * sizePlus3.y + j) * sizePlus3.z + k] = fOfXYZ(vec3(i, j, k)) > 0.0f;
+                uvec3 ijk = uvec3(i, j, k);
                 for (int l = 0; l < 3; l++) {
-                    if (ijk[l] == 0) {
+                    if (ijk[l] == 0u) {
                         continue;
                     }
                     uvec3 iCursor = ijk;
-                    iCursor[l] -= 1;
+                    iCursor[l] -= 1u;
                     bool firstSample = plusMinus[(iCursor.x * sizePlus3.y + iCursor.y) * sizePlus3.z + iCursor.z];
                     bool secondSample = plusMinus[(ijk.x * sizePlus3.y + ijk.y) * sizePlus3.z + ijk.z];
                     // If no solution is detected jump to next iteration of loop.
-                    if (!(firstSample ^ secondSample)) {
+                    if (firstSample == secondSample) {
                         continue;
                     }
                     xyzLineIndex[(iCursor.x * sizePlus3.y + iCursor.y) * sizePlus3.z + iCursor.z][l] = solutionCount;
-                    const int POSITIVE = 1;
-                    const int NEGATIVE = -1;
                     int sign = secondSample ? POSITIVE : NEGATIVE;
                     for (int m = 0; m < 3; m++) {
                         _vertices[solutionCount].p[m] = iCursor[m];
@@ -953,7 +966,7 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(vec3, const float&, 
                     float scan = 0.5f;
                     for (int m = 0; m < iterations; m++) {// Maybe use a do-while loop here to reduce the scan operations by 1.
                         _vertices[solutionCount].p[l] += scan;
-                        if (sign == POSITIVE ^ fOfXYZ(_vertices[solutionCount].p, t, currentOffset, zoom) > 0.0f) {
+                        if (sign == POSITIVE ^ fOfXYZ(_vertices[solutionCount].p) > 0.0f) {
                             scan *= 0.5f;
                         }else{
                             sign *= -1;
@@ -1032,7 +1045,7 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(vec3, const float&, 
                             int _node1 = node1(i, j, k, l);
                             int _node2 = node2(i, j, k, l);
                             int _node3 = node3(i, j, k, l);
-                            if (fOfXYZ((_vertices[_node0].p + _vertices[_node1].p + _vertices[_node2].p + _vertices[_node3].p) * 0.25f, t, currentOffset, zoom) > 0.0f) {
+                            if (fOfXYZ((_vertices[_node0].p + _vertices[_node1].p + _vertices[_node2].p + _vertices[_node3].p) * 0.25f) > 0.0f) {
                                 if (l % 2 != vectorPointsPositive){
                                     groupSegments[groupSegmentCounter++] = ivec3(_node1, _node0, -1);
                                     groupSegments[groupSegmentCounter++] = ivec3(_node2, _node3, -1);
@@ -1068,7 +1081,293 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(vec3, const float&, 
                             int _node1 = node1(i, j, k, l);
                             int _node2 = node2(i, j, k, l);
                             int _node3 = node3(i, j, k, l);
-                            if (fOfXYZ((_vertices[_node0].p + _vertices[_node1].p + _vertices[_node2].p + _vertices[_node3].p) * 0.25f, t, currentOffset, zoom) > 0.0f) {
+                            if (fOfXYZ((_vertices[_node0].p + _vertices[_node1].p + _vertices[_node2].p + _vertices[_node3].p) * 0.25f) > 0.0f) {
+                                if (l % 2 != vectorPointsPositive) {
+                                    groupSegments[groupSegmentCounter++] = ivec3(_node0, _node2, -1);
+                                    groupSegments[groupSegmentCounter++] = ivec3(_node3, _node1, -1);
+                                } else {
+                                    groupSegments[groupSegmentCounter++] = ivec3(_node2, _node0, -1);
+                                    groupSegments[groupSegmentCounter++] = ivec3(_node1, _node3, -1);
+                                }
+                            } else {
+                                if (l % 2 != vectorPointsPositive) {
+                                    groupSegments[groupSegmentCounter++] = ivec3(_node3, _node2, -1);
+                                    groupSegments[groupSegmentCounter++] = ivec3(_node0, _node1, -1);
+                                } else {
+                                    groupSegments[groupSegmentCounter++] = ivec3(_node2, _node3, -1);
+                                    groupSegments[groupSegmentCounter++] = ivec3(_node1, _node0, -1);
+                                }
+                            }
+                            break;
+                        }
+                        case 10://1010
+                            if (l % 2 != vectorPointsPositive)
+                                groupSegments[groupSegmentCounter++] = ivec3(node0(i, j, k, l), node3(i, j, k, l), -1);
+                            else
+                                groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node0(i, j, k, l), -1); break;
+                        case 11://1011
+                            if (l % 2 != vectorPointsPositive)
+                                groupSegments[groupSegmentCounter++] = ivec3(node0(i, j, k, l), node2(i, j, k, l), -1);
+                            else
+                                groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node0(i, j, k, l), -1); break;
+                        case 12://1100
+                            if (l % 2 != vectorPointsPositive)
+                                groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node1(i, j, k, l), -1);
+                            else
+                                groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node2(i, j, k, l), -1); break;
+                        case 13://1101
+                            if (l % 2 != vectorPointsPositive)
+                                groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node1(i, j, k, l), -1);
+                            else
+                                groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node3(i, j, k, l), -1); break;
+                        case 14://1110
+                            if (l % 2 != vectorPointsPositive)
+                                groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node3(i, j, k, l), -1);
+                            else
+                                groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node2(i, j, k, l), -1); break;
+                        case 15:
+                            break;//1111
+                    }
+                }
+                //Grouping
+                //{73}{64}{0}    {73}{64}{0}    {73}{64}{107}
+                //{97}{21}{0}    {64}{89}{0}    {64}{89}{107}
+                //{89}{64}{0}    {89}{80}{0}    {89}{80}{107}
+                //{89}{80}{0}    {80}{73}{0}    {80}{73}{107}
+                //{54}{21}{0}    {21}{97}{0}    {21}{97}{54}
+                //{54}{97}{0}    {97}{54}{0}    {97}{54}{0}
+                //{80}{73}{0}    {54}{21}{0}    {54}{21}{0}
+                int segPerGroup = 1;
+                if (clipEdges) {
+                    for (int l = groupSegmentStartIndex; l < groupSegmentCounter; l++) {
+                        withinGraphRadius[l] = i > 1 && j > 1 && k > 1 && i < sizePlus2.x && j < sizePlus2.y && k < sizePlus2.z;
+                    }
+                }
+                for (int l = groupSegmentStartIndex; l < groupSegmentCounter - 1; l++) {
+                    for (int _m = l + 1; _m < groupSegmentCounter; _m++) {
+                        if (groupSegments[_m][0] != groupSegments[l][1]) {
+                            continue;
+                        }
+                        //Swap
+                        int storeA = groupSegments[l + 1][0];
+                        int storeB = groupSegments[l + 1][1];
+                        groupSegments[l + 1][0] = groupSegments[_m][0];
+                        groupSegments[l + 1][1] = groupSegments[_m][1];
+                        groupSegments[_m][0] = storeA;
+                        groupSegments[_m][1] = storeB;
+                        segPerGroup++;
+                        //Check to see if end of loop
+                        if (groupSegments[l + 1][1] != groupSegments[l + 2 - segPerGroup][0]) {
+                            continue;
+                        }
+                        if (segPerGroup == 3) {
+                            groupSegments[l - 1][2] = groupSegments[l][1];
+                        }
+                        else {
+                            vec3 sum(0.0f);
+                            for (int _n = l - segPerGroup + 2; _n < l + 2; _n++) {
+                                sum += _vertices[groupSegments[_n][0]].p;
+                                groupSegments[_n][2] = solutionCount;
+                            }
+                            _vertices[solutionCount].p = sum / segPerGroup;
+                            solutionCount++;
+                        }
+                        segPerGroup = 1;
+                        l++;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    // Calculate face normals and add them to the per-solution normals.
+    for (int i = 0; i < groupSegmentCounter; i++) {
+        if (groupSegments[i][2] > -1) {
+            vec3 vectorA = _vertices[groupSegments[i][0]].p - _vertices[groupSegments[i][2]].p;
+            vec3 vectorB = _vertices[groupSegments[i][1]].p - _vertices[groupSegments[i][2]].p;
+            vec3 crossProduct = cross(vectorA, vectorB);
+            float length = distance(crossProduct);
+            vec3 normalizedCrossProduct = crossProduct / length;
+            _vertices[groupSegments[i][0]].n += normalizedCrossProduct;
+            _vertices[groupSegments[i][1]].n += normalizedCrossProduct;
+            _vertices[groupSegments[i][2]].n += normalizedCrossProduct;
+        }
+    }
+    //Normalize
+    for (int i = 0; i < solutionCount; i++) {
+        float length = (vectorPointsPositive) ? -distance(vec3(_vertices[i].n)) : distance(vec3(_vertices[i].n));
+        _vertices[i].n /= length;
+    }
+    //Create TriangleView Primitives
+    _numIndices = 0;
+    int triangleCount = 0;
+    for (int i = 0; i < groupSegmentCounter; i++) {
+        if (groupSegments[i][2] > -1 && (!clipEdges || withinGraphRadius[i])) {
+            _indices[triangleCount++] = groupSegments[i];
+            _numIndices += 3;
+        }
+    }
+    for (int i = 0; i < solutionCount; i++) {
+        _vertices[i].p -= currentOffset;
+    }
+}
+
+void ImplicitGrapher::calculateSurfaceOnGPU(float (*fOfXYZ)(vec3), const float& timeVariable, const uint& iterations, const vec3& offset, const float& zoom, const bool& vectorPointsPositive, const bool& clipEdges, PositionXYZNormalXYZ* _vertices, uvec3* _indices, GLuint& _numIndices) {
+    ImplicitGrapher::zoom = zoom;
+    ImplicitGrapher::iterations = iterations;
+    t = timeVariable;
+    currentOffset = defaultOffset + offset;
+    // Erase normals
+    for (int i = 0; i < solutionCount; i++) {
+        _vertices[i].n = vec3(0.0f);
+    }
+    // Reset solution count
+    solutionCount = 0;
+    // Reset group segment counter
+    groupSegmentCounter = 0;
+    // Calculate plusMinusAmounts and approximate solutions
+    for (int i = 0; i < sizePlus3.x; i++) {
+        for (int j = 0; j < sizePlus3.y; j++) {
+            for (int k = 0; k < sizePlus3.z; k++) {
+                plusMinus[(i * sizePlus3.y + j) * sizePlus3.z + k] = fOfXYZ(vec3(i, j, k)) > 0.0f;
+                uvec3 ijk = uvec3(i, j, k);
+                for (int l = 0; l < 3; l++) {
+                    if (ijk[l] == 0u) {
+                        continue;
+                    }
+                    uvec3 iCursor = ijk;
+                    iCursor[l] -= 1u;
+                    bool firstSample = plusMinus[(iCursor.x * sizePlus3.y + iCursor.y) * sizePlus3.z + iCursor.z];
+                    bool secondSample = plusMinus[(ijk.x * sizePlus3.y + ijk.y) * sizePlus3.z + ijk.z];
+                    // If no solution is detected jump to next iteration of loop.
+                    if (firstSample == secondSample) {
+                        continue;
+                    }
+                    xyzLineIndex[(iCursor.x * sizePlus3.y + iCursor.y) * sizePlus3.z + iCursor.z][l] = solutionCount;
+                    int sign = secondSample ? POSITIVE : NEGATIVE;
+                    for (int m = 0; m < 3; m++) {
+                        _vertices[solutionCount].p[m] = iCursor[m];
+                    }
+                    float scan = 0.5f;
+                    for (int m = 0; m < iterations; m++) {// Maybe use a do-while loop here to reduce the scan operations by 1.
+                        _vertices[solutionCount].p[l] += scan;
+                        if (sign == POSITIVE ^ fOfXYZ(_vertices[solutionCount].p) > 0.0f) {
+                            scan *= 0.5f;
+                        }else{
+                            sign *= -1;
+                            scan *= -0.5f;
+                        }
+                    }
+                    solutionCount++;
+                }
+                if (i == 0 || j == 0 || k == 0) {
+                    continue;
+                }
+                int groupSegmentStartIndex = groupSegmentCounter;
+                bool xyz = getPlusMinus(i - 1, j - 1, k - 1);
+                bool xyZ = getPlusMinus(i - 1, j - 1, k);
+                bool xYz = getPlusMinus(i - 1, j, k - 1);
+                bool xYZ = getPlusMinus(i - 1, j, k);
+                bool Xyz = getPlusMinus(i, j - 1, k - 1);
+                bool XyZ = getPlusMinus(i, j - 1, k);
+                bool XYz = getPlusMinus(i, j, k - 1);
+                bool XYZ = getPlusMinus(i, j, k);
+                for (int l = 0; l < 6; l++) {
+                    int combo = 0;
+                    switch (l) {
+                        case 0://XY
+                            combo = xYz * 8 | XYz * 4 | xyz * 2 | Xyz * 1;
+                            break;
+                        case 1://XY
+                            combo = xYZ * 8 | XYZ * 4 | xyZ * 2 | XyZ * 1;
+                            break;
+                        case 2://YZ
+                            combo = xyZ * 8 | xYZ * 4 | xyz * 2 | xYz * 1;
+                            break;
+                        case 3://YZ
+                            combo = XyZ * 8 | XYZ * 4 | Xyz * 2 | XYz * 1;
+                            break;
+                        case 4://ZX
+                            combo = Xyz * 8 | XyZ * 4 | xyz * 2 | xyZ * 1;
+                            break;
+                        case 5://ZX
+                            combo = XYz * 8 | XYZ * 4 | xYz * 2 | xYZ * 1;
+                            break;
+                    }
+                    switch (combo) {
+                        case 0: break;//0000
+                        case 1://0001
+                            if (l % 2 != vectorPointsPositive)
+                                groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node2(i, j, k, l), -1);
+                            else
+                                groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node3(i, j, k, l), -1);
+                            break;
+                        case 2://0010
+                            if (l % 2 != vectorPointsPositive)
+                                groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node3(i, j, k, l), -1);
+                            else
+                                groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node1(i, j, k, l), -1);
+                            break;
+                        case 3://0011
+                            if (l % 2 != vectorPointsPositive)
+                                groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node2(i, j, k, l), -1);
+                            else
+                                groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node1(i, j, k, l), -1); break;
+                        case 4://0100
+                            if (l % 2 != vectorPointsPositive)
+                                groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node0(i, j, k, l), -1);
+                            else
+                                groupSegments[groupSegmentCounter++] = ivec3(node0(i, j, k, l), node2(i, j, k, l), -1);
+                            break;
+                        case 5://0101
+                            if(l % 2 != vectorPointsPositive)
+                                groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node0(i, j, k, l), -1);
+                            else
+                                groupSegments[groupSegmentCounter++] = ivec3(node0(i, j, k, l), node3(i, j, k, l), -1);
+                            break;
+                        case 6: {//0110
+                            int _node0 = node0(i, j, k, l);
+                            int _node1 = node1(i, j, k, l);
+                            int _node2 = node2(i, j, k, l);
+                            int _node3 = node3(i, j, k, l);
+                            if (fOfXYZ((_vertices[_node0].p + _vertices[_node1].p + _vertices[_node2].p + _vertices[_node3].p) * 0.25f) > 0.0f) {
+                                if (l % 2 != vectorPointsPositive){
+                                    groupSegments[groupSegmentCounter++] = ivec3(_node1, _node0, -1);
+                                    groupSegments[groupSegmentCounter++] = ivec3(_node2, _node3, -1);
+                                } else {
+                                    groupSegments[groupSegmentCounter++] = ivec3(_node0, _node1, -1);
+                                    groupSegments[groupSegmentCounter++] = ivec3(_node3, _node2, -1);
+                                }
+                            } else {
+                                if (l % 2 != vectorPointsPositive) {
+                                    groupSegments[groupSegmentCounter++] = ivec3(_node2, _node0, -1);
+                                    groupSegments[groupSegmentCounter++] = ivec3(_node1, _node3, -1);
+                                } else {
+                                    groupSegments[groupSegmentCounter++] = ivec3(_node0, _node2, -1);
+                                    groupSegments[groupSegmentCounter++] = ivec3(_node3, _node1, -1);
+                                }
+                            }
+                            break;
+                        }
+                        case 7://0111
+                            if (l % 2 != vectorPointsPositive)
+                                groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node0(i, j, k, l), -1);
+                            else
+                                groupSegments[groupSegmentCounter++] = ivec3(node0(i, j, k, l), node1(i, j, k, l), -1);
+                            break;
+                        case 8://1000
+                            if (l % 2 != vectorPointsPositive)
+                                groupSegments[groupSegmentCounter++] = ivec3(node0(i, j, k, l), node1(i, j, k, l), -1);
+                            else
+                                groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node0(i, j, k, l), -1);
+                            break;
+                        case 9: {//1001
+                            int _node0 = node0(i, j, k, l);
+                            int _node1 = node1(i, j, k, l);
+                            int _node2 = node2(i, j, k, l);
+                            int _node3 = node3(i, j, k, l);
+                            if (fOfXYZ((_vertices[_node0].p + _vertices[_node1].p + _vertices[_node2].p + _vertices[_node3].p) * 0.25f) > 0.0f) {
                                 if (l % 2 != vectorPointsPositive) {
                                     groupSegments[groupSegmentCounter++] = ivec3(_node0, _node2, -1);
                                     groupSegments[groupSegmentCounter++] = ivec3(_node3, _node1, -1);

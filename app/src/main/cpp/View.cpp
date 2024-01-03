@@ -143,6 +143,14 @@ string View::jstringToString(JNIEnv *env, jstring jStr) {
     return result;
 }
 
+string View::stringArrayToString(string* const strings, const int &count) {
+    string result = "";
+    for(int i = 0; i < count; i++){
+        result += strings[i];
+    }
+    return result;
+}
+
 // returns true if a GL error occurred
 bool View::checkGlError(const char* funcName) {
     GLint err = glGetError();

@@ -27,6 +27,17 @@ void GraphView::render(){
 
     glEnable(GL_DEPTH_TEST);
 
+    //ImplicitGrapher::calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, false, false, &ImplicitGrapher::vertices[0], ImplicitGrapher::indices, ImplicitGrapher::numIndices);
+    glUseProgram(ImplicitGrapher::computeShaderProgram);
+    glUniform3fv(glGetUniformLocation(ImplicitGrapher::computeShaderProgram, "currentOffset"), 1, (ImplicitGrapher::defaultOffset + ImplicitGrapher::offset).v);
+    glUniform1f(glGetUniformLocation(ImplicitGrapher::computeShaderProgram, "t"), 0.1f * getFrameCount());
+    glUniform1f(glGetUniformLocation(ImplicitGrapher::computeShaderProgram, "zoom"), 0.15f);
+    glUniform1i(glGetUniformLocation(ImplicitGrapher::computeShaderProgram, "valuesCounter"), ImplicitGrapher::valuesCounter[ImplicitGrapher::surfaceEquation]);
+    glUniform1i(glGetUniformLocation(ImplicitGrapher::computeShaderProgram, "sequenceLength"), ImplicitGrapher::sequenceLengths[ImplicitGrapher::surfaceEquation]);
+    glUniform1i(glGetUniformLocation(ImplicitGrapher::computeShaderProgram, "surfaceEquation"), ImplicitGrapher::surfaceEquation);
+    glUniform1i(glGetUniformLocation(ImplicitGrapher::computeShaderProgram, "iterations"), ImplicitGrapher::iterations);
+    ImplicitGrapher::calculateSurfaceOnGPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, false, false, &ImplicitGrapher::vertices[0], ImplicitGrapher::indices, ImplicitGrapher::numIndices);
+
     Matrix4<float> translation;
     translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 60.0f * (zoom - 1.0f)));
     Matrix4<float> rotation;
@@ -39,8 +50,6 @@ void GraphView::render(){
             1,
             GL_FALSE,
             (GLfloat*)&mvp);
-
-    ImplicitGrapher::calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, false, false, &ImplicitGrapher::vertices[0], ImplicitGrapher::indices, ImplicitGrapher::numIndices);
 
     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
