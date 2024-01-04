@@ -69,7 +69,7 @@ void GraphView::render(){
         ImplicitGrapher::data->constants[i] = ImplicitGrapher::constants[ImplicitGrapher::surfaceEquation][i];
         ImplicitGrapher::data->equationValues[i] = ImplicitGrapher::equationValues[ImplicitGrapher::surfaceEquation][i];
     }
-    ImplicitGrapher::data->valuesCounter = 0;
+    ImplicitGrapher::data->valuesCounter = ImplicitGrapher::valuesCounter[ImplicitGrapher::surfaceEquation];
     // Bind buffer object computeShaderVBO to indexed buffer target GL_SHADER_STORAGE_BUFFER at index indexBufferBinding
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, ImplicitGrapher::indexBufferBinding, ImplicitGrapher::computeShaderVBO);
     // Create and initialize data store for buffer object computeShaderVBO with a size sizeof(GPUdata) and dynamically copy data to it from pointer location &data
