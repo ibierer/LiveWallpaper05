@@ -254,7 +254,7 @@ public:
             "void main() {\n",
             "    task = gl_WorkGroupSize.x * gl_LocalInvocationID.y + gl_LocalInvocationID.x;\n",
             "    // Erase normals\n",
-            "    for (int i = 0; i < outBuffer.chunks[task].solutionCount; i++) {\n",
+            "    for (int i = int(3u * 32u * task); i < outBuffer.chunks[task].solutionCount; i++) {\n",
             "        outBuffer.chunks[task].vertices[i].n = vec3(0.0f);\n",
             "    }\n",
             "    // Reset solution count\n",

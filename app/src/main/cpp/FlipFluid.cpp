@@ -76,9 +76,9 @@ void FlipFluid::pushParticlesApart(const float& _numIters)
         float y = particlePos[i].y;
         float z = particlePos[i].z;
 
-        int xi = clamp(floor(x * pInvSpacing), 0, pNumX - 1);
-        int yi = clamp(floor(y * pInvSpacing), 0, pNumY - 1);
-        int zi = clamp(floor(z * pInvSpacing), 0, pNumZ - 1);
+        int xi = clamp(floor(x * pInvSpacing), 0.0f, float(pNumX - 1));
+        int yi = clamp(floor(y * pInvSpacing), 0.0f, float(pNumY - 1));
+        int zi = clamp(floor(z * pInvSpacing), 0.0f, float(pNumZ - 1));
         int cellNr = xi * pNumY * pNumZ + yi * pNumZ + zi;
         numCellParticles[cellNr]++;
     }
@@ -100,9 +100,9 @@ void FlipFluid::pushParticlesApart(const float& _numIters)
         float y = particlePos[i].y;
         float z = particlePos[i].z;
 
-        int xi = clamp(floor(x * pInvSpacing), 0, pNumX - 1);
-        int yi = clamp(floor(y * pInvSpacing), 0, pNumY - 1);
-        int zi = clamp(floor(z * pInvSpacing), 0, pNumZ - 1);
+        int xi = clamp(floor(x * pInvSpacing), 0.0f, float(pNumX - 1));
+        int yi = clamp(floor(y * pInvSpacing), 0.0f, float(pNumY - 1));
+        int zi = clamp(floor(z * pInvSpacing), 0.0f, float(pNumZ - 1));
         int cellNr = xi * pNumY * pNumZ + yi * pNumZ + zi;
         firstCellParticle[cellNr]--;
         cellParticleIds[firstCellParticle[cellNr]] = i;
@@ -319,9 +319,9 @@ void FlipFluid::transferVelocities(const bool& _toGrid, const float& _flipRatio)
             float y = particlePos[i].y;
             float z = particlePos[i].z;
 
-            int xi = clamp(floor(x * h1), 0, fNumX - 1);
-            int yi = clamp(floor(y * h1), 0, fNumY - 1);
-            int zi = clamp(floor(z * h1), 0, fNumZ - 1);
+            int xi = clamp(floor(x * h1), 0.0f, float(fNumX - 1));
+            int yi = clamp(floor(y * h1), 0.0f, float(fNumY - 1));
+            int zi = clamp(floor(z * h1), 0.0f, float(fNumZ - 1));
 
             int cellNr = xi * (n * fNumZ) + yi * fNumZ + zi;
             if (cellType[cellNr] == AIR_CELL)
@@ -518,16 +518,16 @@ void FlipFluid::updateParticleColors()
     for (int i = 0; i < numParticles; i++) {
         float s = 0.01;
 
-        particleColor[i].r = clamp(particleColor[i].r - s, 0.0, 1.0);
-        particleColor[i].g = clamp(particleColor[i].g - s, 0.0, 1.0);
-        particleColor[i].b = clamp(particleColor[i].b + s, 0.0, 1.0);
+        particleColor[i].r = clamp(particleColor[i].r - s, 0.0f, 1.0f);
+        particleColor[i].g = clamp(particleColor[i].g - s, 0.0f, 1.0f);
+        particleColor[i].b = clamp(particleColor[i].b + s, 0.0f, 1.0f);
 
         float x = particlePos[i].x;
         float y = particlePos[i].y;
         float z = particlePos[i].z;
-        int xi = clamp(floor(x * h1), 1, fNumX - 1);
-        int yi = clamp(floor(y * h1), 1, fNumY - 1);
-        int zi = clamp(floor(z * h1), 1, fNumZ - 1);
+        int xi = clamp(floor(x * h1), 1.0f, float(fNumX - 1));
+        int yi = clamp(floor(y * h1), 1.0f, float(fNumY - 1));
+        int zi = clamp(floor(z * h1), 1.0f, float(fNumZ - 1));
         int cellNr = xi * fNumY * fNumZ + yi * fNumZ + zi;
 
         float d0 = particleRestDensity;

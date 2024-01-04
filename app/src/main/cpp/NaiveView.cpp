@@ -60,9 +60,9 @@ void NaiveView::populateGrid(const int& dataIndex){
         float y = ((vec3*)&molecules[i])[dataIndex].y + sphereRadiusPlusPointFive;
         float z = ((vec3*)&molecules[i])[dataIndex].z + sphereRadiusPlusPointFive;
 
-        int xi = clamp(floor(x * pInvSpacing), 0, pNumX - 1);
-        int yi = clamp(floor(y * pInvSpacing), 0, pNumY - 1);
-        int zi = clamp(floor(z * pInvSpacing), 0, pNumZ - 1);
+        int xi = clamp(floor(x * pInvSpacing), 0.0f, float(pNumX - 1));
+        int yi = clamp(floor(y * pInvSpacing), 0.0f, float(pNumY - 1));
+        int zi = clamp(floor(z * pInvSpacing), 0.0f, float(pNumZ - 1));
         int cellNr = xi * pNumY * pNumZ + yi * pNumZ + zi;
         numCellParticles[cellNr]++;
     }
@@ -84,9 +84,9 @@ void NaiveView::populateGrid(const int& dataIndex){
         float y = ((vec3*)&molecules[i])[dataIndex].y + sphereRadiusPlusPointFive;
         float z = ((vec3*)&molecules[i])[dataIndex].z + sphereRadiusPlusPointFive;
 
-        int xi = clamp(floor(x * pInvSpacing), 0, pNumX - 1);
-        int yi = clamp(floor(y * pInvSpacing), 0, pNumY - 1);
-        int zi = clamp(floor(z * pInvSpacing), 0, pNumZ - 1);
+        int xi = clamp(floor(x * pInvSpacing), 0.0f, float(pNumX - 1));
+        int yi = clamp(floor(y * pInvSpacing), 0.0f, float(pNumY - 1));
+        int zi = clamp(floor(z * pInvSpacing), 0.0f, float(pNumZ - 1));
         int cellNr = xi * pNumY * pNumZ + yi * pNumZ + zi;
         firstCellParticle[cellNr]--;
         cellParticleIds[firstCellParticle[cellNr]] = i;

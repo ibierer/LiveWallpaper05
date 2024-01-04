@@ -149,6 +149,7 @@ ImplicitGrapher::ImplicitGrapher() {
 
 ImplicitGrapher::ImplicitGrapher(const ivec3& radius) {
     refactor(radius);
+    //defaultOffset = vec3(ivec3(radius + ivec3(1)));
     plusMinus = (bool*)malloc(sizePlus3.x * sizePlus3.y * sizePlus3.z * sizeof(bool));
     xyzLineIndex = (ivec3*)malloc(sizePlus3.x * sizePlus3.y * sizePlus3.z * sizeof(ivec3));
     groupSegments = (ivec3*)malloc(maxSolutionCount * sizeof(ivec3));
@@ -928,6 +929,8 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(vec3), const float& 
     ImplicitGrapher::zoom = zoom;
     ImplicitGrapher::iterations = iterations;
     ImplicitGrapher::vectorPointsPositive = vectorPointsPositive;
+    ImplicitGrapher::t = timeVariable;
+    ImplicitGrapher::clipEdges = clipEdges;
     t = timeVariable;
     currentOffset = defaultOffset + offset;
     // Erase normals
@@ -1215,8 +1218,9 @@ void ImplicitGrapher::calculateSurfaceOnGPU(float (*fOfXYZ)(vec3), const float& 
     ImplicitGrapher::zoom = zoom;
     ImplicitGrapher::iterations = iterations;
     ImplicitGrapher::vectorPointsPositive = vectorPointsPositive;
-    t = timeVariable;
-    currentOffset = defaultOffset + offset;
+    ImplicitGrapher::clipEdges = clipEdges;
+    ImplicitGrapher::t = timeVariable;
+    ImplicitGrapher::currentOffset = defaultOffset + offset;
     // Erase normals
     for (int i = 0; i < solutionCount; i++) {
         _vertices[i].n = vec3(0.0f);
