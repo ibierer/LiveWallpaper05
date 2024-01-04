@@ -252,7 +252,20 @@ public:
             "    return values[0];\n",
             "}\n",
             "void main() {\n",
-            "    task = gl_WorkGroupSize.x * gl_LocalInvocationID.y + gl_LocalInvocationID.x;\n",
+
+
+
+            "    if(gl_LocalInvocationID.x == 0u && gl_LocalInvocationID.y == 0u){\n",
+            "        for(int i = 0; i < 1024; i++){\n",
+            "            for(int j = 0; j < 32; j++){\n",
+            "                outBuffer.chunks[i].plusMinus[j] = true;\n",
+            "            }\n",
+            "        }\n",
+            "    }\n",
+
+
+
+            /*"    task = gl_WorkGroupSize.x * gl_LocalInvocationID.y + gl_LocalInvocationID.x;\n",
             "    // Erase normals\n",
             "    for (int i = int(3u * 32u * task); i < outBuffer.chunks[task].solutionCount; i++) {\n",
             "        outBuffer.chunks[task].vertices[i].n = vec3(0.0f);\n",
@@ -541,7 +554,7 @@ public:
             "    \n",
             "    for (int i = int(3u * 32u * task); i < outBuffer.chunks[task].solutionCount; i++) {\n",
             "        outBuffer.chunks[task].vertices[i].p -= currentOffset;\n",
-            "    }\n",
+            "    }\n",*/
             "}"};
 
     static string memoryEquations[maxNumOfEquations][2];
@@ -552,7 +565,7 @@ public:
 
     static int surfaceEquation;
 
-    explicit ImplicitGrapher(const ivec3& radius);
+    explicit ImplicitGrapher(const ivec3& size);
 
     ~ImplicitGrapher();
 
@@ -704,10 +717,6 @@ private:
 
     static ivec3* groupSegments;
 
-    static ivec3 radius;
-
-    static ivec3 radiusPlusOne;
-
     static ivec3 size;
 
     static ivec3 sizePlus2;
@@ -724,7 +733,7 @@ private:
 
     static float zoom;
 
-    static void refactor(const ivec3& inputRadius);
+    static void refactor(const ivec3& inputSize);
 
     static inline int node0(const int& i, const int& j, const int& k, const int& l);
 

@@ -46,10 +46,6 @@ int ImplicitGrapher::solutionCount = 0;
 
 int ImplicitGrapher::groupSegmentCounter = 0;
 
-ivec3 ImplicitGrapher::radius = ivec3(0);
-
-ivec3 ImplicitGrapher::radiusPlusOne = ivec3(0);
-
 ivec3 ImplicitGrapher::size = ivec3(0);
 
 ivec3 ImplicitGrapher::sizePlus2 = ivec3(0);
@@ -147,9 +143,8 @@ ImplicitGrapher::ImplicitGrapher() {
 
 }
 
-ImplicitGrapher::ImplicitGrapher(const ivec3& radius) {
-    refactor(radius);
-    //defaultOffset = vec3(ivec3(radius + ivec3(1)));
+ImplicitGrapher::ImplicitGrapher(const ivec3& size) {
+    refactor(size);
     plusMinus = (bool*)malloc(sizePlus3.x * sizePlus3.y * sizePlus3.z * sizeof(bool));
     xyzLineIndex = (ivec3*)malloc(sizePlus3.x * sizePlus3.y * sizePlus3.z * sizeof(ivec3));
     groupSegments = (ivec3*)malloc(maxSolutionCount * sizeof(ivec3));
@@ -1510,12 +1505,10 @@ inline ivec3 ImplicitGrapher::getXYZLineIndex(const int& i, const int& j, const 
     return xyzLineIndex[(i * sizePlus3.y + j) * sizePlus3.z + k];
 }
 
-void ImplicitGrapher::refactor(const ivec3& inputRadius) {
-    radius = inputRadius;
-    radiusPlusOne = radius + ivec3(1);
-    size = radius * 2;
+void ImplicitGrapher::refactor(const ivec3& inputSize) {
+    size = inputSize;
     sizePlus2 = size + ivec3(2);
     sizePlus3 = size + ivec3(3);
-    defaultOffset = vec3(radiusPlusOne);
+    defaultOffset = vec3(0.5f * inputSize) + vec3(1.0f);
     maxSolutionCount = 3 * sizePlus3.x * sizePlus3.y * sizePlus3.z;
 }
