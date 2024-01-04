@@ -60,11 +60,21 @@ public:
         for (int i = 0; i < 2; i++) _return[i] = v[i] + input[i];
         return _return;
     }
+    _vec2 operator+(const _vec2& input) const {
+        _vec2 _return;
+        for (int i = 0; i < 2; i++) _return[i] = v[i] + input[i];
+        return _return;
+    }
     _vec2& operator+=(const _vec2& input) {
         for (int i = 0; i < 2; i++) v[i] += input[i];
         return *this;
     }
     _vec2 operator-(const _vec2& input) {
+        _vec2 _return;
+        for (int i = 0; i < 2; i++) _return[i] = v[i] - input[i];
+        return _return;
+    }
+    _vec2 operator-(const _vec2& input) const {
         _vec2 _return;
         for (int i = 0; i < 2; i++) _return[i] = v[i] - input[i];
         return _return;
@@ -76,6 +86,16 @@ public:
     _vec2 operator-() {
         _vec2 _return;
         for (int i = 0; i < 2; i++) _return[i] = -v[i];
+        return _return;
+    }
+    _vec2 operator-() const {
+        _vec2 _return;
+        for (int i = 0; i < 2; i++) _return[i] = -v[i];
+        return _return;
+    }
+    _vec2 operator*(const _vec2& input) {
+        _vec2 _return;
+        for (int i = 0; i < 2; i++) _return[i] = v[i] * input.v[i];
         return _return;
     }
     _vec2 operator*(const _vec2& input) const {
@@ -92,11 +112,21 @@ public:
         for (int i = 0; i < 2; i++) _return[i] = v[i] * scalar;
         return _return;
     }
+    _vec2 operator*(const T& scalar) const {
+        _vec2 _return;
+        for (int i = 0; i < 2; i++) _return[i] = v[i] * scalar;
+        return _return;
+    }
     _vec2& operator*=(const T& scalar) {
         for (int i = 0; i < 2; i++) v[i] *= scalar;
         return *this;
     }
     _vec2 operator/(const _vec2& input) {
+        _vec2 _return;
+        for (int i = 0; i < 2; i++) _return[i] = v[i] / input[i];
+        return _return;
+    }
+    _vec2 operator/(const _vec2& input) const {
         _vec2 _return;
         for (int i = 0; i < 2; i++) _return[i] = v[i] / input[i];
         return _return;
@@ -110,6 +140,11 @@ public:
         for (int i = 0; i < 2; i++) _return[i] = v[i] / input;
         return _return;
     }
+    _vec2 operator/(const T& input) const {
+        _vec2 _return;
+        for (int i = 0; i < 2; i++) _return[i] = v[i] / input;
+        return _return;
+    }
     _vec2& operator/=(const T& input) {
         for (int i = 0; i < 2; i++) v[i] /= input;
         return *this;
@@ -118,7 +153,15 @@ public:
         for (int i = 0; i < 2; i++) v[i] = (T)rhs.v[i];
         return *this;
     }
+    _vec2& operator=(const _vec2<unsigned int>& rhs) const {
+        for (int i = 0; i < 2; i++) v[i] = (T)rhs.v[i];
+        return *this;
+    }
     _vec2& operator=(const _vec2<int>& rhs) {
+        for (int i = 0; i < 2; i++) v[i] = (T)rhs.v[i];
+        return *this;
+    }
+    _vec2& operator=(const _vec2<int>& rhs) const {
         for (int i = 0; i < 2; i++) v[i] = (T)rhs.v[i];
         return *this;
     }
@@ -126,13 +169,26 @@ public:
         for (int i = 0; i < 2; i++) v[i] = (T)rhs.v[i];
         return *this;
     }
+    _vec2& operator=(const _vec2<float>& rhs) const {
+        for (int i = 0; i < 2; i++) v[i] = (T)rhs.v[i];
+        return *this;
+    }
     bool operator==(const _vec2& rhs) {
+        return rhs.x == x && rhs.y == y;
+    }
+    bool operator==(const _vec2& rhs) const {
         return rhs.x == x && rhs.y == y;
     }
     bool operator!=(const _vec2& rhs) {
         return rhs.x != x || rhs.y != y;
     }
-    string str(){
+    bool operator!=(const _vec2& rhs) const {
+        return rhs.x != x || rhs.y != y;
+    }
+    string str() {
+        return "(" + to_string(x) + ", " + to_string(y) + ")";
+    }
+    string str() const {
         return "(" + to_string(x) + ", " + to_string(y) + ")";
     }
 };
@@ -235,6 +291,11 @@ public:
         for (int i = 0; i < 3; i++) _return[i] = v[i] + input.v[i];
         return _return;
     }
+    _vec3 operator+(const _vec3& input) const {
+        _vec3 _return;
+        for (int i = 0; i < 3; i++) _return[i] = v[i] + input.v[i];
+        return _return;
+    }
     _vec3& operator+=(const _vec3& input) {
         for (int i = 0; i < 3; i++) v[i] += input.v[i];
         return *this;
@@ -244,13 +305,28 @@ public:
         for (int i = 0; i < 3; i++) _return[i] = v[i] - input.v[i];
         return _return;
     }
+    _vec3 operator-(const _vec3& input) const {
+        _vec3 _return;
+        for (int i = 0; i < 3; i++) _return[i] = v[i] - input.v[i];
+        return _return;
+    }
     _vec3& operator-=(const _vec3& input) {
         for (int i = 0; i < 3; i++) v[i] -= input.v[i];
         return *this;
     }
+    _vec3 operator-() const {
+        _vec3 _return;
+        for (int i = 0; i < 3; i++) _return[i] = -v[i];
+        return _return;
+    }
     _vec3 operator-() {
         _vec3 _return;
         for (int i = 0; i < 3; i++) _return[i] = -v[i];
+        return _return;
+    }
+    _vec3 operator*(const _vec3& input) {
+        _vec3 _return;
+        for (int i = 0; i < 3; i++) _return[i] = v[i] * input.v[i];
         return _return;
     }
     _vec3 operator*(const _vec3& input) const {
@@ -267,11 +343,21 @@ public:
         for (int i = 0; i < 3; i++) _return[i] = v[i] * scalar;
         return _return;
     }
+    _vec3 operator*(const T& scalar) const {
+        _vec3 _return;
+        for (int i = 0; i < 3; i++) _return[i] = v[i] * scalar;
+        return _return;
+    }
     _vec3& operator*=(const T& scalar) {
         for (int i = 0; i < 3; i++) v[i] *= scalar;
         return *this;
     }
     _vec3 operator/(const _vec3& input) {
+        _vec3 _return;
+        for (int i = 0; i < 3; i++) _return[i] = v[i] / input.v[i];
+        return _return;
+    }
+    _vec3 operator/(const _vec3& input) const {
         _vec3 _return;
         for (int i = 0; i < 3; i++) _return[i] = v[i] / input.v[i];
         return _return;
@@ -285,6 +371,11 @@ public:
         for (int i = 0; i < 3; i++) _return[i] = v[i] / input;
         return _return;
     }
+    _vec3 operator/(const T& input) const {
+        _vec3 _return;
+        for (int i = 0; i < 3; i++) _return[i] = v[i] / input;
+        return _return;
+    }
     _vec3& operator/=(const T& input) {
         for (int i = 0; i < 3; i++) v[i] /= input;
         return *this;
@@ -293,7 +384,15 @@ public:
         for (int i = 0; i < 3; i++) v[i] = (T)rhs.v[i];
         return *this;
     }
+    _vec3& operator=(const _vec3<unsigned int>& rhs) const {
+        for (int i = 0; i < 3; i++) v[i] = (T)rhs.v[i];
+        return *this;
+    }
     _vec3& operator=(const _vec3<int>& rhs) {
+        for (int i = 0; i < 3; i++) v[i] = (T)rhs.v[i];
+        return *this;
+    }
+    _vec3& operator=(const _vec3<int>& rhs) const {
         for (int i = 0; i < 3; i++) v[i] = (T)rhs.v[i];
         return *this;
     }
@@ -301,13 +400,26 @@ public:
         for (int i = 0; i < 3; i++) v[i] = (T)rhs.v[i];
         return *this;
     }
+    _vec3& operator=(const _vec3<float>& rhs) const {
+        for (int i = 0; i < 3; i++) v[i] = (T)rhs.v[i];
+        return *this;
+    }
     bool operator==(const _vec3& rhs) {
+        return rhs.x == x && rhs.y == y && rhs.z == z;
+    }
+    bool operator==(const _vec3& rhs) const {
         return rhs.x == x && rhs.y == y && rhs.z == z;
     }
     bool operator!=(const _vec3& rhs) {
         return rhs.x != x || rhs.y != y || rhs.z != z;
     }
-    string str(){
+    bool operator!=(const _vec3& rhs) const {
+        return rhs.x != x || rhs.y != y || rhs.z != z;
+    }
+    string str() {
+        return "(" + to_string(x) + ", " + to_string(y) + ", " + to_string(z) + ")";
+    }
+    string str() const {
         return "(" + to_string(x) + ", " + to_string(y) + ", " + to_string(z) + ")";
     }
 };
@@ -413,11 +525,21 @@ public:
         for (int i = 0; i < 4; i++) _return[i] = v[i] + input.v[i];
         return _return;
     }
+    _vec4 operator+(const _vec4& input) const {
+        _vec4 _return;
+        for (int i = 0; i < 4; i++) _return[i] = v[i] + input.v[i];
+        return _return;
+    }
     _vec4& operator+=(const _vec4& input) {
         for (int i = 0; i < 4; i++) v[i] += input.v[i];
         return *this;
     }
     _vec4 operator-(const _vec4& input) {
+        _vec4 _return;
+        for (int i = 0; i < 4; i++) _return[i] = v[i] - input.v[i];
+        return _return;
+    }
+    _vec4 operator-(const _vec4& input) const {
         _vec4 _return;
         for (int i = 0; i < 4; i++) _return[i] = v[i] - input.v[i];
         return _return;
@@ -431,7 +553,17 @@ public:
         for (int i = 0; i < 4; i++) _return[i] = -v[i];
         return _return;
     }
+    _vec4 operator-() const {
+        _vec4 _return;
+        for (int i = 0; i < 4; i++) _return[i] = -v[i];
+        return _return;
+    }
     _vec4 operator*(const _vec4& input) const {
+        _vec4 _return;
+        for (int i = 0; i < 4; i++) _return[i] = v[i] * input.v[i];
+        return _return;
+    }
+    _vec4 operator*(const _vec4& input) {
         _vec4 _return;
         for (int i = 0; i < 4; i++) _return[i] = v[i] * input.v[i];
         return _return;
@@ -445,11 +577,21 @@ public:
         for (int i = 0; i < 4; i++) _return[i] = v[i] * scalar;
         return _return;
     }
+    _vec4 operator*(const T& scalar) const {
+        _vec4 _return;
+        for (int i = 0; i < 4; i++) _return[i] = v[i] * scalar;
+        return _return;
+    }
     _vec4& operator*=(const T& scalar) {
         for (int i = 0; i < 4; i++) v[i] *= scalar;
         return *this;
     }
     _vec4 operator/(const _vec4& input) {
+        _vec4 _return;
+        for (int i = 0; i < 4; i++) _return[i] = v[i] / input.v[i];
+        return _return;
+    }
+    _vec4 operator/(const _vec4& input) const {
         _vec4 _return;
         for (int i = 0; i < 4; i++) _return[i] = v[i] / input.v[i];
         return _return;
@@ -463,6 +605,11 @@ public:
         for (int i = 0; i < 4; i++) _return[i] = v[i] / input;
         return _return;
     }
+    _vec4 operator/(const T& input) const {
+        _vec4 _return;
+        for (int i = 0; i < 4; i++) _return[i] = v[i] / input;
+        return _return;
+    }
     _vec4& operator/=(const T& input) {
         for (int i = 0; i < 4; i++) v[i] /= input;
         return *this;
@@ -471,7 +618,15 @@ public:
         for (int i = 0; i < 4; i++) v[i] = (T)rhs.v[i];
         return *this;
     }
+    _vec4& operator=(const _vec4<unsigned int>& rhs) const {
+        for (int i = 0; i < 4; i++) v[i] = (T)rhs.v[i];
+        return *this;
+    }
     _vec4& operator=(const _vec4<int>& rhs) {
+        for (int i = 0; i < 4; i++) v[i] = (T)rhs.v[i];
+        return *this;
+    }
+    _vec4& operator=(const _vec4<int>& rhs) const {
         for (int i = 0; i < 4; i++) v[i] = (T)rhs.v[i];
         return *this;
     }
@@ -479,13 +634,26 @@ public:
         for (int i = 0; i < 4; i++) v[i] = (T)rhs.v[i];
         return *this;
     }
+    _vec4& operator=(const _vec4<float>& rhs) const {
+        for (int i = 0; i < 4; i++) v[i] = (T)rhs.v[i];
+        return *this;
+    }
     bool operator==(const _vec4& rhs) {
+        return rhs.x == x && rhs.y == y && rhs.z == z && rhs.w == w;
+    }
+    bool operator==(const _vec4& rhs) const {
         return rhs.x == x && rhs.y == y && rhs.z == z && rhs.w == w;
     }
     bool operator!=(const _vec4& rhs) {
         return rhs.x != x || rhs.y != y || rhs.z != z || rhs.w != w;
     }
-    string str(){
+    bool operator!=(const _vec4& rhs) const {
+        return rhs.x != x || rhs.y != y || rhs.z != z || rhs.w != w;
+    }
+    string str() {
+        return "(" + to_string(x) + ", " + to_string(y) + ", " + to_string(z) + ", " + to_string(w) + ")";
+    }
+    string str() const {
         return "(" + to_string(x) + ", " + to_string(y) + ", " + to_string(z) + ", " + to_string(w) + ")";
     }
 };
@@ -545,7 +713,9 @@ typedef _vec3<float> vec3;
 typedef _vec3<unsigned int> uvec3;
 typedef _vec3<int> ivec3;
 typedef _vec3<unsigned char> ucvec3;
-
+const vec3 a = vec3(1.0f);
+const vec3 b = vec3(1.0f);
+vec3 sample3 = a + b;
 typedef _vec4<float> vec4;
 typedef _vec4<unsigned int> uvec4;
 typedef _vec4<int> ivec4;
@@ -565,19 +735,19 @@ T dot(const _vec2<T>& left, const _vec2<T>& right) {
     _vec2<T> product = left * right;
     return product.x + product.y;
 }
-float sample2 = dot(vec2(1.0f), vec2(1.0f));
+
 template<class T>
 T dot(const _vec3<T>& left, const _vec3<T>& right) {
     _vec3<T> product = left * right;
     return product.x + product.y + product.z;
 }
-float sample3 = dot(vec3(1.0f), vec3(1.0f));
+
 template<class T>
 T dot(const _vec4<T>& left, const _vec4<T>& right) {
     _vec4<T> product = left * right;
     return product.x + product.y + product.z + product.w;
 }
-float sample4 = dot(vec4(1.0f), vec4(1.0f));
+
 template<class T>
 T distance(const _vec2<T>& coordinates) {
     return sqrt(dot(coordinates, coordinates));
