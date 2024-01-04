@@ -186,10 +186,10 @@ public:
         return rhs.x != x || rhs.y != y;
     }
     string str() {
-        return "(" + to_string(x) + ", " + to_string(y) + ")";
+        return "(" + std::to_string(x) + ", " + std::to_string(y) + ")";
     }
     string str() const {
-        return "(" + to_string(x) + ", " + to_string(y) + ")";
+        return "(" + std::to_string(x) + ", " + std::to_string(y) + ")";
     }
 };
 
@@ -417,10 +417,10 @@ public:
         return rhs.x != x || rhs.y != y || rhs.z != z;
     }
     string str() {
-        return "(" + to_string(x) + ", " + to_string(y) + ", " + to_string(z) + ")";
+        return "(" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + ")";
     }
     string str() const {
-        return "(" + to_string(x) + ", " + to_string(y) + ", " + to_string(z) + ")";
+        return "(" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + ")";
     }
 };
 
@@ -651,10 +651,10 @@ public:
         return rhs.x != x || rhs.y != y || rhs.z != z || rhs.w != w;
     }
     string str() {
-        return "(" + to_string(x) + ", " + to_string(y) + ", " + to_string(z) + ", " + to_string(w) + ")";
+        return "(" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + ", " + std::to_string(w) + ")";
     }
     string str() const {
-        return "(" + to_string(x) + ", " + to_string(y) + ", " + to_string(z) + ", " + to_string(w) + ")";
+        return "(" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + ", " + std::to_string(w) + ")";
     }
 };
 
