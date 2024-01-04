@@ -62,12 +62,6 @@ using nlohmann::json;
 
 View* view = nullptr;
 
-#if !defined(DYNAMIC_ES3)
-static GLboolean gl3stubInit() {
-    return GL_TRUE;
-}
-#endif
-
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env, jobject thiz, jstring JSON) {
@@ -77,7 +71,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
     View::printGlString("Extensions", GL_EXTENSIONS);
 
     const char* versionStr = (const char*)glGetString(GL_VERSION);
-    if (strstr(versionStr, "OpenGL ES 3.") && gl3stubInit()) {
+    if (strstr(versionStr, "OpenGL ES 3.")) {
         json visualizationJSON = json::parse(View::jstringToString(env, JSON));
         string type = visualizationJSON["type"];
         if(view){
