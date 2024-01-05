@@ -421,7 +421,7 @@ private:
 };
 Simulation simulation;
 
-VertexArrayObject cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
+VertexArrayObject cubeVAO;
 
 const string VERTEX_SHADER =
         View::ES_VERSION +
@@ -441,7 +441,7 @@ const string FRAGMENT_SHADER =
         "    outColor = color;\n"
         "}\n";
 
-GLuint cubeProgram = View::createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
+GLuint cubeProgram;
 
 
 
@@ -474,7 +474,8 @@ GraphView::GraphView(const string& equation) : View() {
 
 
 
-
+    cubeProgram = View::createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
+    cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
     simulation.initialize(Simulation::GPU_OPTION);
 }
 
@@ -661,20 +662,20 @@ void GraphView::render(){
     glUseProgram(cubeProgram);
     for(int i = 0; i < numCacheChunks; i++){
         for(int j = 0; j < starsPerChunk && starsPerChunk * i + j < COUNT; j++){
-            translation.SetTranslation(Vec3<float>(
+            Matrix4<float> translation2;
+            translation2.SetTranslation(Vec3<float>(
                     data->chunks[i].stars[j].position.x,
                     data->chunks[i].stars[j].position.y,
                     data->chunks[i].stars[j].position.z
             ));
-translation.SetTranslation(Vec3<float>(0.0f));
-            mvp = orientationAdjustedPerspective * translation * rotation;
+            mvp = orientationAdjustedPerspective * translation * rotation * translation2;
             glUniformMatrix4fv(
                     glGetUniformLocation(cubeProgram, "mvp"),
                     1,
                     GL_FALSE,
                     (GLfloat*)&mvp);
             cubeVAO.draw();
-            ALOGI("data->chunks[i].stars[j].position = %s\n", data->chunks[i].stars[j].position.str().c_str());
+            //ALOGI("data->chunks[i].stars[j].position = %s\n", data->chunks[i].stars[j].position.str().c_str());
         }
     }
 }
