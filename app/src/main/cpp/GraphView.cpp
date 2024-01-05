@@ -217,7 +217,6 @@ public:
     void initialize(int simulationOption){
         this->simulationOption = simulationOption;
         data = (SimulationData*)malloc(sizeof(SimulationData));
-        //data = new SimulationData;
         t = 0.0;
         dt = 1.0f;
         seed();
@@ -234,50 +233,6 @@ public:
         }
         t += dt;
     }
-
-    /*vec3 getPosition(int i){
-        switch(simulationOption){
-        case CPU_OPTION:
-            return data->stars[i].position;
-            break;
-        case GPU_OPTION:
-            return data->chunks[i / starsPerChunk].stars[i % starsPerChunk].position;
-            break;
-        }
-    }
-
-    void setPosition(int i, vec3 position){
-        switch(simulationOption){
-        case CPU_OPTION:
-            data->stars[i].position = position;
-            break;
-        case GPU_OPTION:
-            data->chunks[i / starsPerChunk].stars[i % starsPerChunk].position = position;
-            break;
-        }
-    }
-
-    vec3 getVelocity(int i){
-        switch(simulationOption){
-        case CPU_OPTION:
-            return data->stars[i].velocity;
-            break;
-        case GPU_OPTION:
-            return data->chunks[i / starsPerChunk].stars[i % starsPerChunk].velocity;
-            break;
-        }
-    }
-
-    void setVelocity(int i, vec3 velocity){
-        switch(simulationOption){
-        case CPU_OPTION:
-            data->stars[i].velocity = velocity;
-            break;
-        case GPU_OPTION:
-            data->chunks[i / starsPerChunk].stars[i % starsPerChunk].position = velocity;
-            break;
-        }
-    }*/
 
     int simulationOption; // Should be private
 private:
@@ -314,55 +269,55 @@ private:
         if(!computeShaderGenerated){
 
             // https://community.arm.com/developer/tools-software/graphics/b/blog/posts/get-started-with-compute-shaders
-            char* computeShaderCode =
-                    "#version 320 es\n"
-                    "const uint starsPerChunk = " STRV(starsPerChunk) "u;\n"
-                    "const uint numCacheChunks = uint(" STRV(numCacheChunks) ");\n"
-                    "const uint COUNT = " STRV(COUNT) "u;\n"
-                    R"(struct Star{
-					vec3 position;
-					vec3 velocity;
-				};
-				struct cacheChunk{
-					Star stars[starsPerChunk];
-					//float padding[16 + 0];// Profile this padding
-				};
-				struct SimulationData{
-					cacheChunk chunks[numCacheChunks];
-				};
-				layout(packed, binding = 0) buffer destBuffer{
-					SimulationData data;
-				} outBuffer;
-				uniform float t;
-				uint task;
-				layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
-				void main(){
-					task = gl_WorkGroupSize.x * gl_LocalInvocationID.x + gl_LocalInvocationID.y;
-					if(task < numCacheChunks && t > 0.0f){
-						vec3 gravitySum[starsPerChunk];
-						for(uint i = 0u; i < starsPerChunk && starsPerChunk * task + i < COUNT; i++){
-							gravitySum[i] = vec3(0.0f, 0.0f, 0.0f);
-							for(uint j = 0u; j < numCacheChunks; j++){
-								for(uint k = 0u; k < starsPerChunk && starsPerChunk * j + k < COUNT; k++){
-									if(starsPerChunk * j + k == starsPerChunk * task + i)
-										continue;
-									vec3 difference = outBuffer.data.chunks[j].stars[k].position - outBuffer.data.chunks[task].stars[i].position;
-									float differenceSquared = dot(difference, difference);
-									float distance = sqrt(differenceSquared);
-									gravitySum[i] += difference / distance / differenceSquared;
-								}
-							}
-						}
-						barrier();
-						for(uint i = 0u; i < starsPerChunk && starsPerChunk * task + i < COUNT; i++){
-							outBuffer.data.chunks[task].stars[i].velocity += gravitySum[i];
-							outBuffer.data.chunks[task].stars[i].position += outBuffer.data.chunks[task].stars[i].velocity;
-						}
-					}
-				}
-			)";
+            string computeShaderCode[1000] = {
+                    "#version 320 es\n",
+                    "const uint starsPerChunk = " STRV(starsPerChunk) "u;",
+                    "const uint numCacheChunks = uint(" STRV(numCacheChunks) ");\n",
+                    "const uint COUNT = " STRV(COUNT) "u;\n",
+                    "struct Star{\n",
+                    "	vec3 position;\n",
+                    "	vec3 velocity;\n",
+                    "};\n",
+                    "struct cacheChunk{\n",
+                    "	Star stars[starsPerChunk];\n",
+                    "	//float padding[16 + 0];// Profile this padding\n",
+                    "};\n",
+                    "struct SimulationData{\n",
+                    "	cacheChunk chunks[numCacheChunks];\n",
+                    "};\n",
+                    "layout(packed, binding = 0) buffer destBuffer{\n",
+                    "	SimulationData data;\n",
+                    "} outBuffer;\n",
+                    "uniform float t;\n",
+                    "uint task;\n",
+                    "layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;\n",
+                    "void main(){\n",
+                    "	task = gl_WorkGroupSize.x * gl_LocalInvocationID.x + gl_LocalInvocationID.y;\n",
+                    "	if(task < numCacheChunks && t > 0.0f){\n",
+                    "		vec3 gravitySum[starsPerChunk];\n",
+                    "		for(uint i = 0u; i < starsPerChunk && starsPerChunk * task + i < COUNT; i++){\n",
+                    "			gravitySum[i] = vec3(0.0f, 0.0f, 0.0f);\n",
+                    "			for(uint j = 0u; j < numCacheChunks; j++){\n",
+                    "				for(uint k = 0u; k < starsPerChunk && starsPerChunk * j + k < COUNT; k++){\n",
+                    "					if(starsPerChunk * j + k == starsPerChunk * task + i)\n",
+                    "						continue;\n",
+                    "					vec3 difference = outBuffer.data.chunks[j].stars[k].position - outBuffer.data.chunks[task].stars[i].position;\n",
+                    "					float differenceSquared = dot(difference, difference);\n",
+                    "					float distance = sqrt(differenceSquared);\n",
+                    "					gravitySum[i] += difference / distance / differenceSquared;\n",
+                    "				}\n",
+                    "			}\n",
+                    "		}\n",
+                    "		barrier();\n",
+                    "		for(uint i = 0u; i < starsPerChunk && starsPerChunk * task + i < COUNT; i++){\n",
+                    "			outBuffer.data.chunks[task].stars[i].velocity += gravitySum[i];\n",
+                    "			outBuffer.data.chunks[task].stars[i].position += outBuffer.data.chunks[task].stars[i].velocity;\n",
+                    "		}\n",
+                    "	}\n",
+                    "}"
+            };
 
-            computeShader.gComputeProgram = computeShader.generateComputeShader(computeShaderCode);
+            computeShader.gComputeProgram = computeShader.generateComputeShader(View::stringArrayToString(computeShaderCode, 1000).c_str());
             _t = glGetUniformLocation(computeShader.gComputeProgram, "t");
             glGenBuffers(1, &computeShader.gVBO);
             computeShaderGenerated = true;
@@ -476,6 +431,7 @@ GraphView::GraphView(const string& equation) : View() {
 
     cubeProgram = View::createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
+    //simulation.initialize(Simulation::CPU_OPTION);
     simulation.initialize(Simulation::GPU_OPTION);
 }
 
