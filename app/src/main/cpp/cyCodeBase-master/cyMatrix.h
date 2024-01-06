@@ -275,7 +275,7 @@ public:
 	//! Multiply the give vector with the transpose of the matrix
 	CY_NODISCARD Vec2<T> TransposeMult( Vec2<T> const &p ) const { return Vec2<T>( p.x*cell[0] + p.y*cell[1], p.x*cell[2] + p.y*cell[3] ); }
 
-	CY_NODISCARD Matrix2 TransposeMult( Matrix2 const & right ) const //!< Multiply a matrix by the transpose of this one (i.e. this^T * right).
+	CY_NODISCARD Matrix2 TransposeMult( Matrix2 const & right ) const //!< Multiply a matrix by the transpose of this one (type.e. this^T * right).
 	{
 		Matrix2 r;
 		r[0] = cell[0] * right.cell[0] + cell[1] * right.cell[1];
@@ -284,7 +284,7 @@ public:
 		r[3] = cell[2] * right.cell[2] + cell[3] * right.cell[3];
 		return r;
 	}
-	CY_NODISCARD Matrix2 MultTranspose( Matrix2 const & right ) const //!< Multiply the transpose of a matrix by this one (i.e. this * right^T).
+	CY_NODISCARD Matrix2 MultTranspose( Matrix2 const & right ) const //!< Multiply the transpose of a matrix by this one (type.e. this * right^T).
 	{
 		Matrix2 r;
 		r[0] = cell[0] * right.cell[0] + cell[2] * right.cell[2];
@@ -294,8 +294,8 @@ public:
 		return r;
 	}
 
-	CY_NODISCARD Matrix2 TransposeMultSelf() const { return TransposeMult(*this); } //!< Multiply the transpose of this matrix with itself (i.e. this^T * this).
-	CY_NODISCARD Matrix2 MultSelfTranspose() const { return MultTranspose(*this); } //!< Multiply the matrix with its transpose (i.e. this * this^T).
+	CY_NODISCARD Matrix2 TransposeMultSelf() const { return TransposeMult(*this); } //!< Multiply the transpose of this matrix with itself (type.e. this^T * this).
+	CY_NODISCARD Matrix2 MultSelfTranspose() const { return MultTranspose(*this); } //!< Multiply the matrix with its transpose (type.e. this * this^T).
 
 	CY_NODISCARD T GetTrace() const { return cell[0] + cell[3]; }	//!< return the Trace of this matrix
 
@@ -804,7 +804,7 @@ public:
 		                p.x*cell[6] + p.y*cell[7] + p.z*cell[8] );
 	}
 
-	CY_NODISCARD Matrix3 TransposeMult( Matrix3 const & right ) const //!< Multiply a matrix by the transpose of this one (i.e. this^T * right).
+	CY_NODISCARD Matrix3 TransposeMult( Matrix3 const & right ) const //!< Multiply a matrix by the transpose of this one (type.e. this^T * right).
 	{
 		Matrix3 r;
 		for ( int i=0, k=0; i<3; ++i ) {
@@ -814,7 +814,7 @@ public:
 		}
 		return r;
 	}
-	CY_NODISCARD Matrix3 MultTranspose( Matrix3 const & right ) const //!< Multiply the transpose of a matrix by this one (i.e. this * right^T).
+	CY_NODISCARD Matrix3 MultTranspose( Matrix3 const & right ) const //!< Multiply the transpose of a matrix by this one (type.e. this * right^T).
 	{
 		_CY_INIT_MATRIX3_VECTORIZATION;
 		Matrix3 rm;
@@ -830,8 +830,8 @@ public:
 		return rm;
 	}
 
-	CY_NODISCARD Matrix3 TransposeMultSelf() const { return TransposeMult(*this); } //!< Multiply the transpose of this matrix with itself (i.e. this^T * this).
-	CY_NODISCARD Matrix3 MultSelfTranspose() const { return MultTranspose(*this); } //!< Multiply the matrix with its transpose (i.e. this * this^T).
+	CY_NODISCARD Matrix3 TransposeMultSelf() const { return TransposeMult(*this); } //!< Multiply the transpose of this matrix with itself (type.e. this^T * this).
+	CY_NODISCARD Matrix3 MultSelfTranspose() const { return MultTranspose(*this); } //!< Multiply the matrix with its transpose (type.e. this * this^T).
 
 	CY_NODISCARD T GetTrace() const { return cell[0]+cell[4]+cell[8]; }
 
@@ -2134,7 +2134,7 @@ public:
 		return rr;
 	}
 
-	CY_NODISCARD Matrix4 TransposeMult( Matrix4 const & right ) const //!< Multiply a matrix by the transpose of this one (i.e. this^T * right).
+	CY_NODISCARD Matrix4 TransposeMult( Matrix4 const & right ) const //!< Multiply a matrix by the transpose of this one (type.e. this^T * right).
 	{
 		Matrix4 r;
 		for ( int i=0, k=0; i<3; ++i ) {
@@ -2144,7 +2144,7 @@ public:
 		}
 		return r;
 	}
-	CY_NODISCARD Matrix4 MultTranspose( Matrix4 const & right ) const //!< Multiply the transpose of a matrix by this one (i.e. this * right^T).
+	CY_NODISCARD Matrix4 MultTranspose( Matrix4 const & right ) const //!< Multiply the transpose of a matrix by this one (type.e. this * right^T).
 	{
 		Matrix4 rm;
 		T* rd = rm.cell;
@@ -2162,8 +2162,8 @@ public:
 		return rm;
 	}
 
-	CY_NODISCARD Matrix4 TransposeMultSelf() const { return TransposeMult(*this); } //!< Multiply the transpose of this matrix with itself (i.e. this^T * this).
-	CY_NODISCARD Matrix4 MultSelfTranspose() const { return MultTranspose(*this); } //!< Multiply the matrix with its transpose (i.e. this * this^T).
+	CY_NODISCARD Matrix4 TransposeMultSelf() const { return TransposeMult(*this); } //!< Multiply the transpose of this matrix with itself (type.e. this^T * this).
+	CY_NODISCARD Matrix4 MultSelfTranspose() const { return MultTranspose(*this); } //!< Multiply the matrix with its transpose (type.e. this * this^T).
 
 	CY_NODISCARD T GetTrace() const { return cell[0]+cell[5]+cell[10]+cell[15]; }
 

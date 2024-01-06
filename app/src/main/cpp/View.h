@@ -63,6 +63,8 @@ public:
 
     static GLuint createProgram(const char* const vtxSrc, const char* const fragSrc);
 
+    static GLuint generateComputeShaderProgram(const char *computeShaderSrcCode);
+
     static void printGlString(const char* const name, const GLenum& s);
 
     void calculatePerspectiveSetViewport(const float& maxViewDegrees);

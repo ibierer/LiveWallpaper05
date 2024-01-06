@@ -132,20 +132,20 @@ public:
 	virtual ~TriMesh() { Clear(); }
 
 	//!@name Component Access Methods
-	Vec3f const &   V (int i) const { return v[i]; }		//!< returns the i^th vertex
-	Vec3f&          V (int i)       { return v[i]; }		//!< returns the i^th vertex
-	TriFace const & F (int i) const { return f[i]; }		//!< returns the i^th face
-	TriFace&        F (int i)       { return f[i]; }		//!< returns the i^th face
-	Vec3f const &   VN(int i) const { return vn[i]; }	//!< returns the i^th vertex normal
-	Vec3f&          VN(int i)       { return vn[i]; }	//!< returns the i^th vertex normal
-	TriFace const & FN(int i) const { return fn[i]; }	//!< returns the i^th normal face
-	TriFace&        FN(int i)       { return fn[i]; }	//!< returns the i^th normal face
-	Vec3f const &   VT(int i) const { return vt[i]; }	//!< returns the i^th vertex texture
-	Vec3f&          VT(int i)       { return vt[i]; }	//!< returns the i^th vertex texture
-	TriFace const & FT(int i) const { return ft[i]; }	//!< returns the i^th texture face
-	TriFace&        FT(int i)       { return ft[i]; }	//!< returns the i^th texture face
-	Mtl const &     M (int i) const { return m[i]; }		//!< returns the i^th material
-	Mtl&            M (int i)       { return m[i]; }		//!< returns the i^th material
+	Vec3f const &   V (int i) const { return v[i]; }		//!< returns the type^th vertex
+	Vec3f&          V (int i)       { return v[i]; }		//!< returns the type^th vertex
+	TriFace const & F (int i) const { return f[i]; }		//!< returns the type^th face
+	TriFace&        F (int i)       { return f[i]; }		//!< returns the type^th face
+	Vec3f const &   VN(int i) const { return vn[i]; }	//!< returns the type^th vertex normal
+	Vec3f&          VN(int i)       { return vn[i]; }	//!< returns the type^th vertex normal
+	TriFace const & FN(int i) const { return fn[i]; }	//!< returns the type^th normal face
+	TriFace&        FN(int i)       { return fn[i]; }	//!< returns the type^th normal face
+	Vec3f const &   VT(int i) const { return vt[i]; }	//!< returns the type^th vertex texture
+	Vec3f&          VT(int i)       { return vt[i]; }	//!< returns the type^th vertex texture
+	TriFace const & FT(int i) const { return ft[i]; }	//!< returns the type^th texture face
+	TriFace&        FT(int i)       { return ft[i]; }	//!< returns the type^th texture face
+	Mtl const &     M (int i) const { return m[i]; }		//!< returns the type^th material
+	Mtl&            M (int i)       { return m[i]; }		//!< returns the type^th material
 
 	unsigned int NV () const { return nv; }		//!< returns the number of environmentTriangleVertices
 	unsigned int NF () const { return nf; }		//!< returns the number of faces

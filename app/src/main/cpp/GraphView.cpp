@@ -24,122 +24,197 @@ using std::to_string;
 
 
 
-#ifndef COMPUTESHADER_H
-#define COMPUTESHADER_H
 
-#include <GLES3/gl31.h>
+
+
+#include <fstream>
+
+using std::ifstream;
+using std::stringstream;
+using std::vector;
+
+/* Much of the following was found at
+https://www.youtube.com/watch?v=2pv0Fbo-7ms&list=PLlrATfBNZ98foTJPJ_Ev03o2oq3-GGOS2&index=9 */
+static GLuint compileShader(GLuint type, const string& source) {
+    GLuint id = glCreateShader(type);
+    const char* src = source.c_str();
+    glShaderSource(id, 1, &src, nullptr);
+    glCompileShader(id);
+    int result;
+    glGetShaderiv(id, GL_COMPILE_STATUS, &result);
+    if (result == GL_FALSE) {
+        int length;
+        glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
+        char* message = (char*)alloca(length * sizeof(char));
+        glGetShaderInfoLog(id, length, &length, message);
+        string messageString = "Failed to compileFromSingleFile ";
+        switch (type) {
+            case GL_VERTEX_SHADER:
+                messageString += "vertex";
+                break;
+            case GL_TESS_CONTROL_SHADER:
+                messageString += "tesselation control";
+                break;
+            case GL_TESS_EVALUATION_SHADER:
+                messageString += "tesselation evaluation";
+                break;
+            case GL_GEOMETRY_SHADER:
+                messageString += "geometry";
+                break;
+            case GL_FRAGMENT_SHADER:
+                messageString += "fragment";
+                break;
+            case GL_COMPUTE_SHADER:
+                messageString += "compute";
+                break;
+        }
+        messageString += " shader!\n" + string(message);
+        ALOGE("%s", messageString.c_str());
+        glDeleteShader(id);
+        free(message);
+        return 0;
+    }
+    return id;
+}
+
+struct shaderInfo {
+    const int& type;
+    const string& source;
+};
+
+GLuint compileAndAttachShadersLinkAndValidateProgramDeleteShaders(vector<shaderInfo> shaderInfoVector) {
+    GLuint programId = glCreateProgram();
+    GLuint shaderId;
+    for (vector<shaderInfo>::iterator it = shaderInfoVector.begin(); it != shaderInfoVector.end(); ++it) {
+        switch (it->type) {
+            case 0:
+                shaderId = compileShader(GL_VERTEX_SHADER, it->source);
+                break;
+            case 1:
+                shaderId = compileShader(GL_TESS_CONTROL_SHADER, it->source);
+                break;
+            case 2:
+                shaderId = compileShader(GL_TESS_EVALUATION_SHADER, it->source);
+                break;
+            case 3:
+                shaderId = compileShader(GL_GEOMETRY_SHADER, it->source);
+                break;
+            case 4:
+                shaderId = compileShader(GL_FRAGMENT_SHADER, it->source);
+                break;
+            case 5:
+                shaderId = compileShader(GL_COMPUTE_SHADER, it->source);
+                break;
+        }
+        glAttachShader(programId, shaderId);
+    }
+
+    glLinkProgram(programId);
+    glValidateProgram(programId);
+
+    for (vector<shaderInfo>::iterator it = shaderInfoVector.begin(); it != shaderInfoVector.end(); ++it) {
+        glDeleteShader(shaderId);
+    }
+}
+
+class Shader {
+public:
+    enum class ShaderType {
+        NONE = -1,
+        VERTEX = 0,
+        TESSELLATION_CONTROL = 1,
+        TESSELLATION_EVALUATION = 2,
+        GEOMETRY = 3,
+        FRAGMENT = 4,
+        COMPUTE = 5
+    };
+    string filepath;
+    GLuint compileFromSingleFile(const string& filepath) {
+        this->filepath = filepath;
+
+        bool source_exists[6] = { false, false, false, false, false, false };
+
+        ifstream stream(this->filepath);
+        string line;
+        string ss[6];
+        ShaderType type = ShaderType::NONE;
+        while (getline(stream, line)) {
+            if (line.find("#shader") != string::npos) {
+                if (line.find("vertex") != string::npos) {
+                    // set mode to vertex
+                    type = ShaderType::VERTEX;
+                    source_exists[(int)type] = true;
+                }
+                else if (line.find("tessellation_control") != string::npos) {
+                    // set mode to tessellation_control
+                    type = ShaderType::TESSELLATION_CONTROL;
+                    source_exists[(int)type] = true;
+                }
+                else if (line.find("tessellation_evaluation") != string::npos) {
+                    // set mode to tessellation_evaluation
+                    type = ShaderType::TESSELLATION_EVALUATION;
+                    source_exists[(int)type] = true;
+                }
+                else if (line.find("geometry") != string::npos) {
+                    // set mode to geometry
+                    type = ShaderType::GEOMETRY;
+                    source_exists[(int)type] = true;
+                }
+                else if (line.find("fragment") != string::npos) {
+                    // set mode to fragment
+                    type = ShaderType::FRAGMENT;
+                    source_exists[(int)type] = true;
+                }
+                else if (line.find("compute") != string::npos) {
+                    // set mode to compute
+                    type = ShaderType::COMPUTE;
+                    source_exists[(int)type] = true;
+                }
+            }
+            else {
+                ss[(int)type] = line + "\n";
+            }
+        }
+
+        vector<shaderInfo> shaderInfoVector;
+        for (int i = 0; i < 6; i++) {
+            if (source_exists[i]) {
+                shaderInfoVector.push_back({i, ss[i].c_str()});
+            }
+        }
+        return compileAndAttachShadersLinkAndValidateProgramDeleteShaders(shaderInfoVector);
+    }
+    void compile() {
+        compileFromSingleFile(filepath);
+    }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 class ComputeShader {
 public:
     GLuint gComputeProgram;
     GLuint gVBO;
     static const GLuint gIndexBufferBinding = 0;
-    std::string filepath = "/sdcard/Android/data/com.outputlog/files/log.txt";
-    GLuint generateComputeShader(const char* computeShaderSrcCode) {
-        // Create the compute program, to which the compute shader will be assigned
-        GLuint gComputeProgram = glCreateProgram();
-        // Create and compile the compute shader
-        GLuint mComputeShader = glCreateShader(GL_COMPUTE_SHADER);
-        glShaderSource(mComputeShader, 1, &computeShaderSrcCode, NULL);
-        glCompileShader(mComputeShader);
-        // Check if there were any issues when compiling the shader
-        int rvalue;
-        glGetShaderiv(mComputeShader, GL_COMPILE_STATUS, &rvalue);
-        if (!rvalue) {
-            GLint infoLen = 0;
-            glGetShaderiv(mComputeShader, GL_INFO_LOG_LENGTH, &infoLen);
-            if (infoLen > 1) {
-                char* log = (char*)malloc(sizeof(char) * infoLen);
-                glGetShaderInfoLog(mComputeShader, infoLen, NULL, log);
-                //esLogMessage("Error compiling shader:\n%s\n", log);
-                //outputLog(log, infoLen);
-                //myLogger.outputLog(std::string("Error compiling shader:\n") + std::string(log), filepath);
-                free(log);
-            }
-            glDeleteShader(mComputeShader);
-            return 0;
-            //glGetShaderInfoLog(mComputeShader, LOG_MAX, &length, log);
-            //printf("Error: Compiler log:\n%s\n", log);
-            //return false;
-        }
-        // Attach and link the shader against to the compute program
-        glAttachShader(gComputeProgram, mComputeShader);
-        glLinkProgram(gComputeProgram);
-        // Check if there were some issues when linking the shader.
-        glGetProgramiv(gComputeProgram, GL_LINK_STATUS, &rvalue);
-        if (!rvalue) {
-            GLint infoLen = 0;
-            glGetProgramiv(gComputeProgram, GL_INFO_LOG_LENGTH, &infoLen);
-            if (infoLen > 1) {
-                char* log = (char*)malloc(sizeof(char) * infoLen);
-                glGetProgramInfoLog(gComputeProgram, infoLen, NULL, log);
-                //esLogMessage("Error linking program:\n%s\n", log);
-                //outputLog(log, infoLen);
-                //myLogger.outputLog(std::string("Error linking program:\n") + std::string(log), filepath);
-                free(log);
-            }
-            glDeleteProgram(gComputeProgram);
-            return 0;
-            //glGetProgramInfoLog(gComputeProgram, LOG_MAX, &length, log);
-            //printf("Error: Linker log:\n%s\n", log);
-            //return false;
-        }
-        return gComputeProgram;
-    }
-    static GLuint compileComputeShader(const char* computeShaderSrcCode){
-        // Create the compute program, to which the compute shader will be assigned
-        GLuint gComputeProgram = glCreateProgram();
-        // Create and compile the compute shader
-        GLuint mComputeShader = glCreateShader(GL_COMPUTE_SHADER);
-        glShaderSource(mComputeShader, 1, &computeShaderSrcCode, NULL);
-        glCompileShader(mComputeShader);
-        // Check if there were any issues when compiling the shader
-        int rvalue;
-        glGetShaderiv(mComputeShader, GL_COMPILE_STATUS, &rvalue);
-        if (!rvalue) {
-            GLint infoLen = 0;
-            glGetShaderiv(mComputeShader, GL_INFO_LOG_LENGTH, &infoLen);
-            if (infoLen > 1) {
-                char* log = (char*)malloc(sizeof(char) * infoLen);
-                glGetShaderInfoLog(mComputeShader, infoLen, NULL, log);
-                //esLogMessage("Error compiling shader:\n%s\n", log);
-                //outputLog(log, infoLen);
-                //myLogger::outputLog(std::string("Error compiling shader:\n") + std::string(log), filepath);
-                free(log);
-            }
-            glDeleteShader(mComputeShader);
-            return 0;
-            //glGetShaderInfoLog(mComputeShader, LOG_MAX, &length, log);
-            //printf("Error: Compiler log:\n%s\n", log);
-            //return false;
-        }
-        // Attach and link the shader against to the compute program
-        glAttachShader(gComputeProgram, mComputeShader);
-        glLinkProgram(gComputeProgram);
-        // Check if there were some issues when linking the shader.
-        glGetProgramiv(gComputeProgram, GL_LINK_STATUS, &rvalue);
-        if (!rvalue) {
-            GLint infoLen = 0;
-            glGetProgramiv(gComputeProgram, GL_INFO_LOG_LENGTH, &infoLen);
-            if (infoLen > 1) {
-                char* log = (char*)malloc(sizeof(char) * infoLen);
-                glGetProgramInfoLog(gComputeProgram, infoLen, NULL, log);
-                //esLogMessage("Error linking program:\n%s\n", log);
-                //outputLog(log, infoLen);
-                //myLogger::outputLog(std::string("Error linking program:\n") + std::string(log), filepath);
-                free(log);
-            }
-            glDeleteProgram(gComputeProgram);
-            return 0;
-            //glGetProgramInfoLog(gComputeProgram, LOG_MAX, &length, log);
-            //printf("Error: Linker log:\n%s\n", log);
-            //return false;
-        }
-        return gComputeProgram;
-    }
 };
 
-#endif
 /*
  * Copyright (C) 2010 The Android Open Source Project
  *
@@ -295,29 +370,29 @@ private:
                     "	task = gl_WorkGroupSize.x * gl_LocalInvocationID.x + gl_LocalInvocationID.y;\n",
                     "	if(task < numCacheChunks && t > 0.0f){\n",
                     "		vec3 gravitySum[starsPerChunk];\n",
-                    "		for(uint i = 0u; i < starsPerChunk && starsPerChunk * task + i < COUNT; i++){\n",
-                    "			gravitySum[i] = vec3(0.0f, 0.0f, 0.0f);\n",
+                    "		for(uint type = 0u; type < starsPerChunk && starsPerChunk * task + type < COUNT; type++){\n",
+                    "			gravitySum[type] = vec3(0.0f, 0.0f, 0.0f);\n",
                     "			for(uint j = 0u; j < numCacheChunks; j++){\n",
                     "				for(uint k = 0u; k < starsPerChunk && starsPerChunk * j + k < COUNT; k++){\n",
-                    "					if(starsPerChunk * j + k == starsPerChunk * task + i)\n",
+                    "					if(starsPerChunk * j + k == starsPerChunk * task + type)\n",
                     "						continue;\n",
-                    "					vec3 difference = outBuffer.data.chunks[j].stars[k].position - outBuffer.data.chunks[task].stars[i].position;\n",
+                    "					vec3 difference = outBuffer.data.chunks[j].stars[k].position - outBuffer.data.chunks[task].stars[type].position;\n",
                     "					float differenceSquared = dot(difference, difference);\n",
                     "					float distance = sqrt(differenceSquared);\n",
-                    "					gravitySum[i] += difference / distance / differenceSquared;\n",
+                    "					gravitySum[type] += difference / distance / differenceSquared;\n",
                     "				}\n",
                     "			}\n",
                     "		}\n",
                     "		barrier();\n",
-                    "		for(uint i = 0u; i < starsPerChunk && starsPerChunk * task + i < COUNT; i++){\n",
-                    "			outBuffer.data.chunks[task].stars[i].velocity += gravitySum[i];\n",
-                    "			outBuffer.data.chunks[task].stars[i].position += outBuffer.data.chunks[task].stars[i].velocity;\n",
+                    "		for(uint type = 0u; type < starsPerChunk && starsPerChunk * task + type < COUNT; type++){\n",
+                    "			outBuffer.data.chunks[task].stars[type].velocity += gravitySum[type];\n",
+                    "			outBuffer.data.chunks[task].stars[type].position += outBuffer.data.chunks[task].stars[type].velocity;\n",
                     "		}\n",
                     "	}\n",
                     "}"
             };
 
-            computeShader.gComputeProgram = computeShader.generateComputeShader(View::stringArrayToString(computeShaderCode, 1000).c_str());
+            computeShader.gComputeProgram = View::generateComputeShaderProgram(View::stringArrayToString(computeShaderCode, 1000).c_str());
             _t = glGetUniformLocation(computeShader.gComputeProgram, "t");
             glGenBuffers(1, &computeShader.gVBO);
             computeShaderGenerated = true;
@@ -429,6 +504,15 @@ GraphView::GraphView(const string& equation) : View() {
 
 
 
+    /*//cubeProgram = View::createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
+    vector<shaderInfo> shaderInfoVector;
+    shaderInfoVector.push_back({(int)Shader::ShaderType::VERTEX, VERTEX_SHADER});
+    shaderInfoVector.push_back({(int)Shader::ShaderType::FRAGMENT, FRAGMENT_SHADER});
+    cubeProgram = compileAndAttachShadersLinkAndValidateProgramDeleteShaders(shaderInfoVector);
+    cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
+    //simulation.initialize(Simulation::CPU_OPTION);
+    simulation.initialize(Simulation::GPU_OPTION);*/
+
     cubeProgram = View::createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
     //simulation.initialize(Simulation::CPU_OPTION);
@@ -455,21 +539,21 @@ void GraphView::render(){
         int numIndices;
         bool padding[2008];
     };*/
-    /*for(int i = 0; i < 1024; i++) {
+    /*for(int type = 0; type < 1024; type++) {
         for(int j = 0; j < 32; j++) {
-            ImplicitGrapher::data->chunks[i].plusMinus[j] = false;
-            ImplicitGrapher::data->chunks[i].xyzLineIndex[j] = ivec3(0);
+            ImplicitGrapher::data->chunks[type].plusMinus[j] = false;
+            ImplicitGrapher::data->chunks[type].xyzLineIndex[j] = ivec3(0);
             for(int k = 0; k < 3; k++) {
-                ImplicitGrapher::data->chunks[i].vertices[3 * j + k] = PositionXYZNormalXYZ(vec3(0.0f), vec3(0.0f));
+                ImplicitGrapher::data->chunks[type].vertices[3 * j + k] = PositionXYZNormalXYZ(vec3(0.0f), vec3(0.0f));
                 for(int l = 0; l < 3; l++) {
-                    ImplicitGrapher::data->chunks[i].indices[9 * j + 3 * k + l] = ivec3(0);
+                    ImplicitGrapher::data->chunks[type].indices[9 * j + 3 * k + l] = ivec3(0);
                 }
             }
         }
-        ImplicitGrapher::data->chunks[i].solutionCount = 0;
-        ImplicitGrapher::data->chunks[i].numIndices = 0;
+        ImplicitGrapher::data->chunks[type].solutionCount = 0;
+        ImplicitGrapher::data->chunks[type].numIndices = 0;
         for(int j = 0; j < sizeof(ImplicitGrapher::chunk::padding); j++) {
-            ImplicitGrapher::data->chunks[i].padding[j] = false;
+            ImplicitGrapher::data->chunks[type].padding[j] = false;
         }
     }*/
     /*struct GPUdata {
@@ -479,12 +563,12 @@ void GraphView::render(){
         float equationValues[maxEquationLength];
         int valuesCounter;
     };*/
-    /*for(int i = 0; i < ImplicitGrapher::sequenceLengths[ImplicitGrapher::surfaceEquation]; i++) {
-        ImplicitGrapher::data->sequence[i] = ImplicitGrapher::sequences[ImplicitGrapher::surfaceEquation][i];
+    /*for(int type = 0; type < ImplicitGrapher::sequenceLengths[ImplicitGrapher::surfaceEquation]; type++) {
+        ImplicitGrapher::data->sequence[type] = ImplicitGrapher::sequences[ImplicitGrapher::surfaceEquation][type];
     }
-    for(int i = 0; i < ImplicitGrapher::valuesCounter[ImplicitGrapher::surfaceEquation]; i++) {
-        ImplicitGrapher::data->constants[i] = ImplicitGrapher::constants[ImplicitGrapher::surfaceEquation][i];
-        ImplicitGrapher::data->equationValues[i] = ImplicitGrapher::equationValues[ImplicitGrapher::surfaceEquation][i];
+    for(int type = 0; type < ImplicitGrapher::valuesCounter[ImplicitGrapher::surfaceEquation]; type++) {
+        ImplicitGrapher::data->constants[type] = ImplicitGrapher::constants[ImplicitGrapher::surfaceEquation][type];
+        ImplicitGrapher::data->equationValues[type] = ImplicitGrapher::equationValues[ImplicitGrapher::surfaceEquation][type];
     }
     ImplicitGrapher::data->valuesCounter = ImplicitGrapher::valuesCounter[ImplicitGrapher::surfaceEquation];
 
@@ -527,19 +611,19 @@ void GraphView::render(){
         };*/
         for(int i = 0; i < 1024; i++) {
             for(int j = 0; j < 32; j++) {
-                //ALOGD("ImplicitGrapher::data->chunks[%d].plusMinus[%d] = %s\n", i, j, to_string(ImplicitGrapher::data->chunks[i].plusMinus[j]).c_str());
-                //ImplicitGrapher::data->chunks[i].xyzLineIndex[j] = ivec3(0);
+                //ALOGD("ImplicitGrapher::data->chunks[%d].plusMinus[%d] = %s\n", type, j, to_string(ImplicitGrapher::data->chunks[type].plusMinus[j]).c_str());
+                //ImplicitGrapher::data->chunks[type].xyzLineIndex[j] = ivec3(0);
                 for(int k = 0; k < 3; k++) {
-                    //ImplicitGrapher::data->chunks[i].vertices[3 * j + k] = PositionXYZNormalXYZ(vec3(0.0f), vec3(0.0f));
+                    //ImplicitGrapher::data->chunks[type].vertices[3 * j + k] = PositionXYZNormalXYZ(vec3(0.0f), vec3(0.0f));
                     for(int l = 0; l < 3; l++) {
-                        //ImplicitGrapher::data->chunks[i].indices[9 * j + 3 * k + l] = ivec3(0);
+                        //ImplicitGrapher::data->chunks[type].indices[9 * j + 3 * k + l] = ivec3(0);
                     }
                 }
             }
-            //ImplicitGrapher::data->chunks[i].solutionCount = 0;
-            //ImplicitGrapher::data->chunks[i].numIndices = 0;
+            //ImplicitGrapher::data->chunks[type].solutionCount = 0;
+            //ImplicitGrapher::data->chunks[type].numIndices = 0;
             for(int j = 0; j < sizeof(ImplicitGrapher::chunk::padding); j++) {
-                //ImplicitGrapher::data->chunks[i].padding[j] = false;
+                //ImplicitGrapher::data->chunks[type].padding[j] = false;
             }
         }
         /*struct GPUdata {
@@ -550,11 +634,11 @@ void GraphView::render(){
             int valuesCounter;
         };*/
         for(int i = 0; i < ImplicitGrapher::sequenceLengths[ImplicitGrapher::surfaceEquation]; i++) {
-            //ImplicitGrapher::data->sequence[i] = ImplicitGrapher::sequences[ImplicitGrapher::surfaceEquation][i];
+            //ImplicitGrapher::data->sequence[type] = ImplicitGrapher::sequences[ImplicitGrapher::surfaceEquation][type];
         }
         for(int i = 0; i < ImplicitGrapher::valuesCounter[ImplicitGrapher::surfaceEquation]; i++) {
-            //ImplicitGrapher::data->constants[i] = ImplicitGrapher::constants[ImplicitGrapher::surfaceEquation][i];
-            //ImplicitGrapher::data->equationValues[i] = ImplicitGrapher::equationValues[ImplicitGrapher::surfaceEquation][i];
+            //ImplicitGrapher::data->constants[type] = ImplicitGrapher::constants[ImplicitGrapher::surfaceEquation][type];
+            //ImplicitGrapher::data->equationValues[type] = ImplicitGrapher::equationValues[ImplicitGrapher::surfaceEquation][type];
         }
         //ImplicitGrapher::data->valuesCounter = ImplicitGrapher::valuesCounter[ImplicitGrapher::surfaceEquation];
     }
@@ -576,14 +660,14 @@ void GraphView::render(){
 
     /*glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
-    for(int i = 0; i < 1024; i++) {
-        glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid*)&ImplicitGrapher::data->chunks[i].vertices[0].p);
-        glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid*)&ImplicitGrapher::data->chunks[i].vertices[0].n);
-        glDrawElements(GL_TRIANGLES, ImplicitGrapher::data->chunks[i].numIndices, GL_UNSIGNED_INT, ImplicitGrapher::data->chunks[i].indices);
+    for(int type = 0; type < 1024; type++) {
+        glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid*)&ImplicitGrapher::data->chunks[type].vertices[0].p);
+        glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid*)&ImplicitGrapher::data->chunks[type].vertices[0].n);
+        glDrawElements(GL_TRIANGLES, ImplicitGrapher::data->chunks[type].numIndices, GL_UNSIGNED_INT, ImplicitGrapher::data->chunks[type].indices);
     }
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
-    for(int i = 0; i < 1024; i++){
+    for(int type = 0; type < 1024; type++){
 
     }*/
 
@@ -631,7 +715,7 @@ void GraphView::render(){
                     GL_FALSE,
                     (GLfloat*)&mvp);
             cubeVAO.draw();
-            //ALOGI("data->chunks[i].stars[j].position = %s\n", data->chunks[i].stars[j].position.str().c_str());
+            //ALOGI("data->chunks[type].stars[j].position = %s\n", data->chunks[type].stars[j].position.str().c_str());
         }
     }
 }

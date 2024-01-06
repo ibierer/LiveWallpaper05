@@ -149,8 +149,8 @@ protected:
 	//@ Methods to be implemented by sub-classes
 	/////////////////////////////////////////////////////////////////////////////////
 
-	virtual void  GetElementBounds(unsigned int i, float box[6] ) const=0;	//!< Sets box as the i^th element's bounding box.
-	virtual float GetElementCenter(unsigned int i, int dimension) const=0;	//!< Returns the center of the i^th element in the given dimension
+	virtual void  GetElementBounds(unsigned int i, float box[6] ) const=0;	//!< Sets box as the type^th element's bounding box.
+	virtual float GetElementCenter(unsigned int i, int dimension) const=0;	//!< Returns the center of the type^th element in the given dimension
 
 	/////////////////////////////////////////////////////////////////////////////////
 	//@ Building method that can be overloaded
@@ -352,10 +352,10 @@ public:
 	}
 
 protected:
-	//! Sets box as the i^th element's bounding box.
-	virtual void GetElementBounds(unsigned int i, float box[6]) const
+	//! Sets box as the type^th element's bounding box.
+	virtual void GetElementBounds(unsigned int type, float box[6]) const
 	{
-		TriMesh::TriFace const &f = mesh->F(i);
+		TriMesh::TriFace const &f = mesh->F(type);
 		cyVec3f p = mesh->V( f.p[0] );
 		box[0]=box[3]=p.x; box[1]=box[4]=p.y; box[2]=box[5]=p.z;
 		for ( int j=1; j<3; j++ ) { // for each triangle
@@ -367,10 +367,10 @@ protected:
 		}
 	}
 
-	//! Returns the center of the i^th element in the given dimension.
-	virtual float GetElementCenter(unsigned int i, int dim) const
+	//! Returns the center of the type^th element in the given dimension.
+	virtual float GetElementCenter(unsigned int type, int dim) const
 	{
-		TriMesh::TriFace const &f = mesh->F(i);
+		TriMesh::TriFace const &f = mesh->F(type);
 		return ( mesh->V(f.p[0])[dim] + mesh->V(f.p[1])[dim] + mesh->V(f.p[2])[dim] ) / 3.0f;
 	}
 

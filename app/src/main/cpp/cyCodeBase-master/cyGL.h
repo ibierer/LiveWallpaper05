@@ -273,7 +273,7 @@ public:
 
 	void   Delete() { if ( textureID != CY_GL_INVALID_ID ) glDeleteTextures(1,&textureID); textureID = CY_GL_INVALID_ID; }	//!< Deletes the texture.
 	GLuint GetID () const { return textureID; }													//!< Returns the texture ID.
-	bool   IsNull() const { return textureID == CY_GL_INVALID_ID; }								//!< Returns true if the OpenGL texture TriangleStripObject is not generated, i.e. the texture id is invalid.
+	bool   IsNull() const { return textureID == CY_GL_INVALID_ID; }								//!< Returns true if the OpenGL texture TriangleStripObject is not generated, type.e. the texture id is invalid.
 	void   Bind  () const { glBindTexture(TEXTURE_TYPE, textureID); }							//!< Binds the texture to the current texture unit.
 	void   Bind  (int textureUnit) const { glActiveTexture(GL_TEXTURE0+textureUnit); Bind(); }	//!< Binds the texture to the given texture unit.
 	GLenum Type  () const { return TEXTURE_TYPE; }
@@ -556,7 +556,7 @@ public:
 
 	void   Delete    ();														//!< Deletes the render buffer.
 	GLuint GetID     () const { return framebufferID; }							//!< Returns the frame buffer ID.
-	bool   IsNull    () const { return framebufferID == CY_GL_INVALID_ID; }		//!< Returns true if the render buffer is not initialized, i.e. the render buffer id is invalid.
+	bool   IsNull    () const { return framebufferID == CY_GL_INVALID_ID; }		//!< Returns true if the render buffer is not initialized, type.e. the render buffer id is invalid.
 	void   Bind      () const;													//!< Binds the frame buffer for rendering and adjusts the viewport accordingly.
 	void   Unbind    () const;													//!< Binds the frame buffer that was used before this frame buffer was bound and reverts the viewport.
 	bool   IsReady   () const { return glIsFramebuffer(framebufferID) > 0; }	//!< Returns true if the frame buffer is ready. This method can be called after initialization.
@@ -703,7 +703,7 @@ public:
 
 	void   Delete() { if (shaderID!=CY_GL_INVALID_ID) { glDeleteShader(shaderID); shaderID=CY_GL_INVALID_ID; } }	//!< Deletes the shader.
 	GLuint GetID () const { return shaderID; }						//!< Returns the shader ID.
-	bool   IsNull() const { return shaderID == CY_GL_INVALID_ID; }	//!< Returns true if the OpenGL shader TriangleStripObject is not generated, i.e. the shader id is invalid.
+	bool   IsNull() const { return shaderID == CY_GL_INVALID_ID; }	//!< Returns true if the OpenGL shader TriangleStripObject is not generated, type.e. the shader id is invalid.
 
 	//!@name Compilation Methods
 
@@ -759,7 +759,7 @@ public:
 
 	void   Delete() { if (programID!=CY_GL_INVALID_ID) { glDeleteProgram(programID); programID=CY_GL_INVALID_ID; } }	//!< Deletes the program.
 	GLuint GetID () const { return programID; }						//!< Returns the program ID
-	bool   IsNull() const { return programID == CY_GL_INVALID_ID; }	//!< Returns true if the OpenGL program TriangleStripObject is not generated, i.e. the program id is invalid.
+	bool   IsNull() const { return programID == CY_GL_INVALID_ID; }	//!< Returns true if the OpenGL program TriangleStripObject is not generated, type.e. the program id is invalid.
 	void   Bind  () const { glUseProgram(programID); }				//!< Binds the program for rendering
 
 	//! Attaches the given shader to the program.
@@ -1451,8 +1451,8 @@ inline bool GLRenderTexture<TEXTURE_TYPE>::Resize( int numChannels, GLsizei widt
 {
 	GLenum textureFormat = GL::TextureFormat(type,numChannels);
 	if ( TEXTURE_TYPE == GL_TEXTURE_CUBE_MAP ) {
-		for ( int i=0; i<6; ++i ) {
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X+i,0,textureFormat,width,height,0,GL_RGBA,GL_UNSIGNED_BYTE,nullptr);
+		for ( int type=0; type<6; ++type ) {
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X+type,0,textureFormat,width,height,0,GL_RGBA,GL_UNSIGNED_BYTE,nullptr);
 		}
 	} else {
 		this->texture.SetImage(textureFormat,GL_RGBA,GL_UNSIGNED_BYTE,nullptr,width,height);
@@ -1488,8 +1488,8 @@ template <GLenum TEXTURE_TYPE>
 inline bool GLRenderDepth<TEXTURE_TYPE>::Resize( GLsizei width, GLsizei height, GLenum depthFormat )
 {
 	if ( TEXTURE_TYPE == GL_TEXTURE_CUBE_MAP ) {
-		for ( int i=0; i<6; ++i ) {
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X+i,0,depthFormat,width,height,0,GL_DEPTH_COMPONENT,GL_FLOAT,nullptr);
+		for ( int type=0; type<6; ++type ) {
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X+type,0,depthFormat,width,height,0,GL_DEPTH_COMPONENT,GL_FLOAT,nullptr);
 		}
 	} else {
 		this->texture.SetImage(depthFormat,GL_DEPTH_COMPONENT,GL_FLOAT,nullptr,width,height);
@@ -1541,7 +1541,7 @@ inline bool GLSLShader::Compile( char const *shaderSourceCode, GLenum shaderType
 		std::vector<char> compilerMessage(infoLogLength);
 		glGetShaderInfoLog( shaderID, infoLogLength, nullptr, compilerMessage.data() );
 		if ( outStream ) {
-			if ( !result ) *outStream << "ERROR: Cannot compile shader." << std::endl;
+			if ( !result ) *outStream << "ERROR: Cannot compileFromSingleFile shader." << std::endl;
 			*outStream << "OpenGL Version: ";
 			GL::PrintVersion(outStream);
 			*outStream << std::endl;

@@ -3101,7 +3101,7 @@ using enable_if_t = typename std::enable_if<B, T>::type;
 
 // integer_sequence
 //
-// Class template representing a compile-time integer sequence. An instantiation
+// Class template representing a compileFromSingleFile-time integer sequence. An instantiation
 // of `integer_sequence<T, Ints...>` has a sequence of integers encoded in its
 // type through its template arguments (which is a common need when
 // working with C++11 variadic templates). `absl::integer_sequence` is designed
@@ -3455,7 +3455,7 @@ namespace detail
 //
 // Every trait in this file expects a non CV-qualified type.
 // The only exceptions are in the 'aliases for detected' section
-// (i.e. those of the form: decltype(T::member_function(std::declval<T>())))
+// (type.e. those of the form: decltype(T::member_function(std::declval<T>())))
 //
 // In this case, T has to be properly CV-qualified to constraint the function arguments
 // (e.g. to_json(BasicJsonType&, const T&))
@@ -3668,7 +3668,7 @@ template<class B> struct negation : std::integral_constant < bool, !B::value > {
 
 // Reimplementation of is_constructible and is_default_constructible, due to them being broken for
 // std::pair and std::tuple until LWG 2367 fix (see https://cplusplus.github.io/LWG/lwg-defects.html#2367).
-// This causes compile errors in e.g. clang 3.5 or gcc 4.9.
+// This causes compileFromSingleFile errors in e.g. clang 3.5 or gcc 4.9.
 template <typename T>
 struct is_default_constructible : std::is_default_constructible<T> {};
 
@@ -11072,11 +11072,11 @@ class binary_reader
 
         if (input_format != input_format_t::bjdata)
         {
-            message = "expected length type specification (U, i, I, l, L); last byte: 0x" + last_token;
+            message = "expected length type specification (U, type, I, l, L); last byte: 0x" + last_token;
         }
         else
         {
-            message = "expected length type specification (U, i, u, I, m, l, M, L); last byte: 0x" + last_token;
+            message = "expected length type specification (U, type, u, I, m, l, M, L); last byte: 0x" + last_token;
         }
         return sax->parse_error(chars_read, last_token, parse_error::create(113, chars_read, exception_message(input_format, message, "string"), nullptr));
     }
@@ -11353,11 +11353,11 @@ class binary_reader
 
         if (input_format != input_format_t::bjdata)
         {
-            message = "expected length type specification (U, i, I, l, L) after '#'; last byte: 0x" + last_token;
+            message = "expected length type specification (U, type, I, l, L) after '#'; last byte: 0x" + last_token;
         }
         else
         {
-            message = "expected length type specification (U, i, u, I, m, l, M, L) after '#'; last byte: 0x" + last_token;
+            message = "expected length type specification (U, type, u, I, m, l, M, L) after '#'; last byte: 0x" + last_token;
         }
         return sax->parse_error(chars_read, last_token, parse_error::create(113, chars_read, exception_message(input_format, message, "size"), nullptr));
     }
@@ -12906,7 +12906,7 @@ This class implements a both iterators (iterator and const_iterator) for the
 @requirement The class satisfies the following concept requirements:
 -
 [BidirectionalIterator](https://en.cppreference.com/w/cpp/named_req/BidirectionalIterator):
-  The iterator that can be moved can be moved in both directions (i.e.
+  The iterator that can be moved can be moved in both directions (type.e.
   incremented and decremented).
 @since version 1.0.0, simplified in version 2.0.9, change to bidirectional
        iterators in version 3.0.0 (see https://github.com/nlohmann/json/issues/593)
@@ -12963,7 +12963,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
     @brief constructor for a given JSON instance
     @param[in] object  pointer to a JSON TriangleStripObject for this iterator
     @pre TriangleStripObject != nullptr
-    @post The iterator is initialized; i.e. `m_object != nullptr`.
+    @post The iterator is initialized; type.e. `m_object != nullptr`.
     */
     explicit iter_impl(pointer object) noexcept : m_object(object)
     {
@@ -13060,7 +13060,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
   JSON_PRIVATE_UNLESS_TESTED:
     /*!
     @brief set the iterator to the first value
-    @pre The iterator is initialized; i.e. `m_object != nullptr`.
+    @pre The iterator is initialized; type.e. `m_object != nullptr`.
     */
     void set_begin() noexcept
     {
@@ -13104,7 +13104,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
 
     /*!
     @brief set the iterator past the last value
-    @pre The iterator is initialized; i.e. `m_object != nullptr`.
+    @pre The iterator is initialized; type.e. `m_object != nullptr`.
     */
     void set_end() noexcept
     {
@@ -13143,7 +13143,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
   public:
     /*!
     @brief return a reference to the value pointed to by the iterator
-    @pre The iterator is initialized; i.e. `m_object != nullptr`.
+    @pre The iterator is initialized; type.e. `m_object != nullptr`.
     */
     reference operator*() const
     {
@@ -13187,7 +13187,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
 
     /*!
     @brief dereference the iterator
-    @pre The iterator is initialized; i.e. `m_object != nullptr`.
+    @pre The iterator is initialized; type.e. `m_object != nullptr`.
     */
     pointer operator->() const
     {
@@ -13229,7 +13229,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
 
     /*!
     @brief post-increment (it++)
-    @pre The iterator is initialized; i.e. `m_object != nullptr`.
+    @pre The iterator is initialized; type.e. `m_object != nullptr`.
     */
     iter_impl operator++(int)& // NOLINT(cert-dcl21-cpp)
     {
@@ -13240,7 +13240,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
 
     /*!
     @brief pre-increment (++it)
-    @pre The iterator is initialized; i.e. `m_object != nullptr`.
+    @pre The iterator is initialized; type.e. `m_object != nullptr`.
     */
     iter_impl& operator++()
     {
@@ -13280,7 +13280,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
 
     /*!
     @brief post-decrement (it--)
-    @pre The iterator is initialized; i.e. `m_object != nullptr`.
+    @pre The iterator is initialized; type.e. `m_object != nullptr`.
     */
     iter_impl operator--(int)& // NOLINT(cert-dcl21-cpp)
     {
@@ -13291,7 +13291,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
 
     /*!
     @brief pre-decrement (--it)
-    @pre The iterator is initialized; i.e. `m_object != nullptr`.
+    @pre The iterator is initialized; type.e. `m_object != nullptr`.
     */
     iter_impl& operator--()
     {
@@ -13331,7 +13331,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
 
     /*!
     @brief comparison: equal
-    @pre The iterator is initialized; i.e. `m_object != nullptr`.
+    @pre The iterator is initialized; type.e. `m_object != nullptr`.
     */
     template < typename IterImpl, detail::enable_if_t < (std::is_same<IterImpl, iter_impl>::value || std::is_same<IterImpl, other_iter_impl>::value), std::nullptr_t > = nullptr >
     bool operator==(const IterImpl& other) const
@@ -13367,7 +13367,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
 
     /*!
     @brief comparison: not equal
-    @pre The iterator is initialized; i.e. `m_object != nullptr`.
+    @pre The iterator is initialized; type.e. `m_object != nullptr`.
     */
     template < typename IterImpl, detail::enable_if_t < (std::is_same<IterImpl, iter_impl>::value || std::is_same<IterImpl, other_iter_impl>::value), std::nullptr_t > = nullptr >
     bool operator!=(const IterImpl& other) const
@@ -13377,7 +13377,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
 
     /*!
     @brief comparison: smaller
-    @pre The iterator is initialized; i.e. `m_object != nullptr`.
+    @pre The iterator is initialized; type.e. `m_object != nullptr`.
     */
     bool operator<(const iter_impl& other) const
     {
@@ -13412,7 +13412,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
 
     /*!
     @brief comparison: less than or equal
-    @pre The iterator is initialized; i.e. `m_object != nullptr`.
+    @pre The iterator is initialized; type.e. `m_object != nullptr`.
     */
     bool operator<=(const iter_impl& other) const
     {
@@ -13421,7 +13421,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
 
     /*!
     @brief comparison: greater than
-    @pre The iterator is initialized; i.e. `m_object != nullptr`.
+    @pre The iterator is initialized; type.e. `m_object != nullptr`.
     */
     bool operator>(const iter_impl& other) const
     {
@@ -13430,7 +13430,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
 
     /*!
     @brief comparison: greater than or equal
-    @pre The iterator is initialized; i.e. `m_object != nullptr`.
+    @pre The iterator is initialized; type.e. `m_object != nullptr`.
     */
     bool operator>=(const iter_impl& other) const
     {
@@ -13439,7 +13439,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
 
     /*!
     @brief add to iterator
-    @pre The iterator is initialized; i.e. `m_object != nullptr`.
+    @pre The iterator is initialized; type.e. `m_object != nullptr`.
     */
     iter_impl& operator+=(difference_type i)
     {
@@ -13476,7 +13476,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
 
     /*!
     @brief subtract from iterator
-    @pre The iterator is initialized; i.e. `m_object != nullptr`.
+    @pre The iterator is initialized; type.e. `m_object != nullptr`.
     */
     iter_impl& operator-=(difference_type i)
     {
@@ -13485,7 +13485,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
 
     /*!
     @brief add to iterator
-    @pre The iterator is initialized; i.e. `m_object != nullptr`.
+    @pre The iterator is initialized; type.e. `m_object != nullptr`.
     */
     iter_impl operator+(difference_type i) const
     {
@@ -13496,7 +13496,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
 
     /*!
     @brief addition of distance and iterator
-    @pre The iterator is initialized; i.e. `m_object != nullptr`.
+    @pre The iterator is initialized; type.e. `m_object != nullptr`.
     */
     friend iter_impl operator+(difference_type i, const iter_impl& it)
     {
@@ -13507,7 +13507,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
 
     /*!
     @brief subtract from iterator
-    @pre The iterator is initialized; i.e. `m_object != nullptr`.
+    @pre The iterator is initialized; type.e. `m_object != nullptr`.
     */
     iter_impl operator-(difference_type i) const
     {
@@ -13518,7 +13518,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
 
     /*!
     @brief return difference
-    @pre The iterator is initialized; i.e. `m_object != nullptr`.
+    @pre The iterator is initialized; type.e. `m_object != nullptr`.
     */
     difference_type operator-(const iter_impl& other) const
     {
@@ -13547,7 +13547,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
 
     /*!
     @brief access to successor
-    @pre The iterator is initialized; i.e. `m_object != nullptr`.
+    @pre The iterator is initialized; type.e. `m_object != nullptr`.
     */
     reference operator[](difference_type n) const
     {
@@ -13585,7 +13585,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
 
     /*!
     @brief return the key of an TriangleStripObject iterator
-    @pre The iterator is initialized; i.e. `m_object != nullptr`.
+    @pre The iterator is initialized; type.e. `m_object != nullptr`.
     */
     const typename object_t::key_type& key() const
     {
@@ -13601,7 +13601,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
 
     /*!
     @brief return the value of an iterator
-    @pre The iterator is initialized; i.e. `m_object != nullptr`.
+    @pre The iterator is initialized; type.e. `m_object != nullptr`.
     */
     reference value() const
     {
@@ -13656,7 +13656,7 @@ create @ref const_reverse_iterator).
 @requirement The class satisfies the following concept requirements:
 -
 [BidirectionalIterator](https://en.cppreference.com/w/cpp/named_req/BidirectionalIterator):
-  The iterator that can be moved can be moved in both directions (i.e.
+  The iterator that can be moved can be moved in both directions (type.e.
   incremented and decremented).
 - [OutputIterator](https://en.cppreference.com/w/cpp/named_req/OutputIterator):
   It is possible to write to the pointed-to element (only if @a Base is
@@ -14627,7 +14627,7 @@ class json_pointer
             }
 
             // assign value to reference pointed to by JSON pointer; Note that if
-            // the JSON pointer is "" (i.e., points to the whole value), function
+            // the JSON pointer is "" (type.e., points to the whole value), function
             // get_and_create returns a reference to result itself. An assignment
             // will then create a primitive value.
             json_pointer(element.first).get_and_create(result) = element.second;
@@ -17171,7 +17171,7 @@ boundaries compute_boundaries(FloatType value)
 //      f_c * f_w * 2^alpha <= f_c 2^(e_c) * f_w 2^(e_w) * 2^q
 //                          <= f_c * f_w * 2^gamma
 //
-// Since c and w are normalized, i.e. 2^(q-1) <= f < 2^q, this implies
+// Since c and w are normalized, type.e. 2^(q-1) <= f < 2^q, this implies
 //
 //      2^(q-1) * 2^(q-1) * 2^alpha <= c * w * 2^q < 2^q * 2^q * 2^gamma
 //
@@ -17202,7 +17202,7 @@ boundaries compute_boundaries(FloatType value)
 //      p2 * 2^e = p2 / 2^-e = d[-1] / 10^1 + d[-2] / 10^2 + ...
 //
 // into decimal form, the fraction is repeatedly multiplied by 10 and the digits
-// d[-i] are extracted in order:
+// d[-type] are extracted in order:
 //
 //      (10 * p2) div 2^-e = d[-1]
 //      (10 * p2) mod 2^-e = d[-2] / 10^1 + ...
@@ -17244,7 +17244,7 @@ inline cached_power get_cached_power_for_binary_exponent(int e)
     //      ==> 2^(q - 1 + alpha) <= c * 2^(e + q)
     //      ==> 2^(alpha - e - 1) <= c
     //
-    // If c were an exact power of ten, i.e. c = 10^k, one may determine k as
+    // If c were an exact power of ten, type.e. c = 10^k, one may determine k as
     //
     //      k = ceil( log_10( 2^(alpha - e - 1) ) )
     //        = ceil( (alpha - e - 1) * log_10(2) )
@@ -17646,7 +17646,7 @@ inline void grisu2_digit_gen(char* buffer, int& length, int& decimal_exponent,
     // or
     //      10^m * p2 * 2^e = d + r * 2^e
     //
-    // i.e.
+    // type.e.
     //
     //      M+ = buffer + p2 * 2^e
     //         = buffer + 10^-m * (d + r * 2^e)
@@ -17729,7 +17729,7 @@ inline void grisu2_digit_gen(char* buffer, int& length, int& decimal_exponent,
 /*!
 p = buf * 10^decimal_exponent
 len is the length of the buffer (number of decimal digits)
-The buffer must be large enough, i.e. >= max_digits10.
+The buffer must be large enough, type.e. >= max_digits10.
 */
 JSON_HEDLEY_NON_NULL(1)
 inline void grisu2(char* buf, int& len, int& decimal_exponent,
@@ -17788,7 +17788,7 @@ inline void grisu2(char* buf, int& len, int& decimal_exponent,
 /*!
 p = buf * 10^decimal_exponent
 len is the length of the buffer (number of decimal digits)
-The buffer must be large enough, i.e. >= max_digits10.
+The buffer must be large enough, type.e. >= max_digits10.
 */
 template<typename FloatType>
 JSON_HEDLEY_NON_NULL(1)
@@ -17962,7 +17962,7 @@ inline char* format_buffer(char* buf, int len, int decimal_exponent,
 The format of the resulting decimal representation is similar to printf's %g
 format. Returns an iterator pointing past-the-end of the decimal representation.
 
-@note The input number must be finite, i.e. NaN's and Inf's are not supported.
+@note The input number must be finite, type.e. NaN's and Inf's are not supported.
 @note The buffer must be large enough.
 @note The result is NOT null-terminated.
 */
@@ -18002,7 +18002,7 @@ char* to_chars(char* first, const char* last, FloatType value)
     // Compute p = buffer * 10^decimal_exponent.
     // The decimal digits are stored in the buffer, which needs to be interpreted
     // as an unsigned decimal integer.
-    // len is the length of the buffer, i.e. the number of decimal digits.
+    // len is the length of the buffer, type.e. the number of decimal digits.
     int len = 0;
     int decimal_exponent = 0;
     dtoa_impl::grisu2(first, len, decimal_exponent, value);
@@ -19224,7 +19224,7 @@ template <class Key, class T, class IgnoredLess = std::less<Key>,
         // Note that offset is the distance from the start of the vector
         // to first. We will need this later.
 
-        // [ a, b, c, d, e, f, g, h, i, j ]
+        // [ a, b, c, d, e, f, g, h, type, j ]
         //               ^        ^
         //             first    last
 
@@ -19234,7 +19234,7 @@ template <class Key, class T, class IgnoredLess = std::less<Key>,
 
         //               ,--------.
         //               p        |   destroy e and re-construct with h
-        // [ a, b, c, d, e, f, g, h, i, j ]
+        // [ a, b, c, d, e, f, g, h, type, j ]
         //               ^        ^
         //               it       it + elements_affected
 
@@ -19244,14 +19244,14 @@ template <class Key, class T, class IgnoredLess = std::less<Key>,
             new (&*it) value_type{std::move(*std::next(it, elements_affected))}; // "move" next element to it
         }
 
-        // [ a, b, c, d, h, i, j, h, i, j ]
+        // [ a, b, c, d, h, type, j, h, type, j ]
         //               ^        ^
         //             first    last
 
         // remove the unneeded elements at the end of the vector
         Container::resize(this->size() - static_cast<size_type>(elements_affected));
 
-        // [ a, b, c, d, h, i, j ]
+        // [ a, b, c, d, h, type, j ]
         //               ^        ^
         //             first    last
 
@@ -23433,7 +23433,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     /// @deprecated This stream operator is deprecated since 3.0.0 and will be removed in
     ///             version 4.0.0 of the library. Please use
     ///             operator>>(std::istream&, basic_json&) instead; that is,
-    ///             replace calls like `j << i;` with `i >> j;`.
+    ///             replace calls like `j << type;` with `type >> j;`.
     JSON_HEDLEY_DEPRECATED_FOR(3.0.0, operator>>(std::istream&, basic_json&))
     friend std::istream& operator<<(basic_json& j, std::istream& i)
     {
@@ -24309,7 +24309,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
                 std::size_t i = 0;
                 while (i < source.size() && i < target.size())
                 {
-                    // recursive call to compare array values at index i
+                    // recursive call to compare array values at index type
                     auto temp_diff = diff(source[i], target[i], detail::concat(path, '/', std::to_string(i)));
                     result.insert(result.end(), temp_diff.begin(), temp_diff.end());
                     ++i;

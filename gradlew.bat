@@ -32,7 +32,7 @@ set APP_HOME=%DIRNAME%
 <<<<<<< HEAD
 =======
 @rem Resolve any "." and ".." in APP_HOME to make it shorter.
-for %%i in ("%APP_HOME%") do set APP_HOME=%%~fi
+for %%type in ("%APP_HOME%") do set APP_HOME=%%~fi
 
 >>>>>>> 4f1481069bcabcc89ccd8c6128b0f31bb396fd94
 @rem Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.

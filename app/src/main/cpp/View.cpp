@@ -179,8 +179,28 @@ GLuint View::createShader(const GLenum& shaderType, const char* src) {
             GLchar* infoLog = (GLchar*)malloc(infoLogLen);
             if (infoLog) {
                 glGetShaderInfoLog(shader, infoLogLen, NULL, infoLog);
-                ALOGE("Could not compile %s shader:\n%s\n",
-                      shaderType == GL_VERTEX_SHADER ? "vertex" : "fragment", infoLog);
+                string typeString;
+                switch (shaderType) {
+                    case GL_VERTEX_SHADER:
+                        typeString = "vertex";
+                        break;
+                    case GL_TESS_CONTROL_SHADER:
+                        typeString = "tesselation control";
+                        break;
+                    case GL_TESS_EVALUATION_SHADER:
+                        typeString = "tesselation evaluation";
+                        break;
+                    case GL_GEOMETRY_SHADER:
+                        typeString = "geometry";
+                        break;
+                    case GL_FRAGMENT_SHADER:
+                        typeString = "fragment";
+                        break;
+                    case GL_COMPUTE_SHADER:
+                        typeString = "compute";
+                        break;
+                }
+                ALOGE("Could not compile %s shader:\n%s\n", typeString.c_str(), infoLog);
                 free(infoLog);
             }
         }
@@ -189,6 +209,32 @@ GLuint View::createShader(const GLenum& shaderType, const char* src) {
     }
 
     return shader;
+}
+
+GLuint View::generateComputeShaderProgram(const char* computeShaderSrcCode) {
+    int rvalue;
+    // Create and compileFromSingleFile the compute shader
+    GLuint mComputeShader = createShader(GL_COMPUTE_SHADER, computeShaderSrcCode);
+    // Create the compute program, to which the compute shader will be assigned
+    GLuint gComputeProgram = glCreateProgram();
+    // Attach and link the shader against to the compute program
+    glAttachShader(gComputeProgram, mComputeShader);
+    glLinkProgram(gComputeProgram);
+    // Check if there were some issues when linking the shader.
+    glGetProgramiv(gComputeProgram, GL_LINK_STATUS, &rvalue);
+    if (!rvalue) {
+        GLint infoLen = 0;
+        glGetProgramiv(gComputeProgram, GL_INFO_LOG_LENGTH, &infoLen);
+        if (infoLen > 1) {
+            char* log = (char*)malloc(sizeof(char) * infoLen);
+            glGetProgramInfoLog(gComputeProgram, infoLen, NULL, log);
+            ALOGE("Error linking program:\n%s\n", log);
+            free(log);
+        }
+        glDeleteProgram(gComputeProgram);
+        return 0;
+    }
+    return gComputeProgram;
 }
 
 GLuint View::createProgram(const char* const vtxSrc, const char* const fragSrc) {
@@ -259,7 +305,7 @@ const bool View::supportsES32(){
             if (infoLog) {
                 glGetShaderInfoLog(shader, infoLogLen, NULL, infoLog);
                 if(std::string(infoLog).find("'320' : client/version number not supported") != std::string::npos){
-                    ALOGW("Could not compile OpenGL ES shader version %s: %s. Compiling version 310 instead.",
+                    ALOGW("Could not compileFromSingleFile OpenGL ES shader version %s: %s. Compiling version 310 instead.",
                           "320", infoLog);
                     free(infoLog);
                     return false;

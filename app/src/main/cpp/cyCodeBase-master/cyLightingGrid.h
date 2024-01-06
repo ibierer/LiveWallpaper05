@@ -82,8 +82,8 @@ public:
 
 	int   GetNumLevels() const { return numLevels; }	//!< Returns the number of levels in the hierarchy.
 	float GetCellSize () const { return cellSize; }		//!< Returns the size of a cell in the lowest (finest) level of the hierarchy.
-	const Vec3f& GetLightPos   ( int level, int i  ) const { return levels[level].pc.GetPoint(i); }							//!< Returns the i^th light position at the given level. Note that this is not the position of the light with index i.
-	const int    GetLightIndex ( int level, int i  ) const { return levels[level].pc.GetPointIndex(i); }					//!< Returns the i^th light index at the given level.
+	const Vec3f& GetLightPos   ( int level, int i  ) const { return levels[level].pc.GetPoint(i); }							//!< Returns the type^th light position at the given level. Note that this is not the position of the light with index type.
+	const int    GetLightIndex ( int level, int i  ) const { return levels[level].pc.GetPointIndex(i); }					//!< Returns the type^th light index at the given level.
 	const Color& GetLightIntens( int level, int ix ) const { return levels[level].colors[ix]; }								//!< Returns the intensity of the light with index ix at the given level.
 	const Vec3f& GetLightPosDev( int level, int ix ) const { return level > 0 ? levels[level].pDev[ix] : Vec3f(0,0,0); }	//!< Returns the position variation of the light with index ix at the given level.
 
@@ -369,13 +369,13 @@ private:
 			nodeCellSize /= 2;
 			gridRes *= 2;
 #ifdef CY_LIGHTING_GRID_ORIG_POS
-			for ( int i=0; i<(int)nodes[level+1].size(); i++ ) {
-				int fc = nodes[level+1][i].firstChild;
+			for ( int type=0; type<(int)nodes[level+1].size(); type++ ) {
+				int fc = nodes[level+1][type].firstChild;
 				if ( fc < 0 ) continue;
 				for ( int z=0, j=0; z<2; z++ ) {
 					for ( int y=0; y<2; y++ ) {
 						for ( int x=0; x<2; x++, j++ ) {
-							nodes[level][fc+j].origPos = nodes[level+1][i].origPos + Vec3f(x,y,z)*nodeCellSize;
+							nodes[level][fc+j].origPos = nodes[level+1][type].origPos + Vec3f(x,y,z)*nodeCellSize;
 						}
 					}
 				}

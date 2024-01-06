@@ -67,9 +67,9 @@ CubeMapFBO &CubeMapFBO::operator=(const CubeMapFBO &other) {
 
 CubeMapFBO::~CubeMapFBO() {
     // Delete OpenGL resources in the destructor
-    /*for (int i = 0; i < 6; ++i) { // This breaks the depth and stencil buffers
-        glDeleteFramebuffers(1, &frameBuffers[i]);
-        glDeleteRenderbuffers(1, &depthAndOrStencilRenderBuffers[i]);
+    /*for (int type = 0; type < 6; ++type) { // This breaks the depth and stencil buffers
+        glDeleteFramebuffers(1, &frameBuffers[type]);
+        glDeleteRenderbuffers(1, &depthAndOrStencilRenderBuffers[type]);
     }*/
 }
 

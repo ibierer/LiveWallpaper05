@@ -90,8 +90,8 @@ public:
 	//!@ Access to internal data
 
 	SIZE_TYPE GetPointCount() const { return pointCount-1; }					//!< Returns the point count
-	PointType const & GetPoint(SIZE_TYPE i) const { return points[i+1].Pos(); }	//!< Returns the point at position i
-	SIZE_TYPE GetPointIndex(SIZE_TYPE i) const { return points[i+1].Index(); }	//!< Returns the index of the point at position i
+	PointType const & GetPoint(SIZE_TYPE i) const { return points[i+1].Pos(); }	//!< Returns the point at position type
+	SIZE_TYPE GetPointIndex(SIZE_TYPE i) const { return points[i+1].Index(); }	//!< Returns the index of the point at position type
 
 	/////////////////////////////////////////////////////////////////////////////////
 	//!@ Initialization
