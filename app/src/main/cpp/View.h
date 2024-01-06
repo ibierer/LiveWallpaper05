@@ -17,6 +17,7 @@
 
 using std::string;
 using cy::Matrix4;
+using std::vector;
 
 class View {
 public:
@@ -59,8 +60,6 @@ public:
 
     static bool checkGlError(const char* const funcName);
 
-    static GLuint createShader(const GLenum& shaderType, const char* const src);
-
     static GLuint createComputeShaderProgram(const char *compSrc);
 
     static GLuint createVertexAndFragmentShaderProgram(const char* const vtxSrc, const char* const fragSrc);
@@ -102,6 +101,11 @@ private:
     int framesRendered;
 
     static const bool supportsES32();
+
+    static GLuint createShader(const GLenum& shaderType, const char* const src);
+
+    static GLuint buildShaderProgram(const GLenum *const shaderTypes, const char **const sources, const int &shaderCount);
+
 };
 
 
