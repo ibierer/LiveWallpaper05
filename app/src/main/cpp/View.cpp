@@ -171,6 +171,7 @@ GLuint View::createShader(const GLenum& shaderType, const char* src) {
 
     GLint compiled = GL_FALSE;
     glCompileShader(shader);
+    // Check if there were some issues when compiling the shader.
     glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
     if (!compiled) {
         GLint infoLogLen = 0;
@@ -211,74 +212,256 @@ GLuint View::createShader(const GLenum& shaderType, const char* src) {
     return shader;
 }
 
-GLuint View::generateComputeShaderProgram(const char* computeShaderSrcCode) {
-    int rvalue;
-    // Create and compileFromSingleFile the compute shader
-    GLuint mComputeShader = createShader(GL_COMPUTE_SHADER, computeShaderSrcCode);
-    // Create the compute program, to which the compute shader will be assigned
-    GLuint gComputeProgram = glCreateProgram();
-    // Attach and link the shader against to the compute program
-    glAttachShader(gComputeProgram, mComputeShader);
-    glLinkProgram(gComputeProgram);
+GLuint checkStatus(const GLuint& program, const GLenum& statusType) {
+    GLint successfulStatus = GL_FALSE;
     // Check if there were some issues when linking the shader.
-    glGetProgramiv(gComputeProgram, GL_LINK_STATUS, &rvalue);
-    if (!rvalue) {
-        GLint infoLen = 0;
-        glGetProgramiv(gComputeProgram, GL_INFO_LOG_LENGTH, &infoLen);
-        if (infoLen > 1) {
-            char* log = (char*)malloc(sizeof(char) * infoLen);
-            glGetProgramInfoLog(gComputeProgram, infoLen, NULL, log);
-            ALOGE("Error linking program:\n%s\n", log);
-            free(log);
-        }
-        glDeleteProgram(gComputeProgram);
-        return 0;
-    }
-    return gComputeProgram;
-}
-
-GLuint View::createProgram(const char* const vtxSrc, const char* const fragSrc) {
-    GLuint vtxShader = 0;
-    GLuint fragShader = 0;
-    GLuint program = 0;
-    GLint linked = GL_FALSE;
-
-    vtxShader = createShader(GL_VERTEX_SHADER, vtxSrc);
-    if (!vtxShader) goto exit;
-
-    fragShader = createShader(GL_FRAGMENT_SHADER, fragSrc);
-    if (!fragShader) goto exit;
-
-    program = glCreateProgram();
-    if (!program) {
-        checkGlError("glCreateProgram");
-        goto exit;
-    }
-    glAttachShader(program, vtxShader);
-    glAttachShader(program, fragShader);
-
-    glLinkProgram(program);
-    glGetProgramiv(program, GL_LINK_STATUS, &linked);
-    if (!linked) {
-        ALOGE("Could not link program");
+    glGetProgramiv(program, statusType, &successfulStatus);
+    if (!successfulStatus) {
         GLint infoLogLen = 0;
         glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLogLen);
-        if (infoLogLen) {
-            GLchar* infoLog = (GLchar*)malloc(infoLogLen);
+        if (infoLogLen > 1) {
+            char* infoLog = (char*)malloc(sizeof(char) * infoLogLen);
             if (infoLog) {
                 glGetProgramInfoLog(program, infoLogLen, NULL, infoLog);
-                ALOGE("Could not link program:\n%s\n", infoLog);
+                ALOGE("Error linking program:\n%s\n", infoLog);
                 free(infoLog);
             }
         }
         glDeleteProgram(program);
-        program = 0;
+        return 0;
+    }
+    return program;
+}
+
+GLuint View::createComputeShaderProgram(const char* compSrc) {
+    // Create the compute shader program
+    GLuint program = glCreateProgram();
+    if (!program) {
+        checkGlError("glCreateProgram");
+        return 0;
     }
 
-    exit:
+    // Create and compile the compute shader
+    GLuint shader = createShader(GL_COMPUTE_SHADER, compSrc);
+    if (!shader) {
+        checkGlError("createShader");
+        glDeleteProgram(program);
+        return 0;
+    }
+
+    // Attach and link the shader against to the compute program
+    glAttachShader(program, shader);
+    glLinkProgram(program);
+    glDeleteShader(shader);
+    return checkStatus(program, GL_LINK_STATUS);
+}
+
+GLuint View::createVertexAndFragmentShaderProgram(const char* const vtxSrc, const char* const fragSrc) {
+    // Create the shader program
+    GLuint program = glCreateProgram();
+    if (!program) {
+        checkGlError("glCreateProgram");
+        return 0;
+    }
+
+    // Create and compile the vertex shader
+    GLuint vtxShader = createShader(GL_VERTEX_SHADER, vtxSrc);
+    if (!vtxShader) {
+        checkGlError("createShader");
+        glDeleteProgram(program);
+        return 0;
+    }
+
+    // Create and compile the fragment shader
+    GLuint fragShader = createShader(GL_FRAGMENT_SHADER, fragSrc);
+    if (!fragShader) {
+        checkGlError("createShader");
+        glDeleteProgram(program);
+        glDeleteShader(vtxShader);
+        return 0;
+    }
+
+    glAttachShader(program, vtxShader);
+    glAttachShader(program, fragShader);
+    glLinkProgram(program);
     glDeleteShader(vtxShader);
     glDeleteShader(fragShader);
-    return program;
+    return checkStatus(program, GL_LINK_STATUS);
+}
+
+GLuint View::createVertexGeometryAndFragmentShaderProgram(const char *const vtxSrc, const char *const geomSrc, const char *const fragSrc) {
+    // Create the shader program
+    GLuint program = glCreateProgram();
+    if (!program) {
+        checkGlError("glCreateProgram");
+        return 0;
+    }
+
+    // Create and compile the vertex shader
+    GLuint vtxShader = createShader(GL_VERTEX_SHADER, vtxSrc);
+    if (!vtxShader) {
+        checkGlError("createShader");
+        glDeleteProgram(program);
+        return 0;
+    }
+
+    // Create and compile the geometry shader
+    GLuint geomShader = createShader(GL_GEOMETRY_SHADER, geomSrc);
+    if (!geomShader) {
+        checkGlError("createShader");
+        glDeleteProgram(program);
+        glDeleteShader(vtxShader);
+        return 0;
+    }
+
+    // Create and compile the fragment shader
+    GLuint fragShader = createShader(GL_FRAGMENT_SHADER, fragSrc);
+    if (!fragShader) {
+        checkGlError("createShader");
+        glDeleteProgram(program);
+        glDeleteShader(vtxShader);
+        glDeleteShader(geomShader);
+        return 0;
+    }
+
+    glAttachShader(program, vtxShader);
+    glAttachShader(program, geomShader);
+    glAttachShader(program, fragShader);
+    glLinkProgram(program);
+    glDeleteShader(vtxShader);
+    glDeleteShader(geomShader);
+    glDeleteShader(fragShader);
+    return checkStatus(program, GL_LINK_STATUS);
+}
+
+GLuint View::createVertexTesselationControlTesselationEvaluationAndFragmentShaderProgram(const char *const vtxSrc, const char *const tescSrc, const char *const teseSrc, const char *const fragSrc) {
+    // Create the shader program
+    GLuint program = glCreateProgram();
+    if (!program) {
+        checkGlError("glCreateProgram");
+        return 0;
+    }
+
+    // Create and compile the vertex shader
+    GLuint vtxShader = createShader(GL_VERTEX_SHADER, vtxSrc);
+    if (!vtxShader) {
+        checkGlError("createShader");
+        glDeleteProgram(program);
+        return 0;
+    }
+
+    // Create and compile the tesselation control shader
+    GLuint tescShader = createShader(GL_TESS_CONTROL_SHADER, tescSrc);
+    if (!tescShader) {
+        checkGlError("createShader");
+        glDeleteProgram(program);
+        glDeleteShader(vtxShader);
+        return 0;
+    }
+
+    // Create and compile the tesselation evaluation shader
+    GLuint teseShader = createShader(GL_TESS_EVALUATION_SHADER, teseSrc);
+    if (!teseShader) {
+        checkGlError("createShader");
+        glDeleteProgram(program);
+        glDeleteShader(vtxShader);
+        glDeleteShader(tescShader);
+        return 0;
+    }
+
+    // Create and compile the fragment shader
+    GLuint fragShader = createShader(GL_FRAGMENT_SHADER, fragSrc);
+    if (!fragShader) {
+        checkGlError("createShader");
+        glDeleteProgram(program);
+        glDeleteShader(vtxShader);
+        glDeleteShader(tescShader);
+        glDeleteShader(teseShader);
+        return 0;
+    }
+
+    glAttachShader(program, vtxShader);
+    glAttachShader(program, tescShader);
+    glAttachShader(program, teseShader);
+    glAttachShader(program, fragShader);
+    glLinkProgram(program);
+    glDeleteShader(vtxShader);
+    glDeleteShader(tescShader);
+    glDeleteShader(teseShader);
+    glDeleteShader(fragShader);
+    return checkStatus(program, GL_LINK_STATUS);
+}
+
+GLuint View::createVertexTesselationControlTesselationEvaluationGeometryAndFragmentShaderProgram(const char *const vtxSrc, const char *const tescSrc, const char *const teseSrc, const char *const geomSrc, const char *const fragSrc) {
+    // Create the shader program
+    GLuint program = glCreateProgram();
+    if (!program) {
+        checkGlError("glCreateProgram");
+        return 0;
+    }
+
+    // Create and compile the vertex shader
+    GLuint vtxShader = createShader(GL_VERTEX_SHADER, vtxSrc);
+    if (!vtxShader) {
+        checkGlError("createShader");
+        glDeleteProgram(program);
+        return 0;
+    }
+
+    // Create and compile the tesselation control shader
+    GLuint tescShader = createShader(GL_TESS_CONTROL_SHADER, tescSrc);
+    if (!tescShader) {
+        checkGlError("createShader");
+        glDeleteProgram(program);
+        glDeleteShader(vtxShader);
+        return 0;
+    }
+
+    // Create and compile the tesselation evaluation shader
+    GLuint teseShader = createShader(GL_TESS_EVALUATION_SHADER, teseSrc);
+    if (!teseShader) {
+        checkGlError("createShader");
+        glDeleteProgram(program);
+        glDeleteShader(vtxShader);
+        glDeleteShader(tescShader);
+        return 0;
+    }
+
+    // Create and compile the geometry shader
+    GLuint geomShader = createShader(GL_GEOMETRY_SHADER, geomSrc);
+    if (!geomShader) {
+        checkGlError("createShader");
+        glDeleteProgram(program);
+        glDeleteShader(vtxShader);
+        glDeleteShader(tescShader);
+        glDeleteShader(teseShader);
+        return 0;
+    }
+
+    // Create and compile the fragment shader
+    GLuint fragShader = createShader(GL_FRAGMENT_SHADER, fragSrc);
+    if (!fragShader) {
+        checkGlError("createShader");
+        glDeleteProgram(program);
+        glDeleteShader(vtxShader);
+        glDeleteShader(tescShader);
+        glDeleteShader(teseShader);
+        glDeleteShader(geomShader);
+        return 0;
+    }
+
+    glAttachShader(program, vtxShader);
+    glAttachShader(program, tescShader);
+    glAttachShader(program, teseShader);
+    glAttachShader(program, geomShader);
+    glAttachShader(program, fragShader);
+    glLinkProgram(program);
+    glDeleteShader(vtxShader);
+    glDeleteShader(tescShader);
+    glDeleteShader(teseShader);
+    glDeleteShader(geomShader);
+    glDeleteShader(fragShader);
+    return checkStatus(program, GL_LINK_STATUS);
 }
 
 const bool View::supportsES32(){

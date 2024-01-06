@@ -5,7 +5,7 @@
 #include "CubeMapView.h"
 
 CubeMapView::CubeMapView() : View(){
-    mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
+    mProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     cubeMap = CubeMap::createSimpleTextureCubemap();
     environmentTriangleVAO = VertexArrayObject(CubeMap::environmentTriangleVertices, sizeof(cubeMap.environmentTriangleVertices) / sizeof(PositionXYZ));
 }

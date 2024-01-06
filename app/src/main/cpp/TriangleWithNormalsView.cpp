@@ -5,7 +5,7 @@
 #include "TriangleWithNormalsView.h"
 
 TriangleWithNormalsView::TriangleWithNormalsView() : View(){
-    mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
+    mProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     triangleWithNormalsVAO = VertexArrayObject(triangleVerticesNormals, sizeof(triangleVerticesNormals) / sizeof(PositionXYZNormalXYZ));
 }
 

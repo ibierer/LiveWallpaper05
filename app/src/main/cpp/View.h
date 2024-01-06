@@ -61,9 +61,15 @@ public:
 
     static GLuint createShader(const GLenum& shaderType, const char* const src);
 
-    static GLuint createProgram(const char* const vtxSrc, const char* const fragSrc);
+    static GLuint createComputeShaderProgram(const char *compSrc);
 
-    static GLuint generateComputeShaderProgram(const char *computeShaderSrcCode);
+    static GLuint createVertexAndFragmentShaderProgram(const char* const vtxSrc, const char* const fragSrc);
+
+    static GLuint createVertexGeometryAndFragmentShaderProgram(const char *const vtxSrc, const char *const geomSrc, const char *const fragSrc);
+
+    static GLuint createVertexTesselationControlTesselationEvaluationAndFragmentShaderProgram(const char *const vtxSrc, const char *const tescSrc, const char *const teseSrc, const char *const fragSrc);
+
+    static GLuint createVertexTesselationControlTesselationEvaluationGeometryAndFragmentShaderProgram(const char *const vtxSrc, const char *const tescSrc, const char *const teseSrc, const char *const geomSrc, const char *const fragSrc);
 
     static void printGlString(const char* const name, const GLenum& s);
 
@@ -95,8 +101,7 @@ private:
 
     int framesRendered;
 
-    const static bool supportsES32();
-
+    static const bool supportsES32();
 };
 
 

@@ -5,7 +5,7 @@
 #include "CubeView.h"
 
 CubeView::CubeView() : View() {
-    mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
+    mProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
 }
 

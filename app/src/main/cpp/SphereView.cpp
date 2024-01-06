@@ -5,7 +5,7 @@
 #include "SphereView.h"
 
 SphereView::SphereView() : View() {
-    mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
+    mProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     sphereVAO = VertexArrayObject(Sphere(1.0f, 100));
 }
 

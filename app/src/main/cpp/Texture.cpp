@@ -249,7 +249,8 @@ Texture& Texture::dynamicallyGenerateMandelbrotWithVertexShader(FBO& fbo, View* 
             "       outColor = vec4(fetchFromSpectrum(0.005f * float(iterations)), 1.0f);\n"
             "   }\n"
             "}\n";
-    GLuint mProgram = View::createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
+    GLuint mProgram = View::createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(),
+                                                                 FRAGMENT_SHADER.c_str());
 
     glUseProgram(mProgram);
     glUniform1i(glGetUniformLocation(mProgram, "image"), 0);

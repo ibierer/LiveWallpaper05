@@ -5,12 +5,20 @@
 #include "SphereWithFresnelEffectView.h"
 
 SphereWithFresnelEffectView::SphereWithFresnelEffectView() : View() {
-    sphereMapRefractionProgram = createProgram(VERTEX_SHADER.c_str(), SPHERE_MAP_REFRACTION_FRAGMENT_SHADER.c_str());
-    sphereMapDoubleRefractionProgram = createProgram(VERTEX_SHADER.c_str(), SPHERE_MAP_DOUBLE_REFRACTION_FRAGMENT_SHADER.c_str());
-    sphereMapBackgroundProgram = createProgram(BACKGROUND_VERTEX_SHADER.c_str(), SPHERE_MAP_BACKGROUND_FRAGMENT_SHADER.c_str());
-    cubeMapRefractionProgram = createProgram(VERTEX_SHADER.c_str(), CUBE_MAP_REFRACTION_FRAGMENT_SHADER.c_str());
-    cubeMapDoubleRefractionProgram = createProgram(VERTEX_SHADER.c_str(), CUBE_MAP_DOUBLE_REFRACTION_FRAGMENT_SHADER.c_str());
-    cubeMapBackgroundProgram = createProgram(BACKGROUND_VERTEX_SHADER.c_str(), CUBE_MAP_BACKGROUND_FRAGMENT_SHADER.c_str());
+    sphereMapRefractionProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(),
+                                                                      SPHERE_MAP_REFRACTION_FRAGMENT_SHADER.c_str());
+    sphereMapDoubleRefractionProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(),
+                                                                            SPHERE_MAP_DOUBLE_REFRACTION_FRAGMENT_SHADER.c_str());
+    sphereMapBackgroundProgram = createVertexAndFragmentShaderProgram(
+            BACKGROUND_VERTEX_SHADER.c_str(),
+            SPHERE_MAP_BACKGROUND_FRAGMENT_SHADER.c_str());
+    cubeMapRefractionProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(),
+                                                                    CUBE_MAP_REFRACTION_FRAGMENT_SHADER.c_str());
+    cubeMapDoubleRefractionProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(),
+                                                                          CUBE_MAP_DOUBLE_REFRACTION_FRAGMENT_SHADER.c_str());
+    cubeMapBackgroundProgram = createVertexAndFragmentShaderProgram(
+            BACKGROUND_VERTEX_SHADER.c_str(),
+            CUBE_MAP_BACKGROUND_FRAGMENT_SHADER.c_str());
     //environmentMap = CubeMap::createSimpleTextureCubemap();
     environmentMap = SphereMap(Texture::DefaultImages::MANDELBROT, 16384, 16384, this);
     sphereVAO = VertexArrayObject(Sphere(1.0f, 100));

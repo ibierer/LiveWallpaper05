@@ -5,10 +5,16 @@
 #include "SphereWithReflectionView.h"
 
 SphereWithReflectionView::SphereWithReflectionView() : View() {
-    sphereMapReflectionProgram = createProgram(VERTEX_SHADER.c_str(), SPHERE_MAP_REFLECTION_FRAGMENT_SHADER.c_str());
-    sphereMapBackgroundProgram = createProgram(BACKGROUND_VERTEX_SHADER.c_str(), SPHERE_MAP_BACKGROUND_FRAGMENT_SHADER.c_str());
-    cubeMapReflectionProgram = createProgram(VERTEX_SHADER.c_str(), CUBE_MAP_REFLECTION_FRAGMENT_SHADER.c_str());
-    cubeMapBackgroundProgram = createProgram(BACKGROUND_VERTEX_SHADER.c_str(), CUBE_MAP_BACKGROUND_FRAGMENT_SHADER.c_str());
+    sphereMapReflectionProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(),
+                                                                      SPHERE_MAP_REFLECTION_FRAGMENT_SHADER.c_str());
+    sphereMapBackgroundProgram = createVertexAndFragmentShaderProgram(
+            BACKGROUND_VERTEX_SHADER.c_str(),
+            SPHERE_MAP_BACKGROUND_FRAGMENT_SHADER.c_str());
+    cubeMapReflectionProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(),
+                                                                    CUBE_MAP_REFLECTION_FRAGMENT_SHADER.c_str());
+    cubeMapBackgroundProgram = createVertexAndFragmentShaderProgram(
+            BACKGROUND_VERTEX_SHADER.c_str(),
+            CUBE_MAP_BACKGROUND_FRAGMENT_SHADER.c_str());
     environmentMap = CubeMap::createSimpleTextureCubemap();
     //environmentMap = SphereMap(Texture::DefaultImages::MANDELBROT, 16384, 16384, this);
     sphereVAO = VertexArrayObject(Sphere(1.0f, 100));

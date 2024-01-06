@@ -6,7 +6,7 @@
 #include "VertexArrayObject.h"
 
 TriangleView::TriangleView() : View(){
-    mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
+    mProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     triangleVAO = VertexArrayObject(triangleVertices, sizeof(triangleVertices) / sizeof(PositionXYZ));
 }
 

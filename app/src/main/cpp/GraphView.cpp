@@ -392,7 +392,8 @@ private:
                     "}"
             };
 
-            computeShader.gComputeProgram = View::generateComputeShaderProgram(View::stringArrayToString(computeShaderCode, 1000).c_str());
+            computeShader.gComputeProgram = View::createComputeShaderProgram(
+                    View::stringArrayToString(computeShaderCode, 1000).c_str());
             _t = glGetUniformLocation(computeShader.gComputeProgram, "t");
             glGenBuffers(1, &computeShader.gVBO);
             computeShaderGenerated = true;
@@ -494,7 +495,7 @@ GraphView::GraphView() : View() {
 
 GraphView::GraphView(const string& equation) : View() {
     implicitGrapher = ImplicitGrapher(ivec3(29));
-    mProgram = createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
+    mProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     ImplicitGrapher::surfaceEquation = ImplicitGrapher::numOfEquationsInMemory;
     ImplicitGrapher::memoryEquations[ImplicitGrapher::numOfEquationsInMemory][1] = equation;
     ImplicitGrapher::processEquation(ImplicitGrapher::numOfEquationsInMemory);
@@ -504,7 +505,7 @@ GraphView::GraphView(const string& equation) : View() {
 
 
 
-    /*//cubeProgram = View::createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
+    /*//cubeProgram = View::createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     vector<shaderInfo> shaderInfoVector;
     shaderInfoVector.push_back({(int)Shader::ShaderType::VERTEX, VERTEX_SHADER});
     shaderInfoVector.push_back({(int)Shader::ShaderType::FRAGMENT, FRAGMENT_SHADER});
@@ -513,7 +514,8 @@ GraphView::GraphView(const string& equation) : View() {
     //simulation.initialize(Simulation::CPU_OPTION);
     simulation.initialize(Simulation::GPU_OPTION);*/
 
-    cubeProgram = View::createProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
+    cubeProgram = View::createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(),
+                                                             FRAGMENT_SHADER.c_str());
     cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
     //simulation.initialize(Simulation::CPU_OPTION);
     simulation.initialize(Simulation::GPU_OPTION);
