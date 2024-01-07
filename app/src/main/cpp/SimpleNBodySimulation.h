@@ -9,9 +9,11 @@
 class SimpleNBodySimulation : public Simulation {
 public:
 
-#define numCacheChunks 32
-#define starsPerChunk 16
-#define COUNT 512
+    static const int numCacheChunks = 32;
+
+    static const int starsPerChunk = 16;
+
+    static const int COUNT = 512;
 
     static const int OFFSET_ATTRIBUTE_LOCATION = 1;
 
@@ -29,18 +31,18 @@ public:
     // https://community.arm.com/developer/tools-software/graphics/b/blog/posts/get-started-with-compute-shaders
     string computeShaderCode[1000] = {
             "#version 320 es\n",
-            "const uint starsPerChunk = " STRV(starsPerChunk) "u;",
-            "const uint numCacheChunks = uint(" STRV(numCacheChunks) ");\n",
-            "const uint COUNT = " STRV(COUNT) "u;\n",
+            "const uint starsPerChunk = " + std::to_string(starsPerChunk) + "u;",
+            "const uint numCacheChunks = uint(" + std::to_string(numCacheChunks) + ");\n",
+            "const uint COUNT = " + std::to_string(COUNT) + "u;\n",
             "struct Particle {\n",
             "    vec3 position;\n",
             "    vec3 velocity;\n",
             "};\n",
             "struct cacheChunk{\n",
-            "    Particle stars[" STRV(starsPerChunk) "];\n",
+            "    Particle stars[" + std::to_string(starsPerChunk) + "];\n",
             "};\n",
             "layout(packed, binding = " + std::to_string(OFFSET_ATTRIBUTE_LOCATION) + ") buffer destBuffer{\n",
-            "	  cacheChunk chunks[" STRV(numCacheChunks) "];\n",
+            "	  cacheChunk chunks[" + std::to_string(numCacheChunks) + "];\n",
             "} outBuffer;\n",
             "uniform float t;\n",
             "uint task;\n",

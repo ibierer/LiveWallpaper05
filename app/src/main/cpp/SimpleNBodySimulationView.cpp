@@ -40,7 +40,7 @@ void SimpleNBodySimulationView::render(){
             GL_FALSE,
             (GLfloat*)&mvp);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, simulation.computeShader.gVBO);
-    cubeVAO.drawArraysInstanced(COUNT);
+    cubeVAO.drawArraysInstanced(SimpleNBodySimulation::COUNT);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
     simulation.simulate(false, false);

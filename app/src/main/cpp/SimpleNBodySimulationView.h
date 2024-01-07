@@ -22,7 +22,7 @@ public:
             "    vec3 velocity;\n"
             "};\n"
             "layout(packed, binding = " + std::to_string(SimpleNBodySimulation::OFFSET_ATTRIBUTE_LOCATION) + ") buffer destBuffer{\n"
-            "	 particle particles[" + std::to_string(COUNT) + "];\n"
+            "	 particle particles[" + std::to_string(SimpleNBodySimulation::COUNT) + "];\n"
             "} outBuffer;\n"
             "uniform mat4 mvp;\n"
             "out vec4 vColor;\n"
