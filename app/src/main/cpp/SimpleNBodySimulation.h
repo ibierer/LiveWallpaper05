@@ -10,15 +10,14 @@ class SimpleNBodySimulation : public Simulation {
 public:
 
 #define numCacheChunks 1024
-#define starsPerChunk 10
-#define COUNT 10240
+#define starsPerChunk 16
+#define COUNT 16384
 
-    struct cacheChunk { // 256 bytes
-        Simulation::Particle stars[starsPerChunk]; // 240 bytes
-        float padding[4]; // Profile this padding
+    struct cacheChunk { // 384 bytes
+        Simulation::Particle stars[starsPerChunk];
     };
 
-    struct __attribute__((aligned(256))) SimpleNBodySimulationData { // 2^18 (256K) bytes
+    struct __attribute__((aligned(128))) SimpleNBodySimulationData { // 393216 bytes
         union {
             Particle stars[COUNT]; // CPU computation data
             cacheChunk chunks[numCacheChunks]; // GPU computation data
@@ -37,7 +36,6 @@ public:
             "};\n",
             "struct cacheChunk{\n",
             "    Particle stars[starsPerChunk];\n",
-            "    float padding[4]; // Profile this padding\n",
             "};\n",
             "layout(packed, binding = 0) buffer destBuffer{\n",
             "	  cacheChunk chunks[numCacheChunks];\n",
