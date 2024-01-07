@@ -99,8 +99,8 @@ void GraphView::render(){
 
 
     glUseProgram(cubeProgram);
-    for(int i = 0; i < numCacheChunks; i++){
-        for(int j = 0; j < starsPerChunk && starsPerChunk * i + j < COUNT; j++){
+    for(int i = 0; i < SimpleNBodySimulation::numCacheChunks; i++){
+        for(int j = 0; j < SimpleNBodySimulation::starsPerChunk && SimpleNBodySimulation::starsPerChunk * i + j < SimpleNBodySimulation::COUNT; j++){
             Matrix4<float> translation2;
             translation2.SetTranslation(Vec3<float>(
                     simulation.data->chunks[i].stars[j].position.x,
