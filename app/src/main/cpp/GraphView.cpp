@@ -108,7 +108,7 @@ public:
     };
 
     struct __attribute__((aligned(128))) SimpleNBodySimulationData {
-        union{
+        union {
             Particle stars[COUNT];
             cacheChunk chunks[numCacheChunks];
         };
