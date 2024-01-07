@@ -68,67 +68,77 @@ using std::to_string;
 
 #include <EGL/egl.h>
 
-#define numCacheChunks 1024
-#define starsPerChunk 8
-//#define starsPerChunk 13
-//#define starsPerChunk 21
-#define COUNT 8192
-//#define COUNT 13312
-//#define COUNT 21504
+class Computation {
 
-float getRandomFloat(float x) {
-    float random = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
-    return random * x;
-}
-
-struct Star {
-    vec3 position;
-    vec3 velocity;
-};
-
-struct cacheChunk{
-    Star stars[starsPerChunk]; // 16 * 24 bytes = 3 * 128 bytes
-    //float padding[16 + 0];
-};
-
-struct __attribute__((aligned(128))) SimulationData {
-    union{
-        Star stars[COUNT];
-        cacheChunk chunks[numCacheChunks];
-    };
-};
-
-SimulationData* data;
-
-class Simulation{
 public:
+
+    ComputeShader computeShader;
+
+protected:
+
+    int computationOption;
+
+private:
+
+};
+
+class Simulation : public Computation {
+
+public:
+
+    struct Particle {
+        vec3 position;
+        vec3 velocity;
+    };
+
+private:
+
+};
+
+class SimpleNBodySimulation : public Simulation {
+public:
+
+    #define numCacheChunks 1024
+    #define starsPerChunk 8
+    #define COUNT 8192
+
+    struct cacheChunk {
+        Simulation::Particle stars[starsPerChunk]; // 16 * 24 bytes = 3 * 128 bytes
+        //float padding[16 + 0];
+    };
+
+    struct __attribute__((aligned(128))) SimpleNBodySimulationData {
+        union{
+            Particle stars[COUNT];
+            cacheChunk chunks[numCacheChunks];
+        };
+    };
+
+    SimpleNBodySimulationData* data;
 
     double t;
     GLuint _t;
     static const int CPU_OPTION = 0;
     static const int GPU_OPTION = 1;
 
-    Simulation(){
+    SimpleNBodySimulation(){
 
     }
 
-    ~Simulation(){
-        //free(data);
-        //delete data;
-        // Delete buffer object graphComputeShader.gVBO
-        glDeleteBuffers(1, &computeShader.gVBO);
+    ~SimpleNBodySimulation(){
+
     }
 
-    void initialize(int simulationOption){
-        this->simulationOption = simulationOption;
-        data = (SimulationData*)malloc(sizeof(SimulationData));
+    void initialize(int simulationOption) {
+        this->computationOption = simulationOption;
+        data = (SimpleNBodySimulationData*)malloc(sizeof(SimpleNBodySimulationData));
         t = 0.0;
         dt = 1.0f;
         seed();
     }
 
     void simulate(bool pushDataToGPU){
-        switch(simulationOption){
+        switch(computationOption){
             case CPU_OPTION:
                 simulateOnCPU();
                 break;
@@ -139,13 +149,10 @@ public:
         t += dt;
     }
 
-    int simulationOption; // Should be private
 private:
 
     float dt;
     bool computeShaderGenerated = false;
-
-    ComputeShader computeShader;
 
     void simulateOnCPU(){
         vec3 gravitySum[COUNT];
@@ -179,19 +186,16 @@ private:
                     "const uint starsPerChunk = " STRV(starsPerChunk) "u;",
                     "const uint numCacheChunks = uint(" STRV(numCacheChunks) ");\n",
                     "const uint COUNT = " STRV(COUNT) "u;\n",
-                    "struct Star{\n",
+                    "struct Particle{\n",
                     "	vec3 position;\n",
                     "	vec3 velocity;\n",
                     "};\n",
                     "struct cacheChunk{\n",
-                    "	Star stars[starsPerChunk];\n",
+                    "	Particle stars[starsPerChunk];\n",
                     "	//float padding[16 + 0];// Profile this padding\n",
                     "};\n",
-                    "struct SimulationData{\n",
-                    "	cacheChunk chunks[numCacheChunks];\n",
-                    "};\n",
                     "layout(packed, binding = 0) buffer destBuffer{\n",
-                    "	SimulationData data;\n",
+                    "	cacheChunk chunks[numCacheChunks];\n",
                     "} outBuffer;\n",
                     "uniform float t;\n",
                     "uint task;\n",
@@ -206,7 +210,7 @@ private:
                     "				for(uint k = 0u; k < starsPerChunk && starsPerChunk * j + k < COUNT; k++){\n",
                     "					if(starsPerChunk * j + k == starsPerChunk * task + type)\n",
                     "						continue;\n",
-                    "					vec3 difference = outBuffer.data.chunks[j].stars[k].position - outBuffer.data.chunks[task].stars[type].position;\n",
+                    "					vec3 difference = outBuffer.chunks[j].stars[k].position - outBuffer.chunks[task].stars[type].position;\n",
                     "					float differenceSquared = dot(difference, difference);\n",
                     "					float distance = sqrt(differenceSquared);\n",
                     "					gravitySum[type] += difference / distance / differenceSquared;\n",
@@ -215,15 +219,14 @@ private:
                     "		}\n",
                     "		barrier();\n",
                     "		for(uint type = 0u; type < starsPerChunk && starsPerChunk * task + type < COUNT; type++){\n",
-                    "			outBuffer.data.chunks[task].stars[type].velocity += gravitySum[type];\n",
-                    "			outBuffer.data.chunks[task].stars[type].position += outBuffer.data.chunks[task].stars[type].velocity;\n",
+                    "			outBuffer.chunks[task].stars[type].velocity += gravitySum[type];\n",
+                    "			outBuffer.chunks[task].stars[type].position += outBuffer.chunks[task].stars[type].velocity;\n",
                     "		}\n",
                     "	}\n",
                     "}"
             };
 
-            computeShader.gComputeProgram = View::createComputeShaderProgram(
-                    View::stringArrayToString(computeShaderCode, 1000).c_str());
+            computeShader.gComputeProgram = View::createComputeShaderProgram(View::stringArrayToString(computeShaderCode, 1000).c_str());
             _t = glGetUniformLocation(computeShader.gComputeProgram, "t");
             glGenBuffers(1, &computeShader.gVBO);
             computeShaderGenerated = true;
@@ -246,7 +249,7 @@ private:
         // Bind buffer object simulation.computeShader.gVBO to target GL_ARRAY_BUFFER
         glBindBuffer(GL_ARRAY_BUFFER, computeShader.gVBO);
         // Map a section of buffer object simulation.computeShader.gVBO's data store
-        data = (SimulationData*)glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, sizeof(SimulationData), GL_MAP_READ_BIT);
+        data = (SimpleNBodySimulationData*)glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, sizeof(SimpleNBodySimulationData), GL_MAP_READ_BIT);
         // Unmap buffer object simulation.computeShader.gVBO's data store
         glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 
@@ -256,12 +259,17 @@ private:
     void pushData2GPU(){
         // Bind buffer object simulation.computeShader.gVBO to indexed buffer target GL_SHADER_STORAGE_BUFFER at index simulation.computeShader.gIndexBufferBinding
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, computeShader.gIndexBufferBinding, computeShader.gVBO);
-        // Create and initialize data store for buffer object simulation.computeShader.gVBO with a size of sizeof(SimulationData) and dynamically copy data to it from pointer location verts
-        glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(SimulationData), data, GL_DYNAMIC_COPY);// STREAM = infrequent use and changes, STATIC = frequent use and infrequent changes, DYNAMIC = frequent use and frequent changes
+        // Create and initialize data store for buffer object simulation.computeShader.gVBO with a size of sizeof(SimpleNBodySimulationData) and dynamically copy data to it from pointer location verts
+        glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(SimpleNBodySimulationData), data, GL_DYNAMIC_COPY);// STREAM = infrequent use and changes, STATIC = frequent use and infrequent changes, DYNAMIC = frequent use and frequent changes
+    }
+
+    float getRandomFloat(float x) {
+        float random = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
+        return random * x;
     }
 
     bool seed() {
-        switch(simulationOption){
+        switch(computationOption){
             case CPU_OPTION:
                 for(int i = 0; i < COUNT; i++){
                     data->stars[i].position = vec3(getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f);
@@ -280,7 +288,7 @@ private:
         return true;
     }
 };
-Simulation simulation;
+SimpleNBodySimulation simulation;
 
 VertexArrayObject cubeVAO;
 
@@ -333,7 +341,7 @@ GraphView::GraphView(const string& equation) : View() {
 
     cubeProgram = View::createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(),FRAGMENT_SHADER.c_str());
     cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
-    simulation.initialize(Simulation::GPU_OPTION);
+    simulation.initialize(SimpleNBodySimulation::GPU_OPTION);
 }
 
 GraphView::~GraphView(){
@@ -521,9 +529,9 @@ void GraphView::render(){
         for(int j = 0; j < starsPerChunk && starsPerChunk * i + j < COUNT; j++){
             Matrix4<float> translation2;
             translation2.SetTranslation(Vec3<float>(
-                    data->chunks[i].stars[j].position.x,
-                    data->chunks[i].stars[j].position.y,
-                    data->chunks[i].stars[j].position.z
+                    simulation.data->chunks[i].stars[j].position.x,
+                    simulation.data->chunks[i].stars[j].position.y,
+                    simulation.data->chunks[i].stars[j].position.z
             ));
             mvp = orientationAdjustedPerspective * translation * rotation * translation2;
             glUniformMatrix4fv(

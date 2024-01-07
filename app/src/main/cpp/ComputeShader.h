@@ -8,9 +8,15 @@
 
 class ComputeShader {
 public:
+
     GLuint gComputeProgram;
+
     GLuint gVBO;
+
     static const GLuint gIndexBufferBinding = 0;
+
+private:
+
 };
 
 
