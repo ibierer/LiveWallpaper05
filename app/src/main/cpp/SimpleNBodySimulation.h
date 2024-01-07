@@ -9,9 +9,9 @@
 class SimpleNBodySimulation : public Simulation {
 public:
 
-#define numCacheChunks 1024
+#define numCacheChunks 32
 #define starsPerChunk 16
-#define COUNT 16384
+#define COUNT 512
 
     static const int OFFSET_ATTRIBUTE_LOCATION = 1;
 
