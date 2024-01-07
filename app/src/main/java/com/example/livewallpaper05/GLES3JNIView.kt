@@ -1,5 +1,6 @@
 package com.example.livewallpaper05
 
+import android.app.Activity
 import android.content.Context
 import android.opengl.GLSurfaceView
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo
@@ -57,7 +58,11 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
         }
 
         override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {
-            PreviewActivity.resize(width, height, 0)
+            var orientation = 0
+            if (context != null) {
+                orientation = mViewModel.getOrientation(this.context as Activity)
+            }
+            PreviewActivity.resize(width, height, orientation)
         }
 
         override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
