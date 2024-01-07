@@ -27,167 +27,6 @@ using std::to_string;
 
 
 
-#include <fstream>
-
-using std::ifstream;
-using std::stringstream;
-using std::vector;
-
-/* Much of the following was found at
-https://www.youtube.com/watch?v=2pv0Fbo-7ms&list=PLlrATfBNZ98foTJPJ_Ev03o2oq3-GGOS2&index=9 */
-static GLuint compileShader(GLuint type, const string& source) {
-    GLuint id = glCreateShader(type);
-    const char* src = source.c_str();
-    glShaderSource(id, 1, &src, nullptr);
-    glCompileShader(id);
-    int result;
-    glGetShaderiv(id, GL_COMPILE_STATUS, &result);
-    if (result == GL_FALSE) {
-        int length;
-        glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
-        char* message = (char*)alloca(length * sizeof(char));
-        glGetShaderInfoLog(id, length, &length, message);
-        string messageString = "Failed to compileFromSingleFile ";
-        switch (type) {
-            case GL_VERTEX_SHADER:
-                messageString += "vertex";
-                break;
-            case GL_TESS_CONTROL_SHADER:
-                messageString += "tesselation control";
-                break;
-            case GL_TESS_EVALUATION_SHADER:
-                messageString += "tesselation evaluation";
-                break;
-            case GL_GEOMETRY_SHADER:
-                messageString += "geometry";
-                break;
-            case GL_FRAGMENT_SHADER:
-                messageString += "fragment";
-                break;
-            case GL_COMPUTE_SHADER:
-                messageString += "compute";
-                break;
-        }
-        messageString += " shader!\n" + string(message);
-        ALOGE("%s", messageString.c_str());
-        glDeleteShader(id);
-        free(message);
-        return 0;
-    }
-    return id;
-}
-
-struct shaderInfo {
-    const int& type;
-    const string& source;
-};
-
-GLuint compileAndAttachShadersLinkAndValidateProgramDeleteShaders(vector<shaderInfo> shaderInfoVector) {
-    GLuint programId = glCreateProgram();
-    GLuint shaderId;
-    for (vector<shaderInfo>::iterator it = shaderInfoVector.begin(); it != shaderInfoVector.end(); ++it) {
-        switch (it->type) {
-            case 0:
-                shaderId = compileShader(GL_VERTEX_SHADER, it->source);
-                break;
-            case 1:
-                shaderId = compileShader(GL_TESS_CONTROL_SHADER, it->source);
-                break;
-            case 2:
-                shaderId = compileShader(GL_TESS_EVALUATION_SHADER, it->source);
-                break;
-            case 3:
-                shaderId = compileShader(GL_GEOMETRY_SHADER, it->source);
-                break;
-            case 4:
-                shaderId = compileShader(GL_FRAGMENT_SHADER, it->source);
-                break;
-            case 5:
-                shaderId = compileShader(GL_COMPUTE_SHADER, it->source);
-                break;
-        }
-        glAttachShader(programId, shaderId);
-    }
-
-    glLinkProgram(programId);
-    glValidateProgram(programId);
-
-    for (vector<shaderInfo>::iterator it = shaderInfoVector.begin(); it != shaderInfoVector.end(); ++it) {
-        glDeleteShader(shaderId);
-    }
-}
-
-class Shader {
-public:
-    enum class ShaderType {
-        NONE = -1,
-        VERTEX = 0,
-        TESSELLATION_CONTROL = 1,
-        TESSELLATION_EVALUATION = 2,
-        GEOMETRY = 3,
-        FRAGMENT = 4,
-        COMPUTE = 5
-    };
-    string filepath;
-    GLuint compileFromSingleFile(const string& filepath) {
-        this->filepath = filepath;
-
-        bool source_exists[6] = { false, false, false, false, false, false };
-
-        ifstream stream(this->filepath);
-        string line;
-        string ss[6];
-        ShaderType type = ShaderType::NONE;
-        while (getline(stream, line)) {
-            if (line.find("#shader") != string::npos) {
-                if (line.find("vertex") != string::npos) {
-                    // set mode to vertex
-                    type = ShaderType::VERTEX;
-                    source_exists[(int)type] = true;
-                }
-                else if (line.find("tessellation_control") != string::npos) {
-                    // set mode to tessellation_control
-                    type = ShaderType::TESSELLATION_CONTROL;
-                    source_exists[(int)type] = true;
-                }
-                else if (line.find("tessellation_evaluation") != string::npos) {
-                    // set mode to tessellation_evaluation
-                    type = ShaderType::TESSELLATION_EVALUATION;
-                    source_exists[(int)type] = true;
-                }
-                else if (line.find("geometry") != string::npos) {
-                    // set mode to geometry
-                    type = ShaderType::GEOMETRY;
-                    source_exists[(int)type] = true;
-                }
-                else if (line.find("fragment") != string::npos) {
-                    // set mode to fragment
-                    type = ShaderType::FRAGMENT;
-                    source_exists[(int)type] = true;
-                }
-                else if (line.find("compute") != string::npos) {
-                    // set mode to compute
-                    type = ShaderType::COMPUTE;
-                    source_exists[(int)type] = true;
-                }
-            }
-            else {
-                ss[(int)type] = line + "\n";
-            }
-        }
-
-        vector<shaderInfo> shaderInfoVector;
-        for (int i = 0; i < 6; i++) {
-            if (source_exists[i]) {
-                shaderInfoVector.push_back({i, ss[i].c_str()});
-            }
-        }
-        return compileAndAttachShadersLinkAndValidateProgramDeleteShaders(shaderInfoVector);
-    }
-    void compile() {
-        compileFromSingleFile(filepath);
-    }
-};
 
 
 
@@ -208,12 +47,7 @@ public:
 
 
 
-class ComputeShader {
-public:
-    GLuint gComputeProgram;
-    GLuint gVBO;
-    static const GLuint gIndexBufferBinding = 0;
-};
+
 
 /*
  * Copyright (C) 2010 The Android Open Source Project
@@ -246,10 +80,6 @@ float getRandomFloat(float x) {
     float random = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
     return random * x;
 }
-
-const int PORTRAIT = 0;
-const int LANDSCAPE = 1;
-int orientation = PORTRAIT;
 
 struct Star {
     vec3 position;
@@ -500,24 +330,9 @@ GraphView::GraphView(const string& equation) : View() {
     ImplicitGrapher::memoryEquations[ImplicitGrapher::numOfEquationsInMemory][1] = equation;
     ImplicitGrapher::processEquation(ImplicitGrapher::numOfEquationsInMemory);
     ImplicitGrapher::numOfEquationsInMemory++;
-    /*glGenBuffers(1, &ImplicitGrapher::computeShaderVBO);
-    ImplicitGrapher::indexBufferBinding = 0;*/
 
-
-
-    /*//cubeProgram = View::createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
-    vector<shaderInfo> shaderInfoVector;
-    shaderInfoVector.push_back({(int)Shader::ShaderType::VERTEX, VERTEX_SHADER});
-    shaderInfoVector.push_back({(int)Shader::ShaderType::FRAGMENT, FRAGMENT_SHADER});
-    cubeProgram = compileAndAttachShadersLinkAndValidateProgramDeleteShaders(shaderInfoVector);
+    cubeProgram = View::createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(),FRAGMENT_SHADER.c_str());
     cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
-    //simulation.initialize(Simulation::CPU_OPTION);
-    simulation.initialize(Simulation::GPU_OPTION);*/
-
-    cubeProgram = View::createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(),
-                                                             FRAGMENT_SHADER.c_str());
-    cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
-    //simulation.initialize(Simulation::CPU_OPTION);
     simulation.initialize(Simulation::GPU_OPTION);
 }
 

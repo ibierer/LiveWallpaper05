@@ -36,6 +36,7 @@
 #include "TriangleView.cpp"
 #include "TriangleWithNormalsView.cpp"
 #include "ImplicitGrapher.cpp"
+#include "ComputeShader.cpp"
 #include "GraphView.cpp"
 #include "SimulationView.cpp"
 #include "BarnesHut.cpp"
