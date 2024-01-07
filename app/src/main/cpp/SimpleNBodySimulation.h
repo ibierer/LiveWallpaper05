@@ -19,7 +19,7 @@ public:
         Simulation::Particle stars[starsPerChunk];
     };
 
-    struct __attribute__((aligned(128))) SimpleNBodySimulationData { // 393216 bytes
+    struct __attribute__((aligned(128))) SimpleNBodySimulationData { // 12,288 bytes
         union {
             Particle stars[COUNT]; // CPU computation data
             cacheChunk chunks[numCacheChunks]; // GPU computation data
