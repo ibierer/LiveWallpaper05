@@ -34,5 +34,5 @@ void CubeView::render(){
             GL_FALSE,
             (GLfloat*)&mvp);
 
-    cubeVAO.draw();
+    cubeVAO.drawArrays();
 }

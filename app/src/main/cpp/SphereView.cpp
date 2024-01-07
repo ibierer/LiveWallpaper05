@@ -34,5 +34,5 @@ void SphereView::render(){
             GL_FALSE,
             (GLfloat*)&mvp);
 
-    sphereVAO.draw();
+    sphereVAO.drawArrays();
 }

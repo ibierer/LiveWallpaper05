@@ -33,5 +33,5 @@ void SphereMapView::render(){
     glBindTexture(GL_TEXTURE_2D, sphereMap.getTextureId());
     //glActiveTexture(GL_TEXTURE0);
 
-    environmentTriangleVAO.draw();
+    environmentTriangleVAO.drawArrays();
 }

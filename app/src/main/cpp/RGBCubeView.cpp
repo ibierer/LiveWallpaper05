@@ -28,7 +28,7 @@ void RGBCubeView::render(){
             1,
             GL_FALSE,
             (GLfloat*)&mvp);
-    mBoxVAO.draw();
+    mBoxVAO.drawArrays();
 
     checkGlError("Renderer::render");
 }

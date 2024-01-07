@@ -50,7 +50,7 @@ void RenderToTextureView::render(){
     glBindTexture(GL_TEXTURE_2D, texture.getTextureId());
     glUniform1i(glGetUniformLocation(mProgram, "image"), 0);
 
-    tilesVAO.draw();
+    tilesVAO.drawArrays();
 
     width = storeWidth;
     height = storeHeight;
@@ -70,5 +70,5 @@ void RenderToTextureView::render(){
     glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
     glUniform1i(glGetUniformLocation(mProgram, "image"), 1);
 
-    tilesVAO.draw();
+    tilesVAO.drawArrays();
 }

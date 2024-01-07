@@ -30,5 +30,5 @@ void CubeMapView::render(){
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap.getTextureId());
     //glActiveTexture(GL_TEXTURE0);
 
-    environmentTriangleVAO.draw();
+    environmentTriangleVAO.drawArrays();
 }

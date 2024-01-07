@@ -13,7 +13,7 @@ public:
 
     GLuint gVBO;
 
-    static const GLuint gIndexBufferBinding = 0;
+    GLuint gIndexBufferBinding;
 
 private:
 

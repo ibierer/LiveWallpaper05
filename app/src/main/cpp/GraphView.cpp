@@ -59,8 +59,9 @@ GraphView::GraphView(const string& equation) : View() {
 
     cubeProgram = View::createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(),FRAGMENT_SHADER.c_str());
     cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
-    simulation.initialize(Computation::ComputationOptions::CPU);
-    //simulation.initialize(Computation::ComputationOptions::GPU);
+    //simulation.initialize(Computation::ComputationOptions::CPU);
+    simulation.initialize(Computation::ComputationOptions::GPU);
+    simulation.computeShader.gIndexBufferBinding = 1;
 }
 
 GraphView::~GraphView(){
@@ -97,25 +98,6 @@ void GraphView::render(){
     glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    simulation.simulate(false);
     glUseProgram(cubeProgram);
     for(int i = 0; i < numCacheChunks; i++){
         for(int j = 0; j < starsPerChunk && starsPerChunk * i + j < COUNT; j++){
@@ -131,8 +113,10 @@ void GraphView::render(){
                     1,
                     GL_FALSE,
                     (GLfloat*)&mvp);
-            cubeVAO.draw();
+            cubeVAO.drawArrays();
             //ALOGI("data->chunks[type].stars[j].position = %s\n", data->chunks[type].stars[j].position.str().c_str());
         }
     }
+
+    simulation.simulate(false, true);
 }

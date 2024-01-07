@@ -32,19 +32,19 @@ void SimpleNBodySimulation::simulateOnCPU(){
     }
 }
 
-void SimpleNBodySimulation::simulate(bool pushDataToGPU){
+void SimpleNBodySimulation::simulate(bool pushDataToGPU, bool retrieveDataFromGPU) {
     switch(computationOption){
         case CPU:
             simulateOnCPU();
             break;
         case GPU:
-            simulateOnGPU(pushDataToGPU);
+            simulateOnGPU(pushDataToGPU, retrieveDataFromGPU);
             break;
     }
     t += dt;
 }
 
-void SimpleNBodySimulation::simulateOnGPU(bool pushDataToGPU){
+void SimpleNBodySimulation::simulateOnGPU(bool pushDataToGPU, bool retrieveDataFromGPU) {
 
     bool pushed = false;
 
@@ -68,12 +68,14 @@ void SimpleNBodySimulation::simulateOnGPU(bool pushDataToGPU){
     glDispatchCompute(1, 1, 1);
     // Define the end of the ongoing GPU computation as the barrier after which the CPU code may continue to execute
     glMemoryBarrier(GL_ALL_BARRIER_BITS);
-    // Bind buffer object simulation.computeShader.gVBO to target GL_ARRAY_BUFFER
-    glBindBuffer(GL_ARRAY_BUFFER, computeShader.gVBO);
-    // Map a section of buffer object simulation.computeShader.gVBO's data store
-    data = (SimpleNBodySimulationData*)glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, sizeof(SimpleNBodySimulationData), GL_MAP_READ_BIT);
-    // Unmap buffer object simulation.computeShader.gVBO's data store
-    glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+    if(retrieveDataFromGPU) {
+        // Bind buffer object simulation.computeShader.gVBO to target GL_ARRAY_BUFFER
+        glBindBuffer(GL_ARRAY_BUFFER, computeShader.gVBO);
+        // Map a section of buffer object simulation.computeShader.gVBO's data store
+        data = (SimpleNBodySimulationData*)glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, sizeof(SimpleNBodySimulationData), GL_MAP_READ_BIT);
+        // Unmap buffer object simulation.computeShader.gVBO's data store
+        glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+    }
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }

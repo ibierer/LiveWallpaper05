@@ -97,7 +97,7 @@ void RenderToCubeMapView::render(){
                 1,
                 GL_FALSE,
                 (GLfloat*)&mvp);
-        tilesVAO.draw();
+        tilesVAO.drawArrays();
     }
 
     width = storeWidth;
@@ -122,5 +122,5 @@ void RenderToCubeMapView::render(){
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapFBO.cubeMap.getTextureId());
     glUniform1i(glGetUniformLocation(mProgram, "environmentTexture"), 1);
 
-    environmentTriangleVAO.draw();
+    environmentTriangleVAO.drawArrays();
 }

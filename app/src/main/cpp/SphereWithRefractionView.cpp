@@ -70,7 +70,7 @@ void SphereWithRefractionView::render(){
     glBindTexture(GL_TEXTURE_CUBE_MAP, environmentMap.getTextureId());
     //glActiveTexture(GL_TEXTURE0);
 
-    environmentTriangleVAO.draw();*/
+    environmentTriangleVAO.drawArrays();*/
 
 
     /*glUseProgram(sphereMapRefractionProgram);
@@ -97,7 +97,7 @@ void SphereWithRefractionView::render(){
     glBindTexture(GL_TEXTURE_2D, environmentMap.getTextureId());
     //glActiveTexture(GL_TEXTURE0);
 
-    environmentTriangleVAO.draw();*/
+    environmentTriangleVAO.drawArrays();*/
 
 
     glUseProgram(sphereMapDoubleRefractionProgram);
@@ -112,7 +112,7 @@ void SphereWithRefractionView::render(){
             GL_FALSE,
             (GLfloat*)&cameraTransformation);
 
-    sphereVAO.draw();
+    sphereVAO.drawArrays();
 
 
     glUseProgram(sphereMapBackgroundProgram);
@@ -124,7 +124,7 @@ void SphereWithRefractionView::render(){
     glBindTexture(GL_TEXTURE_2D, environmentMap.getTextureId());
     //glActiveTexture(GL_TEXTURE0);
 
-    environmentTriangleVAO.draw();
+    environmentTriangleVAO.drawArrays();
 
 
     /*glUseProgram(cubeMapDoubleRefractionProgram);
@@ -151,5 +151,5 @@ void SphereWithRefractionView::render(){
     glBindTexture(GL_TEXTURE_CUBE_MAP, environmentMap.getTextureId());
     //glActiveTexture(GL_TEXTURE0);
 
-    environmentTriangleVAO.draw();*/
+    environmentTriangleVAO.drawArrays();*/
 }

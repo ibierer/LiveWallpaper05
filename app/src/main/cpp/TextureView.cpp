@@ -37,5 +37,5 @@ void TextureView::render(){
             (GLfloat*)&mvp);
     glBindTexture(GL_TEXTURE_2D, texture.getTextureId());
 
-    tileVAO.draw();
+    tileVAO.drawArrays();
 }

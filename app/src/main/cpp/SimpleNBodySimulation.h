@@ -13,6 +13,8 @@ public:
 #define starsPerChunk 16
 #define COUNT 16384
 
+    static const int OFFSET_ATTRIBUTE_LOCATION = 1;
+
     struct cacheChunk { // 384 bytes
         Simulation::Particle stars[starsPerChunk];
     };
@@ -35,10 +37,10 @@ public:
             "    vec3 velocity;\n",
             "};\n",
             "struct cacheChunk{\n",
-            "    Particle stars[starsPerChunk];\n",
+            "    Particle stars[" STRV(starsPerChunk) "];\n",
             "};\n",
-            "layout(packed, binding = 0) buffer destBuffer{\n",
-            "	  cacheChunk chunks[numCacheChunks];\n",
+            "layout(packed, binding = " + std::to_string(OFFSET_ATTRIBUTE_LOCATION) + ") buffer destBuffer{\n",
+            "	  cacheChunk chunks[" STRV(numCacheChunks) "];\n",
             "} outBuffer;\n",
             "uniform float t;\n",
             "uint task;\n",
@@ -83,7 +85,7 @@ public:
 
     void initialize(int computationOption);
 
-    void simulate(bool pushDataToGPU);
+    void simulate(bool pushDataToGPU, bool retrieveDataFromGPU);
 
 private:
 
@@ -91,7 +93,7 @@ private:
 
     void simulateOnCPU();
 
-    void simulateOnGPU(bool pushDataToGPU);
+    void simulateOnGPU(bool pushDataToGPU, bool retrieveDataFromGPU);
 
     void pushData2GPU();
 

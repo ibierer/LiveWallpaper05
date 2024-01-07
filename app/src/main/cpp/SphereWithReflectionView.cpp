@@ -54,7 +54,7 @@ void SphereWithReflectionView::render(){
             GL_FALSE,
             (GLfloat*)&cameraTransformation);
 
-    sphereVAO.draw();
+    sphereVAO.drawArrays();
 
 
     glUseProgram(cubeMapBackgroundProgram);
@@ -66,7 +66,7 @@ void SphereWithReflectionView::render(){
     glBindTexture(GL_TEXTURE_CUBE_MAP, environmentMap.getTextureId());
     //glActiveTexture(GL_TEXTURE0);
 
-    environmentTriangleVAO.draw();
+    environmentTriangleVAO.drawArrays();
 
 
     /*glUseProgram(sphereMapReflectionProgram);
@@ -93,5 +93,5 @@ void SphereWithReflectionView::render(){
     glBindTexture(GL_TEXTURE_2D, environmentMap.getTextureId());
     //glActiveTexture(GL_TEXTURE0);
 
-    environmentTriangleVAO.draw();*/
+    environmentTriangleVAO.drawArrays();*/
 }

@@ -41,7 +41,7 @@ void NaiveView::render(){
                 1.0f
         );
         glUniform4fv(glGetUniformLocation(mProgram, "color"), 1, color.v);
-        cubeVAO.draw();
+        cubeVAO.drawArrays();
     }
 
     for(int i = 0; i < 5; i++){

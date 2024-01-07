@@ -15,6 +15,8 @@ public:
 
     GLuint getBufferObjectId();
 
+    int getNumVertices();
+
     VertexArrayObject();
 
     VertexArrayObject(const PositionXYZ* vertices, const int& count);
@@ -33,7 +35,9 @@ public:
 
     ~VertexArrayObject();
 
-    void draw();
+    void drawArrays();
+
+    void drawArraysInstanced(const int& instanceCount);
 
 private:
 

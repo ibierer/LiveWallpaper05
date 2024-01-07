@@ -32,7 +32,7 @@ void TriangleWithNormalsView::render(){
             GL_FALSE,
             (GLfloat*)&mvp);
 
-    triangleWithNormalsVAO.draw();
+    triangleWithNormalsVAO.drawArrays();
 
     glDisable(GL_DEPTH_TEST);
 }

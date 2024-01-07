@@ -43,6 +43,6 @@ void DrawWithFragmentShaderView::render(){
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, texture.getTextureId());
     glUniform1i(glGetUniformLocation(mProgram, "image"), 1);
-    tilesVAO.draw();
+    tilesVAO.drawArrays();
     glBindTexture(GL_TEXTURE_2D, 0);
 }

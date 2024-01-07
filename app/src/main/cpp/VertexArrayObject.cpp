@@ -101,8 +101,18 @@ VertexArrayObject::VertexArrayObject(const TriangleStripObject &triangleStripObj
     }
 }
 
-void VertexArrayObject::draw(){
+void VertexArrayObject::drawArrays(){
     glBindVertexArray(mVAO);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, numVertices);
     glBindVertexArray(0);
+}
+
+void VertexArrayObject::drawArraysInstanced(const int& instanceCount){
+    glBindVertexArray(mVAO);
+    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, numVertices, instanceCount);
+    glBindVertexArray(0);
+}
+
+int VertexArrayObject::getNumVertices() {
+    return numVertices;
 }
