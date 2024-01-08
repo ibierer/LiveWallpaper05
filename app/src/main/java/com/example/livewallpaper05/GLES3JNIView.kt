@@ -1,8 +1,10 @@
 package com.example.livewallpaper05
 
 import android.app.Activity
+import android.app.Application.ActivityLifecycleCallbacks
 import android.content.Context
 import android.opengl.GLSurfaceView
+import android.util.Log
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import kotlinx.coroutines.selects.select
@@ -58,10 +60,8 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
         }
 
         override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {
-            var orientation = 0
-            if (context != null) {
-                orientation = mViewModel.getOrientation(this.context as Activity)
-            }
+            val orientation = mViewModel.getOrientation()
+            Log.d("Livewallpaper", "orientation: $orientation")
             PreviewActivity.resize(width, height, orientation)
         }
 

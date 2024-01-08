@@ -3,6 +3,7 @@ package com.example.livewallpaper05
 import android.content.Context
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.util.Log
 import android.widget.LinearLayout
 import android.view.View
 import android.view.WindowManager
@@ -49,6 +50,9 @@ class PreviewActivity : AppCompatActivity() {
         viewModel.registerSensorEvents(getSystemService(Context.SENSOR_SERVICE) as SensorManager)
         // add gl engine to viewport
         layout.addView(mView)
+
+        // update orientation in repo
+        viewModel.updateOrientation(resources.configuration.orientation)
 
         // setup ui element actions
         rotationScrollBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
