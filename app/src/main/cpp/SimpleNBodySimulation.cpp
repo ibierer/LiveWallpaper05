@@ -47,9 +47,9 @@ void SimpleNBodySimulation::simulate(bool pushDataToGPU, bool retrieveDataFromGP
 }
 
 void SimpleNBodySimulation::simulateOnGPU(bool pushDataToGPU, bool retrieveDataFromGPU) {
-    if(pushDataToGPU || !computeShaderGenerated){
+    if(pushDataToGPU || !pushed){
         pushData2GPU();
-        computeShaderGenerated = true;
+        pushed = true;
     }
     // Bind the compute program
     glUseProgram(computeShader.gComputeProgram);
