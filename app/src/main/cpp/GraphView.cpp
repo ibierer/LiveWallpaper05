@@ -24,6 +24,9 @@ GraphView::GraphView(const string& equation) : View() {
     //simulation.initialize(Computation::ComputationOptions::CPU);
     simulation.initialize(Computation::ComputationOptions::GPU);
     simulation.computeShader.gIndexBufferBinding = SimpleNBodySimulation::OFFSET_ATTRIBUTE_LOCATION;
+    glEnableVertexAttribArray(SimpleNBodySimulation::OFFSET_ATTRIBUTE_LOCATION);
+    glVertexAttribPointer(SimpleNBodySimulation::OFFSET_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Simulation::Particle), 0);
+    glVertexAttribDivisor(SimpleNBodySimulation::OFFSET_ATTRIBUTE_LOCATION, 1);
 }
 
 GraphView::~GraphView(){
@@ -105,9 +108,6 @@ void GraphView::render(){
                     1,
                     GL_FALSE,
                     (GLfloat*)&mvp);
-            glEnableVertexAttribArray(SimpleNBodySimulation::OFFSET_ATTRIBUTE_LOCATION);
-            glVertexAttribPointer(SimpleNBodySimulation::OFFSET_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Simulation::Particle), 0);
-            glVertexAttribDivisor(SimpleNBodySimulation::OFFSET_ATTRIBUTE_LOCATION, 1);
             glBindBuffer(GL_SHADER_STORAGE_BUFFER, simulation.computeShader.gVBO);
             cubeVAO.drawArraysInstanced(SimpleNBodySimulation::COUNT);
             glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);

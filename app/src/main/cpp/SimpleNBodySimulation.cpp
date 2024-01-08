@@ -10,6 +10,8 @@ void SimpleNBodySimulation::initialize(const ComputationOptions& computationOpti
     t = 0.0;
     dt = 1.0f;
     seed();
+    computeShader.gComputeProgram = View::createComputeShaderProgram(View::stringArrayToString(computeShaderCode, 1000).c_str());
+    glGenBuffers(1, &computeShader.gVBO);
 }
 
 void SimpleNBodySimulation::simulateOnCPU(){
@@ -49,8 +51,6 @@ void SimpleNBodySimulation::simulateOnGPU(bool pushDataToGPU, bool retrieveDataF
     bool pushed = false;
 
     if(!computeShaderGenerated){
-        computeShader.gComputeProgram = View::createComputeShaderProgram(View::stringArrayToString(computeShaderCode, 1000).c_str());
-        glGenBuffers(1, &computeShader.gVBO);
         computeShaderGenerated = true;
         pushData2GPU();
         pushed = true;
@@ -62,7 +62,6 @@ void SimpleNBodySimulation::simulateOnGPU(bool pushDataToGPU, bool retrieveDataF
     glUniform1f(glGetUniformLocation(computeShader.gComputeProgram, "t"), t);
     if(pushDataToGPU && !pushed){
         pushData2GPU();
-        pushed = true; // This instruction is not needed
     }
     // Launch work group
     glDispatchCompute(1, 1, 1);

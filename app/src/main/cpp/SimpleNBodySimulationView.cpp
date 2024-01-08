@@ -9,8 +9,8 @@ using std::to_string;
 SimpleNBodySimulationView::SimpleNBodySimulationView() : View() {
     cubeProgram = View::createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(),FRAGMENT_SHADER.c_str());
     cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
-    simulation.initialize(Computation::ComputationOptions::CPU);
-    //simulation.initialize(Computation::ComputationOptions::GPU);
+    //simulation.initialize(Computation::ComputationOptions::CPU);
+    simulation.initialize(Computation::ComputationOptions::GPU);
     simulation.computeShader.gIndexBufferBinding = SimpleNBodySimulation::OFFSET_ATTRIBUTE_LOCATION;
     glEnableVertexAttribArray(SimpleNBodySimulation::OFFSET_ATTRIBUTE_LOCATION);
     glVertexAttribPointer(SimpleNBodySimulation::OFFSET_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Simulation::Particle), 0);
@@ -54,7 +54,7 @@ void SimpleNBodySimulationView::render(){
                     //ALOGI("data->chunks[i].particles[j].position = %s\n", simulation.data->chunks[i].particles[j].position.str().c_str());
                 }
             }*/
-            for(int i = 0; i < SimpleNBodySimulation::COUNT; i++){
+            /*for(int i = 0; i < SimpleNBodySimulation::COUNT; i++){
                 Matrix4<float> translation2;
                 translation2.SetTranslation(Vec3<float>(
                         simulation.data->particles[i].position.x,
@@ -70,8 +70,8 @@ void SimpleNBodySimulationView::render(){
                 cubeVAO.drawArrays();
                 //ALOGI("data->particles[i].position = %s\n", simulation.data->particles[i].position.str().c_str());
             }
-            break;
-            //simulation.pushData2GPU();
+            break;*/
+            simulation.pushData2GPU();
         case Computation::ComputationOptions::GPU:
             glUseProgram(cubeProgram);
             glUniformMatrix4fv(
