@@ -6,45 +6,6 @@
 
 using std::to_string;
 
-SimpleNBodySimulation simulation;
-
-VertexArrayObject cubeVAO;
-
-const string VERTEX_SHADER =
-        View::ES_VERSION +
-        "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
-        "uniform mat4 mvp;\n"
-        "out vec4 vColor;\n"
-        "void main() {\n"
-        "    gl_Position = mvp * vec4(pos, 1.0);\n"
-        "}\n";
-
-const string FRAGMENT_SHADER =
-        View::ES_VERSION +
-        "precision mediump float;\n"
-        "uniform vec4 color;\n"
-        "out vec4 outColor;\n"
-        "void main() {\n"
-        "    outColor = color;\n"
-        "}\n";
-
-GLuint cubeProgram;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 GraphView::GraphView() : View() {
 
 }
@@ -57,11 +18,12 @@ GraphView::GraphView(const string& equation) : View() {
     ImplicitGrapher::processEquation(ImplicitGrapher::numOfEquationsInMemory);
     ImplicitGrapher::numOfEquationsInMemory++;
 
-    cubeProgram = View::createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(),FRAGMENT_SHADER.c_str());
+    cubeProgram = View::createVertexAndFragmentShaderProgram(_VERTEX_SHADER.c_str(),_FRAGMENT_SHADER.c_str());
     cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
+
     //simulation.initialize(Computation::ComputationOptions::CPU);
     simulation.initialize(Computation::ComputationOptions::GPU);
-    simulation.computeShader.gIndexBufferBinding = 1;
+    simulation.computeShader.gIndexBufferBinding = SimpleNBodySimulation::OFFSET_ATTRIBUTE_LOCATION;
 }
 
 GraphView::~GraphView(){
@@ -71,24 +33,24 @@ GraphView::~GraphView(){
 void GraphView::render(){
     glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     glEnable(GL_DEPTH_TEST);
 
     ImplicitGrapher::calculateSurfaceOnGPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, false, false, &ImplicitGrapher::vertices[0], ImplicitGrapher::indices, ImplicitGrapher::numIndices);
 
+    // Prepare model-view-projection matrix
     Matrix4<float> translation;
     translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 60.0f * (zoom - 1.0f)));
     Matrix4<float> rotation;
     rotation = Matrix4<float>(quaternionTo3x3(rotationVector));
     Matrix4<float> mvp = orientationAdjustedPerspective * translation * rotation;
 
+    // Render graph
     glUseProgram(mProgram);
     glUniformMatrix4fv(
             glGetUniformLocation(mProgram, "mvp"),
             1,
             GL_FALSE,
             (GLfloat*)&mvp);
-
     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
     glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid*)&ImplicitGrapher::vertices[0].p);
@@ -97,26 +59,44 @@ void GraphView::render(){
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
 
-
+    // Render cubes
     glUseProgram(cubeProgram);
-    for(int i = 0; i < SimpleNBodySimulation::numCacheChunks; i++){
-        for(int j = 0; j < SimpleNBodySimulation::starsPerChunk && SimpleNBodySimulation::starsPerChunk * i + j < SimpleNBodySimulation::COUNT; j++){
-            Matrix4<float> translation2;
-            translation2.SetTranslation(Vec3<float>(
-                    simulation.data->chunks[i].stars[j].position.x,
-                    simulation.data->chunks[i].stars[j].position.y,
-                    simulation.data->chunks[i].stars[j].position.z
-            ));
-            mvp = orientationAdjustedPerspective * translation * rotation * translation2;
+    switch(simulation.getComputationOption()){
+        case Computation::ComputationOptions::CPU:
+            for(int i = 0; i < SimpleNBodySimulation::numCacheChunks; i++){
+                for(int j = 0; j < SimpleNBodySimulation::starsPerChunk && SimpleNBodySimulation::starsPerChunk * i + j < SimpleNBodySimulation::COUNT; j++){
+                    Matrix4<float> translation2;
+                    translation2.SetTranslation(Vec3<float>(
+                            simulation.data->chunks[i].stars[j].position.x,
+                            simulation.data->chunks[i].stars[j].position.y,
+                            simulation.data->chunks[i].stars[j].position.z
+                    ));
+                    mvp = orientationAdjustedPerspective * translation * rotation * translation2;
+                    glUniformMatrix4fv(
+                            glGetUniformLocation(cubeProgram, "mvp"),
+                            1,
+                            GL_FALSE,
+                            (GLfloat*)&mvp);
+                    cubeVAO.drawArrays();
+                    ALOGI("data->chunks[i].stars[j].position = %s\n", simulation.data->chunks[i].stars[j].position.str().c_str());
+                }
+            }
+            break;
+        case Computation::ComputationOptions::GPU:
             glUniformMatrix4fv(
                     glGetUniformLocation(cubeProgram, "mvp"),
                     1,
                     GL_FALSE,
                     (GLfloat*)&mvp);
-            cubeVAO.drawArrays();
-            //ALOGI("data->chunks[type].stars[j].position = %s\n", data->chunks[type].stars[j].position.str().c_str());
-        }
-    }
+            glEnableVertexAttribArray(SimpleNBodySimulation::OFFSET_ATTRIBUTE_LOCATION);
+            glVertexAttribPointer(SimpleNBodySimulation::OFFSET_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Simulation::Particle), 0);
+            glVertexAttribDivisor(SimpleNBodySimulation::OFFSET_ATTRIBUTE_LOCATION, 1);
+            glBindBuffer(GL_SHADER_STORAGE_BUFFER, simulation.computeShader.gVBO);
+            cubeVAO.drawArraysInstanced(SimpleNBodySimulation::COUNT);
+            glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
-    simulation.simulate(false, true);
+            simulation.simulate(false, false);
+
+            break;
+    }
 }

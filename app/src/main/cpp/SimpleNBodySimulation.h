@@ -15,7 +15,7 @@ public:
 
     static const int COUNT = 512;
 
-    static const int OFFSET_ATTRIBUTE_LOCATION = 1;
+    static const int OFFSET_ATTRIBUTE_LOCATION = 2;
 
     struct cacheChunk { // 384 bytes
         Simulation::Particle stars[starsPerChunk];
@@ -85,9 +85,11 @@ public:
 
     }
 
-    void initialize(int computationOption);
+    void initialize(const ComputationOptions& computationOption);
 
     void simulate(bool pushDataToGPU, bool retrieveDataFromGPU);
+
+    ComputationOptions getComputationOption();
 
 private:
 

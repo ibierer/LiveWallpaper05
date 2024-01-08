@@ -4,7 +4,7 @@
 
 #include "SimpleNBodySimulation.h"
 
-void SimpleNBodySimulation::initialize(int computationOption) {
+void SimpleNBodySimulation::initialize(const ComputationOptions& computationOption) {
     this->computationOption = computationOption;
     data = (SimpleNBodySimulationData*)malloc(sizeof(SimpleNBodySimulationData));
     t = 0.0;
@@ -110,4 +110,8 @@ bool SimpleNBodySimulation::seed() {
             break;
     }
     return true;
+}
+
+Computation::ComputationOptions SimpleNBodySimulation::getComputationOption() {
+    return computationOption;
 }

@@ -19,7 +19,7 @@ public:
 
 protected:
 
-    int computationOption;
+    ComputationOptions computationOption;
 
     bool computeShaderGenerated = false;
 
