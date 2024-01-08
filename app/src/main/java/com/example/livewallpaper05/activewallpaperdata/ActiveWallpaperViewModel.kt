@@ -1,5 +1,6 @@
 package com.example.livewallpaper05.activewallpaperdata
 
+import android.app.Activity
 import android.hardware.SensorManager
 import androidx.lifecycle.*
 import org.json.JSONObject
@@ -25,6 +26,10 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
 
     fun getSimulationType(): Int {
         return repo.simulationType
+    }
+
+    fun getOrientation(screen: Activity): Int {
+        return screen.windowManager.defaultDisplay.rotation
     }
 
     fun updateRotationRate(rate: Float) {
