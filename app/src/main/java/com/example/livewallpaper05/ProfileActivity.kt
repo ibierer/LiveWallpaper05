@@ -1,5 +1,6 @@
 package com.example.livewallpaper05
 
+import android.app.Dialog
 import android.content.Intent
 import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
@@ -26,7 +27,6 @@ class ProfileActivity : AppCompatActivity() {
         if (mRepo!!.getPic() != null) {
             mProfilePic!!.setImageBitmap(mRepo!!.getPic())
         }
-
         mProfilePic!!.setOnClickListener(this::changeProfilePic)
 
     }
@@ -77,6 +77,14 @@ class ProfileActivity : AppCompatActivity() {
             mProfilePic!!.setImageBitmap(imageBitmap)
             mRepo!!.updateProfilePic(imageBitmap)
         }
+    }
+
+    private fun showLoginDialog(){
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(android.view.Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(false)
+        dialog.setContentView(R.layout.dialog_login)
+
     }
 
 }
