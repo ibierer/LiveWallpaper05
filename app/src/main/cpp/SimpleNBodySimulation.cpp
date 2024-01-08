@@ -47,22 +47,14 @@ void SimpleNBodySimulation::simulate(bool pushDataToGPU, bool retrieveDataFromGP
 }
 
 void SimpleNBodySimulation::simulateOnGPU(bool pushDataToGPU, bool retrieveDataFromGPU) {
-
-    bool pushed = false;
-
-    if(!computeShaderGenerated){
-        computeShaderGenerated = true;
+    if(pushDataToGPU || !computeShaderGenerated){
         pushData2GPU();
-        pushed = true;
+        computeShaderGenerated = true;
     }
-
     // Bind the compute program
     glUseProgram(computeShader.gComputeProgram);
     // Push uniform and SSBO data to GPU
     glUniform1f(glGetUniformLocation(computeShader.gComputeProgram, "t"), t);
-    if(pushDataToGPU && !pushed){
-        pushData2GPU();
-    }
     // Launch work group
     glDispatchCompute(1, 1, 1);
     // Define the end of the ongoing GPU computation as the barrier after which the CPU code may continue to execute
