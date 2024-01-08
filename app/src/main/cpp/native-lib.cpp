@@ -127,6 +127,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_resize(JNIEnv *e
         view->width = width;
         view->height = height;
         view->orientation = orientation;
+        ALOGI("Orientation = %s\n", to_string((int)orientation).c_str());
         view->calculatePerspectiveSetViewport(60.0f);
     }
 }
