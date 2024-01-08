@@ -52,7 +52,8 @@ class PreviewActivity : AppCompatActivity() {
         layout.addView(mView)
 
         // update orientation in repo
-        viewModel.updateOrientation(resources.configuration.orientation)
+        Log.d("Livewallpaper", "orientation preview: ${this.display!!.rotation}")
+        viewModel.updateOrientation(this.display!!.rotation)
 
         // setup ui element actions
         rotationScrollBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
