@@ -63,13 +63,13 @@ void GraphView::render(){
     glUseProgram(cubeProgram);
     switch(simulation.getComputationOption()){
         case Computation::ComputationOptions::CPU:
-            for(int i = 0; i < SimpleNBodySimulation::numCacheChunks; i++){
-                for(int j = 0; j < SimpleNBodySimulation::starsPerChunk && SimpleNBodySimulation::starsPerChunk * i + j < SimpleNBodySimulation::COUNT; j++){
+            /*for(int i = 0; i < SimpleNBodySimulation::NUM_CACHE_CHUNKS; i++){
+                for(int j = 0; j < SimpleNBodySimulation::STARS_PER_CHUNK && SimpleNBodySimulation::STARS_PER_CHUNK * i + j < SimpleNBodySimulation::COUNT; j++){
                     Matrix4<float> translation2;
                     translation2.SetTranslation(Vec3<float>(
-                            simulation.data->chunks[i].stars[j].position.x,
-                            simulation.data->chunks[i].stars[j].position.y,
-                            simulation.data->chunks[i].stars[j].position.z
+                            simulation.data->chunks[i].particles[j].position.x,
+                            simulation.data->chunks[i].particles[j].position.y,
+                            simulation.data->chunks[i].particles[j].position.z
                     ));
                     mvp = orientationAdjustedPerspective * translation * rotation * translation2;
                     glUniformMatrix4fv(
@@ -78,10 +78,27 @@ void GraphView::render(){
                             GL_FALSE,
                             (GLfloat*)&mvp);
                     cubeVAO.drawArrays();
-                    ALOGI("data->chunks[i].stars[j].position = %s\n", simulation.data->chunks[i].stars[j].position.str().c_str());
+                    //ALOGI("data->chunks[i].particles[j].position = %s\n", simulation.data->chunks[i].particles[j].position.str().c_str());
                 }
+            }*/
+            /*for(int i = 0; i < SimpleNBodySimulation::COUNT; i++){
+                Matrix4<float> translation2;
+                translation2.SetTranslation(Vec3<float>(
+                        simulation.data->particles[i].position.x,
+                        simulation.data->particles[i].position.y,
+                        simulation.data->particles[i].position.z
+                ));
+                mvp = orientationAdjustedPerspective * translation * rotation * translation2;
+                glUniformMatrix4fv(
+                        glGetUniformLocation(cubeProgram, "mvp"),
+                        1,
+                        GL_FALSE,
+                        (GLfloat*)&mvp);
+                cubeVAO.drawArrays();
+                //ALOGI("data->particles[i].position = %s\n", simulation.data->particles[i].position.str().c_str());
             }
-            break;
+            break;*/
+            simulation.pushData2GPU();
         case Computation::ComputationOptions::GPU:
             glUniformMatrix4fv(
                     glGetUniformLocation(cubeProgram, "mvp"),
@@ -94,9 +111,8 @@ void GraphView::render(){
             glBindBuffer(GL_SHADER_STORAGE_BUFFER, simulation.computeShader.gVBO);
             cubeVAO.drawArraysInstanced(SimpleNBodySimulation::COUNT);
             glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
-            simulation.simulate(false, false);
-
             break;
     }
+
+    simulation.simulate(NO, NO);
 }

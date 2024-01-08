@@ -19,7 +19,7 @@ void SimpleNBodySimulation::simulateOnCPU(){
         for(uint j = 0u; j < COUNT; j++){
             if(j == i)
                 continue;
-            vec3 difference = data->stars[j].position - data->stars[i].position;
+            vec3 difference = data->particles[j].position - data->particles[i].position;
             float differenceSquared = dot(difference, difference);
             float distance = sqrt(differenceSquared);
             gravitySum[i] += difference / distance / differenceSquared;
@@ -27,8 +27,8 @@ void SimpleNBodySimulation::simulateOnCPU(){
     }
 
     for(uint i = 0u; i < COUNT; i++){
-        data->stars[i].velocity += gravitySum[i];
-        data->stars[i].position += data->stars[i].velocity;
+        data->particles[i].velocity += gravitySum[i];
+        data->particles[i].position += data->particles[i].velocity;
     }
 }
 
@@ -96,15 +96,15 @@ bool SimpleNBodySimulation::seed() {
     switch(computationOption){
         case CPU:
             for(int i = 0; i < COUNT; i++){
-                data->stars[i].position = vec3(getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f);
-                data->stars[i].velocity = vec3(0.0f);
+                data->particles[i].position = vec3(getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f);
+                data->particles[i].velocity = vec3(0.0f);
             }
             break;
         case GPU:
-            for(int i = 0; i < numCacheChunks; i++){
-                for(int j = 0; j < starsPerChunk && starsPerChunk * i + j < COUNT; j++){
-                    data->chunks[i].stars[j].position = vec3(getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f);
-                    data->chunks[i].stars[j].velocity = vec3(0.0f);
+            for(int i = 0; i < NUM_CACHE_CHUNKS; i++){
+                for(int j = 0; j < STARS_PER_CHUNK && STARS_PER_CHUNK * i + j < COUNT; j++){
+                    data->chunks[i].particles[j].position = vec3(getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f);
+                    data->chunks[i].particles[j].velocity = vec3(0.0f);
                 }
             }
             break;
