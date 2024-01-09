@@ -5,6 +5,7 @@ import android.hardware.SensorManager
 import android.util.Log
 import androidx.lifecycle.*
 import org.json.JSONObject
+import java.math.RoundingMode
 
 /**
  * View Model to keep a reference to the active wallpaper data
@@ -53,7 +54,8 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
 
     fun updateFPS(fps: Float) {
         // update fps in repo
-        repo.fps.postValue(fps)
+        var rounded = fps.toBigDecimal().setScale(2, RoundingMode.UP).toDouble()
+        repo.fps.postValue(rounded.toFloat())
     }
 
     fun getFPS(): MutableLiveData<Float> {
