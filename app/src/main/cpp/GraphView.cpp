@@ -67,7 +67,7 @@ void GraphView::render(){
     switch(simulation.getComputationOption()){
         case Computation::ComputationOptions::CPU:
             /*for(int i = 0; i < SimpleNBodySimulation::NUM_CACHE_CHUNKS; i++){
-                for(int j = 0; j < SimpleNBodySimulation::STARS_PER_CHUNK && SimpleNBodySimulation::STARS_PER_CHUNK * i + j < SimpleNBodySimulation::COUNT; j++){
+                for(int j = 0; j < SimpleNBodySimulation::PARTICLES_PER_CHUNK && SimpleNBodySimulation::PARTICLES_PER_CHUNK * i + j < SimpleNBodySimulation::COUNT; j++){
                     Matrix4<float> translation2;
                     translation2.SetTranslation(Vec3<float>(
                             simulation.data->chunks[i].particles[j].position.x,
@@ -114,5 +114,5 @@ void GraphView::render(){
             break;
     }
 
-    simulation.simulate(NO, NO);
+    simulation.simulate(1, NO, NO);
 }

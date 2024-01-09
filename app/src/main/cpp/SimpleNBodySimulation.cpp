@@ -34,19 +34,21 @@ void SimpleNBodySimulation::simulateOnCPU(){
     }
 }
 
-void SimpleNBodySimulation::simulate(bool pushDataToGPU, bool retrieveDataFromGPU) {
+void SimpleNBodySimulation::simulate(const int &iterations, bool pushDataToGPU, bool retrieveDataFromGPU) {
     switch(computationOption){
         case CPU:
-            simulateOnCPU();
+            for(int i = 0; i < iterations; i++) {
+                simulateOnCPU();
+            }
             break;
         case GPU:
-            simulateOnGPU(pushDataToGPU, retrieveDataFromGPU);
+            simulateOnGPU(iterations, pushDataToGPU, retrieveDataFromGPU);
             break;
     }
     t += dt;
 }
 
-void SimpleNBodySimulation::simulateOnGPU(bool pushDataToGPU, bool retrieveDataFromGPU) {
+void SimpleNBodySimulation::simulateOnGPU(const int &iterations, bool pushDataToGPU, bool retrieveDataFromGPU) {
     if(pushDataToGPU || !pushed){
         pushData2GPU();
         pushed = true;
@@ -55,10 +57,12 @@ void SimpleNBodySimulation::simulateOnGPU(bool pushDataToGPU, bool retrieveDataF
     glUseProgram(computeShader.gComputeProgram);
     // Push uniform and SSBO data to GPU
     glUniform1f(glGetUniformLocation(computeShader.gComputeProgram, "t"), t);
-    // Launch work group
-    glDispatchCompute(1, 1, 1);
-    // Define the end of the ongoing GPU computation as the barrier after which the CPU code may continue to execute
-    glMemoryBarrier(GL_ALL_BARRIER_BITS);
+    for(int i = 0; i < iterations; i++) {
+        // Launch work group
+        glDispatchCompute(1, 1, 1);
+        // Define the end of the ongoing GPU computation as the barrier after which the CPU code may continue to execute
+        glMemoryBarrier(GL_ALL_BARRIER_BITS);
+    }
     if(retrieveDataFromGPU) {
         // Bind buffer object simulation.computeShader.gVBO to target GL_ARRAY_BUFFER
         glBindBuffer(GL_ARRAY_BUFFER, computeShader.gVBO);
@@ -93,7 +97,7 @@ bool SimpleNBodySimulation::seed() {
             break;
         case GPU:
             for(int i = 0; i < NUM_CACHE_CHUNKS; i++){
-                for(int j = 0; j < STARS_PER_CHUNK && STARS_PER_CHUNK * i + j < COUNT; j++){
+                for(int j = 0; j < PARTICLES_PER_CHUNK && PARTICLES_PER_CHUNK * i + j < COUNT; j++){
                     data->chunks[i].particles[j].position = vec3(getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f);
                     data->chunks[i].particles[j].velocity = vec3(0.0f);
                 }
