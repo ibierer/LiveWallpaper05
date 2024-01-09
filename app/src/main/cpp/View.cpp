@@ -115,16 +115,19 @@ void View::calculatePerspectiveSetViewport(const float& maxViewDegrees) {
     Matrix4<float> rotation;
     switch(orientation){
         case 0:
-            rotation = rotation.Identity();
+            rotation = rotation.Identity(); // Up
             break;
         case 1:
-            rotation.SetRotationZ(0.5 * M_PI);
+            //rotation.SetRotationZ(0.5 * M_PI); // Left
+            rotation = rotation.Identity();
             break;
         case 2:
-            rotation.SetRotationZ(M_PI);
+            //rotation.SetRotationZ(M_PI);
+            rotation = rotation.Identity();
             break;
         case 3:
-            rotation.SetRotationZ(-0.5 * M_PI);
+            //rotation.SetRotationZ(-0.5 * M_PI); // Right
+            rotation = rotation.Identity();
             break;
     }
     orientationAdjustedPerspective = perspective * rotation;
