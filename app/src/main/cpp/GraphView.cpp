@@ -21,8 +21,8 @@ GraphView::GraphView(const string& equation) : View() {
     cubeProgram = View::createVertexAndFragmentShaderProgram(_VERTEX_SHADER.c_str(),_FRAGMENT_SHADER.c_str());
     cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
 
-    //simulation.initialize(Computation::ComputationOptions::CPU);
-    simulation.initialize(Computation::ComputationOptions::GPU);
+    simulation.initialize(Computation::ComputationOptions::CPU);
+    //simulation.initialize(Computation::ComputationOptions::GPU);
     simulation.computeShader.gIndexBufferBinding = SimpleNBodySimulation::OFFSET_ATTRIBUTE_LOCATION;
     glEnableVertexAttribArray(SimpleNBodySimulation::OFFSET_ATTRIBUTE_LOCATION);
     glVertexAttribPointer(SimpleNBodySimulation::OFFSET_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Simulation::Particle), 0);
