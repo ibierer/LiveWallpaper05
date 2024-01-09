@@ -31,15 +31,15 @@ class PreviewActivity : AppCompatActivity() {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_preview)
 
+        // get view window from GLES3JNIView
         mView = GLES3JNIView(application, viewModel)
 
+        // grab ui element for preview page
         val layout = findViewById<LinearLayout>(R.id.render_layout)
         val rotationScrollBar = findViewById<SeekBar>(R.id.rotation_rate_seekbar)
         val simSelectorSpinner = findViewById<Spinner>(R.id.simulation_type_spinner)
 
-        // fill ui elements with default data
-        // fill sim selector with wallpaper options from native-lib.cpp
-        // ie box, naive, picflip, triangle, implicitGrapher
+        // fill sim selector box with wallpaper options from native-lib.cpp
         val simSelectorAdapter = ArrayAdapter.createFromResource(
             this,
             R.array.simulation_types,
@@ -49,14 +49,14 @@ class PreviewActivity : AppCompatActivity() {
 
         // register senser event listeners
         viewModel.registerSensorEvents(getSystemService(Context.SENSOR_SERVICE) as SensorManager)
-        // add gl engine to viewport
+        // add gl engine view to viewport
         layout.addView(mView)
 
         // update orientation in repo
         Log.d("Livewallpaper", "orientation preview: ${this.display!!.rotation}")
         viewModel.updateOrientation(this.display!!.rotation)
 
-        // setup ui element actions
+        // register scrollbar actions to update rotation rate in repo
         rotationScrollBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean){
                 // Do nothing until changes are stopped for smooth ui updates
@@ -71,6 +71,7 @@ class PreviewActivity : AppCompatActivity() {
             }
         })
 
+        // register spinner actions to update simulation type in repo
         simSelectorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
                 val changed = viewModel.updateSimulationType(pos)
@@ -85,19 +86,25 @@ class PreviewActivity : AppCompatActivity() {
             }
         }
 
-        // connect viewmodel.getFPS() to tv_fps_meter
+        // connect fps data to ui fps meter
         var fpsMeter = findViewById<TextView>(R.id.tv_fps_meter)
-        viewModel.getFPS().observe(this, {
+        viewModel.getFPS().observe(this) {
             fpsMeter.text = it.toString()
-        })
+        }
 
     }
 
+    /* this is run when the app is 'paused'
+     * this includes leaving the app, rotating the screen, etc.
+     */
     override fun onPause() {
         super.onPause()
         mView!!.onPause()
     }
 
+    /* this is run when the app is 'resumed'
+     * this includes returning to the app, rotating the screen, etc.
+     */
     override fun onResume() {
         super.onResume()
         mView!!.onResume()
@@ -109,6 +116,7 @@ class PreviewActivity : AppCompatActivity() {
             System.loadLibrary("livewallpaper05")
         }
 
+        // register simulation functions as external and belonging to the livewallpaper05 library
         external fun init(visualization: String)
         external fun resize(width: Int, height: Int, orientation: Int)
         external fun step(acc_x: Float, acc_y: Float, acc_z: Float, rot_x: Float, rot_y: Float, rot_z: Float, rot_w: Float, value: Float)
