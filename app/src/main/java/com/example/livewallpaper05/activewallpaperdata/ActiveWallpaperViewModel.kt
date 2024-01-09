@@ -62,8 +62,12 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         return repo.fps
     }
 
-    fun getRepository(): ActiveWallpaperRepo {
-        return mRepo
+    fun updateLastFrame(new: Long){
+        repo.lastFrame = new
+    }
+
+    fun getLastFrame(): Long {
+        return repo.lastFrame
     }
 
     fun registerSensorEvents(manager: SensorManager) {

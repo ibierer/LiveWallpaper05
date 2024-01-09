@@ -48,9 +48,6 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                 0.0f
                 )*/
 
-            // get time before frame
-            val timeBefore = SystemClock.elapsedRealtimeNanos()
-
             PreviewActivity.step(
                 accelData[0],
                 accelData[1],
@@ -63,15 +60,14 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             )
 
             // get time after frame
-            val timeAfter = SystemClock.elapsedRealtimeNanos()
-            // calculate time to render frame
-            var timeElapsed: Float = (timeAfter - timeBefore).toFloat()
-            if (timeElapsed > 0) {
-                // calculate spf from nanoseconds
-                timeElapsed = timeElapsed / 1000000000.0f
-            }
+            val currentFrame = SystemClock.elapsedRealtimeNanos()
+            // calculate time elapsed
+            var timeElapsed = (currentFrame - mViewModel.getLastFrame()) / 1000000000.0f
+            timeElapsed = 1.0f / timeElapsed.toFloat()
             // update fps in view model with fps from spf
-            mViewModel.updateFPS(1/timeElapsed)
+            mViewModel.updateFPS(timeElapsed)
+            // update last frame in view model
+            mViewModel.updateLastFrame(currentFrame)
         }
 
         override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {
