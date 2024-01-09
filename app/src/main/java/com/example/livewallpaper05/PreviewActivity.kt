@@ -11,6 +11,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.SeekBar
 import android.widget.Spinner
+import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
@@ -83,6 +84,12 @@ class PreviewActivity : AppCompatActivity() {
                 // Do nothing
             }
         }
+
+        // connect viewmodel.getFPS() to tv_fps_meter
+        var fpsMeter = findViewById<TextView>(R.id.tv_fps_meter)
+        viewModel.getFPS().observe(this, {
+            fpsMeter.text = it.toString()
+        })
 
     }
 

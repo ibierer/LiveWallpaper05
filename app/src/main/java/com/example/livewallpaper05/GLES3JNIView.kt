@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Application.ActivityLifecycleCallbacks
 import android.content.Context
 import android.opengl.GLSurfaceView
+import android.os.SystemClock
 import android.util.Log
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
@@ -47,6 +48,9 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                 0.0f
                 )*/
 
+            // get time before frame
+            val timeBefore = SystemClock.elapsedRealtimeNanos()
+
             PreviewActivity.step(
                 accelData[0],
                 accelData[1],
@@ -57,6 +61,17 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                 rotData[3],
                 mViewModel.getRotationRate()
             )
+
+            // get time after frame
+            val timeAfter = SystemClock.elapsedRealtimeNanos()
+            // calculate time to render frame
+            var timeElapsed: Float = (timeAfter - timeBefore).toFloat()
+            if (timeElapsed > 0) {
+                // calculate spf from nanoseconds
+                timeElapsed = timeElapsed / 1000000000.0f
+            }
+            // update fps in view model with fps from spf
+            mViewModel.updateFPS(1/timeElapsed)
         }
 
         override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {

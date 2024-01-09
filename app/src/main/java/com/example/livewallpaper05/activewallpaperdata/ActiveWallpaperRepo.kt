@@ -5,10 +5,12 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
 
 class ActiveWallpaperRepo private constructor () : SensorEventListener {
     var orientation: Int = 0
+    var fps: MutableLiveData<Float> = MutableLiveData<Float>(0.0f)
     var rotationRate: Float = 0.0f
     var rotationData: Array<Float> = arrayOf(0.0f,0.0f,0.0f,0.0f)
     var accelerationData: Array<Float> = arrayOf(0.0f,0.0f,0.0f)

@@ -51,6 +51,15 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         return false
     }
 
+    fun updateFPS(fps: Float) {
+        // update fps in repo
+        repo.fps.postValue(fps)
+    }
+
+    fun getFPS(): MutableLiveData<Float> {
+        return repo.fps
+    }
+
     fun getRepository(): ActiveWallpaperRepo {
         return mRepo
     }
