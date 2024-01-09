@@ -26,7 +26,6 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
 
     class Renderer(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceView.Renderer {
         private var context: Context? = null
-        //private var mRepo: ActiveWallpaperRepo? = repo
         private var mViewModel: ActiveWallpaperViewModel = vm
 
         fun Renderer(context: Context, repo: ActiveWallpaperRepo) {
@@ -37,17 +36,8 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             // default values in ActiveWallpaperViewModel
             val accelData = mViewModel.getAccelerationData()
             val rotData = mViewModel.getRotationData()
-            /**zoom rotTmp = mViewModel.getRotationRate()
-            PreviewActivity.step(
-                0.0f,
-                0.0f,
-                0.0f,
-                rotTmp,
-                0.0f,
-                0.0f,
-                0.0f
-                )*/
 
+            // run step in the simulation (also updates opengl view)
             PreviewActivity.step(
                 accelData[0],
                 accelData[1],
