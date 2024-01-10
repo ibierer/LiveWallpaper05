@@ -12,8 +12,8 @@ data class ProfileTable (
     var username: String,
     @field:ColumnInfo(name = "bio")
     var bio: String,
-    @field:ColumnInfo(name = "profilepic")
-    var profilepic: Bitmap,
     @field:ColumnInfo(name = "uid")
     var uid: Int,
+    @field:ColumnInfo(name = "profilepic", typeAffinity = ColumnInfo.BLOB)
+    var profilepic: ByteArray
 )

@@ -2,7 +2,9 @@ package com.example.livewallpaper05
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Bundle
 import android.os.Environment
+import android.os.PersistableBundle
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
 import com.example.livewallpaper05.profiledata.ProfileTable
 import com.example.livewallpaper05.profiledata.ProfileViewModel
@@ -12,6 +14,7 @@ import java.io.FileOutputStream
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import java.io.ByteArrayOutputStream
 
 
 class ProfileManager : AppCompatActivity() {
@@ -34,32 +37,45 @@ class ProfileManager : AppCompatActivity() {
             }
         }
 
-    init {
+    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
+        super.onCreate(savedInstanceState, persistentState)
+
         // load profile picture from memory if it's path exists
         if (picPath != null) {
             // load picture from local storage
             pic = BitmapFactory.decodeFile(picPath)
         }
-        // connect db to view model
-        mViewModel.profileData.observe(this, flowObserver)
 
         // update values if profile database has values
         if (mProfileTable != null){
             username = mProfileTable!!.username
             bio = mProfileTable!!.bio
             uid = mProfileTable!!.uid
-            pic = mProfileTable!!.profilepic
+            //pic = mProfileTable!!.profilepic
+            val imageData = mProfileTable!!.profilepic
+            pic = BitmapFactory.decodeByteArray(imageData, 0, imageData.size)
             updateProfilePic(pic!!)
         }
+
+        // connect db to view model
+        mViewModel.profileData.observe(this, flowObserver)
     }
 
     fun saveProfile(){
         // run after profile is created or edited
+        val stream = ByteArrayOutputStream()
+        var imgBytes = ByteArray(0)
+        if (pic != null) {
+            val img = pic!!
+            img.compress(Bitmap.CompressFormat.PNG, 90, stream)
+            imgBytes = stream.toByteArray()
+        }
+
         val profile = ProfileTable(
             username = this.username,
             bio = this.bio,
             uid = this.uid,
-            profilepic = this.pic!!
+            profilepic = imgBytes
         )
 
         mProfileTable = profile

@@ -48,7 +48,8 @@ abstract class ProfileRoomDatabase : RoomDatabase() {
             }
 
             suspend fun populateDbTask(profileDao: ProfileDao) {
-                profileDao.updateProfileData(ProfileTable("Dummy_user", "Dummy_Bio"))
+                val tmpImg = ByteArray(0)
+                profileDao.updateProfileData(ProfileTable("Dummy_user", "Dummy_Bio", 0, tmpImg))
             }
         }
     }
