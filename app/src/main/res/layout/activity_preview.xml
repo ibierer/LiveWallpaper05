@@ -66,6 +66,13 @@
             android:background="@color/black"
             />
 
+        <Button
+            android:id="@+id/b_color_picker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select Color"
+            />
+
     </LinearLayout>
     </ScrollView>
 

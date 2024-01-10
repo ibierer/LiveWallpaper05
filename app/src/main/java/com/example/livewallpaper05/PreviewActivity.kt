@@ -1,14 +1,17 @@
 package com.example.livewallpaper05
 
 import android.content.Context
+import android.graphics.Color
 import android.hardware.SensorManager
 import android.os.Bundle
 import android.util.Log
 import android.widget.LinearLayout
 import android.view.View
+import android.view.View.OnClickListener
 import android.view.WindowManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.SeekBar
 import android.widget.Spinner
 import android.widget.TextView
@@ -38,6 +41,7 @@ class PreviewActivity : AppCompatActivity() {
         val layout = findViewById<LinearLayout>(R.id.render_layout)
         val rotationScrollBar = findViewById<SeekBar>(R.id.rotation_rate_seekbar)
         val simSelectorSpinner = findViewById<Spinner>(R.id.simulation_type_spinner)
+        val colorButton = findViewById<Button>(R.id.b_color_picker)
 
         // fill sim selector box with wallpaper options from native-lib.cpp
         val simSelectorAdapter = ArrayAdapter.createFromResource(
@@ -85,6 +89,16 @@ class PreviewActivity : AppCompatActivity() {
                 // Do nothing
             }
         }
+
+        // setup color selection dialog
+        /*colorButton.setOnClickListener {
+            object : OnClickListener() {
+                fun onClick(v: View?) {
+                    Builder(this@PreviewActivity).initialColor(Color.RED)
+
+                }
+            }
+        }*/
 
         // connect fps data to ui fps meter
         var fpsMeter = findViewById<TextView>(R.id.tv_fps_meter)
