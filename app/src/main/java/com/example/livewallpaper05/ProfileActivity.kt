@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import com.example.livewallpaper05.profiledata.ProfileRepo
 
 class ProfileActivity : AppCompatActivity() {
 

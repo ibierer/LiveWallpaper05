@@ -1,4 +1,4 @@
-package com.example.livewallpaper05
+package com.example.livewallpaper05.profiledata
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
