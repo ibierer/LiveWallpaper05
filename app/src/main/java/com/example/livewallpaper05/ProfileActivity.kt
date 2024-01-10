@@ -15,14 +15,15 @@ import com.example.livewallpaper05.profiledata.ProfileRepo
 class ProfileActivity : AppCompatActivity() {
 
     private var mProfilePic: ImageView? = null
-    private var mRepo: ProfileRepo? = null
+    private var mRepo: ProfileManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
 
         mProfilePic = findViewById(R.id.profile_pic)
-        mRepo = ProfileRepo()
+        //mRepo = ProfileRepo()
+        mRepo = ProfileManager()
 
         // set profile pic if it exists
         if (mRepo!!.getPic() != null) {

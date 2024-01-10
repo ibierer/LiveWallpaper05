@@ -3,75 +3,66 @@ package com.example.livewallpaper05.profiledata
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Environment
+import androidx.annotation.WorkerThread
+import androidx.lifecycle.MutableLiveData
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import java.io.File
 import java.io.FileOutputStream
+import kotlinx.coroutines.launch
 
-class ProfileRepo() {
-    private var username: String? = null
-    private var bio: String? = null
-    private var uid: Int? = null
-    private var pic: Bitmap? = null
-    private var picPath: String? = null
+class ProfileRepo private constructor(profileDao: ProfileDao) {
 
-    init {
-        username = "Username"
-        bio = "Bio"
-        uid = 0
-        pic = null
+    val data = MutableLiveData<ProfileTable>()
+    private var mProfileDao: ProfileDao = profileDao
 
-        if (picPath != null) {
-            // load picture from local storage
-            pic = BitmapFactory.decodeFile(picPath)
+    fun setProfile(profileTable: ProfileTable){
+        mScope.launch(Dispatchers.IO){
+            mProfileDao.updateProfileData(profileTable)
+            val profileInfo = mProfileDao.getProfileData()
+            if(profileInfo != null){
+                insert()
+                data.postValue(profileInfo)
+            }
         }
     }
 
-    fun getUsername(): String? {
-        return username
+    @WorkerThread
+    suspend fun deleteAll(){
+        mProfileDao.deleteAll()
     }
 
-    fun setUsername(username: String) {
-        this.username = username
+    @WorkerThread
+    suspend fun deleteProfile(table: ProfileTable){
+        mProfileDao.deleteProfileData(table)
     }
 
-    fun getBio(): String? {
-        return bio
+    @WorkerThread
+    suspend fun insert() {
+        if(data.value != null)
+            mProfileDao.updateProfileData(data.value!!)
     }
 
-    fun setBio(bio: String) {
-        this.bio = bio
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun updateProfile(profileTable: ProfileTable){
+        mProfileDao.updateProfileData(profileTable)
     }
 
-    fun getUid(): Int? {
-        return uid
-    }
+    companion object {
+        @Volatile
+        private var instance: ProfileRepo? = null
+        private lateinit var mScope: CoroutineScope
 
-    fun setUid(uid: Int) {
-        this.uid = uid
-    }
-
-    fun getPic(): Bitmap? {
-        return pic
-    }
-
-    fun updateProfilePic(pic: Bitmap) {
-        this.pic = pic
-
-        // save picture locally
-        if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED){
-            val file = File(
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).absolutePath,
-                "profile_pic.jpg")
-            if (file.exists()) file.delete()
-            try {
-                val out = FileOutputStream(file)
-                pic.compress(Bitmap.CompressFormat.JPEG, 100, out)
-                out.flush()
-                out.close()
-            } catch (e: Exception) {
-                e.printStackTrace()
+        @Synchronized
+        fun getInstance(
+            profileDao: ProfileDao,
+            scope: CoroutineScope
+        ): ProfileRepo {
+            return instance ?: ProfileRepo(profileDao).also {
+                instance = it
+                mScope = scope
             }
-
-            picPath = file.absolutePath
         }
     }
 }
