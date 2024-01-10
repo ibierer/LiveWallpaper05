@@ -51,7 +51,7 @@ class ProfileManager : AppCompatActivity() {
             username = mProfileTable!!.username
             bio = mProfileTable!!.bio
             uid = mProfileTable!!.uid
-            //pic = mProfileTable!!.profilepic
+
             val imageData = mProfileTable!!.profilepic
             pic = BitmapFactory.decodeByteArray(imageData, 0, imageData.size)
             updateProfilePic(pic!!)
@@ -80,6 +80,19 @@ class ProfileManager : AppCompatActivity() {
 
         mProfileTable = profile
         mViewModel.setProfile(profile)
+    }
+
+    fun loadProfile(){
+        // get data from mProfileTable and store it in local variables
+        if (mProfileTable != null){
+            username = mProfileTable!!.username
+            bio = mProfileTable!!.bio
+            uid = mProfileTable!!.uid
+
+            val imageData = mProfileTable!!.profilepic
+            pic = BitmapFactory.decodeByteArray(imageData, 0, imageData.size)
+            updateProfilePic(pic!!)
+        }
     }
 
     fun getUsername(): String? {

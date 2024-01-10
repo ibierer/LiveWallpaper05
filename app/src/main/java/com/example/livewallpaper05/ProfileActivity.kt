@@ -10,12 +10,11 @@ import android.view.View
 import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import com.example.livewallpaper05.profiledata.ProfileRepo
 
 class ProfileActivity : AppCompatActivity() {
 
     private var mProfilePic: ImageView? = null
-    private var mRepo: ProfileManager? = null
+    private var mProfileManager: ProfileManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,14 +22,24 @@ class ProfileActivity : AppCompatActivity() {
 
         mProfilePic = findViewById(R.id.profile_pic)
         //mRepo = ProfileRepo()
-        mRepo = ProfileManager()
+        mProfileManager = ProfileManager()
 
         // set profile pic if it exists
-        if (mRepo!!.getPic() != null) {
-            mProfilePic!!.setImageBitmap(mRepo!!.getPic())
+        if (mProfileManager!!.getPic() != null) {
+            mProfilePic!!.setImageBitmap(mProfileManager!!.getPic())
         }
         mProfilePic!!.setOnClickListener(this::changeProfilePic)
 
+    }
+
+    override fun onPause() {
+        mProfileManager!!.saveProfile()
+        super.onPause()
+    }
+
+    override fun onResume() {
+        mProfileManager!!.loadProfile()
+        super.onResume()
     }
 
     fun changeProfilePic(view: View) {
@@ -67,7 +76,7 @@ class ProfileActivity : AppCompatActivity() {
                 return@registerForActivityResult
             }
             mProfilePic!!.setImageBitmap(imageBitmap)
-            mRepo!!.updateProfilePic(imageBitmap)
+            mProfileManager!!.updateProfilePic(imageBitmap)
         }
     }
 
@@ -77,7 +86,7 @@ class ProfileActivity : AppCompatActivity() {
             // get image from uri returned in data
             val imageBitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, data?.data)
             mProfilePic!!.setImageBitmap(imageBitmap)
-            mRepo!!.updateProfilePic(imageBitmap)
+            mProfileManager!!.updateProfilePic(imageBitmap)
         }
     }
 
