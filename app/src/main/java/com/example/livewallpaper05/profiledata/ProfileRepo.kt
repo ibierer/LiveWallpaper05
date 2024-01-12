@@ -15,6 +15,8 @@ class ProfileRepo private constructor(profileDao: ProfileDao) {
 
     val data = MutableLiveData<ProfileTable>()
     private var mProfileDao: ProfileDao = profileDao
+    // create flow to observe profile pic data
+
 
     fun setProfile(profileTable: ProfileTable){
         mScope.launch(Dispatchers.IO){
