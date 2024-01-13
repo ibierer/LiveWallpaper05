@@ -29,6 +29,8 @@ SimpleNBodySimulationView::SimpleNBodySimulationView() : View() {
     glVertexAttribDivisor(SimpleNBodySimulation::VELOCITY_ATTRIBUTE_LOCATION, 1);
     glBindVertexArray(0);
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+    glDisableVertexAttribArray(SimpleNBodySimulation::OFFSET_ATTRIBUTE_LOCATION);
+    glDisableVertexAttribArray(SimpleNBodySimulation::VELOCITY_ATTRIBUTE_LOCATION);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
