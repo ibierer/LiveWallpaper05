@@ -14,7 +14,7 @@ class SimpleNBodySimulationView : public View {
 
 public:
 
-    const string VERTEX_SHADER =
+    const string VERTEX_SHADER_original =
             View::ES_VERSION +
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
             "struct particle {\n"
@@ -36,18 +36,39 @@ public:
             "    );\n"
             "}\n";
 
+    const string VERTEX_SHADER =
+            View::ES_VERSION +
+            "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
+            "layout(location = " + std::to_string(SimpleNBodySimulation::OFFSET_ATTRIBUTE_LOCATION) + ") in vec3 offset;\n"
+            "layout(location = " + std::to_string(SimpleNBodySimulation::VELOCITY_ATTRIBUTE_LOCATION) + ") in vec3 velocity;\n"
+            "uniform mat4 mvp;\n"
+            "out vec4 vColor;\n"
+            "void main() {\n"
+            "    gl_Position = mvp * vec4(pos + offset, 1.0);\n"
+            "    vColor = vec4(\n"
+            "            0.06125f * velocity.x + 0.5f,\n"
+            "            -0.06125f * velocity.y + 0.5f,\n"
+            "            -0.06125f * velocity.z + 0.5f,\n"
+            "            1.0f\n"
+            "    );\n"
+            "}\n";
+
     const string FRAGMENT_SHADER =
             View::ES_VERSION +
             "precision mediump float;\n"
-            "uniform vec4 color;\n"
             "in vec4 vColor;\n"
             "out vec4 outColor;\n"
             "void main() {\n"
-            //"    outColor = color;\n"
             "    outColor = vColor;\n"
             "}\n";
 
     SimpleNBodySimulation simulation;
+
+    Cube cube;
+
+    GLuint mVAO;
+
+    GLuint mVBO;
 
     VertexArrayObject cubeVAO;
 

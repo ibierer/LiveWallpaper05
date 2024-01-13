@@ -7,14 +7,29 @@
 using std::to_string;
 
 SimpleNBodySimulationView::SimpleNBodySimulationView() : View() {
-    cubeProgram = View::createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(),FRAGMENT_SHADER.c_str());
-    cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
     //simulation.initialize(Computation::ComputationOptions::CPU);
     simulation.initialize(Computation::ComputationOptions::GPU);
     simulation.computeShader.gIndexBufferBinding = SimpleNBodySimulation::OFFSET_ATTRIBUTE_LOCATION;
+    cubeProgram = View::createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(),FRAGMENT_SHADER.c_str());
+    cube = Cube(1.0f, Cube::ColorOption::SOLID);
+    //cubeVAO = VertexArrayObject(cube);
+    glGenVertexArrays(1, &mVAO);
+    glBindVertexArray(mVAO);
+    glGenBuffers(1, &mVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+    glBufferData(GL_ARRAY_BUFFER, cube.getNumVertices() * sizeof(PositionXYZ), cube.getVertices<PositionXYZ>(), GL_STATIC_DRAW);
+    glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZ), (const GLvoid*)offsetof(PositionXYZ, p));
+    glBindBuffer(GL_ARRAY_BUFFER, simulation.computeShader.gVBO);
     glEnableVertexAttribArray(SimpleNBodySimulation::OFFSET_ATTRIBUTE_LOCATION);
     glVertexAttribPointer(SimpleNBodySimulation::OFFSET_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Simulation::Particle), (const GLvoid*)offsetof(Simulation::Particle, position));
     glVertexAttribDivisor(SimpleNBodySimulation::OFFSET_ATTRIBUTE_LOCATION, 1);
+    glEnableVertexAttribArray(SimpleNBodySimulation::VELOCITY_ATTRIBUTE_LOCATION);
+    glVertexAttribPointer(SimpleNBodySimulation::VELOCITY_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Simulation::Particle), (const GLvoid*)offsetof(Simulation::Particle, velocity));
+    glVertexAttribDivisor(SimpleNBodySimulation::VELOCITY_ATTRIBUTE_LOCATION, 1);
+    glBindVertexArray(0);
+    glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 SimpleNBodySimulationView::~SimpleNBodySimulationView(){
@@ -79,9 +94,12 @@ void SimpleNBodySimulationView::render(){
                     1,
                     GL_FALSE,
                     (GLfloat*)&mvp);
-            glBindBuffer(GL_SHADER_STORAGE_BUFFER, simulation.computeShader.gVBO);
-            cubeVAO.drawArraysInstanced(SimpleNBodySimulation::COUNT);
-            glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+            glBindBuffer(GL_ARRAY_BUFFER, simulation.computeShader.gVBO);
+            //cubeVAO.drawArraysInstanced(SimpleNBodySimulation::COUNT);
+            glBindVertexArray(mVAO);
+            glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, cube.getNumVertices(), SimpleNBodySimulation::COUNT);
+            glBindVertexArray(0);
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
             break;
     }
 

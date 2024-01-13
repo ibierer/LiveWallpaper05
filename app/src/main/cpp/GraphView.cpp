@@ -109,7 +109,10 @@ void GraphView::render(){
                     GL_FALSE,
                     (GLfloat*)&mvp);
             glBindBuffer(GL_SHADER_STORAGE_BUFFER, simulation.computeShader.gVBO);
-            cubeVAO.drawArraysInstanced(SimpleNBodySimulation::COUNT);
+            //cubeVAO.drawArraysInstanced(SimpleNBodySimulation::COUNT);
+            glBindVertexArray(cubeVAO.getArrayObjectId());
+            glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, cubeVAO.getNumVertices(), SimpleNBodySimulation::COUNT);
+            glBindVertexArray(0);
             glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
             break;
     }

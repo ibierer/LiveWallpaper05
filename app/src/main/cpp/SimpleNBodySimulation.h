@@ -17,6 +17,8 @@ public:
 
     static const int OFFSET_ATTRIBUTE_LOCATION = 2;
 
+    static const int VELOCITY_ATTRIBUTE_LOCATION = 3;
+
     struct cacheChunk { // 384 bytes
         Particle particles[PARTICLES_PER_CHUNK];
     };
