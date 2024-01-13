@@ -96,12 +96,10 @@ void SimpleNBodySimulationView::render(){
                     1,
                     GL_FALSE,
                     (GLfloat*)&mvp);
-            glBindBuffer(GL_ARRAY_BUFFER, simulation.computeShader.gVBO);
             //cubeVAO.drawArraysInstanced(SimpleNBodySimulation::COUNT);
             glBindVertexArray(mVAO);
             glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, cube.getNumVertices(), SimpleNBodySimulation::COUNT);
             glBindVertexArray(0);
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
             break;
     }
 
