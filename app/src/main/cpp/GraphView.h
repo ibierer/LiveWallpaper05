@@ -11,6 +11,7 @@
 #include "ImplicitGrapher.h"
 
 using std::string;
+using std::to_string;
 
 class GraphView : public View {
 
@@ -42,10 +43,10 @@ public:
             "}\n";
 
     const string _VERTEX_SHADER =
-            View::ES_VERSION +
+            ES_VERSION +
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
-            "layout(location = " + std::to_string(SimpleNBodySimulation::OFFSET_ATTRIBUTE_LOCATION) + ") in vec3 offset;\n"
-            "layout(location = " + std::to_string(SimpleNBodySimulation::VELOCITY_ATTRIBUTE_LOCATION) + ") in vec3 velocity;\n"
+            "layout(location = " + to_string(SimpleNBodySimulation::OFFSET_ATTRIBUTE_LOCATION) + ") in vec3 offset;\n"
+            "layout(location = " + to_string(SimpleNBodySimulation::VELOCITY_ATTRIBUTE_LOCATION) + ") in vec3 velocity;\n"
             "uniform mat4 mvp;\n"
             "out vec4 vColor;\n"
             "void main() {\n"
@@ -59,7 +60,7 @@ public:
             "}\n";
 
     const string _FRAGMENT_SHADER =
-            View::ES_VERSION +
+            ES_VERSION +
             "precision mediump float;\n"
             "in vec4 vColor;\n"
             "out vec4 outColor;\n"

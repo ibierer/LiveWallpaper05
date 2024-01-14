@@ -7,7 +7,7 @@
 using std::to_string;
 
 SimpleNBodySimulationView::SimpleNBodySimulationView() : View() {
-    cubeProgram = View::createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(),FRAGMENT_SHADER.c_str());
+    cubeProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(),FRAGMENT_SHADER.c_str());
 
     //simulation.initialize(Computation::ComputationOptions::CPU);
     simulation.initialize(Computation::ComputationOptions::GPU);

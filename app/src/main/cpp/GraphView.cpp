@@ -12,7 +12,7 @@ GraphView::GraphView() : View() {
 
 GraphView::GraphView(const string& equation) : View() {
     mProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
-    cubeProgram = View::createVertexAndFragmentShaderProgram(_VERTEX_SHADER.c_str(),_FRAGMENT_SHADER.c_str());
+    cubeProgram = createVertexAndFragmentShaderProgram(_VERTEX_SHADER.c_str(),_FRAGMENT_SHADER.c_str());
 
     implicitGrapher = ImplicitGrapher(ivec3(29));
     ImplicitGrapher::surfaceEquation = ImplicitGrapher::numOfEquationsInMemory;
