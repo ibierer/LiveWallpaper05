@@ -64,8 +64,6 @@ public:
 
     SimpleNBodySimulation simulation;
 
-    Cube cube;
-
     VertexArrayObject cubeVAO;
 
     GLuint cubeProgram;
