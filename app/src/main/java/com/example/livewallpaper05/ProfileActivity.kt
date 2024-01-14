@@ -13,6 +13,7 @@ import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
+import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.Observer
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
 import com.example.livewallpaper05.profiledata.ProfileTable
@@ -63,12 +64,23 @@ class ProfileActivity : AppCompatActivity() {
                 mUsername!!.text = profileData.username
                 mBio!!.text = profileData.bio
                 val imageData = profileData.profilepic
-                if(imageData != null){
+                if(imageData != null && imageData.isNotEmpty()){
                     val imageBitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.size)
                     mProfilePic!!.setImageBitmap(imageBitmap)
+                } else {
+                    mProfilePic!!.setImageResource(R.drawable.baseline_account_circle_24)
                 }
             }
         })
+
+        // update view model with default profile data
+        mViewModel.setProfile(
+            ProfileTable(mUsername!!.text.toString(),
+                mBio!!.text.toString(),
+                0,
+                ByteArray(0)
+            )
+        )
     }
 
     fun changeProfilePic(view: View) {
