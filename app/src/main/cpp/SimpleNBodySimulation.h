@@ -23,7 +23,7 @@ public:
 
     static const int VELOCITY_ATTRIBUTE_LOCATION = 3;
 
-    struct cacheChunk { // 512 bytes
+    struct __attribute__((aligned(128))) cacheChunk { // 512 bytes
         Particle particles[PARTICLES_PER_CHUNK];
         float padding[(512 - sizeof(particles)) / sizeof(float)];
     };
