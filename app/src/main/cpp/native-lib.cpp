@@ -106,7 +106,8 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
             view = new PicFlipView();
         }else if(type == "triangle"){
             //view = new TriangleView();
-            view = new SphereMapView();
+            //view = new SphereMapView();
+            view = new SphereWithFresnelEffectView();
         }else if(type == "graph"){
             view = new GraphView(visualizationJSON["settings"]);
         }
