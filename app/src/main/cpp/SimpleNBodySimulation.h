@@ -32,7 +32,7 @@ public:
 
     // https://community.arm.com/developer/tools-software/graphics/b/blog/posts/get-started-with-compute-shaders
     string computeShaderCode[1000] = {
-            "#version 320 es\n",
+            "#version 310 es\n", // OpenGLES 3.1 is required for compute shaders.
             "const uint PARTICLES_PER_CHUNK = " + std::to_string(PARTICLES_PER_CHUNK) + "u;",
             "const uint NUM_CACHE_CHUNKS = uint(" + std::to_string(NUM_CACHE_CHUNKS) + ");\n",
             "const uint COUNT = " + std::to_string(COUNT) + "u;\n",
@@ -40,7 +40,7 @@ public:
             "    vec3 position;\n",
             "    vec3 velocity;\n",
             "};\n",
-            "struct cacheChunk{\n",
+            "struct cacheChunk {\n",
             "    Particle particles[" + std::to_string(PARTICLES_PER_CHUNK) + "];\n",
             "};\n",
             "layout(packed, binding = " + std::to_string(OFFSET_ATTRIBUTE_LOCATION) + ") buffer destBuffer{\n",
