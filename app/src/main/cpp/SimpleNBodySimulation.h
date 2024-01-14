@@ -25,10 +25,10 @@ public:
 
     struct cacheChunk { // 512 bytes
         Particle particles[PARTICLES_PER_CHUNK];
-        float padding[32];
+        float padding[(512 - sizeof(particles)) / sizeof(float)];
     };
 
-    struct __attribute__((aligned(128))) SimpleNBodySimulationData { // 12,288 bytes
+    struct __attribute__((aligned(128))) SimpleNBodySimulationData {
         union {
             //Particle particles[COUNT]; // CPU computation data
             cacheChunk chunks[NUM_CACHE_CHUNKS]; // GPU computation data
@@ -47,9 +47,9 @@ public:
             "};\n",
             "struct cacheChunk {\n",
             "    Particle particles[" + to_string(PARTICLES_PER_CHUNK) + "];\n",
-            "    float padding[32];\n",
+            "    float padding[" + to_string((int)sizeof(cacheChunk::padding) / sizeof(float)) + "];\n",
             "};\n",
-            "layout(packed, binding = " + to_string(DEFAULT_INDEX_BUFFER_BINDING) + ") buffer destBuffer{\n",
+            "layout(packed, binding = " + to_string(DEFAULT_INDEX_BUFFER_BINDING) + ") buffer destBuffer {\n",
             "	  cacheChunk chunks[" + to_string(NUM_CACHE_CHUNKS) + "];\n",
             "} outBuffer;\n",
             "uniform float t;\n",
