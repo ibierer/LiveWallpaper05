@@ -9,8 +9,8 @@ using std::to_string;
 SimpleNBodySimulationView::SimpleNBodySimulationView() : View() {
     cubeProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(),FRAGMENT_SHADER.c_str());
 
-    //simulation.initialize(Computation::ComputationOptions::CPU);
-    simulation.initialize(Computation::ComputationOptions::GPU);
+    simulation.initialize(Computation::ComputationOptions::CPU);
+    //simulation.initialize(Computation::ComputationOptions::GPU);
     simulation.computeShader.gIndexBufferBinding = SimpleNBodySimulation::DEFAULT_INDEX_BUFFER_BINDING;
 
     cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));

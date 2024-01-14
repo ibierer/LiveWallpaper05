@@ -15,29 +15,30 @@ void SimpleNBodySimulation::initialize(const ComputationOptions& computationOpti
 }
 
 void SimpleNBodySimulation::simulateOnCPU(){
-    if(t > 0.0f) {
-        vec3 gravitySum[NUM_CACHE_CHUNKS][PARTICLES_PER_CHUNK];
-        for (uint task = 0; task < NUM_CACHE_CHUNKS; task++) {
-            for (uint i = 0u; i < PARTICLES_PER_CHUNK; i++) {
-                gravitySum[task][i] = vec3(0.0f, 0.0f, 0.0f);
-                for (uint j = 0u; j < NUM_CACHE_CHUNKS; j++) {
-                    for (uint k = 0u; k < PARTICLES_PER_CHUNK; k++) {
-                        if (PARTICLES_PER_CHUNK * j + k == PARTICLES_PER_CHUNK * task + i)
-                            continue;
-                        vec3 difference = data->chunks[j].particles[k].position -
-                                          data->chunks[task].particles[i].position;
-                        float differenceSquared = dot(difference, difference);
-                        float distance = sqrt(differenceSquared);
-                        gravitySum[task][i] += difference / distance / differenceSquared;
-                    }
+    if(t <= 0.0f) {
+        return;
+    }
+    vec3 gravitySum[NUM_CACHE_CHUNKS][PARTICLES_PER_CHUNK];
+    for (uint task = 0u; task < NUM_CACHE_CHUNKS; task++) {
+        for (uint i = 0u; i < PARTICLES_PER_CHUNK; i++) {
+            gravitySum[task][i] = vec3(0.0f, 0.0f, 0.0f);
+            for (uint j = 0u; j < NUM_CACHE_CHUNKS; j++) {
+                for (uint k = 0u; k < PARTICLES_PER_CHUNK; k++) {
+                    if (PARTICLES_PER_CHUNK * j + k == PARTICLES_PER_CHUNK * task + i)
+                        continue;
+                    vec3 difference = data->chunks[j].particles[k].position -
+                                      data->chunks[task].particles[i].position;
+                    float differenceSquared = dot(difference, difference);
+                    float distance = sqrt(differenceSquared);
+                    gravitySum[task][i] += difference / distance / differenceSquared;
                 }
             }
         }
-        for (uint task = 0; task < NUM_CACHE_CHUNKS; task++) {
-            for (uint i = 0u; i < PARTICLES_PER_CHUNK; i++) {
-                data->chunks[task].particles[i].velocity += gravitySum[task][i];
-                data->chunks[task].particles[i].position += data->chunks[task].particles[i].velocity;
-            }
+    }
+    for (uint task = 0; task < NUM_CACHE_CHUNKS; task++) {
+        for (uint i = 0u; i < PARTICLES_PER_CHUNK; i++) {
+            data->chunks[task].particles[i].velocity += gravitySum[task][i];
+            data->chunks[task].particles[i].position += data->chunks[task].particles[i].velocity;
         }
     }
 }
@@ -65,7 +66,7 @@ void SimpleNBodySimulation::simulateOnGPU(const int &iterations, bool pushDataTo
     glUseProgram(computeShader.gComputeProgram);
     // Push uniform and SSBO data to GPU
     glUniform1f(glGetUniformLocation(computeShader.gComputeProgram, "t"), t);
-    for(int i = 0; i < iterations; i++) {
+    for(int i = 0; i < iterations && t > 0.0; i++) {
         // Launch work group
         glDispatchCompute(1, 1, 1);
         // Define the end of the ongoing GPU computation as the barrier after which the CPU code may continue to execute
