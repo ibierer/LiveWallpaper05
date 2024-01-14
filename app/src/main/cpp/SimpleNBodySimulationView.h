@@ -66,10 +66,6 @@ public:
 
     Cube cube;
 
-    GLuint mVAO;
-
-    GLuint mVBO;
-
     VertexArrayObject cubeVAO;
 
     GLuint cubeProgram;
