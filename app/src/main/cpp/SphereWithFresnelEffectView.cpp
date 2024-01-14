@@ -127,7 +127,7 @@ void SphereWithFresnelEffectView::render(){
     environmentTriangleVAO.drawArrays();
 
 
-    glUseProgram(cubeMapDoubleRefractionProgram);
+    /*glUseProgram(cubeMapDoubleRefractionProgram);
     glUniformMatrix4fv(
             glGetUniformLocation(cubeMapDoubleRefractionProgram, "mvp"),
             1,
@@ -151,5 +151,5 @@ void SphereWithFresnelEffectView::render(){
     glBindTexture(GL_TEXTURE_CUBE_MAP, environmentMap.getTextureId());
     //glActiveTexture(GL_TEXTURE0);
 
-    environmentTriangleVAO.drawArrays();
+    environmentTriangleVAO.drawArrays();*/
 }
