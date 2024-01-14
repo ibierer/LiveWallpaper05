@@ -20,9 +20,9 @@ GraphView::GraphView(const string& equation) : View() {
     ImplicitGrapher::processEquation(ImplicitGrapher::numOfEquationsInMemory);
     ImplicitGrapher::numOfEquationsInMemory++;
 
-    simulation.initialize(Computation::ComputationOptions::CPU);
-    //simulation.initialize(Computation::ComputationOptions::GPU);
-    simulation.computeShader.gIndexBufferBinding = SimpleNBodySimulation::OFFSET_ATTRIBUTE_LOCATION;
+    //simulation.initialize(Computation::ComputationOptions::CPU);
+    simulation.initialize(Computation::ComputationOptions::GPU);
+    simulation.computeShader.gIndexBufferBinding = SimpleNBodySimulation::DEFAULT_INDEX_BUFFER_BINDING;
 
     cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
 }

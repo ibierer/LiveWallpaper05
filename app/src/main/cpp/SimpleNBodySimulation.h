@@ -17,6 +17,8 @@ public:
 
     static const int COUNT = NUM_CACHE_CHUNKS * PARTICLES_PER_CHUNK;
 
+    static const int DEFAULT_INDEX_BUFFER_BINDING = 0;
+
     static const int OFFSET_ATTRIBUTE_LOCATION = 2;
 
     static const int VELOCITY_ATTRIBUTE_LOCATION = 3;
@@ -47,7 +49,7 @@ public:
             "    Particle particles[" + to_string(PARTICLES_PER_CHUNK) + "];\n",
             "    float padding[32];\n",
             "};\n",
-            "layout(packed, binding = " + to_string(OFFSET_ATTRIBUTE_LOCATION) + ") buffer destBuffer{\n",
+            "layout(packed, binding = " + to_string(DEFAULT_INDEX_BUFFER_BINDING) + ") buffer destBuffer{\n",
             "	  cacheChunk chunks[" + to_string(NUM_CACHE_CHUNKS) + "];\n",
             "} outBuffer;\n",
             "uniform float t;\n",
