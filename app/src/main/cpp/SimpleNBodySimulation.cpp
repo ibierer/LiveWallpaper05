@@ -15,22 +15,30 @@ void SimpleNBodySimulation::initialize(const ComputationOptions& computationOpti
 }
 
 void SimpleNBodySimulation::simulateOnCPU(){
-    vec3 gravitySum[COUNT];
-    for(uint i = 0u; i < COUNT; i++){
-        gravitySum[i] = vec3(0.0f);
-        for(uint j = 0u; j < COUNT; j++){
-            if(j == i)
-                continue;
-            vec3 difference = data->particles[j].position - data->particles[i].position;
-            float differenceSquared = dot(difference, difference);
-            float distance = sqrt(differenceSquared);
-            gravitySum[i] += difference / distance / differenceSquared;
+    if(t > 0.0f) {
+        vec3 gravitySum[NUM_CACHE_CHUNKS][PARTICLES_PER_CHUNK];
+        for (uint task = 0; task < NUM_CACHE_CHUNKS; task++) {
+            for (uint i = 0u; i < PARTICLES_PER_CHUNK; i++) {
+                gravitySum[task][i] = vec3(0.0f, 0.0f, 0.0f);
+                for (uint j = 0u; j < NUM_CACHE_CHUNKS; j++) {
+                    for (uint k = 0u; k < PARTICLES_PER_CHUNK; k++) {
+                        if (PARTICLES_PER_CHUNK * j + k == PARTICLES_PER_CHUNK * task + i)
+                            continue;
+                        vec3 difference = data->chunks[j].particles[k].position -
+                                          data->chunks[task].particles[i].position;
+                        float differenceSquared = dot(difference, difference);
+                        float distance = sqrt(differenceSquared);
+                        gravitySum[task][i] += difference / distance / differenceSquared;
+                    }
+                }
+            }
         }
-    }
-
-    for(uint i = 0u; i < COUNT; i++){
-        data->particles[i].velocity += gravitySum[i];
-        data->particles[i].position += data->particles[i].velocity;
+        for (uint task = 0; task < NUM_CACHE_CHUNKS; task++) {
+            for (uint i = 0u; i < PARTICLES_PER_CHUNK; i++) {
+                data->chunks[task].particles[i].velocity += gravitySum[task][i];
+                data->chunks[task].particles[i].position += data->chunks[task].particles[i].velocity;
+            }
+        }
     }
 }
 
@@ -90,9 +98,15 @@ float SimpleNBodySimulation::getRandomFloat(float x) {
 bool SimpleNBodySimulation::seed() {
     switch(computationOption){
         case CPU:
-            for(int i = 0; i < COUNT; i++){
+            /*for(int i = 0; i < COUNT; i++){
                 data->particles[i].position = vec3(getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f);
                 data->particles[i].velocity = vec3(0.0f);
+            }*/
+            for(int i = 0; i < NUM_CACHE_CHUNKS; i++){
+                for(int j = 0; j < PARTICLES_PER_CHUNK && PARTICLES_PER_CHUNK * i + j < COUNT; j++){
+                    data->chunks[i].particles[j].position = vec3(getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f);
+                    data->chunks[i].particles[j].velocity = vec3(0.0f);
+                }
             }
             break;
         case GPU:
