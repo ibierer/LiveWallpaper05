@@ -7,7 +7,7 @@
 using std::min;
 using std::max;
 
-NaiveView::NaiveView() : SimulationView(){
+NaiveView::NaiveView() : View() {
     mProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
     seed(15.0f);
@@ -16,6 +16,11 @@ NaiveView::NaiveView() : SimulationView(){
 NaiveView::~NaiveView(){
     glDeleteProgram(mProgram);
     delete molecules;
+}
+
+void NaiveView::setMoleculeCount(int n){
+    moleculeCount = n;
+    cbrtMoleculeCount = cbrt(moleculeCount);
 }
 
 void NaiveView::render(){
@@ -27,7 +32,7 @@ void NaiveView::render(){
     Matrix4<float> translation;
     for(int i = 0; i < moleculeCount; i++) {
         translation = translation.Translation(
-                Vec3<float>(molecules[i].position[0], molecules[i].position[1], molecules[i].position[2] + 50.0f * (zoom - 1.0f)));
+                Vec3<float>(molecules[i].position.x, molecules[i].position.y, molecules[i].position.z + 50.0f * (zoom - 1.0f)));
         Matrix4<float> mvp = perspective * translation;
         glUniformMatrix4fv(
                 glGetUniformLocation(mProgram, "mvp"),

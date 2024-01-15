@@ -6,9 +6,7 @@
 #define LIVEWALLPAPER05_NAIVEVIEW_H
 
 
-#include "SimulationView.h"
-
-class NaiveView : public SimulationView{
+class NaiveView : public View{
 public:
 
     VertexArrayObject cubeVAO;
@@ -30,6 +28,12 @@ public:
             "void main() {\n"
             "    outColor = color;\n"
             "}\n";
+
+    int moleculeCount;
+
+    int cbrtMoleculeCount;
+
+    void setMoleculeCount(int n);
 
     struct Molecule {
         vec3 position;

@@ -74,6 +74,8 @@ public:
 
     void calculatePerspectiveSetViewport(const float& maxViewDegrees);
 
+    vec3 compensateForOrientation(const vec3& acc);
+
     static const string ES_VERSION;
 
     static const string SPHERE_MAP_TEXTURE_FUNCTION;

@@ -4,7 +4,7 @@
 
 #include "PicFlipView.h"
 
-PicFlipView::PicFlipView() : SimulationView(){
+PicFlipView::PicFlipView() : View() {
     mProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
     setupScene();

@@ -6,10 +6,9 @@
 #define LIVEWALLPAPER05_PICFLIPVIEW_H
 
 
-#include "SimulationView.h"
 #include "FlipFluid.h"
 
-class PicFlipView : public SimulationView{
+class PicFlipView : public View {
 public:
 
     VertexArrayObject cubeVAO;
