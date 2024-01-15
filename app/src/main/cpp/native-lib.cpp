@@ -44,6 +44,7 @@
 #include "GraphView.cpp"
 #include "NaiveSimulation.cpp"
 #include "NaiveSimulationView.cpp"
+#include "NaiveSimulationWithSurfaceView.cpp"
 #include "FlipFluid.cpp"
 #include "PicFlipView.cpp"
 #include "EnvironmentMap.cpp"
@@ -97,7 +98,8 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
             //view = new SphereWithReflectionView();
             //view = new SphereWithRefractionView();
             //view = new SphereWithFresnelEffectView();
-            view = new SimpleNBodySimulationView();
+            //view = new SimpleNBodySimulationView();
+            view = new NaiveSimulationWithSurfaceView();
         }else if(type == "naive"){
             view = new NaiveSimulationView();
         }else if(type == "picflip"){

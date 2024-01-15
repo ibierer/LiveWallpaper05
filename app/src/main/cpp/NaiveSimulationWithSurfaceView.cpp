@@ -1,21 +1,24 @@
 //
-// Created by Immanuel Bierer on 12/4/2023.
+// Created by Immanuel Bierer on 1/15/2024.
 //
 
-#include "NaiveSimulationView.h"
+#include "NaiveSimulationWithSurfaceView.h"
 
-NaiveSimulationView::NaiveSimulationView() : View() {
+using std::min;
+using std::max;
+
+NaiveSimulationWithSurfaceView::NaiveSimulationWithSurfaceView() : View() {
     mProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
     simulation.seed(15.0f);
 }
 
-NaiveSimulationView::~NaiveSimulationView(){
+NaiveSimulationWithSurfaceView::~NaiveSimulationWithSurfaceView(){
     glDeleteProgram(mProgram);
     delete simulation.particles;
 }
 
-void NaiveSimulationView::render(){
+void NaiveSimulationWithSurfaceView::render(){
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
