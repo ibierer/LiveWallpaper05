@@ -19,7 +19,7 @@ public:
 
     ImplicitGrapher implicitGrapher;
 
-    const string VERTEX_SHADER =
+    const string GRAPH_VERTEX_SHADER =
             ES_VERSION +
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
             "layout(location = " STRV(NORMAL_ATTRIBUTE_LOCATION) ") in vec3 normal;\n"
@@ -32,7 +32,7 @@ public:
             "    vNormal = normal;\n"
             "}\n";
 
-    const string FRAGMENT_SHADER =
+    const string GRAPH_FRAGMENT_SHADER =
             ES_VERSION +
             "precision mediump float;\n"
             "in vec3 vPosition;\n"
@@ -42,7 +42,7 @@ public:
             "    outColor = vec4(0.025f * vPosition + vec3(0.5), 1.0f); \n"
             "}\n";
 
-    const string _VERTEX_SHADER =
+    const string CUBE_VERTEX_SHADER =
             ES_VERSION +
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
             "layout(location = " + to_string(SimpleNBodySimulation::OFFSET_ATTRIBUTE_LOCATION) + ") in vec3 offset;\n"
@@ -59,7 +59,7 @@ public:
             "    );\n"
             "}\n";
 
-    const string _FRAGMENT_SHADER =
+    const string CUBE_FRAGMENT_SHADER =
             ES_VERSION +
             "precision mediump float;\n"
             "in vec4 vColor;\n"
@@ -71,6 +71,8 @@ public:
     SimpleNBodySimulation simulation;
 
     VertexArrayObject cubeVAO;
+
+    GLuint graphProgram;
 
     GLuint cubeProgram;
 

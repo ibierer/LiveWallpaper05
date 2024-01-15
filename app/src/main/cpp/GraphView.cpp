@@ -11,8 +11,8 @@ GraphView::GraphView() : View() {
 }
 
 GraphView::GraphView(const string& equation) : View() {
-    mProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
-    cubeProgram = createVertexAndFragmentShaderProgram(_VERTEX_SHADER.c_str(),_FRAGMENT_SHADER.c_str());
+    graphProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_FRAGMENT_SHADER.c_str());
+    cubeProgram = createVertexAndFragmentShaderProgram(CUBE_VERTEX_SHADER.c_str(), CUBE_FRAGMENT_SHADER.c_str());
 
     implicitGrapher = ImplicitGrapher(ivec3(29));
     ImplicitGrapher::surfaceEquation = ImplicitGrapher::numOfEquationsInMemory;
@@ -46,9 +46,9 @@ void GraphView::render(){
     Matrix4<float> mvp = orientationAdjustedPerspective * translation * rotation;
 
     // Render graph
-    glUseProgram(mProgram);
+    glUseProgram(graphProgram);
     glUniformMatrix4fv(
-            glGetUniformLocation(mProgram, "mvp"),
+            glGetUniformLocation(graphProgram, "mvp"),
             1,
             GL_FALSE,
             (GLfloat*)&mvp);
