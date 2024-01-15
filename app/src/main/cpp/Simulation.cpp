@@ -3,3 +3,8 @@
 //
 
 #include "Simulation.h"
+
+void Simulation::setParticleCount(int n){
+    particleCount = n;
+    cbrtParticleCount = cbrt(n);
+}

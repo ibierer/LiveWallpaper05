@@ -89,7 +89,7 @@ public:
 	/////////////////////////////////////////////////////////////////////////////////
 	//!@ Access to internal data
 
-	SIZE_TYPE GetPointCount() const { return pointCount-1; }					//!< Returns the point count
+	SIZE_TYPE GetPointCount() const { return pointCount-1; }					//!< Returns the point particleCount
 	PointType const & GetPoint(SIZE_TYPE i) const { return points[i+1].Pos(); }	//!< Returns the point at position type
 	SIZE_TYPE GetPointIndex(SIZE_TYPE i) const { return points[i+1].Index(); }	//!< Returns the index of the point at position type
 
@@ -140,7 +140,7 @@ public:
 		BuildKDTree( orig, boundMin, boundMax, 1, 0, pointCount );
 		delete [] orig;
 		if ( (pointCount & 1) == 0 ) {
-			// if the point count is even, we should add a bogus point
+			// if the point particleCount is even, we should add a bogus point
 			points[ pointCount+1 ].Set( PointType( std::numeric_limits<FType>::infinity() ), 0, 0 );
 		}
 		numInternal = pointCount / 2;
@@ -338,7 +338,7 @@ private:
 	};
 
 	PointData *points;		// Keeps the points as a k-d tree.
-	SIZE_TYPE  pointCount;	// Keeps the point count.
+	SIZE_TYPE  pointCount;	// Keeps the point particleCount.
 	SIZE_TYPE  numInternal;	// Keeps the number of internal k-d tree nodes.
 
 	// The main method for recursively building the k-d tree.

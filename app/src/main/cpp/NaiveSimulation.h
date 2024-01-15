@@ -10,19 +10,11 @@ class NaiveSimulation : public Simulation {
 
 public:
 
-    int count;
-
-    int cbrtCount;
-
-    void setParticleCount(int n);
-
     bool seed(const float& radius);
 
     void simulate(const vec3& gravity);
 
-    struct Particle {
-        vec3 position;
-        vec3 velocity;
+    struct Particle : public Simulation::Particle {
         vec3 positionFinal;
         vec3 sumForceInitial;
         vec3 sumForceFinal;

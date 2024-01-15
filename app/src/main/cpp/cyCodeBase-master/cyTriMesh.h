@@ -111,7 +111,7 @@ protected:
 	Vec3f   *vt;	//!< texture environmentTriangleVertices
 	TriFace *ft;	//!< texture faces
 	Mtl     *m;		//!< materials
-	int     *mcfc;	//!< material cumulative face count
+	int     *mcfc;	//!< material cumulative face particleCount
 
 	unsigned int nv;	//!< number of environmentTriangleVertices
 	unsigned int nf;	//!< number of faces

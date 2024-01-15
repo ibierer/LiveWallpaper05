@@ -25,7 +25,7 @@ void NaiveSimulationView::render(){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(mProgram);
     Matrix4<float> translation;
-    for(int i = 0; i < simulation.count; i++) {
+    for(int i = 0; i < simulation.particleCount; i++) {
         translation = translation.Translation(
                 Vec3<float>(simulation.particles[i].position.x, simulation.particles[i].position.y, simulation.particles[i].position.z + 50.0f * (zoom - 1.0f)));
         Matrix4<float> mvp = perspective * translation;
@@ -55,7 +55,7 @@ void NaiveSimulation::populateGrid(const int& dataIndex){
     for (int i = 0; i < pNumCells; i++)
         numCellParticles[i] = 0;
 
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < particleCount; i++) {
         float x = ((vec3*)&particles[i])[dataIndex].x + sphereRadiusPlusPointFive;
         float y = ((vec3*)&particles[i])[dataIndex].y + sphereRadiusPlusPointFive;
         float z = ((vec3*)&particles[i])[dataIndex].z + sphereRadiusPlusPointFive;
@@ -79,7 +79,7 @@ void NaiveSimulation::populateGrid(const int& dataIndex){
 
     // fill particles into cells
 
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < particleCount; i++) {
         float x = ((vec3*)&particles[i])[dataIndex].x + sphereRadiusPlusPointFive;
         float y = ((vec3*)&particles[i])[dataIndex].y + sphereRadiusPlusPointFive;
         float z = ((vec3*)&particles[i])[dataIndex].z + sphereRadiusPlusPointFive;

@@ -95,7 +95,7 @@ public:
 	//!@name Constant Data Access Methods
 
 	Header         const & GetHeader           () const { return header; }			//!< Use this method to access header data.
-	unsigned short const * GetSegmentsArray    () const { return segments; }		//!< Returns segments array (segment count for each hair strand).
+	unsigned short const * GetSegmentsArray    () const { return segments; }		//!< Returns segments array (segment particleCount for each hair strand).
 	float          const * GetPointsArray      () const { return points; }			//!< Returns points array (xyz coordinates of each hair point).
 	float          const * GetThicknessArray   () const { return thickness; }		//!< Returns thickness array (thickness at each hair point}.
 	float          const * GetTransparencyArray() const { return transparency; }	//!< Returns transparency array (transparency at each hair point).
@@ -105,7 +105,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	//!@name Data Access Methods
 
-	unsigned short* GetSegmentsArray    () { return segments; }		//!< Returns segments array (segment count for each hair strand).
+	unsigned short* GetSegmentsArray    () { return segments; }		//!< Returns segments array (segment particleCount for each hair strand).
 	float*          GetPointsArray      () { return points; }		//!< Returns points array (xyz coordinates of each hair point).
 	float*          GetThicknessArray   () { return thickness; }	//!< Returns thickness array (thickness at each hair point}.
 	float*          GetTransparencyArray() { return transparency; }	//!< Returns transparency array (transparency at each hair point).
@@ -139,7 +139,7 @@ public:
 		memset( header.info, '\0', _CY_HAIR_FILE_INFO_SIZE );
 	}
 
-	//! Sets the hair count, re-allocates segments array if necessary.
+	//! Sets the hair particleCount, re-allocates segments array if necessary.
 	void SetHairCount( int count )
 	{
 		header.hair_count = count;
@@ -149,7 +149,7 @@ public:
 		}
 	}
 
-	// Sets the point count, re-allocates points, thickness, transparency, and colors arrays if necessary.
+	// Sets the point particleCount, re-allocates points, thickness, transparency, and colors arrays if necessary.
 	void SetPointCount( int count )
 	{
 		header.point_count = count;
@@ -172,7 +172,7 @@ public:
 	}
 
 	//! Use this function to allocate/delete arrays.
-	//! Before you call this method set hair count and point count.
+	//! Before you call this method set hair particleCount and point particleCount.
 	//! Note that a valid HAIR file should always have points array.
 	void SetArrays( int array_types )
 	{
@@ -294,8 +294,8 @@ public:
 
 	//! Fills the given direction array with normalized directions using the points array.
 	//! Call this function if you need strand directions for shading.
-	//! The given array dir should be allocated as an array of size 3 times point count.
-	//! Returns point count, returns zero if fails.
+	//! The given array dir should be allocated as an array of size 3 times point particleCount.
+	//! Returns point particleCount, returns zero if fails.
 	int FillDirectionArray( float *dir )
 	{
 		if ( dir==nullptr || header.point_count<=0 || points==nullptr ) return 0;

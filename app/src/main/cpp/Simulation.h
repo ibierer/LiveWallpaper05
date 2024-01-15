@@ -15,6 +15,12 @@ public:
         vec3 velocity;
     };
 
+    int particleCount;
+
+    int cbrtParticleCount;
+
+    void setParticleCount(int n);
+
 private:
 
 };

@@ -196,7 +196,7 @@ private:
 		float const * GetBounds    () const { return box.b; }																//!< returns the bounding box of the node
 	private:
 		Box          box;	//!< bounding box of the node
-		unsigned int data;	//!< node data bits that keep the leaf node flag and the child node index or element count and element offset.
+		unsigned int data;	//!< node data bits that keep the leaf node flag and the child node index or element particleCount and element offset.
 	};
 
 	Node         *nodes;	//!< the tree structure that keeps all the node data (nodeData[0] is not used for cache coherency)

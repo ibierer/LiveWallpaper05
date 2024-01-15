@@ -11180,7 +11180,7 @@ class binary_reader
                 if (number < 0)
                 {
                     return sax->parse_error(chars_read, get_token_string(), parse_error::create(113, chars_read,
-                                            exception_message(input_format, "count in an optimized container must be positive", "size"), nullptr));
+                                            exception_message(input_format, "particleCount in an optimized container must be positive", "size"), nullptr));
                 }
                 result = static_cast<std::size_t>(number); // NOLINT(bugprone-signed-char-misuse,cert-str34-c): number is not a char
                 return true;
@@ -11196,7 +11196,7 @@ class binary_reader
                 if (number < 0)
                 {
                     return sax->parse_error(chars_read, get_token_string(), parse_error::create(113, chars_read,
-                                            exception_message(input_format, "count in an optimized container must be positive", "size"), nullptr));
+                                            exception_message(input_format, "particleCount in an optimized container must be positive", "size"), nullptr));
                 }
                 result = static_cast<std::size_t>(number);
                 return true;
@@ -11212,7 +11212,7 @@ class binary_reader
                 if (number < 0)
                 {
                     return sax->parse_error(chars_read, get_token_string(), parse_error::create(113, chars_read,
-                                            exception_message(input_format, "count in an optimized container must be positive", "size"), nullptr));
+                                            exception_message(input_format, "particleCount in an optimized container must be positive", "size"), nullptr));
                 }
                 result = static_cast<std::size_t>(number);
                 return true;
@@ -11228,7 +11228,7 @@ class binary_reader
                 if (number < 0)
                 {
                     return sax->parse_error(chars_read, get_token_string(), parse_error::create(113, chars_read,
-                                            exception_message(input_format, "count in an optimized container must be positive", "size"), nullptr));
+                                            exception_message(input_format, "particleCount in an optimized container must be positive", "size"), nullptr));
                 }
                 if (!value_in_range_of<std::size_t>(number))
                 {
@@ -18644,11 +18644,11 @@ class serializer
 
   private:
     /*!
-    @brief count digits
+    @brief particleCount digits
 
     Count the number of decimal (base 10) digits for an input unsigned integer.
 
-    @param[in] x  unsigned integer number to count its digits
+    @param[in] x  unsigned integer number to particleCount its digits
     @return    number of decimal digits
     */
     inline unsigned int count_digits(number_unsigned_t x) noexcept
@@ -20317,7 +20317,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         return basic_json(init, false, value_t::object);
     }
 
-    /// @brief construct an array with count copies of given value
+    /// @brief construct an array with particleCount copies of given value
     /// @sa https://json.nlohmann.me/api/basic_json/basic_json/
     basic_json(size_type cnt, const basic_json& val):
         m_data{cnt, val}
@@ -22009,7 +22009,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     }
 
     /// @brief returns the number of occurrences of a key in a JSON TriangleStripObject
-    /// @sa https://json.nlohmann.me/api/basic_json/count/
+    /// @sa https://json.nlohmann.me/api/basic_json/particleCount/
     size_type count(const typename object_t::key_type& key) const
     {
         // return 0 for all nonobject types
@@ -22017,7 +22017,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     }
 
     /// @brief returns the number of occurrences of a key in a JSON TriangleStripObject
-    /// @sa https://json.nlohmann.me/api/basic_json/count/
+    /// @sa https://json.nlohmann.me/api/basic_json/particleCount/
     template<class KeyType, detail::enable_if_t<
                  detail::is_usable_as_basic_json_key_type<basic_json_t, KeyType>::value, int> = 0>
     size_type count(KeyType && key) const

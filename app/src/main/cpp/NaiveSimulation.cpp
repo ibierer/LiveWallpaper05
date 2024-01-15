@@ -4,24 +4,19 @@
 
 #include "NaiveSimulation.h"
 
-void NaiveSimulation::setParticleCount(int n){
-    count = n;
-    cbrtCount = cbrt(n);
-}
-
 bool NaiveSimulation::seed(const float& radius) {
     setParticleCount(1000);
-    particles = new NaiveSimulation::Particle[count];
+    particles = new NaiveSimulation::Particle[particleCount];
     sphereRadius = radius;
     sphereRadiusSquared = sphereRadius * sphereRadius;
     sphereRadiusPlusPointFive = sphereRadius + 0.5f;
     sphereRadiusPlusPointFiveSquared = sphereRadiusPlusPointFive * sphereRadiusPlusPointFive;
-    for (int i = 0; i < count; i++) {
-        int first = i - (i % (cbrtCount * cbrtCount));
-        particles[i].position.x = first / (cbrtCount * cbrtCount) - (cbrtCount - 1) / 2.0f;
+    for (int i = 0; i < particleCount; i++) {
+        int first = i - (i % (cbrtParticleCount * cbrtParticleCount));
+        particles[i].position.x = first / (cbrtParticleCount * cbrtParticleCount) - (cbrtParticleCount - 1) / 2.0f;
         first = i - first;
-        particles[i].position.y = (first - (first % cbrtCount)) / cbrtCount - (cbrtCount - 1) / 2.0f;
-        particles[i].position.z = first % cbrtCount - (cbrtCount - 1) / 2.0f;
+        particles[i].position.y = (first - (first % cbrtParticleCount)) / cbrtParticleCount - (cbrtParticleCount - 1) / 2.0f;
+        particles[i].position.z = first % cbrtParticleCount - (cbrtParticleCount - 1) / 2.0f;
         particles[i].velocity = vec3(0.0f, 0.000001f, 0.0f);
         particles[i].positionFinal = particles[i].position;
     }
@@ -37,7 +32,7 @@ bool NaiveSimulation::seed(const float& radius) {
     pNumCells = pNumX * pNumY * pNumZ;
     numCellParticles = (int*)calloc(pNumCells, sizeof(int));              // Initialize the number of particles in each cell
     firstCellParticle = (int*)calloc((pNumCells + 1), sizeof(int));       // Initialize the index of the first particle in each cell
-    cellParticleIds = (int*)calloc(count, sizeof(int));
+    cellParticleIds = (int*)calloc(particleCount, sizeof(int));
 
     populateGrid(0);
 
@@ -45,7 +40,7 @@ bool NaiveSimulation::seed(const float& radius) {
 }
 
 void NaiveSimulation::simulate(const vec3& gravity) {
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < particleCount; i++) {
         calculateForce(i, gravity, particles[i].sumForceInitial, particles[i].position, 0);
         particles[i].positionFinal = particles[i].position + deltaTime * (particles[i].sumForceInitial * 0.5f * deltaTime + particles[i].velocity);
         // Bug fix: Stop runaway particles
@@ -55,7 +50,7 @@ void NaiveSimulation::simulate(const vec3& gravity) {
         }
     }
     populateGrid(2);
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < particleCount; i++) {
         calculateForce(i, gravity, particles[i].sumForceFinal, particles[i].positionFinal, 2);
         vec3 sumForceAverage = 0.5f * (particles[i].sumForceInitial + particles[i].sumForceFinal);
         particles[i].position += deltaTime * (sumForceAverage * 0.5f * deltaTime + particles[i].velocity);

@@ -270,7 +270,7 @@ public:
             "    for (int type = int(3u * 32u * task); type < outBuffer.chunks[task].solutionCount; type++) {\n",
             "        outBuffer.chunks[task].vertices[type].n = vec3(0.0f);\n",
             "    }\n",
-            "    // Reset solution count\n",
+            "    // Reset solution particleCount\n",
             "    outBuffer.chunks[task].solutionCount = int(3u * 32u * task);\n",
             "    // Reset group segment counter\n",
             "    int groupSegmentCounter = 0;\n",
@@ -578,14 +578,6 @@ public:
     static float fOfXYZ(vec3 position);
 
     static void calculateSurfaceOnCPU(float (*fOfXYZ)(vec3),
-                                      const float &timeVariable, const uint &iterations,
-                                      const vec3 &offset,
-                                      const float &zoom, const bool &vectorPointsPositive,
-                                      const bool &clipEdges, PositionXYZNormalXYZ *_vertices,
-                                      uvec3 *_indices,
-                                      GLuint &_numIndices);
-
-    static void calculateSurfaceOnGPU(float (*fOfXYZ)(vec3),
                                       const float &timeVariable, const uint &iterations,
                                       const vec3 &offset,
                                       const float &zoom, const bool &vectorPointsPositive,

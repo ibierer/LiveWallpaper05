@@ -66,7 +66,7 @@ void FlipFluid::pushParticlesApart(const float& _numIters)
 {
     float colorDiffusionCoeff = 0.001;
 
-    // count particles per cell
+    // particleCount particles per cell
 
     for (int i = 0; i < pNumCells; i++)
         numCellParticles[i] = 0;

@@ -201,7 +201,7 @@ private:
 	SIZE_TYPE *heap;			// The heap array, keeping the id of each data item.
 	SIZE_TYPE *heapPos;			// The heap position of each item.
 	SIZE_TYPE heapItemCount;	// The number of items in the heap.
-	SIZE_TYPE size;				// The total item count, including the ones removed from the heap.
+	SIZE_TYPE size;				// The total item particleCount, including the ones removed from the heap.
 	bool deleteData;			// Determines whether the data pointer owns the memory it points to.
 
 	// Clears the data pointer and deallocates memory if the data is owned.
