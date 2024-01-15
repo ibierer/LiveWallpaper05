@@ -1,41 +1,26 @@
 //
-// Created by Immanuel Bierer on 12/4/2023.
+// Created by Immanuel Bierer on 1/14/2024.
 //
 
-#ifndef LIVEWALLPAPER05_NAIVEVIEW_H
-#define LIVEWALLPAPER05_NAIVEVIEW_H
+#ifndef LIVEWALLPAPER05_NAIVESIMULATION_H
+#define LIVEWALLPAPER05_NAIVESIMULATION_H
 
 
-class NaiveView : public View{
+class NaiveSimulation : public Simulation {
+
 public:
 
-    VertexArrayObject cubeVAO;
+    int count;
 
-    const string VERTEX_SHADER =
-            ES_VERSION +
-            "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
-            "uniform mat4 mvp;\n"
-            "out vec4 vColor;\n"
-            "void main() {\n"
-            "    gl_Position = mvp * vec4(pos, 1.0);\n"
-            "}\n";
+    int cbrtCount;
 
-    const string FRAGMENT_SHADER =
-            ES_VERSION +
-            "precision mediump float;\n"
-            "uniform vec4 color;\n"
-            "out vec4 outColor;\n"
-            "void main() {\n"
-            "    outColor = color;\n"
-            "}\n";
+    void setParticleCount(int n);
 
-    int moleculeCount;
+    bool seed(const float& radius);
 
-    int cbrtMoleculeCount;
+    void simulate(const vec3& gravity);
 
-    void setMoleculeCount(int n);
-
-    struct Molecule {
+    struct Particle {
         vec3 position;
         vec3 velocity;
         vec3 positionFinal;
@@ -43,19 +28,7 @@ public:
         vec3 sumForceFinal;
     };
 
-    Molecule* molecules;
-
-    bool seed(const float& radius);
-
-    void simulate(const vec3& gravity);
-
-    NaiveView();
-
-    ~NaiveView();
-
-    void render() override;
-
-private:
+    Particle* particles;
 
     const float deltaTime = 0.02f;
 
@@ -97,6 +70,8 @@ private:
 
     int pNumCells;
 
+private:
+
     void populateGrid(const int& dataIndex);
 
     void useGrid(const int& i, const int& dataIndex, int* const ids, int& count);
@@ -106,7 +81,8 @@ private:
     float f(const float& x);
 
     inline void calculateForce(const int& i, const vec3& gravity, vec3& force, const vec3& position, const int& dataIndex);
+
 };
 
 
-#endif //LIVEWALLPAPER05_NAIVEVIEW_H
+#endif //LIVEWALLPAPER05_NAIVESIMULATION_H

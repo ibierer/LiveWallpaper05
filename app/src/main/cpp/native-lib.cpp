@@ -42,7 +42,8 @@
 #include "SimpleNBodySimulationView.cpp"
 #include "ImplicitGrapher.cpp"
 #include "GraphView.cpp"
-#include "NaiveView.cpp"
+#include "NaiveSimulation.cpp"
+#include "NaiveSimulationView.cpp"
 #include "FlipFluid.cpp"
 #include "PicFlipView.cpp"
 #include "EnvironmentMap.cpp"
@@ -98,7 +99,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
             //view = new SphereWithFresnelEffectView();
             view = new SimpleNBodySimulationView();
         }else if(type == "naive"){
-            view = new NaiveView();
+            view = new NaiveSimulationView();
         }else if(type == "picflip"){
             view = new PicFlipView();
         }else if(type == "triangle"){
