@@ -926,6 +926,7 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(vec3), const float& 
     ImplicitGrapher::vectorPointsPositive = vectorPointsPositive;
     ImplicitGrapher::t = timeVariable;
     ImplicitGrapher::clipEdges = clipEdges;
+    ImplicitGrapher::offset = offset;
     t = timeVariable;
     currentOffset = defaultOffset + offset;
     // Erase normals
@@ -1221,6 +1222,6 @@ void ImplicitGrapher::refactor(const ivec3& inputSize) {
     size = inputSize;
     sizePlus2 = size + ivec3(2);
     sizePlus3 = size + ivec3(3);
-    defaultOffset = vec3(0.5f * inputSize) + vec3(1.0f);
+    offset = defaultOffset = vec3(0.5f * inputSize) + vec3(1.0f);
     maxSolutionCount = 3 * sizePlus3.x * sizePlus3.y * sizePlus3.z;
 }

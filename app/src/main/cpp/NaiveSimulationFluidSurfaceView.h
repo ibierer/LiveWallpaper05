@@ -2,11 +2,11 @@
 // Created by Immanuel Bierer on 1/15/2024.
 //
 
-#ifndef LIVEWALLPAPER05_NAIVESIMULATIONWITHSURFACEVIEW_H
-#define LIVEWALLPAPER05_NAIVESIMULATIONWITHSURFACEVIEW_H
+#ifndef LIVEWALLPAPER05_NAIVESIMULATIONFLUIDSURFACEVIEW_H
+#define LIVEWALLPAPER05_NAIVESIMULATIONFLUIDSURFACEVIEW_H
 
 
-class NaiveSimulationWithSurfaceView : public View{
+class NaiveSimulationFluidSurfaceView : public View{
 public:
 
     GLuint graphProgram;
@@ -60,9 +60,9 @@ public:
             "    outColor = color;\n"
             "}\n";
 
-    NaiveSimulationWithSurfaceView();
+    NaiveSimulationFluidSurfaceView();
 
-    ~NaiveSimulationWithSurfaceView();
+    ~NaiveSimulationFluidSurfaceView();
 
     void render() override;
 
@@ -71,4 +71,4 @@ private:
 };
 
 
-#endif //LIVEWALLPAPER05_NAIVESIMULATIONWITHSURFACEVIEW_H
+#endif //LIVEWALLPAPER05_NAIVESIMULATIONFLUIDSURFACEVIEW_H

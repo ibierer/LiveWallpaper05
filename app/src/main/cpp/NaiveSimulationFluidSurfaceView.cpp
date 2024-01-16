@@ -2,7 +2,7 @@
 // Created by Immanuel Bierer on 1/15/2024.
 //
 
-#include "NaiveSimulationWithSurfaceView.h"
+#include "NaiveSimulationFluidSurfaceView.h"
 
 using std::min;
 using std::max;
@@ -55,26 +55,23 @@ float fOfXYZFluidSurface(vec3 _) {
     return sum - 2.0f;
 }
 
-NaiveSimulationWithSurfaceView::NaiveSimulationWithSurfaceView() : View() {
+NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView() : View() {
     cubeProgram = createVertexAndFragmentShaderProgram(CUBE_VERTEX_SHADER.c_str(), CUBE_FRAGMENT_SHADER.c_str());
     graphProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_FRAGMENT_SHADER.c_str());
     cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
 
-    implicitGrapher = ImplicitGrapher(ivec3(29));
-    ImplicitGrapher::processEquation(ImplicitGrapher::numOfEquationsInMemory);
-    ImplicitGrapher::surfaceEquation = 0;
-    ImplicitGrapher::numOfEquationsInMemory++;
+    implicitGrapher = ImplicitGrapher(ivec3(14));
 
     simulation.seed(5.0f);
     sim = &simulation;
 }
 
-NaiveSimulationWithSurfaceView::~NaiveSimulationWithSurfaceView(){
+NaiveSimulationFluidSurfaceView::~NaiveSimulationFluidSurfaceView(){
     glDeleteProgram(mProgram);
     delete simulation.particles;
 }
 
-void NaiveSimulationWithSurfaceView::render(){
+void NaiveSimulationFluidSurfaceView::render(){
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
@@ -101,8 +98,7 @@ void NaiveSimulationWithSurfaceView::render(){
     }
 
     //ImplicitGrapher::calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, false, false, ImplicitGrapher::vertices, ImplicitGrapher::indices, ImplicitGrapher::numIndices);
-    //fOfXYZFluidSurface, t, 10, vec3(0.0f), 3.0f / 7.0f, false, false, &vertices[0], _solutionSurface_indices, solutionSurface.numIndices
-    ImplicitGrapher::calculateSurfaceOnCPU(fOfXYZFluidSurface, 0.1f * getFrameCount(), 10, vec3(0.0f), 3.0f / 7.0f, false, false, ImplicitGrapher::vertices, ImplicitGrapher::indices, ImplicitGrapher::numIndices);
+    ImplicitGrapher::calculateSurfaceOnCPU(fOfXYZFluidSurface, 0.1f * getFrameCount(), 10, ImplicitGrapher::defaultOffset, 3.0f / 7.0f, false, false, ImplicitGrapher::vertices, ImplicitGrapher::indices, ImplicitGrapher::numIndices);
 
     // Prepare model-view-projection matrix
     translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 60.0f * (zoom - 1.0f)));
