@@ -81,7 +81,12 @@ void NaiveSimulationFluidSurfaceView::render(){
     for(int i = 0; i < simulation.particleCount; i++) {
         translation = translation.Translation(
                 Vec3<float>(simulation.particles[i].position.x, simulation.particles[i].position.y, simulation.particles[i].position.z + 50.0f * (zoom - 1.0f)));
-        Matrix4<float> mvp = perspective * translation;
+        Matrix4<float> mvp;
+        if(referenceFrameRotates) {
+            mvp = perspective * translation;
+        }else{
+            mvp = perspective * translation;
+        }
         glUniformMatrix4fv(
                 glGetUniformLocation(cubeProgram, "mvp"),
                 1,
@@ -107,7 +112,12 @@ void NaiveSimulationFluidSurfaceView::render(){
     Matrix4<float> translation2;
     translation2 = translation2.Translation(Vec3<float>(ImplicitGrapher::defaultOffset.x, ImplicitGrapher::defaultOffset.y, ImplicitGrapher::defaultOffset.z));
     //Matrix4<float> mvp = orientationAdjustedPerspective * translation * rotation * translation2;
-    Matrix4<float> mvp = perspective * translation * rotation * translation2;
+    Matrix4<float> mvp;
+    if(referenceFrameRotates){
+        mvp = perspective * translation * translation2;
+    }else{
+        mvp = perspective * translation * translation2;
+    }
 
     // Render graph
     glUseProgram(graphProgram);
