@@ -101,10 +101,13 @@ void NaiveSimulationFluidSurfaceView::render(){
     ImplicitGrapher::calculateSurfaceOnCPU(fOfXYZFluidSurface, 0.1f * getFrameCount(), 10, ImplicitGrapher::defaultOffset, 3.0f / 7.0f, false, false, ImplicitGrapher::vertices, ImplicitGrapher::indices, ImplicitGrapher::numIndices);
 
     // Prepare model-view-projection matrix
-    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 60.0f * (zoom - 1.0f)));
+    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 50.0f * (zoom - 1.0f)));
     Matrix4<float> rotation;
     rotation = Matrix4<float>(quaternionTo3x3(rotationVector));
-    Matrix4<float> mvp = orientationAdjustedPerspective * translation * rotation;
+    Matrix4<float> translation2;
+    translation2 = translation2.Translation(Vec3<float>(ImplicitGrapher::defaultOffset.x, ImplicitGrapher::defaultOffset.y, ImplicitGrapher::defaultOffset.z));
+    //Matrix4<float> mvp = orientationAdjustedPerspective * translation * rotation * translation2;
+    Matrix4<float> mvp = perspective * translation * rotation * translation2;
 
     // Render graph
     glUseProgram(graphProgram);
