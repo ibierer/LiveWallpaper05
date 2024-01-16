@@ -37,7 +37,7 @@ void RenderToTextureView::render(){
     Matrix4<float> translation2;
     translation2 = translation2.Translation(Vec3<float>(-0.5f));
     Matrix4<float> rotation;
-    rotation = Matrix4<float>(quaternionTo3x3(rotationVector));
+    rotation = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
     Matrix4<float> mvp = orientationAdjustedPerspective * translation * rotation * translation2;
 
     glUseProgram(mProgram);

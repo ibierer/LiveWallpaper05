@@ -55,12 +55,21 @@ float fOfXYZFluidSurface(vec3 _) {
     return sum - 2.0f;
 }
 
+template<class T>
+Vec3<T>& operator*(const Matrix3<T>& matrix, const Vec3<T>& vector) {
+    Vec3<T> _return;
+    for (int i = 0; i < 3; i++) {
+        _return[i] = dot(matrix[i], vector);
+    }
+    return _return;
+}
+
 NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView() : View() {
     cubeProgram = createVertexAndFragmentShaderProgram(CUBE_VERTEX_SHADER.c_str(), CUBE_FRAGMENT_SHADER.c_str());
     graphProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_FRAGMENT_SHADER.c_str());
     cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
 
-    implicitGrapher = ImplicitGrapher(ivec3(14));
+    implicitGrapher = ImplicitGrapher(ivec3(29));
 
     simulation.seed(5.0f);
     sim = &simulation;
@@ -78,14 +87,17 @@ void NaiveSimulationFluidSurfaceView::render(){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(cubeProgram);
     Matrix4<float> translation;
+    Matrix4<float> translation2;
+    Matrix4<float> rotation = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
     for(int i = 0; i < simulation.particleCount; i++) {
         translation = translation.Translation(
-                Vec3<float>(simulation.particles[i].position.x, simulation.particles[i].position.y, simulation.particles[i].position.z + 50.0f * (zoom - 1.0f)));
+                Vec3<float>(0.0f, 0.0f, 50.0f * (zoom - 1.0f)));
+        translation2 = translation2.Translation(Vec3<float>(simulation.particles[i].position.x, simulation.particles[i].position.y, simulation.particles[i].position.z));
         Matrix4<float> mvp;
         if(referenceFrameRotates) {
-            mvp = perspective * translation;
+            mvp = perspective * translation * translation2;
         }else{
-            mvp = perspective * translation;
+            mvp = orientationAdjustedPerspective * translation * rotation * translation2;
         }
         glUniformMatrix4fv(
                 glGetUniformLocation(cubeProgram, "mvp"),
@@ -102,21 +114,16 @@ void NaiveSimulationFluidSurfaceView::render(){
         cubeVAO.drawArrays();
     }
 
-    //ImplicitGrapher::calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, false, false, ImplicitGrapher::vertices, ImplicitGrapher::indices, ImplicitGrapher::numIndices);
     ImplicitGrapher::calculateSurfaceOnCPU(fOfXYZFluidSurface, 0.1f * getFrameCount(), 10, ImplicitGrapher::defaultOffset, 3.0f / 7.0f, false, false, ImplicitGrapher::vertices, ImplicitGrapher::indices, ImplicitGrapher::numIndices);
 
     // Prepare model-view-projection matrix
     translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 50.0f * (zoom - 1.0f)));
-    Matrix4<float> rotation;
-    rotation = Matrix4<float>(quaternionTo3x3(rotationVector));
-    Matrix4<float> translation2;
     translation2 = translation2.Translation(Vec3<float>(ImplicitGrapher::defaultOffset.x, ImplicitGrapher::defaultOffset.y, ImplicitGrapher::defaultOffset.z));
-    //Matrix4<float> mvp = orientationAdjustedPerspective * translation * rotation * translation2;
     Matrix4<float> mvp;
     if(referenceFrameRotates){
         mvp = perspective * translation * translation2;
     }else{
-        mvp = perspective * translation * translation2;
+        mvp = orientationAdjustedPerspective * translation * rotation * translation2;
     }
 
     // Render graph
@@ -135,7 +142,11 @@ void NaiveSimulationFluidSurfaceView::render(){
     glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
 
     for(int i = 0; i < 5; i++){
-        simulation.simulate(compensateForOrientation(accelerometerVector));
+        if(referenceFrameRotates){
+            simulation.simulate(compensateForOrientation(accelerometerVector));
+        }else {
+            simulation.simulate(quaternionTo3x3(rotationVector) * (-accelerometerVector));
+        }
     }
 
     checkGlError("Renderer::render");

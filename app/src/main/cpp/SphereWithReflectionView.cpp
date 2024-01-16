@@ -35,7 +35,7 @@ void SphereWithReflectionView::render(){
     Matrix4<float> translation;
     translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 10.0f * (zoom - 1.0f)));
     Matrix4<float> rotation;
-    rotation = Matrix4<float>(quaternionTo3x3(rotationVector));
+    rotation = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
     Matrix4<float> view = translation * rotation;
     Matrix4<float> mvp = orientationAdjustedPerspective * view;
     Matrix4<float> cameraTransformation = rotation.GetInverse() * view;

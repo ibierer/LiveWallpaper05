@@ -22,20 +22,6 @@ RenderToCubeMapView::~RenderToCubeMapView(){
     glDeleteProgram(mProgram);
 }
 
-template<class T>
-Vec3<T> transform(Matrix3<T> matrix, const Vec3<T>& vector){
-    Vec3<T> result = Vec3<T>((T)0, (T)0, (T)0);
-    for(int i = 0; i < 3; i++){
-        for(int j = 0; j < 3; j++){
-            result[i] += matrix.GetRow(j)[i] * vector[j];
-        }
-        if(i > 0){
-            result[i] *= (T)(-1);
-        }
-    }
-    return result;
-}
-
 void RenderToCubeMapView::render(){
     int storeWidth = width;
     width = cubeMapFBO.getResolution();
@@ -82,7 +68,7 @@ void RenderToCubeMapView::render(){
         Vec3<float> position = Vec3<float>(0.0f, 0.0f, 3.0f * (zoom - 1.0f));
         Matrix4<float> rotation2;
         rotation2.SetRotation(Vec3<float>(0.0f, 0.0f, 1.0f), 0.005 * getFrameCount());
-        Matrix4<float> rotation3 = Matrix4<float>(quaternionTo3x3(rotationVector));
+        Matrix4<float> rotation3 = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
         Matrix3<float> subMatrix = rotation3.GetSubMatrix3();
         Vec3<float> transpose = transform(subMatrix, position);
         Matrix4<float> translation;
@@ -109,7 +95,7 @@ void RenderToCubeMapView::render(){
     glClear(GL_COLOR_BUFFER_BIT);
     glDisable(GL_DEPTH_TEST);
 
-    rotation = Matrix4<float>(quaternionTo3x3(rotationVector));
+    rotation = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
     Matrix4<float> inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();
 
     glUseProgram(mProgram);

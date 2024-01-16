@@ -107,7 +107,7 @@ void PicFlipView::render() {
         translation2 = translation2.Translation(
                 10.0f * Vec3<float>(fluid->particlePos[i].x, fluid->particlePos[i].y,
                                     fluid->particlePos[i].z));
-        Matrix4<float> rotation = Matrix4<float>(quaternionTo3x3(rotationVector));
+        Matrix4<float> rotation = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
         Matrix4<float> mvp = perspective * translation * translation2;
         glUniformMatrix4fv(
                 glGetUniformLocation(mProgram, "mvp"),

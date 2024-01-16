@@ -12,7 +12,9 @@
 using std::string;
 using cy::Matrix3;
 using cy::Matrix4;
+using cy::Vec2;
 using cy::Vec3;
+using cy::Vec4;
 
 template <class T>
 class _vec2 {
@@ -28,6 +30,9 @@ public:
             T g;
         };
     };
+    T& operator[](int& index) {
+        return v[index];
+    }
     T& operator[](const int& index) {
         return v[index];
     }
@@ -256,6 +261,9 @@ public:
             T b;
         };
     };
+    T& operator[](int& index) {
+        return v[index];
+    }
     T& operator[](const int& index) {
         return v[index];
     }
@@ -490,6 +498,9 @@ public:
             T a;
         };
     };
+    T& operator[](int& index) {
+        return v[index];
+    }
     T& operator[](const int& index) {
         return v[index];
     }
@@ -749,6 +760,24 @@ T dot(const _vec4<T>& left, const _vec4<T>& right) {
 }
 
 template<class T>
+T dot(const Vec2<T>& left, const Vec2<T>& right) {
+    Vec2<T> product = left * right;
+    return product.x + product.y;
+}
+
+template<class T>
+T dot(const Vec3<T>& left, const Vec3<T>& right) {
+    Vec3<T> product = left * right;
+    return product.x + product.y + product.z;
+}
+
+template<class T>
+T dot(const Vec4<T>& left, const Vec4<T>& right) {
+    Vec4<T> product = left * right;
+    return product.x + product.y + product.z + product.w;
+}
+
+template<class T>
 T distance(const _vec2<T>& coordinates) {
     return sqrt(dot(coordinates, coordinates));
 }
@@ -843,18 +872,68 @@ _vec3<T> normalize(const _vec3<T>& input) {
 }
 
 template<class T>
-Matrix3<T> quaternionTo3x3(const _vec4<T>& input) {
-    T thetaOver2 = acosf(input.v[3]);
+Matrix3<T> quaternionTo3x3(const Vec4<T>& input) {
+    T thetaOver2 = acosf(input.w);
     T sinOfHalfTheta = sinf(thetaOver2);
-    T x = input.v[0] / sinOfHalfTheta;
-    T y = input.v[1] / sinOfHalfTheta;
-    T z = input.v[2] / sinOfHalfTheta;
+    T x = input.x / sinOfHalfTheta;
+    T y = input.y / sinOfHalfTheta;
+    T z = input.z / sinOfHalfTheta;
     T theta = 2.0f * thetaOver2;
     return Matrix3<T>(
             Vec3<T>(x * x * (1 - cosf(theta)) + cosf(theta), x * y * (1 - cosf(theta)) - z * sinf(theta), x * z * (1 - cosf(theta)) + y * sinf(theta)),
             Vec3<T>(x * y * (1 - cosf(theta)) + z * sinf(theta), y * y * (1 - cosf(theta)) + cosf(theta), y * z * (1 - cosf(theta)) - x * sinf(theta)),
             Vec3<T>(x * z * (1 - cosf(theta)) - y * sinf(theta), y * z * (1 - cosf(theta)) + x * sinf(theta), z * z * (1 - cosf(theta)) + cosf(theta))
     );
+}
+
+template<class T>
+class mat3 {
+public:
+    _vec3<T> m[3];
+    mat3() {
+
+    }
+    mat3(const _vec3<T>& a, const _vec3<T>& b, const _vec3<T>& c) {
+        m[0] = a;
+        m[1] = b;
+        m[2] = c;
+    }
+    _vec3<T> operator*(const _vec3<T>& input) {
+        _vec3<T> _return;
+        for (int i = 0; i < 3; i++) {
+            _return[i] = dot(m[i], input);
+        }
+        return _return;
+    }
+};
+
+template<class T>
+mat3<T> quaternionTo3x3(const _vec4<T>& input) {
+    float thetaOver2 = acosf(input.w);
+    float sinOfHalfTheta = sinf(thetaOver2);
+    float x = input.x / sinOfHalfTheta;
+    float y = input.y / sinOfHalfTheta;
+    float z = input.z / sinOfHalfTheta;
+    float theta = 2.0f * thetaOver2;
+    return mat3<T>(
+            vec3(x * x * (1 - cosf(theta)) + cosf(theta), x * y * (1 - cosf(theta)) - z * sinf(theta), x * z * (1 - cosf(theta)) + y * sinf(theta)),
+            vec3(x * y * (1 - cosf(theta)) + z * sinf(theta), y * y * (1 - cosf(theta)) + cosf(theta), y * z * (1 - cosf(theta)) - x * sinf(theta)),
+            vec3(x * z * (1 - cosf(theta)) - y * sinf(theta), y * z * (1 - cosf(theta)) + x * sinf(theta), z * z * (1 - cosf(theta)) + cosf(theta))
+    );
+}
+
+template<class T>
+Vec3<T> transform(const Matrix3<T> &matrix, const Vec3<T>& vector){
+    Vec3<T> result = Vec3<T>((T)0, (T)0, (T)0);
+    for(int i = 0; i < 3; i++){
+        for(int j = 0; j < 3; j++){
+            result[i] += matrix.GetRow(j)[i] * vector[j];
+        }
+        if(i > 0){
+            result[i] *= (T)(-1);
+        }
+    }
+    return result;
 }
 
 

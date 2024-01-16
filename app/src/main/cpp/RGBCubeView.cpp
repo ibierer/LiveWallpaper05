@@ -21,7 +21,7 @@ void RGBCubeView::render(){
     glUseProgram(mProgram);
     Matrix4<float> translation;
     translation = translation.Translation(Vec3<float>(0.0f, 0.0f, zoom - 2.0f));
-    Matrix4<float> rotation = Matrix4<float>(quaternionTo3x3(rotationVector));
+    Matrix4<float> rotation = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
     Matrix4<float> mvp = orientationAdjustedPerspective * translation * rotation;
     glUniformMatrix4fv(
             glGetUniformLocation(mProgram, "mvp"),
