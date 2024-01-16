@@ -7,6 +7,54 @@
 using std::min;
 using std::max;
 
+NaiveSimulation* sim;
+
+float fOfXYZFluidSurface(vec3 _) {
+    _ -= ImplicitGrapher::offset;
+
+    //if (abs(_.x) > 6.99f || abs(_.y) > 6.99f || abs(_.z) > 6.99f) {
+    if(dot(_, _) > 6.99f * 6.99f) {
+        return -1.0f;
+    }
+
+    _ *= 5.5f / 7.0f;
+
+    float px = _.x + sim->sphereRadiusPlusPointFive;
+    float py = _.y + sim->sphereRadiusPlusPointFive;
+    float pz = _.z + sim->sphereRadiusPlusPointFive;
+
+    int pxi = floor(px * sim->pInvSpacing);
+    int pyi = floor(py * sim->pInvSpacing);
+    int pzi = floor(pz * sim->pInvSpacing);
+    int x0 = max(pxi - 1, 0);
+    int y0 = max(pyi - 1, 0);
+    int z0 = max(pzi - 1, 0);
+    int x1 = min(pxi + 1, sim->pNumX - 1);
+    int y1 = min(pyi + 1, sim->pNumY - 1);
+    int z1 = min(pzi + 1, sim->pNumZ - 1);
+
+    float sum = 0.0f;
+
+    for (int xi = x0; xi <= x1; xi++) {
+        for (int yi = y0; yi <= y1; yi++) {
+            for (int zi = z0; zi <= z1; zi++) {
+                int cellNr = xi * sim->pNumY * sim->pNumZ + yi * sim->pNumZ + zi;
+                int first = sim->firstCellParticle[cellNr];
+                int last = sim->firstCellParticle[cellNr + 1];
+                for (int j = first; j < last; j++) {
+                    int id = sim->cellParticleIds[j];
+                    vec3 difference = sim->particles[id].position - _;
+                    float distanceSquared = dot(difference, difference);
+                    if(distanceSquared < sim->maxForceDistanceSquared) {
+                        sum += 1.0f / distanceSquared;
+                    }
+                }
+            }
+        }
+    }
+    return sum - 2.0f;
+}
+
 NaiveSimulationWithSurfaceView::NaiveSimulationWithSurfaceView() : View() {
     cubeProgram = createVertexAndFragmentShaderProgram(CUBE_VERTEX_SHADER.c_str(), CUBE_FRAGMENT_SHADER.c_str());
     graphProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_FRAGMENT_SHADER.c_str());
@@ -17,7 +65,8 @@ NaiveSimulationWithSurfaceView::NaiveSimulationWithSurfaceView() : View() {
     ImplicitGrapher::surfaceEquation = 0;
     ImplicitGrapher::numOfEquationsInMemory++;
 
-    simulation.seed(15.0f);
+    simulation.seed(5.0f);
+    sim = &simulation;
 }
 
 NaiveSimulationWithSurfaceView::~NaiveSimulationWithSurfaceView(){
@@ -51,7 +100,9 @@ void NaiveSimulationWithSurfaceView::render(){
         cubeVAO.drawArrays();
     }
 
-    ImplicitGrapher::calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, false, false, ImplicitGrapher::vertices, ImplicitGrapher::indices, ImplicitGrapher::numIndices);
+    //ImplicitGrapher::calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, false, false, ImplicitGrapher::vertices, ImplicitGrapher::indices, ImplicitGrapher::numIndices);
+    //fOfXYZFluidSurface, t, 10, vec3(0.0f), 3.0f / 7.0f, false, false, &vertices[0], _solutionSurface_indices, solutionSurface.numIndices
+    ImplicitGrapher::calculateSurfaceOnCPU(fOfXYZFluidSurface, 0.1f * getFrameCount(), 10, vec3(0.0f), 3.0f / 7.0f, false, false, ImplicitGrapher::vertices, ImplicitGrapher::indices, ImplicitGrapher::numIndices);
 
     // Prepare model-view-projection matrix
     translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 60.0f * (zoom - 1.0f)));

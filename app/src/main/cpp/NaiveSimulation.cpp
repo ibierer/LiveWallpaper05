@@ -8,7 +8,7 @@ using std::min;
 using std::max;
 
 bool NaiveSimulation::seed(const float& radius) {
-    setParticleCount(1000);
+    setParticleCount(125);
     particles = new NaiveSimulation::Particle[particleCount];
     sphereRadius = radius;
     sphereRadiusSquared = sphereRadius * sphereRadius;
