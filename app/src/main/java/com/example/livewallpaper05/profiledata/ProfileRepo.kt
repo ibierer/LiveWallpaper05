@@ -20,11 +20,11 @@ class ProfileRepo private constructor(profileDao: ProfileDao) {
 
     fun setProfile(profileTable: ProfileTable){
         mScope.launch(Dispatchers.IO){
-            mProfileDao.updateProfileData(profileTable)
-            val profileInfo = mProfileDao.getProfileData()
+            //val profileInfo = mProfileDao.getProfileData()
+            val profileInfo = profileTable
             if(profileInfo != null){
-                insert()
                 data.postValue(profileInfo)
+                mProfileDao.updateProfileData(profileTable)
             }
         }
     }

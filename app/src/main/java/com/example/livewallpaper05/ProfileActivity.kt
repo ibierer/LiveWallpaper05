@@ -72,15 +72,6 @@ class ProfileActivity : AppCompatActivity() {
                 }
             }
         })
-
-        // update view model with default profile data
-        mViewModel.setProfile(
-            ProfileTable(mUsername!!.text.toString(),
-                mBio!!.text.toString(),
-                0,
-                ByteArray(0)
-            )
-        )
     }
 
     fun changeProfilePic(view: View) {
@@ -132,21 +123,6 @@ class ProfileActivity : AppCompatActivity() {
     fun updateProfilePicture(pic: Bitmap){
         // update profile pic in database
         mViewModel.updateProfilePic(pic)
-        /**
-        if(pic != null){
-            mViewModel.updateProfilePic(pic)
-            // fill profile table with new data
-            val stream = ByteArrayOutputStream()
-            pic.compress(Bitmap.CompressFormat.PNG, 90, stream)
-            val imgBytes = stream.toByteArray()
-            val profile = ProfileTable(
-                username = mProfileTable!!.username,
-                bio = mProfileTable!!.bio,
-                uid = mProfileTable!!.uid,
-                profilepic = imgBytes
-            )
-            mViewModel.setProfile(profile)
-        }*/
     }
 
     private fun showLoginDialog(){

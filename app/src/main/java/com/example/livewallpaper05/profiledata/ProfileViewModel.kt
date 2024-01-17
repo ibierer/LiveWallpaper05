@@ -17,22 +17,9 @@ class ProfileViewModel(repo: ProfileRepo) : ViewModel() {
     val data: LiveData<ProfileTable>
         get() = profileData
 
-
-    fun insert(profile: ProfileTable) = viewModelScope.launch {
-        mRepo.updateProfile(profile)
-    }
-
     fun setProfile(profile: ProfileTable) {
         if(profileData != null)
             mRepo.setProfile(profile)
-    }
-
-    fun removeProfile(key: ProfileTable) = viewModelScope.launch {
-        mRepo.deleteProfile(key)
-    }
-
-    fun deleteAll() = viewModelScope.launch {
-        mRepo.deleteAll()
     }
 
     fun updateProfilePic(pic: Bitmap) {
@@ -40,8 +27,6 @@ class ProfileViewModel(repo: ProfileRepo) : ViewModel() {
         val stream = ByteArrayOutputStream()
         pic.compress(Bitmap.CompressFormat.PNG, 100, stream)
         val byteArray = stream.toByteArray()
-        // decode byte array to bitmap
-        val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
         // create new profile table with updated profile pic
         var profile = ProfileTable(
             "username",
