@@ -6,7 +6,7 @@
 
 SphereMapView::SphereMapView() : View() {
     //sphereMap = SphereMap(Texture::staticallyGenerateMandelbrotWithVertexShader(Texture(GL_RGB, 16384, 16384, 0, GL_LINEAR), this));
-    mProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
+    sphereMapProgram = createVertexAndFragmentShaderProgram(SPHERE_MAP_VERTEX_SHADER.c_str(), SPHERE_MAP_FRAGMENT_SHADER.c_str());
     //sphereMap = SphereMap(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
     sphereMap = SphereMap(Texture::DefaultImages::MANDELBROT, 16384, 16384, this);
     environmentTriangleVAO = VertexArrayObject(EnvironmentMap::environmentTriangleVertices, sizeof(sphereMap.environmentTriangleVertices) / sizeof(PositionXYZ));
@@ -24,9 +24,9 @@ void SphereMapView::render(){
     Matrix4<float> rotation = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
     Matrix4<float> inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();
 
-    glUseProgram(mProgram);
+    glUseProgram(sphereMapProgram);
     glUniformMatrix4fv(
-            glGetUniformLocation(mProgram, "inverseViewProjection"),
+            glGetUniformLocation(sphereMapProgram, "inverseViewProjection"),
             1,
             GL_FALSE,
             (GLfloat*)&inverseViewProjection);

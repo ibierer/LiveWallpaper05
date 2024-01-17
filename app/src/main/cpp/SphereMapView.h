@@ -15,7 +15,9 @@ public:
 
     SphereMap sphereMap;
 
-    const string VERTEX_SHADER =
+    GLuint sphereMapProgram;
+
+    const string SPHERE_MAP_VERTEX_SHADER =
             ES_VERSION +
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
             "uniform mat4 inverseViewProjection;\n"
@@ -26,7 +28,7 @@ public:
             "    direction = (inverseViewProjection * vec4(pos, 1.0f)).xyz;\n"
             "}\n";
 
-    const string FRAGMENT_SHADER =
+    const string SPHERE_MAP_FRAGMENT_SHADER =
             ES_VERSION +
             "precision mediump float;\n"
             "uniform sampler2D environmentTexture;\n"
