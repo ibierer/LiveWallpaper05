@@ -13,7 +13,9 @@ public:
 
     VertexArrayObject sphereVAO;
 
-    const string VERTEX_SHADER =
+    GLuint sphereProgram;
+
+    const string SPHERE_VERTEX_SHADER =
             ES_VERSION +
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
             "layout(location = " STRV(NORMAL_ATTRIBUTE_LOCATION) ") in vec3 normal;\n"
@@ -24,7 +26,7 @@ public:
             "    vNormal = normal;\n"
             "}\n";
 
-    const string FRAGMENT_SHADER =
+    const string SPHERE_FRAGMENT_SHADER =
             ES_VERSION +
             "precision mediump float;\n"
             "in vec3 vNormal;\n"

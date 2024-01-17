@@ -21,7 +21,7 @@ float fOfXYZFluidSurface(vec3 _) {
         return -1.0f;
     }
 
-    _ *= sim->sphereRadiusPlusPointFive / ImplicitGrapher::offset.x;
+    _ *= sim->sphereRadiusPlusPointFive / ImplicitGrapher::defaultOffset.x;
 
     float px = _.x + sim->sphereRadiusPlusPointFive;
     float py = _.y + sim->sphereRadiusPlusPointFive;
@@ -62,11 +62,13 @@ float fOfXYZFluidSurface(vec3 _) {
 NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView(const int &particleCount, const int &graphSize, const float &sphereRadius) : View() {
     cubeProgram = createVertexAndFragmentShaderProgram(CUBE_VERTEX_SHADER.c_str(), CUBE_FRAGMENT_SHADER.c_str());
     graphProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_FRAGMENT_SHADER.c_str());
+    sphereProgram = createVertexAndFragmentShaderProgram(SPHERE_VERTEX_SHADER.c_str(), SPHERE_FRAGMENT_SHADER.c_str());
     cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
 
     implicitGrapher = ImplicitGrapher(ivec3(graphSize));
 
     simulation.seed(particleCount, sphereRadius);
+    sphereVAO = VertexArrayObject(Sphere(sphereRadius, 100));
     sim = &simulation;
 }
 
@@ -82,11 +84,10 @@ void NaiveSimulationFluidSurfaceView::render(){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(cubeProgram);
     Matrix4<float> translation;
+    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 50.0f * (zoom - 1.0f)));
     Matrix4<float> translation2;
     Matrix4<float> rotation = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
     for(int i = 0; i < simulation.particleCount; i++) {
-        translation = translation.Translation(
-                Vec3<float>(0.0f, 0.0f, 50.0f * (zoom - 1.0f)));
         translation2 = translation2.Translation(Vec3<float>(simulation.particles[i].position.x, simulation.particles[i].position.y, simulation.particles[i].position.z));
         Matrix4<float> mvp;
         if(referenceFrameRotates) {
@@ -112,7 +113,6 @@ void NaiveSimulationFluidSurfaceView::render(){
     ImplicitGrapher::calculateSurfaceOnCPU(fOfXYZFluidSurface, 0.1f * getFrameCount(), 10, ImplicitGrapher::defaultOffset, 3.0f / 7.0f, false, false, ImplicitGrapher::vertices, ImplicitGrapher::indices, ImplicitGrapher::numIndices);
 
     // Prepare model-view-projection matrix
-    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 50.0f * (zoom - 1.0f)));
     translation2 = translation2.Translation(Vec3<float>(ImplicitGrapher::defaultOffset.x, ImplicitGrapher::defaultOffset.y, ImplicitGrapher::defaultOffset.z));
     Matrix4<float> mvp;
     if(referenceFrameRotates){
@@ -135,6 +135,18 @@ void NaiveSimulationFluidSurfaceView::render(){
     glDrawElements(GL_TRIANGLES, ImplicitGrapher::numIndices, GL_UNSIGNED_INT, ImplicitGrapher::indices);
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
+
+    // Render a sphere
+    glCullFace(GL_FRONT);
+    mvp = perspective * translation;
+    glUseProgram(sphereProgram);
+    glUniformMatrix4fv(
+            glGetUniformLocation(sphereProgram, "mvp"),
+            1,
+            GL_FALSE,
+            (GLfloat*)&mvp);
+    sphereVAO.drawArrays();
+    glCullFace(GL_BACK);
 
     for(int i = 0; i < 5; i++){
         if(referenceFrameRotates){

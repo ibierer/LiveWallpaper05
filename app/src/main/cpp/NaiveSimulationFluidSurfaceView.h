@@ -13,7 +13,11 @@ public:
 
     GLuint cubeProgram;
 
+    GLuint sphereProgram;
+
     VertexArrayObject cubeVAO;
+
+    VertexArrayObject sphereVAO;
 
     NaiveSimulation simulation;
 
@@ -41,7 +45,7 @@ public:
             "in vec3 vNormal;\n"
             "out vec4 outColor;\n"
             "void main() {\n"
-            "    outColor = vec4(0.025f * vPosition + vec3(0.5), 1.0f); \n"
+            "    outColor = vec4(0.5f * normalize(vNormal) + vec3(0.5f), 1.0f); \n"
             "}\n";
 
     const string CUBE_VERTEX_SHADER =
@@ -60,6 +64,26 @@ public:
             "out vec4 outColor;\n"
             "void main() {\n"
             "    outColor = color;\n"
+            "}\n";
+
+    const string SPHERE_VERTEX_SHADER =
+            ES_VERSION +
+            "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
+            "layout(location = " STRV(NORMAL_ATTRIBUTE_LOCATION) ") in vec3 normal;\n"
+            "out vec3 vNormal;\n"
+            "uniform mat4 mvp;\n"
+            "void main() {\n"
+            "    gl_Position = mvp * vec4(pos, 1.0);\n"
+            "    vNormal = normal;\n"
+            "}\n";
+
+    const string SPHERE_FRAGMENT_SHADER =
+            ES_VERSION +
+            "precision mediump float;\n"
+            "in vec3 vNormal;\n"
+            "out vec4 outColor;\n"
+            "void main() {\n"
+            "    outColor = vec4(1.0f, 0.0f, 0.0f, 1.0f); \n"
             "}\n";
 
     NaiveSimulationFluidSurfaceView(const int& particleCount, const int& graphSize, const float& sphereRadius);

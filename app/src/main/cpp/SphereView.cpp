@@ -5,12 +5,12 @@
 #include "SphereView.h"
 
 SphereView::SphereView() : View() {
-    mProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
+    sphereProgram = createVertexAndFragmentShaderProgram(SPHERE_VERTEX_SHADER.c_str(), SPHERE_FRAGMENT_SHADER.c_str());
     sphereVAO = VertexArrayObject(Sphere(1.0f, 100));
 }
 
 SphereView::~SphereView(){
-    glDeleteProgram(mProgram);
+    glDeleteProgram(sphereProgram);
 }
 
 void SphereView::render(){
@@ -27,9 +27,9 @@ void SphereView::render(){
     rotation = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
     Matrix4<float> mvp = orientationAdjustedPerspective * translation * rotation;
 
-    glUseProgram(mProgram);
+    glUseProgram(sphereProgram);
     glUniformMatrix4fv(
-            glGetUniformLocation(mProgram, "mvp"),
+            glGetUniformLocation(sphereProgram, "mvp"),
             1,
             GL_FALSE,
             (GLfloat*)&mvp);
