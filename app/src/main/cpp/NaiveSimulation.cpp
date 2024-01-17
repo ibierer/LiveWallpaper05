@@ -7,13 +7,12 @@
 using std::min;
 using std::max;
 
-bool NaiveSimulation::seed(const float& radius) {
-    setParticleCount(125);
+bool NaiveSimulation::seed(const int& count, const float& radius) {
+    setParticleCount(count);
     particles = new NaiveSimulation::Particle[particleCount];
     sphereRadius = radius;
     sphereRadiusSquared = sphereRadius * sphereRadius;
     sphereRadiusPlusPointFive = sphereRadius + 0.5f;
-    sphereRadiusPlusPointFiveSquared = sphereRadiusPlusPointFive * sphereRadiusPlusPointFive;
     for (int i = 0; i < particleCount; i++) {
         int first = i - (i % (cbrtParticleCount * cbrtParticleCount));
         particles[i].position.x = first / (cbrtParticleCount * cbrtParticleCount) - (cbrtParticleCount - 1) / 2.0f;

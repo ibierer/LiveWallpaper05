@@ -62,7 +62,7 @@ public:
             "    outColor = color;\n"
             "}\n";
 
-    NaiveSimulationFluidSurfaceView();
+    NaiveSimulationFluidSurfaceView(const int& particleCount, const int& graphSize, const float& sphereRadius);
 
     ~NaiveSimulationFluidSurfaceView();
 

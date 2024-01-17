@@ -12,12 +12,16 @@ NaiveSimulation* sim;
 float fOfXYZFluidSurface(vec3 _) {
     _ -= ImplicitGrapher::offset;
 
-    //if (abs(_.x) > 6.99f || abs(_.y) > 6.99f || abs(_.z) > 6.99f) {
-    if(dot(_, _) > 6.99f * 6.99f) {
+    if (
+            abs(_.x) > (ImplicitGrapher::offset.x - 0.01f) ||
+            abs(_.y) > (ImplicitGrapher::offset.y - 0.01f) ||
+            abs(_.z) > (ImplicitGrapher::offset.z - 0.01f)
+    ) {
+    //if(dot(_, _) > 6.99f * 6.99f) {
         return -1.0f;
     }
 
-    _ *= 5.5f / 7.0f;
+    _ *= sim->sphereRadiusPlusPointFive / ImplicitGrapher::offset.x;
 
     float px = _.x + sim->sphereRadiusPlusPointFive;
     float py = _.y + sim->sphereRadiusPlusPointFive;
@@ -55,23 +59,14 @@ float fOfXYZFluidSurface(vec3 _) {
     return sum - 2.0f;
 }
 
-template<class T>
-Vec3<T>& operator*(const Matrix3<T>& matrix, const Vec3<T>& vector) {
-    Vec3<T> _return;
-    for (int i = 0; i < 3; i++) {
-        _return[i] = dot(matrix[i], vector);
-    }
-    return _return;
-}
-
-NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView() : View() {
+NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView(const int &particleCount, const int &graphSize, const float &sphereRadius) : View() {
     cubeProgram = createVertexAndFragmentShaderProgram(CUBE_VERTEX_SHADER.c_str(), CUBE_FRAGMENT_SHADER.c_str());
     graphProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_FRAGMENT_SHADER.c_str());
     cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
 
-    implicitGrapher = ImplicitGrapher(ivec3(29));
+    implicitGrapher = ImplicitGrapher(ivec3(graphSize));
 
-    simulation.seed(5.0f);
+    simulation.seed(particleCount, sphereRadius);
     sim = &simulation;
 }
 

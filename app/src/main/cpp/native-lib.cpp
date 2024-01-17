@@ -99,9 +99,9 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
             //view = new SphereWithRefractionView();
             //view = new SphereWithFresnelEffectView();
             //view = new SimpleNBodySimulationView();
-            view = new NaiveSimulationFluidSurfaceView();
+            view = new NaiveSimulationFluidSurfaceView(1000, 80, 15.0f);
         }else if(type == "naive"){
-            view = new NaiveSimulationView();
+            view = new NaiveSimulationView(1000, 15.0f);
         }else if(type == "picflip"){
             view = new PicFlipView();
         }else if(type == "triangle"){

@@ -4,10 +4,10 @@
 
 #include "NaiveSimulationView.h"
 
-NaiveSimulationView::NaiveSimulationView() : View() {
+NaiveSimulationView::NaiveSimulationView(const int &particleCount, const float &sphereRadius) : View() {
     mProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
-    simulation.seed(15.0f);
+    simulation.seed(particleCount, sphereRadius);
 }
 
 NaiveSimulationView::~NaiveSimulationView(){

@@ -10,7 +10,7 @@ class NaiveSimulation : public Simulation {
 
 public:
 
-    bool seed(const float& radius);
+    bool seed(const int& count, const float& radius);
 
     void simulate(const vec3& gravity);
 
@@ -32,13 +32,7 @@ public:
 
     float sphereRadiusPlusPointFive;
 
-    float sphereRadiusPlusPointFiveSquared;
-
     const float efficiency = 1.0f;//0.995f;
-
-    const float maxForce = 100000000.0f;
-
-    const float maxForceSquared = maxForce * maxForce;
 
     const double maxForceDistance = 2.0;
 

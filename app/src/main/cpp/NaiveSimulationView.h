@@ -31,7 +31,7 @@ public:
             "    outColor = color;\n"
             "}\n";
 
-    NaiveSimulationView();
+    NaiveSimulationView(const int &particleCount, const float &sphereRadius);
 
     ~NaiveSimulationView();
 
