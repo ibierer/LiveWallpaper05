@@ -5,7 +5,7 @@
 #include "RenderToTextureView.h"
 
 RenderToTextureView::RenderToTextureView() : View() {
-    mProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
+    mProgram = createVertexAndFragmentShaderProgram(TILES_VERTEX_SHADER.c_str(), TILES_FRAGMENT_SHADER.c_str());
     tilesVAO = VertexArrayObject(tilesVertices, sizeof(tilesVertices) / sizeof(PositionXYZ));
     texture = Texture(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
     //texture = Texture::staticallyGenerateMandelbrotWithVertexShader(Texture(GL_RGB, 16384, 16384, 0, GL_LINEAR), this);

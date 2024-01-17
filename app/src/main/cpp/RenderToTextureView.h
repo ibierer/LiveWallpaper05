@@ -19,7 +19,7 @@ public:
 
     FBO fbo;
 
-    const string VERTEX_SHADER =
+    const string TILES_VERTEX_SHADER =
             ES_VERSION +
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
             "out vec3 position;\n"
@@ -29,7 +29,7 @@ public:
             "    position = pos;\n"
             "}\n";
 
-    const string FRAGMENT_SHADER =
+    const string TILES_FRAGMENT_SHADER =
             ES_VERSION +
             "precision mediump float;\n"
             "uniform sampler2D image;\n"
