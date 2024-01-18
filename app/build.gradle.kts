@@ -67,7 +67,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.0")
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
     implementation("androidx.fragment:fragment-ktx:1.6.2")
-    implementation("androidx.room:room-runtime:2.6.1")
     kapt("androidx.lifecycle:lifecycle-compiler:2.2.0")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")

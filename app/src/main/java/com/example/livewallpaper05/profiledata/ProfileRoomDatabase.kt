@@ -16,6 +16,7 @@ abstract class ProfileRoomDatabase : RoomDatabase() {
 
     // make db singleton
     companion object {
+
         @Volatile
         private var mInstance: ProfileRoomDatabase? = null
         fun getDatabase(
