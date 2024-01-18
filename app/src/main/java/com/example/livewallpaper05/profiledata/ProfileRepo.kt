@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 class ProfileRepo private constructor(profileDao: ProfileDao) {
 
     val data = MutableLiveData<ProfileTable>()
+    //val wallpapers = MutableLiveData<>()
     private var mProfileDao: ProfileDao = profileDao
     // create flow to observe profile pic data
 
@@ -27,16 +28,6 @@ class ProfileRepo private constructor(profileDao: ProfileDao) {
                 mProfileDao.updateProfileData(profileTable)
             }
         }
-    }
-
-    @WorkerThread
-    suspend fun deleteAll(){
-        mProfileDao.deleteAll()
-    }
-
-    @WorkerThread
-    suspend fun deleteProfile(table: ProfileTable){
-        mProfileDao.deleteProfileData(table)
     }
 
     @WorkerThread

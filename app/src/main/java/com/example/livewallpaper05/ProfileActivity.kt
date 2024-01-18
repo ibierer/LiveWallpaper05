@@ -9,53 +9,62 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
 import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
-import androidx.core.graphics.drawable.toBitmap
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
-import com.example.livewallpaper05.profiledata.ProfileTable
+import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
+import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModelFactory
+import com.example.livewallpaper05.helpful_fragments.WallpaperFragment
 import com.example.livewallpaper05.profiledata.ProfileViewModel
-import java.io.ByteArrayOutputStream
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class ProfileActivity : AppCompatActivity() {
 
     private var mProfilePic: ImageView? = null
     private var mUsername: TextView? = null
     private var mBio: TextView? = null
-    //private var mProfileManager: ProfileManager? = null
+    private var mNewWallpaper: FloatingActionButton? = null
+    private var mPreviewScroll: ScrollView? = null
+    private var mWallpaperLayout: LinearLayout? = null
+
+    private val prevData: LiveData<Bitmap> = MutableLiveData<Bitmap>()
 
     // profile table data
-    private var mProfileTable: ProfileTable? = null
-    private val mViewModel: ProfileViewModel by viewModels {
+    private val mProfileViewModel: ProfileViewModel by viewModels {
         ProfileViewModel.ProfileViewModelFactory((application as ActiveWallpaperApplication).profileRepo)
     }
 
-    private val flowObserver: Observer<ProfileTable> =
-        Observer { profileTable ->
-            if (mProfileTable != null) {
-                mProfileTable = profileTable
-            }
-        }
+    // active wallpaper view model
+    private val mActiveWallpaperViewModel: ActiveWallpaperViewModel by viewModels {
+        ActiveWallpaperViewModelFactory((application as ActiveWallpaperApplication).repository)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
 
-        // connect db to view model
-        mViewModel.profileData.observe(this, flowObserver)
-
         mProfilePic = findViewById(R.id.iv_profile_pic)
         mUsername = findViewById(R.id.tv_username)
         mBio = findViewById(R.id.tv_biography)
+        mNewWallpaper = findViewById(R.id.b_new_wallpaper)
+        mWallpaperLayout = findViewById(R.id.sv_ll_wallpapers)
 
         // set profile pic click listener
         mProfilePic!!.setOnClickListener(this::changeProfilePic)
 
-        // link profile view elements to profile live data
-        mViewModel.profileData.observe(this, Observer { profileData ->
+        // set new wallpaper button click listener
+        mNewWallpaper!!.setOnClickListener(this::newWallpaper)
+
+        // link profile view elements to profile live data via callback function
+        mProfileViewModel.profileData.observe(this, Observer { profileData ->
             if(profileData != null){
                 // if profile data username is Dummy_user do nothing
                 if(profileData.username == "Dummy_user"){
@@ -72,8 +81,15 @@ class ProfileActivity : AppCompatActivity() {
                 }
             }
         })
+
+        // create active wallpaper preview
+        supportFragmentManager.beginTransaction()
+            .add(mWallpaperLayout!!.id, WallpaperFragment.newInstance(true, mActiveWallpaperViewModel.getPreviewImg()))
+            .commit()
+
     }
 
+    // creates popup dialog to prompt user to chose how to update profile picture
     fun changeProfilePic(view: View) {
         // build dialog to choose between media and camera
         val dialog = AlertDialog.Builder(this)
@@ -100,6 +116,7 @@ class ProfileActivity : AppCompatActivity() {
         dialog.show()
     }
 
+    // opens camera to take picture for profile picture
     private val cameraActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
             val data = result.data
@@ -111,6 +128,7 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
+    // opens phone photo gallery to grab picture for profile picture
     private val galleryActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
             val data = result.data
@@ -120,9 +138,10 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
+    // [PHASE OUT] calls view model to update local storage of profile picture
     fun updateProfilePicture(pic: Bitmap){
         // update profile pic in database
-        mViewModel.updateProfilePic(pic)
+        mProfileViewModel.updateProfilePic(pic)
     }
 
     private fun showLoginDialog(){
@@ -131,6 +150,14 @@ class ProfileActivity : AppCompatActivity() {
         dialog.setCancelable(false)
         dialog.setContentView(R.layout.dialog_login)
 
+    }
+
+    fun newWallpaper(view: View){
+        // save current wallpaper
+
+        // create new empty wallpaper config
+
+        // update active wallpaper to new wallpaper
     }
 
 }

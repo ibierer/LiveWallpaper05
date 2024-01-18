@@ -10,8 +10,7 @@
         android:id="@+id/motion_toolbar"
         android:layout_width="match_parent"
         android:layout_height="250dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="20dp"
+        android:layout_margin="10dp"
         app:layoutDescription="@xml/toolbar_scene"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent">

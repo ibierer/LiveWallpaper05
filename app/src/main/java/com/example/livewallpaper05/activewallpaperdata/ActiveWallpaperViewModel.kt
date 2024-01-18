@@ -1,11 +1,16 @@
 package com.example.livewallpaper05.activewallpaperdata
 
 import android.app.Activity
+import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
 import android.hardware.SensorManager
 import android.util.Log
 import androidx.lifecycle.*
 import org.json.JSONObject
 import java.math.RoundingMode
+import java.util.Random
 
 /**
  * View Model to keep a reference to the active wallpaper data
@@ -13,6 +18,28 @@ import java.math.RoundingMode
 class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewModel() {
     // reference repo from constructor value
     val mRepo: ActiveWallpaperRepo = repo
+
+    fun getPreviewImg(): Bitmap {
+        if (repo.preview != null && false)
+            return repo.preview!!
+        else {
+            var rng = Random()
+            var color = Color.argb(255,
+                rng.nextInt(256),
+                rng.nextInt(256),
+                rng.nextInt(256))
+
+            val screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels
+            val screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels
+            val imgWidth = screenWidth/4
+            val imgHeight = screenHeight/4
+
+            var tmp = Bitmap.createBitmap(imgWidth, imgHeight, Bitmap.Config.ARGB_8888)
+            tmp.eraseColor(color)
+
+            return tmp
+        }
+    }
 
     // return rotation rate value from repo
     fun getRotationRate(): Float {
@@ -96,6 +123,11 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
     fun loadConfig(config: String) {
         val configJson = JSONObject(config)
         repo.rotationRate = configJson.getDouble("rotationRate").toFloat()
+    }
+
+    fun updatePreviewImg(preview: Bitmap?) {
+        if (preview != null)
+            repo.preview = preview
     }
 }
 
