@@ -47,6 +47,7 @@ abstract class ProfileRoomDatabase : RoomDatabase() {
                 }
             }
 
+            // seed database
             suspend fun populateDbTask(profileDao: ProfileDao) {
                 val tmpImg = ByteArray(0)
                 profileDao.updateProfileData(ProfileTable("Dummy_user", "Dummy_Bio", 0, tmpImg))
