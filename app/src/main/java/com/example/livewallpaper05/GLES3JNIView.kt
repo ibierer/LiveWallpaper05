@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Application.ActivityLifecycleCallbacks
 import android.content.Context
 import android.opengl.GLSurfaceView
+import android.os.SystemClock
 import android.util.Log
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
@@ -25,7 +26,6 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
 
     class Renderer(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceView.Renderer {
         private var context: Context? = null
-        //private var mRepo: ActiveWallpaperRepo? = repo
         private var mViewModel: ActiveWallpaperViewModel = vm
 
         fun Renderer(context: Context, repo: ActiveWallpaperRepo) {
@@ -36,17 +36,8 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             // default values in ActiveWallpaperViewModel
             val accelData = mViewModel.getAccelerationData()
             val rotData = mViewModel.getRotationData()
-            /**zoom rotTmp = mViewModel.getRotationRate()
-            PreviewActivity.step(
-                0.0f,
-                0.0f,
-                0.0f,
-                rotTmp,
-                0.0f,
-                0.0f,
-                0.0f
-                )*/
 
+            // run step in the simulation (also updates opengl view)
             PreviewActivity.step(
                 accelData[0],
                 accelData[1],
@@ -57,6 +48,16 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                 rotData[3],
                 mViewModel.getRotationRate()
             )
+
+            // get time after frame
+            val currentFrame = SystemClock.elapsedRealtimeNanos()
+            // calculate time elapsed
+            var timeElapsed = (currentFrame - mViewModel.getLastFrame()) / 1000000000.0f
+            timeElapsed = 1.0f / timeElapsed.toFloat()
+            // update fps in view model with fps from spf
+            mViewModel.updateFPS(timeElapsed)
+            // update last frame in view model
+            mViewModel.updateLastFrame(currentFrame)
         }
 
         override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {

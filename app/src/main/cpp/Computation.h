@@ -21,7 +21,7 @@ protected:
 
     ComputationOptions computationOption;
 
-    bool computeShaderGenerated = false;
+    bool pushed = false;
 
 private:
 

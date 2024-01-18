@@ -11,14 +11,14 @@ public:
 
     static const int NUM_CACHE_CHUNKS = 32;
 
-    static const int STARS_PER_CHUNK = 16;
+    static const int PARTICLES_PER_CHUNK = 16;
 
-    static const int COUNT = 512;
+    static const int COUNT = NUM_CACHE_CHUNKS * PARTICLES_PER_CHUNK;
 
     static const int OFFSET_ATTRIBUTE_LOCATION = 2;
 
     struct cacheChunk { // 384 bytes
-        Particle particles[STARS_PER_CHUNK];
+        Particle particles[PARTICLES_PER_CHUNK];
     };
 
     struct __attribute__((aligned(128))) SimpleNBodySimulationData { // 12,288 bytes
@@ -31,7 +31,7 @@ public:
     // https://community.arm.com/developer/tools-software/graphics/b/blog/posts/get-started-with-compute-shaders
     string computeShaderCode[1000] = {
             "#version 320 es\n",
-            "const uint STARS_PER_CHUNK = " + std::to_string(STARS_PER_CHUNK) + "u;",
+            "const uint PARTICLES_PER_CHUNK = " + std::to_string(PARTICLES_PER_CHUNK) + "u;",
             "const uint NUM_CACHE_CHUNKS = uint(" + std::to_string(NUM_CACHE_CHUNKS) + ");\n",
             "const uint COUNT = " + std::to_string(COUNT) + "u;\n",
             "struct Particle {\n",
@@ -39,7 +39,7 @@ public:
             "    vec3 velocity;\n",
             "};\n",
             "struct cacheChunk{\n",
-            "    Particle particles[" + std::to_string(STARS_PER_CHUNK) + "];\n",
+            "    Particle particles[" + std::to_string(PARTICLES_PER_CHUNK) + "];\n",
             "};\n",
             "layout(packed, binding = " + std::to_string(OFFSET_ATTRIBUTE_LOCATION) + ") buffer destBuffer{\n",
             "	  cacheChunk chunks[" + std::to_string(NUM_CACHE_CHUNKS) + "];\n",
@@ -50,25 +50,25 @@ public:
             "void main(){\n",
             "	  task = gl_WorkGroupSize.x * gl_LocalInvocationID.x + gl_LocalInvocationID.y;\n",
             "	  if(task < NUM_CACHE_CHUNKS && t > 0.0f){\n",
-            "	  	vec3 gravitySum[STARS_PER_CHUNK];\n",
-            "	  	for(uint type = 0u; type < STARS_PER_CHUNK && STARS_PER_CHUNK * task + type < COUNT; type++){\n",
-            "	  		gravitySum[type] = vec3(0.0f, 0.0f, 0.0f);\n",
-            "	  		for(uint j = 0u; j < NUM_CACHE_CHUNKS; j++){\n",
-            "	  			for(uint k = 0u; k < STARS_PER_CHUNK && STARS_PER_CHUNK * j + k < COUNT; k++){\n",
-            "	  				if(STARS_PER_CHUNK * j + k == STARS_PER_CHUNK * task + type)\n",
-            "	  					continue;\n",
-            "	  				vec3 difference = outBuffer.chunks[j].particles[k].position - outBuffer.chunks[task].particles[type].position;\n",
-            "	  				float differenceSquared = dot(difference, difference);\n",
-            "	  				float distance = sqrt(differenceSquared);\n",
-            "	  				gravitySum[type] += difference / distance / differenceSquared;\n",
-            "	  			}\n",
-            "	  		}\n",
-            "	  	}\n",
-            "	  	barrier();\n",
-            "	  	for(uint type = 0u; type < STARS_PER_CHUNK && STARS_PER_CHUNK * task + type < COUNT; type++){\n",
-            "	  		outBuffer.chunks[task].particles[type].velocity += gravitySum[type];\n",
-            "	  		outBuffer.chunks[task].particles[type].position += outBuffer.chunks[task].particles[type].velocity;\n",
-            "	  	}\n",
+            "	  	  vec3 gravitySum[PARTICLES_PER_CHUNK];\n",
+            "	  	  for(uint i = 0u; i < PARTICLES_PER_CHUNK && PARTICLES_PER_CHUNK * task + i < COUNT; i++){\n",
+            "	  	      gravitySum[i] = vec3(0.0f, 0.0f, 0.0f);\n",
+            "	  	      for(uint j = 0u; j < NUM_CACHE_CHUNKS; j++){\n",
+            "	  	          for(uint k = 0u; k < PARTICLES_PER_CHUNK && PARTICLES_PER_CHUNK * j + k < COUNT; k++){\n",
+            "	  	              if(PARTICLES_PER_CHUNK * j + k == PARTICLES_PER_CHUNK * task + i)\n",
+            "	  	                  continue;\n",
+            "	  	              vec3 difference = outBuffer.chunks[j].particles[k].position - outBuffer.chunks[task].particles[i].position;\n",
+            "	  	              float differenceSquared = dot(difference, difference);\n",
+            "	  	              float distance = sqrt(differenceSquared);\n",
+            "	  	              gravitySum[i] += difference / distance / differenceSquared;\n",
+            "	  	          }\n",
+            "	  	      }\n",
+            "	  	  }\n",
+            "	  	  barrier();\n",
+            "	  	  for(uint i = 0u; i < PARTICLES_PER_CHUNK && PARTICLES_PER_CHUNK * task + i < COUNT; i++){\n",
+            "	  	      outBuffer.chunks[task].particles[i].velocity += gravitySum[i];\n",
+            "	  	      outBuffer.chunks[task].particles[i].position += outBuffer.chunks[task].particles[i].velocity;\n",
+            "	  	  }\n",
             "	  }\n",
             "}"
     };
@@ -87,7 +87,8 @@ public:
 
     void initialize(const ComputationOptions& computationOption);
 
-    void simulate(bool pushDataToGPU, bool retrieveDataFromGPU);
+    void simulate(const int &iterations, bool pushDataToGPU,
+                  bool retrieveDataFromGPU);
 
     ComputationOptions getComputationOption();
 
@@ -99,7 +100,8 @@ private:
 
     void simulateOnCPU();
 
-    void simulateOnGPU(bool pushDataToGPU, bool retrieveDataFromGPU);
+    void simulateOnGPU(const int &iterations, bool pushDataToGPU,
+                       bool retrieveDataFromGPU);
 
     float getRandomFloat(float x);
 

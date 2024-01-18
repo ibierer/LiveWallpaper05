@@ -3,32 +3,75 @@ package com.example.livewallpaper05
 import android.app.Dialog
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
+import androidx.core.graphics.drawable.toBitmap
+import androidx.lifecycle.Observer
+import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
+import com.example.livewallpaper05.profiledata.ProfileTable
+import com.example.livewallpaper05.profiledata.ProfileViewModel
+import java.io.ByteArrayOutputStream
 
 class ProfileActivity : AppCompatActivity() {
 
     private var mProfilePic: ImageView? = null
-    private var mRepo: ProfileRepo? = null
+    private var mUsername: TextView? = null
+    private var mBio: TextView? = null
+    //private var mProfileManager: ProfileManager? = null
+
+    // profile table data
+    private var mProfileTable: ProfileTable? = null
+    private val mViewModel: ProfileViewModel by viewModels {
+        ProfileViewModel.ProfileViewModelFactory((application as ActiveWallpaperApplication).profileRepo)
+    }
+
+    private val flowObserver: Observer<ProfileTable> =
+        Observer { profileTable ->
+            if (mProfileTable != null) {
+                mProfileTable = profileTable
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
 
-        mProfilePic = findViewById(R.id.profile_pic)
-        mRepo = ProfileRepo()
+        // connect db to view model
+        mViewModel.profileData.observe(this, flowObserver)
 
-        // set profile pic if it exists
-        if (mRepo!!.getPic() != null) {
-            mProfilePic!!.setImageBitmap(mRepo!!.getPic())
-        }
+        mProfilePic = findViewById(R.id.iv_profile_pic)
+        mUsername = findViewById(R.id.tv_username)
+        mBio = findViewById(R.id.tv_biography)
+
+        // set profile pic click listener
         mProfilePic!!.setOnClickListener(this::changeProfilePic)
 
+        // link profile view elements to profile live data
+        mViewModel.profileData.observe(this, Observer { profileData ->
+            if(profileData != null){
+                // if profile data username is Dummy_user do nothing
+                if(profileData.username == "Dummy_user"){
+                    return@Observer
+                }
+                mUsername!!.text = profileData.username
+                mBio!!.text = profileData.bio
+                val imageData = profileData.profilepic
+                if(imageData != null && imageData.isNotEmpty()){
+                    val imageBitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.size)
+                    mProfilePic!!.setImageBitmap(imageBitmap)
+                } else {
+                    mProfilePic!!.setImageResource(R.drawable.baseline_account_circle_24)
+                }
+            }
+        })
     }
 
     fun changeProfilePic(view: View) {
@@ -64,8 +107,7 @@ class ProfileActivity : AppCompatActivity() {
             if (imageBitmap == null) {
                 return@registerForActivityResult
             }
-            mProfilePic!!.setImageBitmap(imageBitmap)
-            mRepo!!.updateProfilePic(imageBitmap)
+            updateProfilePicture(imageBitmap)
         }
     }
 
@@ -74,9 +116,13 @@ class ProfileActivity : AppCompatActivity() {
             val data = result.data
             // get image from uri returned in data
             val imageBitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, data?.data)
-            mProfilePic!!.setImageBitmap(imageBitmap)
-            mRepo!!.updateProfilePic(imageBitmap)
+            updateProfilePicture(imageBitmap)
         }
+    }
+
+    fun updateProfilePicture(pic: Bitmap){
+        // update profile pic in database
+        mViewModel.updateProfilePic(pic)
     }
 
     private fun showLoginDialog(){
