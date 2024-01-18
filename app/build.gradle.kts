@@ -61,15 +61,13 @@ dependencies {
     implementation("androidx.room:room-runtime:2.3.0")
     kapt("androidx.room:room-compiler:2.3.0")
     implementation("androidx.room:room-ktx:2.3.0")
+    annotationProcessor("android.arch.persistence.room:compiler:1.1.1")
 
     // view model dependencies
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.0")
-    implementation("androidx.room:room-ktx:2.6.1")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.0")
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
-    kapt("androidx.room:room-compiler:2.6.1")
     implementation("androidx.fragment:fragment-ktx:1.6.2")
-    annotationProcessor("android.arch.persistence.room:compiler:1.1.1")
     implementation("androidx.room:room-runtime:2.6.1")
     kapt("androidx.lifecycle:lifecycle-compiler:2.2.0")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
