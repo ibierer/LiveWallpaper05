@@ -48,6 +48,7 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // From Jo to Cam: connect to postgre mock server here and query basic profile info into class instance declared below
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
 
@@ -161,3 +162,6 @@ class ProfileActivity : AppCompatActivity() {
     }
 
 }
+
+// rip profile data from postgres server into this
+data class Profile(val username: String, val name: String, val dateCreated: String, val bio: String)

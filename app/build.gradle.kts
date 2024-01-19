@@ -62,6 +62,9 @@ dependencies {
     implementation("androidx.room:room-ktx:2.3.0")
     annotationProcessor("android.arch.persistence.room:compiler:1.1.1")
 
+    // postgreSQL JDBC dependencies
+    implementation("org.postgresql:postgresql:42.3.1")
+
     // view model dependencies
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.0")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.0")
