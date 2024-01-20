@@ -11,6 +11,7 @@ NaiveSimulation* sim;
 
 float fOfXYZFluidSurface(vec3 _) {
     _ -= ImplicitGrapher::offset;
+    //return dot(_, _) - 48.0f;
 
     if (
             abs(_.x) > (ImplicitGrapher::offset.x - 0.01f) ||
@@ -108,12 +109,13 @@ void NaiveSimulationFluidSurfaceView::render(){
     Matrix4<float> inverseViewProjection;
 
     {
-        glDisable(GL_CULL_FACE);
         glBindFramebuffer(GL_FRAMEBUFFER, fbo.getFrameBuffer());
         glDrawBuffers(1, fbo.drawBuffers);
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
 
         // Draw graph
         {
@@ -174,7 +176,6 @@ void NaiveSimulationFluidSurfaceView::render(){
 
 
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
     glUseProgram(cubeProgram);
 
     // Prepare model-view-projection matrix
