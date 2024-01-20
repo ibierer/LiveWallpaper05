@@ -62,13 +62,6 @@ float fOfXYZFluidSurface(vec3 _) {
 NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView(const int &particleCount, const int &graphSize, const float &sphereRadius) : View() {
     mProgram = createVertexAndFragmentShaderProgram(TILES_VERTEX_SHADER.c_str(), TILES_FRAGMENT_SHADER.c_str());
     tilesVAO = VertexArrayObject(tilesVertices, sizeof(tilesVertices) / sizeof(PositionXYZ));
-    texture = Texture(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
-    //texture = Texture::staticallyGenerateMandelbrotWithVertexShader(Texture(GL_RGB, 16384, 16384, 0, GL_LINEAR), this);
-    fbo = FBO(
-            (void*) new Texture(GL_RGB, texture.getWidth(), texture.getHeight(), 0, GL_LINEAR),
-            YES,
-            NO);
-
 
     cubeProgram = createVertexAndFragmentShaderProgram(CUBE_VERTEX_SHADER.c_str(), CUBE_FRAGMENT_SHADER.c_str());
     graphNormalMapProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_NORMAL_MAP_FRAGMENT_SHADER.c_str());
@@ -96,6 +89,13 @@ NaiveSimulationFluidSurfaceView::~NaiveSimulationFluidSurfaceView(){
 }
 
 void NaiveSimulationFluidSurfaceView::render(){
+
+    if(getFrameCount() == 0){
+        fbo = FBO(
+                (void*) new Texture(GL_RGB, width, height, 0, GL_LINEAR),
+                YES,
+                NO);
+    }
 
     ImplicitGrapher::calculateSurfaceOnCPU(fOfXYZFluidSurface, 0.1f * getFrameCount(), 10, ImplicitGrapher::defaultOffset, 3.0f / 7.0f, false, false, ImplicitGrapher::vertices, ImplicitGrapher::indices, ImplicitGrapher::numIndices);
 
@@ -156,7 +156,7 @@ void NaiveSimulationFluidSurfaceView::render(){
 
         glUseProgram(mProgram);
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture.getTextureId());
+        glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
         glUniform1i(glGetUniformLocation(mProgram, "image"), 0);
 
         width = storeWidth;
@@ -223,6 +223,8 @@ void NaiveSimulationFluidSurfaceView::render(){
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
     glUniform1i(glGetUniformLocation(graphFluidSurfaceProgram, "image"), 1);
+    glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenWidth"), width);
+    glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenHeight"), height);
     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
     glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid*)&ImplicitGrapher::vertices[0].p);

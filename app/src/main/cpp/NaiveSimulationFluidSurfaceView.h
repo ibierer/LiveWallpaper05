@@ -29,15 +29,13 @@ public:
 
     VertexArrayObject tilesVAO;
 
-    Texture texture;
-
     FBO fbo;
 
     NaiveSimulation simulation;
 
     ImplicitGrapher implicitGrapher;
 
-    bool referenceFrameRotates = false;
+    bool referenceFrameRotates = true;
 
     const string TILES_VERTEX_SHADER =
             ES_VERSION +
@@ -88,6 +86,8 @@ public:
     const string GRAPH_FLUID_SURFACE_FRAGMENT_SHADER =
             ES_VERSION +
             "precision mediump float;\n"
+            "uniform float screenWidth;\n"
+            "uniform float screenHeight;\n"
             "uniform sampler2D image;\n"
             "uniform sampler2D environmentTexture;\n"
             "in vec3 direction;\n"
@@ -100,11 +100,18 @@ public:
             FRESNEL_EFFECT_FUNCTION + +
             "void main() {\n"
             "    vec3 normalizedDirection = normalize(direction);\n"
-            "    vec3 normalizedNormal = normalize(vNormal);\n"
+            "    vec3 normalizedNormal;\n"
+            "    if(int(gl_FragCoord.y / 20.0) % 2 == 0){\n"
+            "        normalizedNormal = normalize(vNormal);\n"
+            "    }else{\n"
+            //"        normalizedNormal = normalize(vNormal);\n"
+            "        normalizedNormal = normalize(texture(image, gl_FragCoord.xy/vec2(screenWidth, screenHeight)).rgb - vec3(0.5f));\n"
+            "    }\n"
             "    float dotNI = dot(normalizedDirection, normalizedNormal);\n"
             "    vec4 reflectedColor = Texture(environmentTexture, reflect2(normalizedDirection, normalizedNormal, dotNI));\n"
             "    vec4 refractedColor = Texture(environmentTexture, refract2(normalizedDirection, normalizedNormal, 0.75, dotNI));\n"
             "    outColor = mix(refractedColor, reflectedColor, fresnel(dotNI));\n"
+            // "    outColor = mix(refractedColor, reflectedColor, 1.0f);\n"
             "}\n";
 
     const string CUBE_VERTEX_SHADER =
