@@ -66,22 +66,22 @@ public:
             "out vec3 direction;\n"
             "uniform mat4 mvp;\n"
             "uniform mat4 viewTransformation;\n"
+            "uniform mat3 normalMatrix;\n"
             "void main() {\n"
             "    gl_Position = mvp * vec4(pos, 1.0);\n"
             "    vPosition = pos;\n"
-            "    vNormal = normal;\n"
+            "    vNormal = normalMatrix * normal;\n"
             "    direction = (viewTransformation * vec4(pos, 1.0)).xyz;\n"
             "}\n";
 
     const string GRAPH_NORMAL_MAP_FRAGMENT_SHADER =
             ES_VERSION +
             "precision mediump float;\n"
-            "uniform mat3 normalMatrix;\n"
             "in vec3 vPosition;\n"
             "in vec3 vNormal;\n"
             "out vec4 outColor;\n"
             "void main() {\n"
-            "    outColor = vec4(0.5f * normalize(normalMatrix * vNormal) + vec3(0.5f), 1.0f); \n"
+            "    outColor = vec4(0.5f * normalize(vNormal) + vec3(0.5f), 1.0f); \n"
             "}\n";
 
     const string GRAPH_FLUID_SURFACE_FRAGMENT_SHADER =
@@ -91,7 +91,6 @@ public:
             "uniform float screenHeight;\n"
             "uniform sampler2D image;\n"
             "uniform sampler2D environmentTexture;\n"
-            "uniform mat3 normalMatrix;\n"
             "in vec3 direction;\n"
             "in vec3 vPosition;\n"
             "in vec3 vNormal;\n"
@@ -102,20 +101,14 @@ public:
             FRESNEL_EFFECT_FUNCTION + +
             "void main() {\n"
             "    vec3 normalizedDirection = normalize(direction);\n"
-            "    vec3 normalizedNormal;\n"
-            "    if(int(gl_FragCoord.y / 20.0) % 2 == 0){\n"
-            "        normalizedNormal = normalize(normalMatrix * vNormal);\n"
-            "    }else{\n"
-            //"        normalizedNormal = normalize(vNormal);\n"
-            "        normalizedNormal = normalize(texture(image, gl_FragCoord.xy/vec2(screenWidth, screenHeight)).rgb - vec3(0.5f));\n"
-            "    }\n"
+            "    vec3 normalizedNormal = normalize(vNormal);\n"
+            "    vec3 normalizedSecondaryNormal = normalize(texture(image, gl_FragCoord.xy/vec2(screenWidth, screenHeight)).rgb - vec3(0.5f));\n"
             "    float dotNI = dot(normalizedDirection, normalizedNormal);\n"
-            "    vec4 reflectedColor = Texture(environmentTexture, reflect2(normalizedDirection, normalizedNormal, dotNI));\n"
-            "    vec4 refractedColor = Texture(environmentTexture, refract2(normalizedDirection, normalizedNormal, 0.75, dotNI));\n"
+            "    vec3 reflectedRay = reflect2(normalizedDirection, normalizedNormal, dotNI);\n"
+            "    vec4 reflectedColor = Texture(environmentTexture, reflectedRay);\n"
+            "    vec3 refractedRay = refract2(normalizedDirection, normalizedNormal, 0.75, dotNI);\n"
+            "    vec4 refractedColor = Texture(environmentTexture, refractedRay);\n"
             "    outColor = mix(refractedColor, reflectedColor, fresnel(dotNI));\n"
-            //"    outColor = mix(refractedColor, reflectedColor, 1.0f);\n"
-            //"    outColor = Texture(environmentTexture, normalizedDirection);\n"
-            //"    outColor = Texture(environmentTexture, normalizedNormal);\n"
             "}\n";
 
     const string CUBE_VERTEX_SHADER =
