@@ -106,9 +106,8 @@ void NaiveSimulationFluidSurfaceView::render(){
         calculatePerspectiveSetViewport(60.0f);
         glBindFramebuffer(GL_FRAMEBUFFER, fbo.getFrameBuffer());
         glDrawBuffers(1, fbo.drawBuffers);
-        glClearColor(backgroundColor.r + 0.5f, backgroundColor.g + 0.5f, backgroundColor.b + 0.5f, backgroundColor.a);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
         glEnable(GL_DEPTH_TEST);
 
         // Draw graph
@@ -151,19 +150,12 @@ void NaiveSimulationFluidSurfaceView::render(){
         rotation = Matrix4<float>(quaternionTo3x3(
                 Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z,
                             rotationVector.w)));
-        Matrix4<float> mvp = orientationAdjustedPerspective * translation * rotation * translation2;
+        Matrix4<float> mvp;
 
         glUseProgram(mProgram);
-        glUniformMatrix4fv(
-                glGetUniformLocation(mProgram, "mvp"),
-                1,
-                GL_FALSE,
-                (GLfloat *) &mvp);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture.getTextureId());
         glUniform1i(glGetUniformLocation(mProgram, "image"), 0);
-
-        tilesVAO.drawArrays();
 
         width = storeWidth;
         height = storeHeight;
