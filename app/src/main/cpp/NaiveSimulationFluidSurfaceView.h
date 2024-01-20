@@ -76,11 +76,12 @@ public:
     const string GRAPH_NORMAL_MAP_FRAGMENT_SHADER =
             ES_VERSION +
             "precision mediump float;\n"
+            "uniform mat3 normalMatrix;\n"
             "in vec3 vPosition;\n"
             "in vec3 vNormal;\n"
             "out vec4 outColor;\n"
             "void main() {\n"
-            "    outColor = vec4(0.5f * normalize(vNormal) + vec3(0.5f), 1.0f); \n"
+            "    outColor = vec4(0.5f * normalize(normalMatrix * vNormal) + vec3(0.5f), 1.0f); \n"
             "}\n";
 
     const string GRAPH_FLUID_SURFACE_FRAGMENT_SHADER =
@@ -90,6 +91,7 @@ public:
             "uniform float screenHeight;\n"
             "uniform sampler2D image;\n"
             "uniform sampler2D environmentTexture;\n"
+            "uniform mat3 normalMatrix;\n"
             "in vec3 direction;\n"
             "in vec3 vPosition;\n"
             "in vec3 vNormal;\n"
@@ -102,7 +104,7 @@ public:
             "    vec3 normalizedDirection = normalize(direction);\n"
             "    vec3 normalizedNormal;\n"
             "    if(int(gl_FragCoord.y / 20.0) % 2 == 0){\n"
-            "        normalizedNormal = normalize(vNormal);\n"
+            "        normalizedNormal = normalize(normalMatrix * vNormal);\n"
             "    }else{\n"
             //"        normalizedNormal = normalize(vNormal);\n"
             "        normalizedNormal = normalize(texture(image, gl_FragCoord.xy/vec2(screenWidth, screenHeight)).rgb - vec3(0.5f));\n"
@@ -111,7 +113,9 @@ public:
             "    vec4 reflectedColor = Texture(environmentTexture, reflect2(normalizedDirection, normalizedNormal, dotNI));\n"
             "    vec4 refractedColor = Texture(environmentTexture, refract2(normalizedDirection, normalizedNormal, 0.75, dotNI));\n"
             "    outColor = mix(refractedColor, reflectedColor, fresnel(dotNI));\n"
-            // "    outColor = mix(refractedColor, reflectedColor, 1.0f);\n"
+            //"    outColor = mix(refractedColor, reflectedColor, 1.0f);\n"
+            //"    outColor = Texture(environmentTexture, normalizedDirection);\n"
+            //"    outColor = Texture(environmentTexture, normalizedNormal);\n"
             "}\n";
 
     const string CUBE_VERTEX_SHADER =

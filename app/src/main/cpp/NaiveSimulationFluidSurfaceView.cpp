@@ -11,7 +11,7 @@ NaiveSimulation* sim;
 
 float fOfXYZFluidSurface(vec3 _) {
     _ -= ImplicitGrapher::offset;
-    //return dot(_, _) - 48.0f;
+    //return 48.0f - dot(_, _);
 
     if (
             abs(_.x) > (ImplicitGrapher::offset.x - 0.01f) ||
@@ -107,6 +107,7 @@ void NaiveSimulationFluidSurfaceView::render(){
     Matrix4<float> view;
     Matrix4<float> cameraTransformation;
     Matrix4<float> inverseViewProjection;
+    Matrix3<float> normalMatrix;
 
     {
         glBindFramebuffer(GL_FRAMEBUFFER, fbo.getFrameBuffer());
@@ -126,8 +127,10 @@ void NaiveSimulationFluidSurfaceView::render(){
             translation2 = translation2.Translation(Vec3<float>(ImplicitGrapher::defaultOffset.x, ImplicitGrapher::defaultOffset.y, ImplicitGrapher::defaultOffset.z));
             if(referenceFrameRotates){
                 mvp = perspective * translation * translation2;
+                normalMatrix = rotation.GetSubMatrix3().GetInverse();
             }else{
                 mvp = orientationAdjustedPerspective * translation * rotation * translation2;
+                normalMatrix = normalMatrix.Identity();
             }
 
             // Render graph
@@ -137,6 +140,11 @@ void NaiveSimulationFluidSurfaceView::render(){
                     1,
                     GL_FALSE,
                     (GLfloat*)&mvp);
+            glUniformMatrix3fv(
+                    glGetUniformLocation(graphNormalMapProgram, "normalMatrix"),
+                    1,
+                    GL_FALSE,
+                    (GLfloat*)&normalMatrix);
             glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
             glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
             glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid*)&ImplicitGrapher::vertices[0].p);
@@ -185,9 +193,11 @@ void NaiveSimulationFluidSurfaceView::render(){
     if(referenceFrameRotates){
         view = translation * translation2;
         mvp = perspective * view;
+        normalMatrix = rotation.GetSubMatrix3().GetInverse();
     }else{
         view = translation * rotation * translation2;
         mvp = orientationAdjustedPerspective * view;
+        normalMatrix = normalMatrix.Identity();
     }
     cameraTransformation = rotation.GetInverse() * view;
 
@@ -203,6 +213,11 @@ void NaiveSimulationFluidSurfaceView::render(){
             1,
             GL_FALSE,
             (GLfloat*)&cameraTransformation);
+    glUniformMatrix3fv(
+            glGetUniformLocation(graphFluidSurfaceProgram, "normalMatrix"),
+            1,
+            GL_FALSE,
+            (GLfloat*)&normalMatrix);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, sphereMap.getTextureId());
     glUniform1i(glGetUniformLocation(graphFluidSurfaceProgram, "environmentTexture"), 0);
