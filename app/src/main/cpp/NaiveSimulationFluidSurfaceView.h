@@ -37,7 +37,7 @@ public:
 
     ImplicitGrapher implicitGrapher;
 
-    bool referenceFrameRotates = true;
+    bool referenceFrameRotates = false;
 
     const string TILES_VERTEX_SHADER =
             ES_VERSION +
@@ -99,9 +99,6 @@ public:
             REFRACT2_FUNCTION +
             FRESNEL_EFFECT_FUNCTION + +
             "void main() {\n"
-            //"    outColor = vec4(0.5f * normalize(vNormal) + vec3(0.5f), 1.0f); \n"
-            //"    outColor = Texture(image, vNormal);\n"
-            //"    outColor = Texture(environmentTexture, reflect(normalize(direction), normalize(vNormal)));\n"
             "    vec3 normalizedDirection = normalize(direction);\n"
             "    vec3 normalizedNormal = normalize(vNormal);\n"
             "    float dotNI = dot(normalizedDirection, normalizedNormal);\n"
