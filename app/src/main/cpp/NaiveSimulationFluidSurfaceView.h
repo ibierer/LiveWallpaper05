@@ -102,13 +102,20 @@ public:
             "void main() {\n"
             "    vec3 normalizedDirection = normalize(direction);\n"
             "    vec3 normalizedNormal = normalize(vNormal);\n"
-            "    vec3 normalizedSecondaryNormal = normalize(texture(image, gl_FragCoord.xy/vec2(screenWidth, screenHeight)).rgb - vec3(0.5f));\n"
+            "    vec4 bufferColor = texture(image, gl_FragCoord.xy/vec2(screenWidth, screenHeight));\n"
+            "    vec3 normalizedSecondaryNormal = normalize(bufferColor.rgb - vec3(0.5f));\n"
             "    float dotNI = dot(normalizedDirection, normalizedNormal);\n"
+            "    vec3 refractedRay = refract2(normalizedDirection, normalizedNormal, 1.33f, dotNI);\n"
+            "    float secondaryDotNI = dot(refractedRay, normalizedSecondaryNormal);\n"
             "    vec3 reflectedRay = reflect2(normalizedDirection, normalizedNormal, dotNI);\n"
             "    vec4 reflectedColor = Texture(environmentTexture, reflectedRay);\n"
-            "    vec3 refractedRay = refract2(normalizedDirection, normalizedNormal, 0.75, dotNI);\n"
+            "    vec3 secondaryRefractedRay = refract2(refractedRay, normalizedSecondaryNormal, 0.75f, secondaryDotNI);\n"
             "    vec4 refractedColor = Texture(environmentTexture, refractedRay);\n"
-            "    outColor = mix(refractedColor, reflectedColor, fresnel(dotNI));\n"
+            //"    vec4 refractedColor = Texture(environmentTexture, secondaryRefractedRay);\n"
+            //"    outColor = mix(refractedColor, reflectedColor, fresnel(dotNI)); // glass\n"
+            //"    outColor = mix(refractedColor, reflectedColor, 1.0f); // mercury\n"
+            "    outColor = mix(refractedColor, reflectedColor, 0.0f); // invisible\n"
+            //"    outColor = bufferColor; // bufferColor (normal map)\n"
             "}\n";
 
     const string CUBE_VERTEX_SHADER =
