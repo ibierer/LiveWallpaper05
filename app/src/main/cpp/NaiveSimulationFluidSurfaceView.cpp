@@ -99,13 +99,16 @@ void NaiveSimulationFluidSurfaceView::render(){
 
     ImplicitGrapher::calculateSurfaceOnCPU(fOfXYZFluidSurface, 0.1f * getFrameCount(), 10, ImplicitGrapher::defaultOffset, 3.0f / 7.0f, false, false, ImplicitGrapher::vertices, ImplicitGrapher::indices, ImplicitGrapher::numIndices);
 
+    Matrix4<float> translation;
+    Matrix4<float> translation2;
+    Matrix4<float> rotation;
+    Matrix4<float> mvp;
+    Matrix4<float> view;
+    Matrix4<float> cameraTransformation;
+    Matrix4<float> inverseViewProjection;
+
     {
         glDisable(GL_CULL_FACE);
-        int storeWidth = width;
-        width = fbo.getWidth();
-        int storeHeight = height;
-        height = fbo.getHeight();
-        calculatePerspectiveSetViewport(60.0f);
         glBindFramebuffer(GL_FRAMEBUFFER, fbo.getFrameBuffer());
         glDrawBuffers(1, fbo.drawBuffers);
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -114,14 +117,11 @@ void NaiveSimulationFluidSurfaceView::render(){
 
         // Draw graph
         {
-            Matrix4<float> translation;
             translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 50.0f * (zoom - 1.0f)));
-            Matrix4<float> translation2;
-            Matrix4<float> rotation = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
+            rotation = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
 
             // Prepare model-view-projection matrix
             translation2 = translation2.Translation(Vec3<float>(ImplicitGrapher::defaultOffset.x, ImplicitGrapher::defaultOffset.y, ImplicitGrapher::defaultOffset.z));
-            Matrix4<float> mvp;
             if(referenceFrameRotates){
                 mvp = perspective * translation * translation2;
             }else{
@@ -144,24 +144,15 @@ void NaiveSimulationFluidSurfaceView::render(){
             glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
         }
 
-        Matrix4<float> translation;
         translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 50.0f * (zoom - 1.0f)));
-        Matrix4<float> translation2;
         translation2 = translation2.Translation(Vec3<float>(-0.5f));
-        Matrix4<float> rotation;
-        rotation = Matrix4<float>(quaternionTo3x3(
-                Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z,
-                            rotationVector.w)));
-        Matrix4<float> mvp;
+        rotation = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
 
         glUseProgram(mProgram);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
         glUniform1i(glGetUniformLocation(mProgram, "image"), 0);
 
-        width = storeWidth;
-        height = storeHeight;
-        calculatePerspectiveSetViewport(60.0f);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -187,12 +178,6 @@ void NaiveSimulationFluidSurfaceView::render(){
     glUseProgram(cubeProgram);
 
     // Prepare model-view-projection matrix
-    Matrix4<float> translation;
-    Matrix4<float> translation2;
-    Matrix4<float> rotation;
-    Matrix4<float> view;
-    Matrix4<float> mvp;
-    Matrix4<float> cameraTransformation;
     translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 50.0f * (zoom - 1.0f)));
     rotation = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
     translation2 = translation2.Translation(Vec3<float>(ImplicitGrapher::defaultOffset.x, ImplicitGrapher::defaultOffset.y, ImplicitGrapher::defaultOffset.z));
@@ -246,7 +231,7 @@ void NaiveSimulationFluidSurfaceView::render(){
     glCullFace(GL_BACK);*/
 
     // Render sphere map
-    Matrix4<float> inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();
+    inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();
     glUseProgram(sphereMapProgram);
     glUniformMatrix4fv(
             glGetUniformLocation(sphereMapProgram, "inverseViewProjection"),
