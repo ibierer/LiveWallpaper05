@@ -9,7 +9,9 @@
 class NaiveSimulationFluidSurfaceView : public View{
 public:
 
-    GLuint graphProgram;
+    GLuint graphNormalMapProgram;
+
+    GLuint graphFluidSurfaceProgram;
 
     GLuint cubeProgram;
 
@@ -63,14 +65,17 @@ public:
             "layout(location = " STRV(NORMAL_ATTRIBUTE_LOCATION) ") in vec3 normal;\n"
             "out vec3 vPosition;\n"
             "out vec3 vNormal;\n"
+            "out vec3 direction;\n"
             "uniform mat4 mvp;\n"
+            "uniform mat4 viewTransformation;\n"
             "void main() {\n"
             "    gl_Position = mvp * vec4(pos, 1.0);\n"
             "    vPosition = pos;\n"
             "    vNormal = normal;\n"
+            "    direction = (viewTransformation * vec4(pos, 1.0)).xyz;\n"
             "}\n";
 
-    const string GRAPH_FRAGMENT_SHADER =
+    const string GRAPH_NORMAL_MAP_FRAGMENT_SHADER =
             ES_VERSION +
             "precision mediump float;\n"
             "in vec3 vPosition;\n"
@@ -78,6 +83,31 @@ public:
             "out vec4 outColor;\n"
             "void main() {\n"
             "    outColor = vec4(0.5f * normalize(vNormal) + vec3(0.5f), 1.0f); \n"
+            "}\n";
+
+    const string GRAPH_FLUID_SURFACE_FRAGMENT_SHADER =
+            ES_VERSION +
+            "precision mediump float;\n"
+            "uniform sampler2D image;\n"
+            "uniform sampler2D environmentTexture;\n"
+            "in vec3 direction;\n"
+            "in vec3 vPosition;\n"
+            "in vec3 vNormal;\n"
+            "out vec4 outColor;\n" +
+            SPHERE_MAP_TEXTURE_FUNCTION +
+            REFLECT2_FUNCTION +
+            REFRACT2_FUNCTION +
+            FRESNEL_EFFECT_FUNCTION + +
+            "void main() {\n"
+            //"    outColor = vec4(0.5f * normalize(vNormal) + vec3(0.5f), 1.0f); \n"
+            //"    outColor = Texture(image, vNormal);\n"
+            //"    outColor = Texture(environmentTexture, reflect(normalize(direction), normalize(vNormal)));\n"
+            "    vec3 normalizedDirection = normalize(direction);\n"
+            "    vec3 normalizedNormal = normalize(vNormal);\n"
+            "    float dotNI = dot(normalizedDirection, normalizedNormal);\n"
+            "    vec4 reflectedColor = Texture(environmentTexture, reflect2(normalizedDirection, normalizedNormal, dotNI));\n"
+            "    vec4 refractedColor = Texture(environmentTexture, refract2(normalizedDirection, normalizedNormal, 0.75, dotNI));\n"
+            "    outColor = mix(refractedColor, reflectedColor, fresnel(dotNI));\n"
             "}\n";
 
     const string CUBE_VERTEX_SHADER =
