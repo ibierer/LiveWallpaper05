@@ -575,6 +575,8 @@ public:
 
     static uint numIndices;
 
+    static size_t getRecommendedIndicesArraySize();
+
     static float fOfXYZ(vec3 position);
 
     static void calculateSurfaceOnCPU(float (*fOfXYZ)(vec3),

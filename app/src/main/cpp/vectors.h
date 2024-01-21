@@ -33,7 +33,13 @@ public:
     T& operator[](int& index) {
         return v[index];
     }
+    T& operator[](int& index) const {
+        return v[index];
+    }
     T& operator[](const int& index) {
+        return v[index];
+    }
+    T& operator[](const int& index) const {
         return v[index];
     }
     _vec2() {
@@ -264,7 +270,13 @@ public:
     T& operator[](int& index) {
         return v[index];
     }
+    T& operator[](int& index) const {
+        return v[index];
+    }
     T& operator[](const int& index) {
+        return v[index];
+    }
+    T& operator[](const int& index) const {
         return v[index];
     }
     _vec3() {
@@ -501,7 +513,13 @@ public:
     T& operator[](int& index) {
         return v[index];
     }
+    T& operator[](int& index) const {
+        return v[index];
+    }
     T& operator[](const int& index) {
+        return v[index];
+    }
+    T& operator[](const int& index) const {
         return v[index];
     }
     _vec4() {

@@ -27,7 +27,7 @@ public:
 
     SphereMap sphereMap;
 
-    VertexArrayObject tileVAO;
+    VertexArrayObject tilesVAO;
 
     FBO fbo;
 
@@ -36,6 +36,8 @@ public:
     ImplicitGrapher implicitGrapher;
 
     bool referenceFrameRotates = true;
+
+    bool sphereClipsGraph = true;
 
     const string TILES_VERTEX_SHADER =
             ES_VERSION +

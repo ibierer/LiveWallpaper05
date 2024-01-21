@@ -62,7 +62,7 @@ float fOfXYZFluidSurface(vec3 _) {
 
 NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView(const int &particleCount, const int &graphSize, const float &sphereRadius) : View() {
     mProgram = createVertexAndFragmentShaderProgram(TILES_VERTEX_SHADER.c_str(), TILES_FRAGMENT_SHADER.c_str());
-    tileVAO = VertexArrayObject(tileVertices, sizeof(tileVertices) / sizeof(PositionXYZ));
+    tilesVAO = VertexArrayObject(tilesVertices, sizeof(tilesVertices) / sizeof(PositionXYZ));
 
     cubeProgram = createVertexAndFragmentShaderProgram(CUBE_VERTEX_SHADER.c_str(), CUBE_FRAGMENT_SHADER.c_str());
     graphNormalMapProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_NORMAL_MAP_FRAGMENT_SHADER.c_str());
@@ -98,7 +98,33 @@ void NaiveSimulationFluidSurfaceView::render(){
                 NO);
     }
 
-    ImplicitGrapher::calculateSurfaceOnCPU(fOfXYZFluidSurface, 0.1f * getFrameCount(), 10, ImplicitGrapher::defaultOffset, 3.0f / 7.0f, false, false, ImplicitGrapher::vertices, ImplicitGrapher::indices, ImplicitGrapher::numIndices);
+    enum Material {
+        MERCURY,
+        WATER,
+        BUBBLE,
+    } material = WATER;
+
+    float indexOfRefraction;
+    float reflectivity;
+    int twoSidedRefraction;
+
+    switch(material){
+        case MERCURY:
+            indexOfRefraction = 1.0f;
+            reflectivity = 1.0f;
+            twoSidedRefraction = NO;
+            break;
+        case WATER:
+            indexOfRefraction = 4.0f / 3.0f;
+            reflectivity = -1.0f;
+            twoSidedRefraction = YES;
+            break;
+        case BUBBLE:
+            indexOfRefraction = 3.0f / 4.0f;
+            reflectivity = 0.0f;
+            twoSidedRefraction = YES;
+            break;
+    }
 
     Matrix4<float> translation, rotation, model, view, projection, mvp, cameraTransformation, inverseViewProjection;
     Matrix3<float> normalMatrix;
@@ -108,170 +134,276 @@ void NaiveSimulationFluidSurfaceView::render(){
     normalMatrix = referenceFrameRotates ? rotation.GetSubMatrix3().GetInverse() : normalMatrix.Identity();
     inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();
 
-    glEnable(GL_DEPTH_TEST);
+    ImplicitGrapher::calculateSurfaceOnCPU(fOfXYZFluidSurface, 0.1f * getFrameCount(), 10, ImplicitGrapher::defaultOffset, 3.0f / 7.0f, false, false, ImplicitGrapher::vertices, ImplicitGrapher::indices, ImplicitGrapher::numIndices);
 
-    // Render to texture
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo.getFrameBuffer());
-    glDrawBuffers(1, fbo.drawBuffers);
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    {
-        // Prepare model-view-projection matrix
-        model = model.Translation(Vec3<float>(ImplicitGrapher::defaultOffset.x, ImplicitGrapher::defaultOffset.y, ImplicitGrapher::defaultOffset.z));
-        view = referenceFrameRotates ? translation : translation * rotation;
-        projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
-        mvp = projection * view * model;
+    if(sphereClipsGraph){
+        static const Matrix4<float> inverseView = (referenceFrameRotates ? translation : translation * rotation).GetInverse();
+        static const Vec3<float> camPosition = (inverseView * Vec4<float>(0.0f, 0.0f, 0.0f, 1.0f)).XYZ();
+        static const vec3 cameraPosition = vec3(camPosition.x, camPosition.y, camPosition.z);
+        struct sortingUtility {
+            static bool compareUvec3(const uvec3& a, const uvec3& b) {
+                vec3 positionA = (1.0f / 3.0f) * (ImplicitGrapher::vertices[a.v[0]].p + ImplicitGrapher::vertices[a.v[1]].p + ImplicitGrapher::vertices[a.v[2]].p);
+                vec3 positionB = (1.0f / 3.0f) * (ImplicitGrapher::vertices[b.v[0]].p + ImplicitGrapher::vertices[b.v[1]].p + ImplicitGrapher::vertices[b.v[2]].p);
+                vec3 differenceA = positionA - cameraPosition;
+                vec3 differenceB = positionB - cameraPosition;
+                float squaredDistanceA = dot(differenceA, differenceA);
+                float squaredDistanceB = dot(differenceB, differenceB);
+                return squaredDistanceA < squaredDistanceB;
+            }
+        };
+        std::sort(ImplicitGrapher::indices, ImplicitGrapher::indices + ImplicitGrapher::numIndices / 3, sortingUtility::compareUvec3);
 
-        // Render graph
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_FRONT);
-        glUseProgram(graphNormalMapProgram);
-        glUniformMatrix4fv(
-                glGetUniformLocation(graphNormalMapProgram, "mvp"),
-                1,
-                GL_FALSE,
-                (GLfloat *) &mvp);
-        glUniformMatrix3fv(
-                glGetUniformLocation(graphNormalMapProgram, "normalMatrix"),
-                1,
-                GL_FALSE,
-                (GLfloat *) &normalMatrix);
-        glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
-        glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
-        glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].p);
-        glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].n);
-        glDrawElements(GL_TRIANGLES, ImplicitGrapher::numIndices, GL_UNSIGNED_INT, ImplicitGrapher::indices);
-        glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
-        glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
-        glCullFace(GL_BACK);
-    }
+        // Render to texture
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo.getFrameBuffer());
+        glDrawBuffers(1, fbo.drawBuffers);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        {
+            // Prepare model-view-projection matrix
+            model = model.Translation(Vec3<float>(ImplicitGrapher::defaultOffset.x, ImplicitGrapher::defaultOffset.y, ImplicitGrapher::defaultOffset.z));
+            view = referenceFrameRotates ? translation : translation * rotation;
+            projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
+            mvp = projection * view * model;
 
-
-    // Render to default frame buffer
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    {
-        glDisable(GL_CULL_FACE);
-        glUseProgram(mProgram);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
-        glUniform1i(glGetUniformLocation(mProgram, "image"), 0);
-
-        // Prepare model-view-projection matrix
-        model = model.Translation(Vec3<float>(-0.5f, -0.5f, 0.0f));
-        view = translation * rotation;
-        projection = orientationAdjustedPerspective;
-        mvp = projection * view * model;
-
-        glUniformMatrix4fv(
-                glGetUniformLocation(mProgram, "mvp"),
-                1,
-                GL_FALSE,
-                (GLfloat *) &mvp);
-
-        tileVAO.drawArrays();
-
-        glEnable(GL_CULL_FACE);
-
-        // Prepare model-view-projection matrix
-        model = model.Translation(Vec3<float>(ImplicitGrapher::defaultOffset.x, ImplicitGrapher::defaultOffset.y, ImplicitGrapher::defaultOffset.z));
-        view = referenceFrameRotates ? translation : translation * rotation;
-        projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
-        mvp = projection * view * model;
-        cameraTransformation = rotation.GetInverse() * translation * model;
-
-        enum Material {
-            MERCURY,
-            WATER,
-            BUBBLE,
-        } material = WATER;
-
-        float indexOfRefraction;
-        float reflectivity;
-        int twoSidedRefraction;
-
-        switch(material){
-            case MERCURY:
-                indexOfRefraction = 1.0f;
-                reflectivity = 1.0f;
-                twoSidedRefraction = NO;
-                break;
-            case WATER:
-                indexOfRefraction = 4.0f / 3.0f;
-                reflectivity = -1.0f;
-                twoSidedRefraction = YES;
-                break;
-            case BUBBLE:
-                indexOfRefraction = 3.0f / 4.0f;
-                reflectivity = 0.0f;
-                twoSidedRefraction = YES;
-                break;
+            // Render graph
+            glEnable(GL_DEPTH_TEST);
+            glEnable(GL_CULL_FACE);
+            glCullFace(GL_FRONT);
+            glUseProgram(graphNormalMapProgram);
+            glUniformMatrix4fv(
+                    glGetUniformLocation(graphNormalMapProgram, "mvp"),
+                    1,
+                    GL_FALSE,
+                    (GLfloat *) &mvp);
+            glUniformMatrix3fv(
+                    glGetUniformLocation(graphNormalMapProgram, "normalMatrix"),
+                    1,
+                    GL_FALSE,
+                    (GLfloat *) &normalMatrix);
+            glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+            glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
+            glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].p);
+            glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].n);
+            glDrawElements(GL_TRIANGLES, ImplicitGrapher::numIndices, GL_UNSIGNED_INT, ImplicitGrapher::indices);
+            glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+            glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
+            glCullFace(GL_BACK);
         }
 
-        // Render graph
-        glUseProgram(graphFluidSurfaceProgram);
-        glUniformMatrix4fv(
-                glGetUniformLocation(graphFluidSurfaceProgram, "mvp"),
-                1,
-                GL_FALSE,
-                (GLfloat *) &mvp);
-        glUniformMatrix4fv(
-                glGetUniformLocation(graphFluidSurfaceProgram, "viewTransformation"),
-                1,
-                GL_FALSE,
-                (GLfloat *) &cameraTransformation);
-        glUniformMatrix3fv(
-                glGetUniformLocation(graphFluidSurfaceProgram, "normalMatrix"),
-                1,
-                GL_FALSE,
-                (GLfloat *) &normalMatrix);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, sphereMap.getTextureId());
-        glUniform1i(glGetUniformLocation(graphFluidSurfaceProgram, "environmentTexture"), 0);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
-        glUniform1i(glGetUniformLocation(graphFluidSurfaceProgram, "image"), 1);
-        glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "reflectivity"), reflectivity);
-        glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "indexOfRefraction"), indexOfRefraction);
-        glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "inverseIOR"), 1.0f / indexOfRefraction);
-        glUniform1i(glGetUniformLocation(graphFluidSurfaceProgram, "twoSidedRefraction"), twoSidedRefraction);
-        glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenWidth"), width);
-        glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenHeight"), height);
-        glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
-        glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
-        glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].p);
-        glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].n);
-        glDrawElements(GL_TRIANGLES, ImplicitGrapher::numIndices, GL_UNSIGNED_INT, ImplicitGrapher::indices);
-        glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
-        glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
 
-        // Render a sphere
-        /*glCullFace(GL_FRONT);
-        mvp = perspective * translation;
-        glUseProgram(sphereProgram);
-        glUniformMatrix4fv(
-                glGetUniformLocation(sphereProgram, "mvp"),
-                1,
-                GL_FALSE,
-                (GLfloat*)&mvp);
-        sphereVAO.drawArrays();
-        glCullFace(GL_BACK);*/
+        // Render to default frame buffer
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        {
+            glEnable(GL_DEPTH_TEST);
+            glDisable(GL_CULL_FACE);
+            glUseProgram(mProgram);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
+            glUniform1i(glGetUniformLocation(mProgram, "image"), 0);
 
-        glDisable(GL_CULL_FACE);
+            // Prepare model-view-projection matrix
+            model = model.Translation(Vec3<float>(-0.5f));
+            view = translation * rotation;
+            projection = orientationAdjustedPerspective;
+            mvp = projection * view * model;
 
-        // Render sphere map
-        glUseProgram(sphereMapProgram);
-        glUniformMatrix4fv(
-                glGetUniformLocation(sphereMapProgram, "inverseViewProjection"),
-                1,
-                GL_FALSE,
-                (GLfloat *) &inverseViewProjection);
-        glBindTexture(GL_TEXTURE_2D, sphereMap.getTextureId());
-        glActiveTexture(GL_TEXTURE1);
-        glUniform1i(glGetUniformLocation(sphereMapProgram, "environmentTexture"), 1);
-        environmentTriangleVAO.drawArrays();
+            glUniformMatrix4fv(
+                    glGetUniformLocation(mProgram, "mvp"),
+                    1,
+                    GL_FALSE,
+                    (GLfloat *) &mvp);
+
+            tilesVAO.drawArrays();
+
+            glEnable(GL_CULL_FACE);
+
+            // Prepare model-view-projection matrix
+            model = model.Translation(Vec3<float>(ImplicitGrapher::defaultOffset.x, ImplicitGrapher::defaultOffset.y, ImplicitGrapher::defaultOffset.z));
+            view = referenceFrameRotates ? translation : translation * rotation;
+            projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
+            mvp = projection * view * model;
+            cameraTransformation = rotation.GetInverse() * translation * model;
+
+            // Render graph
+            glUseProgram(graphFluidSurfaceProgram);
+            glUniformMatrix4fv(
+                    glGetUniformLocation(graphFluidSurfaceProgram, "mvp"),
+                    1,
+                    GL_FALSE,
+                    (GLfloat *) &mvp);
+            glUniformMatrix4fv(
+                    glGetUniformLocation(graphFluidSurfaceProgram, "viewTransformation"),
+                    1,
+                    GL_FALSE,
+                    (GLfloat *) &cameraTransformation);
+            glUniformMatrix3fv(
+                    glGetUniformLocation(graphFluidSurfaceProgram, "normalMatrix"),
+                    1,
+                    GL_FALSE,
+                    (GLfloat *) &normalMatrix);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, sphereMap.getTextureId());
+            glUniform1i(glGetUniformLocation(graphFluidSurfaceProgram, "environmentTexture"), 0);
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
+            glUniform1i(glGetUniformLocation(graphFluidSurfaceProgram, "image"), 1);
+            glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "reflectivity"), reflectivity);
+            glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "indexOfRefraction"), indexOfRefraction);
+            glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "inverseIOR"), 1.0f / indexOfRefraction);
+            glUniform1i(glGetUniformLocation(graphFluidSurfaceProgram, "twoSidedRefraction"), twoSidedRefraction);
+            glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenWidth"), width);
+            glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenHeight"), height);
+            glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+            glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
+            glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].p);
+            glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].n);
+            glDrawElements(GL_TRIANGLES, ImplicitGrapher::numIndices, GL_UNSIGNED_INT, ImplicitGrapher::indices);
+            glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+            glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
+
+            // Render a sphere
+            /*glCullFace(GL_FRONT);
+            mvp = perspective * translation;
+            glUseProgram(sphereProgram);
+            glUniformMatrix4fv(
+                    glGetUniformLocation(sphereProgram, "mvp"),
+                    1,
+                    GL_FALSE,
+                    (GLfloat*)&mvp);
+            sphereVAO.drawArrays();
+            glCullFace(GL_BACK);*/
+        }
+
+    }else{
+
+        // Render to texture
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo.getFrameBuffer());
+        glDrawBuffers(1, fbo.drawBuffers);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        {
+            // Prepare model-view-projection matrix
+            model = model.Translation(Vec3<float>(ImplicitGrapher::defaultOffset.x, ImplicitGrapher::defaultOffset.y, ImplicitGrapher::defaultOffset.z));
+            view = referenceFrameRotates ? translation : translation * rotation;
+            projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
+            mvp = projection * view * model;
+
+            // Render graph
+            glEnable(GL_DEPTH_TEST);
+            glEnable(GL_CULL_FACE);
+            glCullFace(GL_FRONT);
+            glUseProgram(graphNormalMapProgram);
+            glUniformMatrix4fv(
+                    glGetUniformLocation(graphNormalMapProgram, "mvp"),
+                    1,
+                    GL_FALSE,
+                    (GLfloat *) &mvp);
+            glUniformMatrix3fv(
+                    glGetUniformLocation(graphNormalMapProgram, "normalMatrix"),
+                    1,
+                    GL_FALSE,
+                    (GLfloat *) &normalMatrix);
+            glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+            glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
+            glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].p);
+            glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].n);
+            glDrawElements(GL_TRIANGLES, ImplicitGrapher::numIndices, GL_UNSIGNED_INT, ImplicitGrapher::indices);
+            glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+            glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
+            glCullFace(GL_BACK);
+        }
+
+
+        // Render to default frame buffer
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        {
+            glEnable(GL_DEPTH_TEST);
+            glDisable(GL_CULL_FACE);
+            glUseProgram(mProgram);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
+            glUniform1i(glGetUniformLocation(mProgram, "image"), 0);
+
+            // Prepare model-view-projection matrix
+            model = model.Translation(Vec3<float>(-0.5f));
+            view = translation * rotation;
+            projection = orientationAdjustedPerspective;
+            mvp = projection * view * model;
+
+            glUniformMatrix4fv(
+                    glGetUniformLocation(mProgram, "mvp"),
+                    1,
+                    GL_FALSE,
+                    (GLfloat *) &mvp);
+
+            tilesVAO.drawArrays();
+
+            glEnable(GL_CULL_FACE);
+
+            // Prepare model-view-projection matrix
+            model = model.Translation(Vec3<float>(ImplicitGrapher::defaultOffset.x, ImplicitGrapher::defaultOffset.y, ImplicitGrapher::defaultOffset.z));
+            view = referenceFrameRotates ? translation : translation * rotation;
+            projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
+            mvp = projection * view * model;
+            cameraTransformation = rotation.GetInverse() * translation * model;
+
+            // Render graph
+            glUseProgram(graphFluidSurfaceProgram);
+            glUniformMatrix4fv(
+                    glGetUniformLocation(graphFluidSurfaceProgram, "mvp"),
+                    1,
+                    GL_FALSE,
+                    (GLfloat *) &mvp);
+            glUniformMatrix4fv(
+                    glGetUniformLocation(graphFluidSurfaceProgram, "viewTransformation"),
+                    1,
+                    GL_FALSE,
+                    (GLfloat *) &cameraTransformation);
+            glUniformMatrix3fv(
+                    glGetUniformLocation(graphFluidSurfaceProgram, "normalMatrix"),
+                    1,
+                    GL_FALSE,
+                    (GLfloat *) &normalMatrix);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, sphereMap.getTextureId());
+            glUniform1i(glGetUniformLocation(graphFluidSurfaceProgram, "environmentTexture"), 0);
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
+            glUniform1i(glGetUniformLocation(graphFluidSurfaceProgram, "image"), 1);
+            glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "reflectivity"), reflectivity);
+            glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "indexOfRefraction"), indexOfRefraction);
+            glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "inverseIOR"), 1.0f / indexOfRefraction);
+            glUniform1i(glGetUniformLocation(graphFluidSurfaceProgram, "twoSidedRefraction"), twoSidedRefraction);
+            glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenWidth"), width);
+            glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenHeight"), height);
+            glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+            glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
+            glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].p);
+            glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].n);
+            glDrawElements(GL_TRIANGLES, ImplicitGrapher::numIndices, GL_UNSIGNED_INT, ImplicitGrapher::indices);
+            glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+            glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
+        }
     }
+
+    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
+
+    // Render sphere map
+    glUseProgram(sphereMapProgram);
+    glUniformMatrix4fv(
+            glGetUniformLocation(sphereMapProgram, "inverseViewProjection"),
+            1,
+            GL_FALSE,
+            (GLfloat *) &inverseViewProjection);
+    glBindTexture(GL_TEXTURE_2D, sphereMap.getTextureId());
+    glActiveTexture(GL_TEXTURE1);
+    glUniform1i(glGetUniformLocation(sphereMapProgram, "environmentTexture"), 1);
+    environmentTriangleVAO.drawArrays();
 
     // Simulate
     for(int i = 0; i < 5; i++){
