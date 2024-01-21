@@ -215,6 +215,34 @@ void NaiveSimulationFluidSurfaceView::render(){
         }
         cameraTransformation = rotation.GetInverse() * view;
 
+        enum Material {
+            MERCURY,
+            WATER,
+            BUBBLE,
+        };
+        Material material;
+        float indexOfRefraction;
+        float reflectivity;
+        int twoSidedRefraction;
+        material = WATER;
+        switch(material){
+            case MERCURY:
+                indexOfRefraction = 1.0f;
+                reflectivity = 1.0f;
+                twoSidedRefraction = NO;
+                break;
+            case WATER:
+                indexOfRefraction = 4.0f / 3.0f;
+                reflectivity = -1.0f;
+                twoSidedRefraction = YES;
+                break;
+            case BUBBLE:
+                indexOfRefraction = 3.0f / 4.0f;
+                reflectivity = 0.0f;
+                twoSidedRefraction = YES;
+                break;
+        }
+
         // Render graph
         glUseProgram(graphFluidSurfaceProgram);
         glUniformMatrix4fv(
@@ -238,6 +266,10 @@ void NaiveSimulationFluidSurfaceView::render(){
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
         glUniform1i(glGetUniformLocation(graphFluidSurfaceProgram, "image"), 1);
+        glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "reflectivity"), reflectivity);
+        glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "indexOfRefraction"), indexOfRefraction);
+        glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "inverseIOR"), 1.0f / indexOfRefraction);
+        glUniform1i(glGetUniformLocation(graphFluidSurfaceProgram, "twoSidedRefraction"), twoSidedRefraction);
         glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenWidth"), width);
         glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenHeight"), height);
         glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
