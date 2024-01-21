@@ -100,14 +100,7 @@ void NaiveSimulationFluidSurfaceView::render(){
 
     ImplicitGrapher::calculateSurfaceOnCPU(fOfXYZFluidSurface, 0.1f * getFrameCount(), 10, ImplicitGrapher::defaultOffset, 3.0f / 7.0f, false, false, ImplicitGrapher::vertices, ImplicitGrapher::indices, ImplicitGrapher::numIndices);
 
-    Matrix4<float> translation;
-    Matrix4<float> rotation;
-    Matrix4<float> model;
-    Matrix4<float> view;
-    Matrix4<float> projection;
-    Matrix4<float> mvp;
-    Matrix4<float> cameraTransformation;
-    Matrix4<float> inverseViewProjection;
+    Matrix4<float> translation, rotation, model, view, projection, mvp, cameraTransformation, inverseViewProjection;
     Matrix3<float> normalMatrix;
 
     translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 50.0f * (zoom - 1.0f)));
