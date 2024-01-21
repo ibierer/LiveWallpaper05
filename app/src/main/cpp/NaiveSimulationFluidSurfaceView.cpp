@@ -13,12 +13,12 @@ float fOfXYZFluidSurface(vec3 _) {
     _ -= ImplicitGrapher::offset;
     //return 48.0f - dot(_, _);
 
-    if (
+    /*if (
             abs(_.x) > (ImplicitGrapher::offset.x - 0.01f) ||
             abs(_.y) > (ImplicitGrapher::offset.y - 0.01f) ||
             abs(_.z) > (ImplicitGrapher::offset.z - 0.01f)
-    ) {
-    //if(dot(_, _) > 6.99f * 6.99f) {
+    ) {*/
+    if(dot(_, _) > (ImplicitGrapher::offset.x - 0.01f) * (ImplicitGrapher::offset.x - 0.01f)) {
         return -1.0f;
     }
 
@@ -179,7 +179,6 @@ void NaiveSimulationFluidSurfaceView::render(){
     tilesVAO.drawArrays();
 
     glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
 
     // Prepare model-view-projection matrix
     translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 50.0f * (zoom - 1.0f)));
