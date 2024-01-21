@@ -35,7 +35,7 @@ public:
 
     ImplicitGrapher implicitGrapher;
 
-    bool referenceFrameRotates = false;
+    bool referenceFrameRotates = true;
 
     const string TILES_VERTEX_SHADER =
             ES_VERSION +
