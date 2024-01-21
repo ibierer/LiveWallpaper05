@@ -27,7 +27,7 @@ public:
 
     SphereMap sphereMap;
 
-    VertexArrayObject tilesVAO;
+    VertexArrayObject tileVAO;
 
     FBO fbo;
 

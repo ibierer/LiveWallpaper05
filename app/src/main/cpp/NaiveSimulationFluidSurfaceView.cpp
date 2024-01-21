@@ -62,7 +62,7 @@ float fOfXYZFluidSurface(vec3 _) {
 
 NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView(const int &particleCount, const int &graphSize, const float &sphereRadius) : View() {
     mProgram = createVertexAndFragmentShaderProgram(TILES_VERTEX_SHADER.c_str(), TILES_FRAGMENT_SHADER.c_str());
-    tilesVAO = VertexArrayObject(tilesVertices, sizeof(tilesVertices) / sizeof(PositionXYZ));
+    tileVAO = VertexArrayObject(tileVertices, sizeof(tileVertices) / sizeof(PositionXYZ));
 
     cubeProgram = createVertexAndFragmentShaderProgram(CUBE_VERTEX_SHADER.c_str(), CUBE_FRAGMENT_SHADER.c_str());
     graphNormalMapProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_NORMAL_MAP_FRAGMENT_SHADER.c_str());
@@ -77,7 +77,7 @@ NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView(const int &part
     simulation.seed(particleCount, sphereRadius);
     sphereVAO = VertexArrayObject(Sphere(sphereRadius, 100));
 
-    //sphereMap = SphereMap(Texture::DefaultImages::MANDELBROT, 1024, 1024, this);
+    //sphereMap = SphereMap(Texture::DefaultImages::MANDELBROT, 2048, 2048, this);
     sphereMap = SphereMap(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
     environmentTriangleVAO = VertexArrayObject(EnvironmentMap::environmentTriangleVertices, sizeof(sphereMap.environmentTriangleVertices) / sizeof(PositionXYZ));
 
@@ -101,37 +101,33 @@ void NaiveSimulationFluidSurfaceView::render(){
     ImplicitGrapher::calculateSurfaceOnCPU(fOfXYZFluidSurface, 0.1f * getFrameCount(), 10, ImplicitGrapher::defaultOffset, 3.0f / 7.0f, false, false, ImplicitGrapher::vertices, ImplicitGrapher::indices, ImplicitGrapher::numIndices);
 
     Matrix4<float> translation;
-    Matrix4<float> translation2;
     Matrix4<float> rotation;
-    Matrix4<float> mvp;
+    Matrix4<float> model;
     Matrix4<float> view;
+    Matrix4<float> projection;
+    Matrix4<float> mvp;
     Matrix4<float> cameraTransformation;
     Matrix4<float> inverseViewProjection;
     Matrix3<float> normalMatrix;
 
-    // Render to texture
-    {
-        glBindFramebuffer(GL_FRAMEBUFFER, fbo.getFrameBuffer());
-        glDrawBuffers(1, fbo.drawBuffers);
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glEnable(GL_DEPTH_TEST);
+    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 50.0f * (zoom - 1.0f)));
+    rotation = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
+    normalMatrix = referenceFrameRotates ? rotation.GetSubMatrix3().GetInverse() : normalMatrix.Identity();
+    inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();
 
+    glEnable(GL_DEPTH_TEST);
+
+    // Render to texture
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo.getFrameBuffer());
+    glDrawBuffers(1, fbo.drawBuffers);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    {
         // Prepare model-view-projection matrix
-        translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 50.0f * (zoom - 1.0f)));
-        rotation = Matrix4<float>(quaternionTo3x3(
-                Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z,
-                            rotationVector.w)));
-        translation2 = translation2.Translation(
-                Vec3<float>(ImplicitGrapher::defaultOffset.x, ImplicitGrapher::defaultOffset.y,
-                            ImplicitGrapher::defaultOffset.z));
-        if (referenceFrameRotates) {
-            mvp = perspective * translation * translation2;
-            normalMatrix = rotation.GetSubMatrix3().GetInverse();
-        } else {
-            mvp = orientationAdjustedPerspective * translation * rotation * translation2;
-            normalMatrix = normalMatrix.Identity();
-        }
+        model = model.Translation(Vec3<float>(ImplicitGrapher::defaultOffset.x, ImplicitGrapher::defaultOffset.y, ImplicitGrapher::defaultOffset.z));
+        view = referenceFrameRotates ? translation : translation * rotation;
+        projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
+        mvp = projection * view * model;
 
         // Render graph
         glEnable(GL_CULL_FACE);
@@ -149,14 +145,9 @@ void NaiveSimulationFluidSurfaceView::render(){
                 (GLfloat *) &normalMatrix);
         glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
         glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
-        glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE,
-                              sizeof(PositionXYZNormalXYZ),
-                              (const GLvoid *) &ImplicitGrapher::vertices[0].p);
-        glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE,
-                              sizeof(PositionXYZNormalXYZ),
-                              (const GLvoid *) &ImplicitGrapher::vertices[0].n);
-        glDrawElements(GL_TRIANGLES, ImplicitGrapher::numIndices, GL_UNSIGNED_INT,
-                       ImplicitGrapher::indices);
+        glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].p);
+        glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].n);
+        glDrawElements(GL_TRIANGLES, ImplicitGrapher::numIndices, GL_UNSIGNED_INT, ImplicitGrapher::indices);
         glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
         glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
         glCullFace(GL_BACK);
@@ -164,67 +155,49 @@ void NaiveSimulationFluidSurfaceView::render(){
 
 
     // Render to default frame buffer
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     {
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glDisable(GL_CULL_FACE);
-
-        translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 50.0f * (zoom - 1.0f)));
-        translation2 = translation2.Translation(Vec3<float>(-0.5f));
-        rotation = Matrix4<float>(quaternionTo3x3(
-                Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z,
-                            rotationVector.w)));
-
         glUseProgram(mProgram);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
         glUniform1i(glGetUniformLocation(mProgram, "image"), 0);
 
-        mvp = orientationAdjustedPerspective * translation * rotation * translation2;
+        // Prepare model-view-projection matrix
+        model = model.Translation(Vec3<float>(-0.5f, -0.5f, 0.0f));
+        view = translation * rotation;
+        projection = orientationAdjustedPerspective;
+        mvp = projection * view * model;
 
         glUniformMatrix4fv(
                 glGetUniformLocation(mProgram, "mvp"),
                 1,
                 GL_FALSE,
                 (GLfloat *) &mvp);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
-        glUniform1i(glGetUniformLocation(mProgram, "image"), 1);
 
-        tilesVAO.drawArrays();
+        tileVAO.drawArrays();
 
         glEnable(GL_CULL_FACE);
 
         // Prepare model-view-projection matrix
-        translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 50.0f * (zoom - 1.0f)));
-        rotation = Matrix4<float>(quaternionTo3x3(
-                Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z,
-                            rotationVector.w)));
-        translation2 = translation2.Translation(
-                Vec3<float>(ImplicitGrapher::defaultOffset.x, ImplicitGrapher::defaultOffset.y,
-                            ImplicitGrapher::defaultOffset.z));
-        if (referenceFrameRotates) {
-            view = translation * translation2;
-            mvp = perspective * view;
-            normalMatrix = rotation.GetSubMatrix3().GetInverse();
-        } else {
-            view = translation * rotation * translation2;
-            mvp = orientationAdjustedPerspective * view;
-            normalMatrix = normalMatrix.Identity();
-        }
-        cameraTransformation = rotation.GetInverse() * view;
+        model = model.Translation(Vec3<float>(ImplicitGrapher::defaultOffset.x, ImplicitGrapher::defaultOffset.y, ImplicitGrapher::defaultOffset.z));
+        view = referenceFrameRotates ? translation : translation * rotation;
+        projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
+        mvp = projection * view * model;
+        cameraTransformation = rotation.GetInverse() * translation * model;
 
         enum Material {
             MERCURY,
             WATER,
             BUBBLE,
-        };
-        Material material;
+        } material = WATER;
+
         float indexOfRefraction;
         float reflectivity;
         int twoSidedRefraction;
-        material = WATER;
+
         switch(material){
             case MERCURY:
                 indexOfRefraction = 1.0f;
@@ -274,14 +247,9 @@ void NaiveSimulationFluidSurfaceView::render(){
         glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenHeight"), height);
         glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
         glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
-        glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE,
-                              sizeof(PositionXYZNormalXYZ),
-                              (const GLvoid *) &ImplicitGrapher::vertices[0].p);
-        glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE,
-                              sizeof(PositionXYZNormalXYZ),
-                              (const GLvoid *) &ImplicitGrapher::vertices[0].n);
-        glDrawElements(GL_TRIANGLES, ImplicitGrapher::numIndices, GL_UNSIGNED_INT,
-                       ImplicitGrapher::indices);
+        glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].p);
+        glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].n);
+        glDrawElements(GL_TRIANGLES, ImplicitGrapher::numIndices, GL_UNSIGNED_INT, ImplicitGrapher::indices);
         glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
         glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
 
@@ -297,8 +265,9 @@ void NaiveSimulationFluidSurfaceView::render(){
         sphereVAO.drawArrays();
         glCullFace(GL_BACK);*/
 
+        glDisable(GL_CULL_FACE);
+
         // Render sphere map
-        inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();
         glUseProgram(sphereMapProgram);
         glUniformMatrix4fv(
                 glGetUniformLocation(sphereMapProgram, "inverseViewProjection"),
@@ -309,10 +278,9 @@ void NaiveSimulationFluidSurfaceView::render(){
         glActiveTexture(GL_TEXTURE1);
         glUniform1i(glGetUniformLocation(sphereMapProgram, "environmentTexture"), 1);
         environmentTriangleVAO.drawArrays();
-
-        glDisable(GL_CULL_FACE);
     }
 
+    // Simulate
     for(int i = 0; i < 5; i++){
         if(referenceFrameRotates){
             simulation.simulate(compensateForOrientation(accelerometerVector));
@@ -321,5 +289,5 @@ void NaiveSimulationFluidSurfaceView::render(){
         }
     }
 
-    checkGlError("Renderer::render");
+    checkGlError("NaiveSimulationFluidSurfaceView::render");
 }
