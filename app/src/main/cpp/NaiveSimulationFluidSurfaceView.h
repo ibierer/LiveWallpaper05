@@ -35,7 +35,7 @@ public:
 
     ImplicitGrapher implicitGrapher;
 
-    bool referenceFrameRotates = true;
+    bool referenceFrameRotates = false;
 
     const string TILES_VERTEX_SHADER =
             ES_VERSION +
@@ -103,18 +103,17 @@ public:
             "    vec3 normalizedDirection = normalize(direction);\n"
             "    vec3 normalizedNormal = normalize(vNormal);\n"
             "    vec4 bufferColor = texture(image, gl_FragCoord.xy/vec2(screenWidth, screenHeight));\n"
-            "    vec3 normalizedSecondaryNormal = normalize(bufferColor.rgb - vec3(0.5f));\n"
+            "    vec3 normalizedSecondaryNormal = -normalize(bufferColor.rgb - vec3(0.5f));\n"
             "    float dotNI = dot(normalizedDirection, normalizedNormal);\n"
-            "    vec3 refractedRay = refract2(normalizedDirection, normalizedNormal, 1.33f, dotNI);\n"
+            "    vec3 refractedRay = normalize(refract2(normalizedDirection, normalizedNormal, 0.75f, dotNI));\n"
             "    float secondaryDotNI = dot(refractedRay, normalizedSecondaryNormal);\n"
             "    vec3 reflectedRay = reflect2(normalizedDirection, normalizedNormal, dotNI);\n"
             "    vec4 reflectedColor = Texture(environmentTexture, reflectedRay);\n"
-            "    vec3 secondaryRefractedRay = refract2(refractedRay, normalizedSecondaryNormal, 0.75f, secondaryDotNI);\n"
-            "    vec4 refractedColor = Texture(environmentTexture, refractedRay);\n"
-            //"    vec4 refractedColor = Texture(environmentTexture, secondaryRefractedRay);\n"
-            //"    outColor = mix(refractedColor, reflectedColor, fresnel(dotNI)); // glass\n"
+            "    vec3 secondaryRefractedRay = normalize(refract2(refractedRay, normalizedSecondaryNormal, 4.0f / 3.0f, secondaryDotNI));\n"
+            "    vec4 refractedColor = Texture(environmentTexture, secondaryRefractedRay);\n"
+            "    outColor = mix(refractedColor, reflectedColor, fresnel(dotNI)); // water\n"
             //"    outColor = mix(refractedColor, reflectedColor, 1.0f); // mercury\n"
-            "    outColor = mix(refractedColor, reflectedColor, 0.0f); // invisible\n"
+            //"    outColor = mix(refractedColor, reflectedColor, 0.0f); // invisible\n"
             //"    outColor = bufferColor; // bufferColor (normal map)\n"
             "}\n";
 
