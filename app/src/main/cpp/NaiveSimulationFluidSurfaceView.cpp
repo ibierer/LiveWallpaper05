@@ -11,6 +11,7 @@ NaiveSimulation* sim;
 
 float fOfXYZFluidSurface(vec3 _) {
     _ -= ImplicitGrapher::offset;
+    //return 25.0f - dot(_, _);
     //return 48.0f - dot(_, _);
 
     /*if (
@@ -75,7 +76,8 @@ NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView(const int &part
     implicitGrapher = ImplicitGrapher(ivec3(graphSize));
 
     simulation.seed(particleCount, sphereRadius);
-    sphereVAO = VertexArrayObject(Sphere(sphereRadius, 100));
+    //sphereVAO = VertexArrayObject(Sphere(sphereRadius, 100));
+    sphereVAO = VertexArrayObject(Sphere(1.0f, 100));
 
     //sphereMap = SphereMap(Texture::DefaultImages::MANDELBROT, 2048, 2048, this);
     sphereMap = SphereMap(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
@@ -133,11 +135,16 @@ void NaiveSimulationFluidSurfaceView::render(){
     rotation = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
     normalMatrix = referenceFrameRotates ? rotation.GetSubMatrix3().GetInverse() : normalMatrix.Identity();
     inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();
+    cameraTransformation = rotation.GetInverse() * translation * model.Translation(Vec3<float>(ImplicitGrapher::defaultOffset.x, ImplicitGrapher::defaultOffset.y, ImplicitGrapher::defaultOffset.z));
 
     ImplicitGrapher::calculateSurfaceOnCPU(fOfXYZFluidSurface, 0.1f * getFrameCount(), 10, ImplicitGrapher::defaultOffset, 3.0f / 7.0f, false, false, ImplicitGrapher::vertices, ImplicitGrapher::indices, ImplicitGrapher::numIndices);
 
     if(sphereClipsGraph){
-        static const Matrix4<float> inverseView = (referenceFrameRotates ? translation : translation * rotation).GetInverse();
+        model = model.Translation(Vec3<float>(ImplicitGrapher::defaultOffset.x, ImplicitGrapher::defaultOffset.y, ImplicitGrapher::defaultOffset.z));
+        view = referenceFrameRotates ? translation : translation * rotation;
+        // projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
+        // mvp = projection * view * model;
+        static const Matrix4<float> inverseView = referenceFrameRotates ? (view * model).GetInverse() : view * model;
         static const Vec3<float> camPosition = (inverseView * Vec4<float>(0.0f, 0.0f, 0.0f, 1.0f)).XYZ();
         static const vec3 cameraPosition = vec3(camPosition.x, camPosition.y, camPosition.z);
         struct sortingUtility {
@@ -148,7 +155,7 @@ void NaiveSimulationFluidSurfaceView::render(){
                 vec3 differenceB = positionB - cameraPosition;
                 float squaredDistanceA = dot(differenceA, differenceA);
                 float squaredDistanceB = dot(differenceB, differenceB);
-                return squaredDistanceA < squaredDistanceB;
+                return squaredDistanceA > squaredDistanceB;
             }
         };
         std::sort(ImplicitGrapher::indices, ImplicitGrapher::indices + ImplicitGrapher::numIndices / 3, sortingUtility::compareUvec3);
@@ -166,7 +173,6 @@ void NaiveSimulationFluidSurfaceView::render(){
             mvp = projection * view * model;
 
             // Render graph
-            glEnable(GL_DEPTH_TEST);
             glEnable(GL_CULL_FACE);
             glCullFace(GL_FRONT);
             glUseProgram(graphNormalMapProgram);
@@ -196,12 +202,19 @@ void NaiveSimulationFluidSurfaceView::render(){
         glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         {
-            glEnable(GL_DEPTH_TEST);
             glDisable(GL_CULL_FACE);
-            glUseProgram(mProgram);
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
-            glUniform1i(glGetUniformLocation(mProgram, "image"), 0);
+
+            // Render sphere map
+            glUseProgram(sphereMapProgram);
+            glUniformMatrix4fv(
+                    glGetUniformLocation(sphereMapProgram, "inverseViewProjection"),
+                    1,
+                    GL_FALSE,
+                    (GLfloat *) &inverseViewProjection);
+            glBindTexture(GL_TEXTURE_2D, sphereMap.getTextureId());
+            glActiveTexture(GL_TEXTURE1);
+            glUniform1i(glGetUniformLocation(sphereMapProgram, "environmentTexture"), 1);
+            environmentTriangleVAO.drawArrays();
 
             // Prepare model-view-projection matrix
             model = model.Translation(Vec3<float>(-0.5f));
@@ -209,6 +222,11 @@ void NaiveSimulationFluidSurfaceView::render(){
             projection = orientationAdjustedPerspective;
             mvp = projection * view * model;
 
+            // Render tile
+            glUseProgram(mProgram);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
+            glUniform1i(glGetUniformLocation(mProgram, "image"), 0);
             glUniformMatrix4fv(
                     glGetUniformLocation(mProgram, "mvp"),
                     1,
@@ -217,14 +235,13 @@ void NaiveSimulationFluidSurfaceView::render(){
 
             tilesVAO.drawArrays();
 
-            glEnable(GL_CULL_FACE);
+            //glEnable(GL_CULL_FACE);
 
             // Prepare model-view-projection matrix
             model = model.Translation(Vec3<float>(ImplicitGrapher::defaultOffset.x, ImplicitGrapher::defaultOffset.y, ImplicitGrapher::defaultOffset.z));
             view = referenceFrameRotates ? translation : translation * rotation;
             projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
             mvp = projection * view * model;
-            cameraTransformation = rotation.GetInverse() * translation * model;
 
             // Render graph
             glUseProgram(graphFluidSurfaceProgram);
@@ -263,17 +280,24 @@ void NaiveSimulationFluidSurfaceView::render(){
             glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
             glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
 
-            // Render a sphere
-            /*glCullFace(GL_FRONT);
-            mvp = perspective * translation;
-            glUseProgram(sphereProgram);
-            glUniformMatrix4fv(
-                    glGetUniformLocation(sphereProgram, "mvp"),
-                    1,
-                    GL_FALSE,
-                    (GLfloat*)&mvp);
-            sphereVAO.drawArrays();
-            glCullFace(GL_BACK);*/
+            /*if(!referenceFrameRotates) {
+                // Prepare model-view-projection matrix
+                model = model.Translation(Vec3<float>(ImplicitGrapher::defaultOffset.x, ImplicitGrapher::defaultOffset.y, ImplicitGrapher::defaultOffset.z));
+                view = referenceFrameRotates ? translation : translation * rotation;
+                projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
+                mvp = projection * view * model*//* * model.GetInverse() * rotation.GetInverse() * translation.GetInverse()*//*;
+
+                // Render a sphere
+                glCullFace(GL_FRONT);
+                glUseProgram(sphereProgram);
+                glUniformMatrix4fv(
+                        glGetUniformLocation(sphereProgram, "mvp"),
+                        1,
+                        GL_FALSE,
+                        (GLfloat *) &mvp);
+                sphereVAO.drawArrays();
+                glCullFace(GL_BACK);
+            }*/
         }
 
     }else{
@@ -387,23 +411,23 @@ void NaiveSimulationFluidSurfaceView::render(){
             glDrawElements(GL_TRIANGLES, ImplicitGrapher::numIndices, GL_UNSIGNED_INT, ImplicitGrapher::indices);
             glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
             glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
+
+            glEnable(GL_DEPTH_TEST);
+            glDisable(GL_CULL_FACE);
+
+            // Render sphere map
+            glUseProgram(sphereMapProgram);
+            glUniformMatrix4fv(
+                    glGetUniformLocation(sphereMapProgram, "inverseViewProjection"),
+                    1,
+                    GL_FALSE,
+                    (GLfloat *) &inverseViewProjection);
+            glBindTexture(GL_TEXTURE_2D, sphereMap.getTextureId());
+            glActiveTexture(GL_TEXTURE1);
+            glUniform1i(glGetUniformLocation(sphereMapProgram, "environmentTexture"), 1);
+            environmentTriangleVAO.drawArrays();
         }
     }
-
-    glEnable(GL_DEPTH_TEST);
-    glDisable(GL_CULL_FACE);
-
-    // Render sphere map
-    glUseProgram(sphereMapProgram);
-    glUniformMatrix4fv(
-            glGetUniformLocation(sphereMapProgram, "inverseViewProjection"),
-            1,
-            GL_FALSE,
-            (GLfloat *) &inverseViewProjection);
-    glBindTexture(GL_TEXTURE_2D, sphereMap.getTextureId());
-    glActiveTexture(GL_TEXTURE1);
-    glUniform1i(glGetUniformLocation(sphereMapProgram, "environmentTexture"), 1);
-    environmentTriangleVAO.drawArrays();
 
     // Simulate
     for(int i = 0; i < 5; i++){

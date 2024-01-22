@@ -37,7 +37,7 @@ public:
 
     bool referenceFrameRotates = true;
 
-    bool sphereClipsGraph = true;
+    bool sphereClipsGraph = false;
 
     const string TILES_VERTEX_SHADER =
             ES_VERSION +
