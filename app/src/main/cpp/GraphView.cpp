@@ -61,7 +61,7 @@ void GraphView::render(){
     glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
 
     // Render cubes
-    if(simulation.getComputationOption() == Computation::ComputationOptions::CPU) {
+    /*if(simulation.getComputationOption() == Computation::ComputationOptions::CPU) {
         simulation.pushData2GPU();
     }
     glUseProgram(cubeProgram);
@@ -86,5 +86,5 @@ void GraphView::render(){
     glDisableVertexAttribArray(SimpleNBodySimulation::VELOCITY_ATTRIBUTE_LOCATION);
     glBindVertexArray(0);
 
-    simulation.simulate(1, NO, NO);
+    simulation.simulate(1, NO, NO);*/
 }

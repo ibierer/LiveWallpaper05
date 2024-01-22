@@ -61,7 +61,8 @@ float fOfXYZFluidSurface(vec3 _) {
     return sum - 2.0f;
 }
 
-NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView(const int &particleCount, const int &graphSize, const float &sphereRadius) : View() {
+NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView(const int &particleCount, const int &graphSize, const float &sphereRadius, const bool &referenceFrameRotates) : View() {
+    this->referenceFrameRotates = referenceFrameRotates;
     mProgram = createVertexAndFragmentShaderProgram(TILES_VERTEX_SHADER.c_str(), TILES_FRAGMENT_SHADER.c_str());
     tilesVAO = VertexArrayObject(tilesVertices, sizeof(tilesVertices) / sizeof(PositionXYZ));
 

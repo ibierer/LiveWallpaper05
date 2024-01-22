@@ -99,7 +99,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
             //view = new SphereWithRefractionView();
             //view = new SphereWithFresnelEffectView();
             //view = new SimpleNBodySimulationView();
-            view = new NaiveSimulationFluidSurfaceView(1000, 40, 20.0f);
+            view = new NaiveSimulationFluidSurfaceView(1000, 40, 20.0f, true);
         }else if(type == "naive"){
             view = new NaiveSimulationView(1000, 15.0f);
         }else if(type == "picflip"){
@@ -107,7 +107,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
         }else if(type == "triangle"){
             //view = new TriangleView();
             //view = new SphereMapView();
-            view = new SphereWithFresnelEffectView();
+            view = new SphereWithFresnelEffectView(Texture::MANDELBROT, 2048);
         }else if(type == "graph"){
             view = new GraphView(visualizationJSON["settings"]);
         }

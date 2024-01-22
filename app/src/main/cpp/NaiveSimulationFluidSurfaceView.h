@@ -190,7 +190,10 @@ public:
             "    outColor = Texture(environmentTexture, direction);\n"
             "}\n";
 
-    NaiveSimulationFluidSurfaceView(const int& particleCount, const int& graphSize, const float& sphereRadius);
+    NaiveSimulationFluidSurfaceView(const int &particleCount,
+                                    const int &graphSize,
+                                    const float &sphereRadius,
+                                    const bool &referenceFrameRotates);
 
     ~NaiveSimulationFluidSurfaceView();
 
