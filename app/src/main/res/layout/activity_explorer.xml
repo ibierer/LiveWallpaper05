@@ -7,7 +7,17 @@
     tools:context=".ExplorerActivity">
 
     <!-- Explorer UI elements here -->
+    <Button
+        android:id="@+id/b_test_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Test Send"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
 
+    <!-- menu button below -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/f_toolbar"
         android:name="com.example.livewallpaper05.helpful_fragments.Toolbar"
