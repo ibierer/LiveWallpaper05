@@ -53,9 +53,9 @@ abstract class ProfileRoomDatabase : RoomDatabase() {
             // seed database
             suspend fun populateDbTask(profileDao: ProfileDao) {
                 val tmpImg = ByteArray(0)
-                val url = "jdbc:postgresql://localhost:5432/example"
+                val url = "jdbc:postgresql://localhost:5432/CapstoneTest"
                 val connection = DriverManager
-                    .getConnection(url, "postgres", "postgres")
+                    .getConnection(url, "postgres", "")
 
                 // check connection is valid here
                 println(connection.isValid(0))
