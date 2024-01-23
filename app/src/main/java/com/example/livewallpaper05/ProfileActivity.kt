@@ -164,4 +164,4 @@ class ProfileActivity : AppCompatActivity() {
 }
 
 // rip profile data from postgres server into this
-data class Profile(val username: String, val name: String, val dateCreated: String, val bio: String)
+//data class Profile(val username: String, val name: String, val dateCreated: String, val bio: String)

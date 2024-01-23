@@ -13,6 +13,9 @@ interface ProfileDao {
     @Query("SELECT * FROM profile_table")
     fun getProfileData(): ProfileTable
 
+    //@Query("SELECT * FROM profile_table WHERE username = test")
+    //fun getUserProfileData(): ProfileTable
+
     // this function runs the sql command "INSERT INTO profile_table VALUES (profileTable)"
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun updateProfileData(profileTable: ProfileTable)

@@ -19,7 +19,7 @@ data class ProfileTable (
     @field:ColumnInfo(name = "bio")
     var bio: String,
     @field:ColumnInfo(name = "DateCreated")
-    var DateCreated : LocalDate,
+    var DateCreated : String,
     @field:ColumnInfo(name = "profilepic", typeAffinity = ColumnInfo.BLOB)
     var profilepic: ByteArray
 )
