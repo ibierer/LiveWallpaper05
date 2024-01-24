@@ -126,7 +126,7 @@ void NaiveSimulationFluidSurfaceView::render(){
         case BUBBLE:
             indexOfRefraction = 3.0f / 4.0f;
             reflectivity = 0.0f;
-            twoSidedRefraction = YES;
+            twoSidedRefraction = NO;
             break;
     }
 
@@ -433,7 +433,7 @@ void NaiveSimulationFluidSurfaceView::render(){
 
     // Simulate
     for(int i = 0; i < 5; i++){
-        float linearAccelerationMultiplier = getFrameCount() > 10 ? 20.0f : 1.0f / 10 * getFrameCount();
+        float linearAccelerationMultiplier = 4.0f * (getFrameCount() > 10 ? 1.0f : 1.0f / 10 * getFrameCount());
         if(referenceFrameRotates){
             if(gravityOn) {
                 simulation.simulate(compensateForOrientation(accelerometerVector));
