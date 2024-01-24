@@ -21,6 +21,8 @@ data class ProfileTable (
     @field:ColumnInfo(name = "DateCreated")
     var DateCreated : String,
     @field:ColumnInfo(name = "profilepic", typeAffinity = ColumnInfo.BLOB)
-    var profilepic: ByteArray
+    var profilepic: ByteArray,
+    @field:ColumnInfo(name = "savedWallpapers")
+    var savedWallpapers: List<String>
 )
 

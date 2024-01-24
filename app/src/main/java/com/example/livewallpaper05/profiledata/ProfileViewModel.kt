@@ -12,15 +12,8 @@ import java.io.ByteArrayOutputStream
 class ProfileViewModel(repo: ProfileRepo) : ViewModel() {
 
     val profileData: LiveData<ProfileTable> = repo.data
+    val wallpapers: LiveData<List<String>> = repo.wallpapers
     private var mRepo = repo
-
-    val data: LiveData<ProfileTable>
-        get() = profileData
-
-    fun setProfile(profile: ProfileTable) {
-        if(profileData != null)
-            mRepo.setProfile(profile)
-    }
 
     fun updateProfilePic(pic: Bitmap) {
         // get byte array from bitmap
@@ -49,6 +42,13 @@ class ProfileViewModel(repo: ProfileRepo) : ViewModel() {
         // update profile table
         mRepo.setProfile(profile)
 
+    }
+
+    fun updateSavedWallpapers(wallpapers: List<String>) {
+        //mRepo.wallpapers.value = wallpapers
+        viewModelScope.launch {
+            mRepo.setWallpapers(wallpapers)
+        }
     }
 
     class ProfileViewModelFactory(private val repo: ProfileRepo) : ViewModelProvider.Factory {

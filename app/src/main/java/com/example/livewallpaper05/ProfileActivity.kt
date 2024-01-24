@@ -32,10 +32,7 @@ class ProfileActivity : AppCompatActivity() {
     private var mUsername: TextView? = null
     private var mBio: TextView? = null
     private var mNewWallpaper: FloatingActionButton? = null
-    private var mPreviewScroll: ScrollView? = null
     private var mWallpaperLayout: LinearLayout? = null
-
-    private val prevData: LiveData<Bitmap> = MutableLiveData<Bitmap>()
 
     // profile table data
     private val mProfileViewModel: ProfileViewModel by viewModels {
@@ -155,6 +152,8 @@ class ProfileActivity : AppCompatActivity() {
 
     fun newWallpaper(view: View){
         // save current wallpaper
+        val activeConfig = mActiveWallpaperViewModel.getConfig()
+        mProfileViewModel.updateSavedWallpapers(listOf(activeConfig.toString()))
 
         // create new empty wallpaper config
 

@@ -115,7 +115,11 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
     // return config string from repo
     fun getConfig(): String {
         var config = JSONObject()
-        config.put("rotationRate", repo.rotationRate)
+        // store simulation type, background color, and settings (with default values for now
+        config.put("type", repo.simulationType)
+        config.put("backgroundColor", JSONObject("{\"r\": 51, \"g\": 51, \"b\": 77, \"a\": 255}"))
+        config.put("settings", "1/((sqrt(x^2 + y^2) - 2 + 1.25cos(t))^2 + (z - 1.5sin(t))^2) + 1/((sqrt(x^2 + y^2) - 2 - 1.25cos(t))^2 + (z + 1.5sin(t))^2) = 1.9")
+
         return config.toString()
     }
 

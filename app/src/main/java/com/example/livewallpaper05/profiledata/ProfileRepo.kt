@@ -5,6 +5,8 @@ import android.graphics.BitmapFactory
 import android.os.Environment
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.MutableLiveData
+import androidx.room.TypeConverter
+import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import java.io.File
@@ -14,10 +16,9 @@ import kotlinx.coroutines.launch
 class ProfileRepo private constructor(profileDao: ProfileDao) {
 
     val data = MutableLiveData<ProfileTable>()
-    //val wallpapers = MutableLiveData<>()
-    private var mProfileDao: ProfileDao = profileDao
-    // create flow to observe profile pic data
+    val wallpapers = MutableLiveData<List<String>>()
 
+    private var mProfileDao: ProfileDao = profileDao
 
     fun setProfile(profileTable: ProfileTable){
         mScope.launch(Dispatchers.IO){
@@ -30,16 +31,22 @@ class ProfileRepo private constructor(profileDao: ProfileDao) {
         }
     }
 
+    fun setWallpapers(wallpaper: List<String>) {
+        mScope.launch(Dispatchers.IO) {
+            if (wallpaper != null) {
+                wallpapers.postValue(wallpaper)
+                // convert wallpaper list to string
+                mProfileDao.addWallpapers(wallpaper)
+            }
+        }
+    }
+
     @WorkerThread
     suspend fun insert() {
         if(data.value != null)
             mProfileDao.updateProfileData(data.value!!)
-    }
-
-    @Suppress("RedundantSuspendModifier")
-    @WorkerThread
-    suspend fun updateProfile(profileTable: ProfileTable){
-        mProfileDao.updateProfileData(profileTable)
+        if (wallpapers.value != null)
+            mProfileDao.addWallpapers(wallpapers.value!!)
     }
 
     companion object {
@@ -55,6 +62,23 @@ class ProfileRepo private constructor(profileDao: ProfileDao) {
             return instance ?: ProfileRepo(profileDao).also {
                 instance = it
                 mScope = scope
+            }
+        }
+    }
+
+    // code for converting list of wallpaper configs to string
+    class ListConverter {
+        @TypeConverter
+        fun fromList(list: List<String>): String {
+            return Gson().toJson(list)
+        }
+
+        @TypeConverter
+        fun toList(string: String): List<String> {
+            return try{
+                Gson().fromJson<List<String>>(string, List::class.java)
+            } catch (e: Exception) {
+                emptyList()
             }
         }
     }
