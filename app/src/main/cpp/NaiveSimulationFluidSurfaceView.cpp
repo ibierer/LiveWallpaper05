@@ -61,8 +61,9 @@ float fOfXYZFluidSurface(vec3 _) {
     return sum - 2.0f;
 }
 
-NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView(const int &particleCount, const int &graphSize, const float &sphereRadius, const bool &referenceFrameRotates) : View() {
+NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView(const int &particleCount, const int &graphSize, const float &sphereRadius, const bool &referenceFrameRotates, const bool& gravityOn) : View() {
     this->referenceFrameRotates = referenceFrameRotates;
+    this->gravityOn = gravityOn;
     mProgram = createVertexAndFragmentShaderProgram(TILES_VERTEX_SHADER.c_str(), TILES_FRAGMENT_SHADER.c_str());
     tilesVAO = VertexArrayObject(tilesVertices, sizeof(tilesVertices) / sizeof(PositionXYZ));
 
@@ -432,10 +433,19 @@ void NaiveSimulationFluidSurfaceView::render(){
 
     // Simulate
     for(int i = 0; i < 5; i++){
+        float linearAccelerationMultiplier = getFrameCount() > 10 ? 20.0f : 1.0f / 10 * getFrameCount();
         if(referenceFrameRotates){
-            simulation.simulate(compensateForOrientation(accelerometerVector));
+            if(gravityOn) {
+                simulation.simulate(compensateForOrientation(accelerometerVector));
+            }else{
+                simulation.simulate(compensateForOrientation(linearAccelerationMultiplier * linearAccelerationVector));
+            }
         }else {
-            simulation.simulate(quaternionTo3x3(rotationVector) * (-accelerometerVector));
+            if(gravityOn){
+                simulation.simulate(quaternionTo3x3(rotationVector) * (-accelerometerVector));
+            }else{
+                simulation.simulate(quaternionTo3x3(rotationVector) * (-linearAccelerationMultiplier * linearAccelerationVector));
+            }
         }
     }
 

@@ -99,7 +99,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
             //view = new SphereWithRefractionView();
             //view = new SphereWithFresnelEffectView();
             //view = new SimpleNBodySimulationView();
-            view = new NaiveSimulationFluidSurfaceView(1000, 40, 20.0f, true);
+            view = new NaiveSimulationFluidSurfaceView(1000, 40, 20.0f, false, false);
         }else if(type == "naive"){
             view = new NaiveSimulationView(1000, 15.0f);
         }else if(type == "picflip"){
@@ -135,9 +135,10 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_resize(JNIEnv *e
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_livewallpaper05_PreviewActivity_00024Companion_step(JNIEnv *env, jobject thiz, jfloat acc_x, jfloat acc_y, jfloat acc_z, jfloat rot_x, jfloat rot_y, jfloat rot_z, jfloat rot_w, jfloat value) {
+Java_com_example_livewallpaper05_PreviewActivity_00024Companion_step(JNIEnv *env, jobject thiz, jfloat acc_x, jfloat acc_y, jfloat acc_z, jfloat rot_x, jfloat rot_y, jfloat rot_z, jfloat rot_w, jfloat linear_acc_x, jfloat linear_acc_y, jfloat linear_acc_z, jfloat value) {
     if (view) {
         view->accelerometerVector = vec3(acc_x, acc_y, acc_z);
+        view->linearAccelerationVector = vec3(linear_acc_x, linear_acc_y, linear_acc_z);
         view->rotationVector = vec4(rot_x, rot_y, rot_z, rot_w);
         view->zoom = value;
         view->render();

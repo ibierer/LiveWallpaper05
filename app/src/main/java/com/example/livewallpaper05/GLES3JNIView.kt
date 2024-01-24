@@ -36,6 +36,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             // default values in ActiveWallpaperViewModel
             val accelData = mViewModel.getAccelerationData()
             val rotData = mViewModel.getRotationData()
+            val linearAccelData = mViewModel.getLinearAccelerationData()
 
             // run step in the simulation (also updates opengl view)
             PreviewActivity.step(
@@ -46,6 +47,9 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                 rotData[1],
                 rotData[2],
                 rotData[3],
+                linearAccelData[0],
+                linearAccelData[1],
+                linearAccelData[2],
                 mViewModel.getRotationRate()
             )
 

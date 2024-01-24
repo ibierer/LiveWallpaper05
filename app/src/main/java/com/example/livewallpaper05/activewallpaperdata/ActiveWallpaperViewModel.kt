@@ -29,6 +29,11 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         return repo.accelerationData
     }
 
+    // return linear acceleration data from repo
+    fun getLinearAccelerationData(): Array<Float> {
+        return repo.linearAccelerationData
+    }
+
     // return simulation type from repo
     fun getSimulationType(): Int {
         return repo.simulationType
