@@ -103,7 +103,8 @@ class ProfileActivity : AppCompatActivity() {
         mSavedWallpaperViewModel.savedWallpapers.observe(this, Observer { wallpapers ->
             if(wallpapers != null){
                 // clear wallpaper layout
-                mWallpaperLayout!!.removeAllViews()
+                //mWallpaperLayout!!.removeAllViews()
+                mWallpaperGrid!!.removeAllViews()
 
                 // add each wallpaper to layout
                 for(wallpaper in wallpapers){
@@ -114,8 +115,13 @@ class ProfileActivity : AppCompatActivity() {
                     // create fragment
                     val fragment = WallpaperFragment.newInstance(is_active, preview)
                     // add fragment to layout
-                    supportFragmentManager.beginTransaction()
+                    /*supportFragmentManager.beginTransaction()
                         .add(mWallpaperLayout!!.id, fragment)
+                        .commit()
+                    */
+                    // add fragment to grid
+                    supportFragmentManager.beginTransaction()
+                        .add(mWallpaperGrid!!.id, fragment)
                         .commit()
                 }
             }
