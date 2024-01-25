@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.hardware.SensorManager
 import android.util.Log
 import androidx.lifecycle.*
+import com.example.livewallpaper05.savedWallpapers.SavedWallpaperTable
 import org.json.JSONObject
 import java.math.RoundingMode
 import java.util.Random
@@ -19,11 +20,12 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
     // reference repo from constructor value
     val mRepo: ActiveWallpaperRepo = repo
 
-    fun getPreviewImg(): Bitmap {
+    fun getPreviewImg(seed: Int): Bitmap {
         if (repo.preview != null && false)
             return repo.preview!!
         else {
             var rng = Random()
+            rng.setSeed(seed.toLong())
             var color = Color.argb(255,
                 rng.nextInt(256),
                 rng.nextInt(256),
@@ -116,6 +118,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
     fun getConfig(): String {
         var config = JSONObject()
         // store simulation type, background color, and settings (with default values for now
+        config.put("name", "New Wallpaper")
         config.put("type", repo.simulationType)
         config.put("backgroundColor", JSONObject("{\"r\": 51, \"g\": 51, \"b\": 77, \"a\": 255}"))
         config.put("settings", "1/((sqrt(x^2 + y^2) - 2 + 1.25cos(t))^2 + (z - 1.5sin(t))^2) + 1/((sqrt(x^2 + y^2) - 2 - 1.25cos(t))^2 + (z + 1.5sin(t))^2) = 1.9")
@@ -124,9 +127,18 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
     }
 
     // load config string into repo
-    fun loadConfig(config: String) {
-        val configJson = JSONObject(config)
+    fun loadConfig(table: SavedWallpaperTable) {
+        repo.wid = table.wid
+        val configJson = JSONObject(table.config)
         repo.rotationRate = configJson.getDouble("rotationRate").toFloat()
+    }
+
+    fun getWid(): Int {
+        return repo.wid
+    }
+
+    fun setWid(wid: Int) {
+        repo.wid = wid
     }
 
     fun updatePreviewImg(preview: Bitmap?) {

@@ -46,11 +46,13 @@ android {
 }
 
 dependencies {
+    var room_version = "2.4.3"
+    var activity_version = "1.6.1"
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("org.postgresql:postgresql:42.7.1")
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("androidx.activity:activity-ktx:1.6.1")
+    implementation("androidx.appcompat:appcompat:$activity_version")
+    implementation("androidx.activity:activity-ktx:$activity_version")
     implementation("com.google.android.material:material:1.8.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     testImplementation("junit:junit:4.13.2")
@@ -58,10 +60,11 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
     // room database dependencies
-    implementation("androidx.room:room-runtime:2.3.0")
-    kapt("androidx.room:room-compiler:2.3.0")
-    implementation("androidx.room:room-ktx:2.3.0")
-    annotationProcessor("android.arch.persistence.room:compiler:1.1.1")
+    implementation("androidx.room:room-runtime:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
+    kapt("androidx.room:room-compiler:$room_version")
+    annotationProcessor("android.arch.persistence.room:compiler:1.0.0")
+    //annotationProcessor("androidx.room:room-compiler:$room_version")
     implementation("com.google.code.gson:gson:2.8.8")
 
     // postgreSQL JDBC dependencies

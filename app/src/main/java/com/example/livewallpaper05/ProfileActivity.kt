@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
+import android.widget.GridLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
@@ -24,6 +25,7 @@ import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModelFactory
 import com.example.livewallpaper05.helpful_fragments.WallpaperFragment
 import com.example.livewallpaper05.profiledata.ProfileViewModel
+import com.example.livewallpaper05.savedWallpapers.SavedWallpaperViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class ProfileActivity : AppCompatActivity() {
@@ -33,10 +35,16 @@ class ProfileActivity : AppCompatActivity() {
     private var mBio: TextView? = null
     private var mNewWallpaper: FloatingActionButton? = null
     private var mWallpaperLayout: LinearLayout? = null
+    private var mWallpaperGrid: GridLayout? = null
 
     // profile table data
     private val mProfileViewModel: ProfileViewModel by viewModels {
         ProfileViewModel.ProfileViewModelFactory((application as ActiveWallpaperApplication).profileRepo)
+    }
+
+    // saved wallpaper data
+    private val mSavedWallpaperViewModel: SavedWallpaperViewModel by viewModels {
+        SavedWallpaperViewModel.SavedWallpaperViewModelFactory((application as ActiveWallpaperApplication).savedWallpaperRepo)
     }
 
     // active wallpaper view model
@@ -54,6 +62,7 @@ class ProfileActivity : AppCompatActivity() {
         mBio = findViewById(R.id.tv_biography)
         mNewWallpaper = findViewById(R.id.b_new_wallpaper)
         mWallpaperLayout = findViewById(R.id.sv_ll_wallpapers)
+        mWallpaperGrid = findViewById(R.id.sv_ll_gl_wallpapers)
 
         // set profile pic click listener
         mProfilePic!!.setOnClickListener(this::changeProfilePic)
@@ -80,10 +89,37 @@ class ProfileActivity : AppCompatActivity() {
             }
         })
 
-        // create active wallpaper preview
-        supportFragmentManager.beginTransaction()
-            .add(mWallpaperLayout!!.id, WallpaperFragment.newInstance(true, mActiveWallpaperViewModel.getPreviewImg()))
-            .commit()
+        // add default wallpaper to mSavedWallpaperViewModel
+        mSavedWallpaperViewModel.createWallpaperTable()
+
+        // link active wallpaper to active wallpaper live data via callback function
+        mSavedWallpaperViewModel.activeWallpaper.observe(this, Observer { wallpaper ->
+            // set active wallpaper wid to wallpaper wid
+            mActiveWallpaperViewModel.setWid(wallpaper.wid)
+            // [TODO] use this to update active wallpaper with saved wallpaper data
+        })
+
+        // link saved wallpaper view elements to saved wallpaper live data via callback function
+        mSavedWallpaperViewModel.savedWallpapers.observe(this, Observer { wallpapers ->
+            if(wallpapers != null){
+                // clear wallpaper layout
+                mWallpaperLayout!!.removeAllViews()
+
+                // add each wallpaper to layout
+                for(wallpaper in wallpapers){
+                    // find if wallpaper is active
+                    val is_active = wallpaper.wid == mActiveWallpaperViewModel.getWid()
+                    // create random color bitmap preview based on wid
+                    val preview = mActiveWallpaperViewModel.getPreviewImg(wallpaper.wid)
+                    // create fragment
+                    val fragment = WallpaperFragment.newInstance(is_active, preview)
+                    // add fragment to layout
+                    supportFragmentManager.beginTransaction()
+                        .add(mWallpaperLayout!!.id, fragment)
+                        .commit()
+                }
+            }
+        })
 
     }
 
@@ -153,11 +189,12 @@ class ProfileActivity : AppCompatActivity() {
     fun newWallpaper(view: View){
         // save current wallpaper
         val activeConfig = mActiveWallpaperViewModel.getConfig()
-        mProfileViewModel.updateSavedWallpapers(listOf(activeConfig.toString()))
+        //mProfileViewModel.updateSavedWallpapers(listOf(activeConfig.toString()))
+        mSavedWallpaperViewModel.saveWallpaper(activeConfig)
 
         // create new empty wallpaper config
+        mSavedWallpaperViewModel.createWallpaperTable()
 
-        // update active wallpaper to new wallpaper
     }
 
 }

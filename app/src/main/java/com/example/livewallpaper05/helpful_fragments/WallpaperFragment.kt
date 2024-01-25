@@ -48,7 +48,6 @@ class WallpaperFragment : Fragment() {
     companion object {
         fun newInstance(isActive: Boolean, preview: Bitmap): Fragment {
             val frag = WallpaperFragment()
-            val bund = Bundle()
             frag.active = isActive
             frag.prevBitmap = preview
             return frag

@@ -12,7 +12,6 @@ import java.io.ByteArrayOutputStream
 class ProfileViewModel(repo: ProfileRepo) : ViewModel() {
 
     val profileData: LiveData<ProfileTable> = repo.data
-    val wallpapers: LiveData<List<String>> = repo.wallpapers
     private var mRepo = repo
 
     fun updateProfilePic(pic: Bitmap) {
@@ -22,27 +21,23 @@ class ProfileViewModel(repo: ProfileRepo) : ViewModel() {
         val byteArray = stream.toByteArray()
         // create new profile table with updated profile pic
         var profile = ProfileTable(
+            0,
             "username",
             "bio",
             byteArray
         )
         try {
             profile = ProfileTable(
+                profileData.value!!.uid,
                 profileData.value!!.username,
                 profileData.value!!.bio,
                 byteArray
+                //profileData.value!!.savedWallpapers
             )
         } catch (e: Exception) {}
         // update profile table
         mRepo.setProfile(profile)
 
-    }
-
-    fun updateSavedWallpapers(wallpapers: List<String>) {
-        //mRepo.wallpapers.value = wallpapers
-        viewModelScope.launch {
-            mRepo.setWallpapers(wallpapers)
-        }
     }
 
     class ProfileViewModelFactory(private val repo: ProfileRepo) : ViewModelProvider.Factory {

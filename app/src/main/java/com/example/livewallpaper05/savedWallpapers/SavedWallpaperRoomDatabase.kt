@@ -1,37 +1,34 @@
-package com.example.livewallpaper05.profiledata
+package com.example.livewallpaper05.savedWallpapers
 
 import android.content.Context
-import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverter
-import androidx.room.TypeConverters
-import kotlinx.coroutines.CoroutineScope
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.livewallpaper05.savedWallpapers.SavedWallpaperDao
+import com.example.livewallpaper05.savedWallpapers.SavedWallpaperTable
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.sql.DriverManager
-import java.time.LocalDateTime
-import kotlin.jvm.Volatile
 
-@Database(entities = [ProfileTable::class], version = 1, exportSchema = false)
-abstract class ProfileRoomDatabase : RoomDatabase() {
-    abstract fun profileDao(): ProfileDao
+// create wallpaper database
+@Database(entities = [SavedWallpaperTable::class], version = 1, exportSchema = false)
+abstract class SavedWallpaperRoomDatabase : RoomDatabase() {
+    abstract fun wallpaperDao(): SavedWallpaperDao
 
     // make db singleton
     companion object {
 
         @Volatile
-        private var mInstance: ProfileRoomDatabase? = null
+        private var mInstance: SavedWallpaperRoomDatabase? = null
         fun getDatabase(
             context: Context,
             scope: CoroutineScope
-        ): ProfileRoomDatabase {
+        ): SavedWallpaperRoomDatabase {
             return mInstance?: synchronized(this){
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
-                    ProfileRoomDatabase::class.java, "profile.db"
+                    SavedWallpaperRoomDatabase::class.java, "wallpaper.db"
                 )
                     .addCallback(RoomDatabaseCallback(scope))
                     .fallbackToDestructiveMigration()
@@ -48,15 +45,14 @@ abstract class ProfileRoomDatabase : RoomDatabase() {
                 super.onCreate(db)
                 mInstance?.let {database ->
                     scope.launch(Dispatchers.IO) {
-                        populateDbTask(database.profileDao())
+                        populateDbTask(database.wallpaperDao())
                     }
                 }
             }
 
             // seed database
-            suspend fun populateDbTask(profileDao: ProfileDao) {
-                val tmpImg = ByteArray(0)
-                profileDao.updateProfileData(ProfileTable(0, "Dummy_User", "Hello World!", tmpImg))
+            suspend fun populateDbTask(wallpaperDao: SavedWallpaperDao) {
+                wallpaperDao.saveWallpaper(SavedWallpaperTable(0, ""))
             }
         }
     }

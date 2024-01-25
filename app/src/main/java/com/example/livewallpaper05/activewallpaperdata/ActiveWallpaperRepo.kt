@@ -11,6 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 
 class ActiveWallpaperRepo private constructor () : SensorEventListener {
     // initialize default values
+    var wid: Int = 0
     var orientation: Int = 0
     var fps: MutableLiveData<Float> = MutableLiveData<Float>(0.0f)
     var lastFrame: Long = 0
