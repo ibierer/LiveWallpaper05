@@ -1,6 +1,7 @@
 package com.example.livewallpaper05.activewallpaperdata
 
 import android.app.Activity
+import android.graphics.Color
 import android.hardware.SensorManager
 import android.util.Log
 import androidx.lifecycle.*
@@ -56,6 +57,16 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
             return true
         }
         return false
+    }
+
+    // update color in repo
+    fun updateColor(color: Color) {
+        repo.color = color
+    }
+
+    // return color from repo
+    fun getColor(): Color {
+        return repo.color
     }
 
     // update fps in repo (scale float to 2 decimal places)

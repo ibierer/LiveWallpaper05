@@ -67,9 +67,16 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
         }
 
         override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
+            // get color rgba values from view model
+            val color = mViewModel.getColor()
+            val r = (color.red()*255).toInt()
+            val g = (color.green()*255).toInt()
+            val b = (color.blue()*255).toInt()
+            val a = (color.alpha()*255).toInt()
+
             val boxJSON = "{\n" +
                     "    \"type\": \"box\",\n" +
-                    "    \"background_color\": {\"r\": 51, \"g\": 51, \"b\": 77, \"a\": 255}\n" +
+                    "    \"background_color\": {\"r\": ${r}, \"g\": ${g}, \"b\": ${b}, \"a\": 255}\n" +
                     "}"
             val naiveJSON = "{\n" +
                     "    \"type\": \"naive\",\n" +

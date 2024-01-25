@@ -1,13 +1,13 @@
 package com.example.livewallpaper05
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.hardware.SensorManager
 import android.os.Bundle
 import android.util.Log
 import android.widget.LinearLayout
 import android.view.View
-import android.view.View.OnClickListener
 import android.view.WindowManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -15,11 +15,15 @@ import android.widget.Button
 import android.widget.SeekBar
 import android.widget.Spinner
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.toColor
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModelFactory
+import com.example.livewallpaper05.helpful_fragments.ColorActivity
 
 class PreviewActivity : AppCompatActivity() {
 
@@ -91,14 +95,10 @@ class PreviewActivity : AppCompatActivity() {
         }
 
         // setup color selection dialog
-        /*colorButton.setOnClickListener {
-            object : OnClickListener() {
-                fun onClick(v: View?) {
-                    Builder(this@PreviewActivity).initialColor(Color.RED)
-
-                }
-            }
-        }*/
+        colorButton.setOnClickListener {
+            val colorIntent = Intent(this, ColorActivity::class.java)
+            colorActivity.launch(colorIntent)
+        }
 
         // connect fps data to ui fps meter
         var fpsMeter = findViewById<TextView>(R.id.tv_fps_meter)
@@ -122,6 +122,22 @@ class PreviewActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         mView!!.onResume()
+    }
+
+    private val colorActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val data = result.data
+            //val color = data?.extras?.get("data")
+            val color = data?.getIntExtra("color", Color.WHITE)
+
+            if (color == null) {
+                return@registerForActivityResult
+            }
+            val trueColor = color.toColor()
+            viewModel.updateColor(trueColor)
+            mView!!.onPause()
+            mView!!.onResume()
+        }
     }
 
     companion object {
