@@ -4,7 +4,7 @@
 
 #include "SphereWithFresnelEffectView.h"
 
-SphereWithFresnelEffectView::SphereWithFresnelEffectView() : View() {
+SphereWithFresnelEffectView::SphereWithFresnelEffectView(Texture::DefaultImages option, const int &resolution) : View() {
     sphereMapRefractionProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(),
                                                                       SPHERE_MAP_REFRACTION_FRAGMENT_SHADER.c_str());
     sphereMapDoubleRefractionProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(),
@@ -20,7 +20,7 @@ SphereWithFresnelEffectView::SphereWithFresnelEffectView() : View() {
             BACKGROUND_VERTEX_SHADER.c_str(),
             CUBE_MAP_BACKGROUND_FRAGMENT_SHADER.c_str());
     //environmentMap = CubeMap::createSimpleTextureCubemap();
-    environmentMap = SphereMap(Texture::DefaultImages::MANDELBROT, 16384, 16384, this);
+    environmentMap = SphereMap(option, resolution, resolution, this);
     sphereVAO = VertexArrayObject(Sphere(1.0f, 100));
     environmentTriangleVAO = VertexArrayObject(EnvironmentMap::environmentTriangleVertices, sizeof(environmentMap.environmentTriangleVertices) / sizeof(PositionXYZ));
 }

@@ -153,7 +153,8 @@ public:
             "    outColor = texture(environmentTexture, direction); \n"
             "}\n";
 
-    SphereWithFresnelEffectView();
+    SphereWithFresnelEffectView(Texture::DefaultImages option,
+                                const int &resolution);
 
     ~SphereWithFresnelEffectView();
 

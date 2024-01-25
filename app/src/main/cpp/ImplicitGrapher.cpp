@@ -150,7 +150,7 @@ ImplicitGrapher::ImplicitGrapher(const ivec3& size) {
     groupSegments = (ivec3*)malloc(maxSolutionCount * sizeof(ivec3));
     withinGraphRadius = (bool*)malloc(maxSolutionCount * sizeof(bool));
     ImplicitGrapher::vertices = (PositionXYZNormalXYZ*)malloc(maxSolutionCount * sizeof(PositionXYZNormalXYZ));
-    ImplicitGrapher::indices = (uvec3*)malloc(3 * maxSolutionCount * sizeof(uvec3));
+    ImplicitGrapher::indices = (uvec3*)malloc(getRecommendedIndicesArraySize());
     writeDefaultEquationsToMemory();
     // writeUserEquationsToMemory();
     for (int i = 0; i < numOfEquationsInMemory; i++) {
@@ -1224,4 +1224,8 @@ void ImplicitGrapher::refactor(const ivec3& inputSize) {
     sizePlus3 = size + ivec3(3);
     offset = defaultOffset = vec3(0.5f * inputSize) + vec3(1.0f);
     maxSolutionCount = 3 * sizePlus3.x * sizePlus3.y * sizePlus3.z;
+}
+
+size_t ImplicitGrapher::getRecommendedIndicesArraySize() {
+    return 3 * maxSolutionCount * sizeof(uvec3);
 }

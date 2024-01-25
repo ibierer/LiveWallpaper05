@@ -38,6 +38,8 @@ public:
 
     vec3 accelerometerVector;
 
+    vec3 linearAccelerationVector;
+
     vec4 rotationVector;
 
     Matrix4<float> perspective;

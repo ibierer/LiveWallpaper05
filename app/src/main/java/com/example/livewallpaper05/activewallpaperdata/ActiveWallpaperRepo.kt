@@ -19,6 +19,7 @@ class ActiveWallpaperRepo private constructor () : SensorEventListener {
     var rotationRate: Float = 0.0f
     var rotationData: Array<Float> = arrayOf(0.0f,0.0f,0.0f,0.0f)
     var accelerationData: Array<Float> = arrayOf(0.0f,0.0f,0.0f)
+    var linearAccelerationData: Array<Float> = arrayOf(0.0f,0.0f,0.0f)
     var simulationType: Int = 0
 
     private lateinit var mSensorManager: SensorManager
@@ -47,6 +48,7 @@ class ActiveWallpaperRepo private constructor () : SensorEventListener {
         this.mSensorManager = mSensorManager
         mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR), SensorManager.SENSOR_DELAY_GAME)
         mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME)
+        mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION), SensorManager.SENSOR_DELAY_GAME)
     }
 
     // update sensor data variables when sensor values change
@@ -57,6 +59,9 @@ class ActiveWallpaperRepo private constructor () : SensorEventListener {
             }
             if (p0.sensor.type == Sensor.TYPE_ACCELEROMETER) {
                 accelerationData = p0.values.toTypedArray()
+            }
+            if (p0.sensor.type == Sensor.TYPE_LINEAR_ACCELERATION) {
+                linearAccelerationData = p0.values.toTypedArray()
             }
         }
     }

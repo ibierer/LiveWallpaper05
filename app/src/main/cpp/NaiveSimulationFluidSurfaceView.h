@@ -35,7 +35,11 @@ public:
 
     ImplicitGrapher implicitGrapher;
 
-    bool referenceFrameRotates = true;
+    bool referenceFrameRotates;
+
+    bool gravityOn;
+
+    bool sphereClipsGraph = false;
 
     const string TILES_VERTEX_SHADER =
             ES_VERSION +
@@ -188,7 +192,7 @@ public:
             "    outColor = Texture(environmentTexture, direction);\n"
             "}\n";
 
-    NaiveSimulationFluidSurfaceView(const int& particleCount, const int& graphSize, const float& sphereRadius);
+    NaiveSimulationFluidSurfaceView(const int &particleCount, const int &graphSize, const float &sphereRadius, const bool &referenceFrameRotates, const bool& gravityOn);
 
     ~NaiveSimulationFluidSurfaceView();
 

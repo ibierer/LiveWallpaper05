@@ -149,7 +149,7 @@ class PreviewActivity : AppCompatActivity() {
         // register simulation functions as external and belonging to the livewallpaper05 library
         external fun init(visualization: String)
         external fun resize(width: Int, height: Int, orientation: Int)
-        external fun step(acc_x: Float, acc_y: Float, acc_z: Float, rot_x: Float, rot_y: Float, rot_z: Float, rot_w: Float, value: Float)
+        external fun step(acc_x: Float, acc_y: Float, acc_z: Float, rot_x: Float, rot_y: Float, rot_z: Float, rot_w: Float, linear_acc_x: Float, linear_acc_y: Float, linear_acc_z: Float, value: Float)
         external fun sendData(value: Float)
     }
 }
