@@ -22,20 +22,14 @@ class ProfileViewModel(repo: ProfileRepo) : ViewModel() {
         val byteArray = stream.toByteArray()
         // create new profile table with updated profile pic
         var profile = ProfileTable(
-            0,
             "username",
-            "name",
             "bio",
-            "date",
             byteArray
         )
         try {
             profile = ProfileTable(
-                profileData.value!!.uid,
                 profileData.value!!.username,
-                profileData.value!!.name,
                 profileData.value!!.bio,
-                profileData.value!!.DateCreated,
                 byteArray
             )
         } catch (e: Exception) {}

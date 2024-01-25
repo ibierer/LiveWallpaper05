@@ -9,17 +9,18 @@ import java.time.LocalDate
 
 @Entity(tableName = "profile_table")
 data class ProfileTable (
-    @field:ColumnInfo(name = "uid")
-    @field:PrimaryKey(autoGenerate = true)
-    var uid: Int = 0,
+//    @field:ColumnInfo(name = "uid")
+//    var uid: Int = 0,
     @field:ColumnInfo(name = "username")
+
+    @field:PrimaryKey(autoGenerate = false)
     var username: String,
-    @field:ColumnInfo(name = "name")
-    var name: String,
+//    @field:ColumnInfo(name = "name")
+//    var name: String,
     @field:ColumnInfo(name = "bio")
     var bio: String,
-    @field:ColumnInfo(name = "DateCreated")
-    var DateCreated : String,
+//    @field:ColumnInfo(name = "DateCreated")
+//    var DateCreated : String,
     @field:ColumnInfo(name = "profilepic", typeAffinity = ColumnInfo.BLOB)
     var profilepic: ByteArray,
     @field:ColumnInfo(name = "savedWallpapers")
