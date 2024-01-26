@@ -17,48 +17,6 @@ private:
 
 public:
 
-    GLuint generateComputeShader(const char* computeShaderSrcCode) {
-        // Create the compute program, to which the compute shader will be assigned
-        GLuint gComputeProgram = glCreateProgram();
-        // Create and compileFromSingleFile the compute shader
-        GLuint mComputeShader = glCreateShader(GL_COMPUTE_SHADER);
-        glShaderSource(mComputeShader, 1, &computeShaderSrcCode, NULL);
-        glCompileShader(mComputeShader);
-        // Check if there were any issues when compiling the shader
-        int rvalue;
-        glGetShaderiv(mComputeShader, GL_COMPILE_STATUS, &rvalue);
-        if (!rvalue) {
-            GLint infoLen = 0;
-            glGetShaderiv(mComputeShader, GL_INFO_LOG_LENGTH, &infoLen);
-            if (infoLen > 1) {
-                char* log = (char*)malloc(sizeof(char) * infoLen);
-                glGetShaderInfoLog(mComputeShader, infoLen, NULL, log);
-                ALOGE("Could not compileFromSingleFile compute shader:\n%s\n", log);
-                free(log);
-            }
-            glDeleteShader(mComputeShader);
-            return 0;
-        }
-        // Attach and link the shader against to the compute program
-        glAttachShader(gComputeProgram, mComputeShader);
-        glLinkProgram(gComputeProgram);
-        // Check if there were some issues when linking the shader.
-        glGetProgramiv(gComputeProgram, GL_LINK_STATUS, &rvalue);
-        if (!rvalue) {
-            GLint infoLen = 0;
-            glGetProgramiv(gComputeProgram, GL_INFO_LOG_LENGTH, &infoLen);
-            if (infoLen > 1) {
-                char* log = (char*)malloc(sizeof(char) * infoLen);
-                glGetShaderInfoLog(mComputeShader, infoLen, NULL, log);
-                ALOGE("Error linking program:\n%s\n", log);
-                free(log);
-            }
-            glDeleteProgram(gComputeProgram);
-            return 0;
-        }
-        return gComputeProgram;
-    }
-
     static GLuint computeShaderProgram;
 
     static GLuint computeShaderVBO;

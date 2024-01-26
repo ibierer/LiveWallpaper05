@@ -157,8 +157,7 @@ ImplicitGrapher::ImplicitGrapher(const ivec3& size) {
         processEquation(i);
     }
 
-    computeShaderProgram = generateComputeShader(View::stringArrayToString((string*)computeShaderCode, 1000).c_str());
-    //computeShaderProgram = View::createComputeShaderProgram(View::stringArrayToString((string*)computeShaderCode, 1000).c_str());
+    computeShaderProgram = View::createComputeShaderProgram(View::stringArrayToString((string*)computeShaderCode, 1000).c_str());
     glGenBuffers(1, &computeShaderVBO);
     data = (GPUdata*)malloc(sizeof(GPUdata));
 }
