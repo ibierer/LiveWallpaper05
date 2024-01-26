@@ -15,10 +15,14 @@ GraphView::GraphView(const string& equation) : View() {
     cubeProgram = createVertexAndFragmentShaderProgram(CUBE_VERTEX_SHADER.c_str(), CUBE_FRAGMENT_SHADER.c_str());
 
     implicitGrapher = ImplicitGrapher(ivec3(29));
-    ImplicitGrapher::surfaceEquation = 0;
-    ImplicitGrapher::memoryEquations[ImplicitGrapher::surfaceEquation][1] = equation;
-    ImplicitGrapher::processEquation(ImplicitGrapher::surfaceEquation);
-    ImplicitGrapher::numOfEquationsInMemory++;
+    ImplicitGrapher::surfaceEquation = 40; // Resets to 0 on the first render
+    for(int i = 0; i < ImplicitGrapher::numOfDefaultEquations; i++){
+        ImplicitGrapher::memoryEquations[i][1] = ImplicitGrapher::defaultEquations[i][1];
+        ImplicitGrapher::processEquation(i);
+        ImplicitGrapher::numOfEquationsInMemory++;
+    }
+    //ImplicitGrapher::memoryEquations[ImplicitGrapher::surfaceEquation][1] = equation;
+    //ImplicitGrapher::processEquation(ImplicitGrapher::surfaceEquation);
 
     //simulation.initialize(Computation::ComputationOptions::CPU);
     simulation.initialize(Computation::ComputationOptions::GPU);
@@ -59,6 +63,13 @@ void GraphView::render(){
     glDrawElements(GL_TRIANGLES, ImplicitGrapher::numIndices, GL_UNSIGNED_INT, ImplicitGrapher::indices);
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
+
+    if(getFrameCount() % 100 == 0){
+        ImplicitGrapher::surfaceEquation++;
+        if(ImplicitGrapher::surfaceEquation == 41){
+            ImplicitGrapher::surfaceEquation = 0;
+        }
+    }
 
     // Render cubes
     /*if(simulation.getComputationOption() == Computation::ComputationOptions::CPU) {
