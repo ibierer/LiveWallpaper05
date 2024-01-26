@@ -173,7 +173,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     selectionJSON = picflipJSON
                 }
                 3 -> {
-                    selectionJSON = nbodyJSON
+                    selectionJSON = triangleJSON
                 }
                 4 -> {
                     selectionJSON = graphJSON

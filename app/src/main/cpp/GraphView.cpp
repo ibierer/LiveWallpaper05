@@ -66,7 +66,7 @@ void GraphView::render(){
 
     if(getFrameCount() % 100 == 0){
         ImplicitGrapher::surfaceEquation++;
-        if(ImplicitGrapher::surfaceEquation == 41){
+        if(ImplicitGrapher::surfaceEquation == ImplicitGrapher::numOfDefaultEquations){
             ImplicitGrapher::surfaceEquation = 0;
         }
     }
