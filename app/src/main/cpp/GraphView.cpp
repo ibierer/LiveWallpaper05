@@ -15,9 +15,9 @@ GraphView::GraphView(const string& equation) : View() {
     cubeProgram = createVertexAndFragmentShaderProgram(CUBE_VERTEX_SHADER.c_str(), CUBE_FRAGMENT_SHADER.c_str());
 
     implicitGrapher = ImplicitGrapher(ivec3(29));
-    ImplicitGrapher::surfaceEquation = ImplicitGrapher::numOfEquationsInMemory;
-    ImplicitGrapher::memoryEquations[ImplicitGrapher::numOfEquationsInMemory][1] = equation;
-    ImplicitGrapher::processEquation(ImplicitGrapher::numOfEquationsInMemory);
+    ImplicitGrapher::surfaceEquation = 0;
+    ImplicitGrapher::memoryEquations[ImplicitGrapher::surfaceEquation][1] = equation;
+    ImplicitGrapher::processEquation(ImplicitGrapher::surfaceEquation);
     ImplicitGrapher::numOfEquationsInMemory++;
 
     //simulation.initialize(Computation::ComputationOptions::CPU);
