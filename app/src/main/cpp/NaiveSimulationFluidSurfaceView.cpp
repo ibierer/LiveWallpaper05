@@ -352,7 +352,7 @@ void NaiveSimulationFluidSurfaceView::render(){
             glUseProgram(mProgram);
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
-            glUniform1i(glGetUniformLocation(mProgram, "image"), 0);
+            /*glUniform1i(glGetUniformLocation(mProgram, "image"), 0);
 
             // Prepare model-view-projection matrix
             model = model.Translation(Vec3<float>(-0.5f));
@@ -366,7 +366,7 @@ void NaiveSimulationFluidSurfaceView::render(){
                     GL_FALSE,
                     (GLfloat *) &mvp);
 
-            tilesVAO.drawArrays();
+            tilesVAO.drawArrays();*/
 
             glEnable(GL_CULL_FACE);
 

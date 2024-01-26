@@ -79,37 +79,46 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
     const char* versionStr = (const char*)glGetString(GL_VERSION);
     if (strstr(versionStr, "OpenGL ES 3.")) {
         json visualizationJSON = json::parse(View::jstringToString(env, JSON));
-        string type = visualizationJSON["type"];
+        string type = visualizationJSON["visualization_type"];
         if(view){
             free(view);
         }
-        if(type == "box"){
-            //view = new RGBCubeView();
-            //view = new TriangleView();
-            //view = new TriangleWithNormalsView();
-            //view = new CubeMapView();
-            //view = new SphereMapView();
-            //view = new TextureView();
-            //view = new RenderToTextureView();
-            //view = new RenderToCubeMapView();
-            //view = new DrawWithFragmentShaderView();
-            //view = new SphereView();
-            //view = new CubeView();
-            //view = new SphereWithReflectionView();
-            //view = new SphereWithRefractionView();
-            //view = new SphereWithFresnelEffectView();
-            //view = new SimpleNBodySimulationView();
-            view = new NaiveSimulationFluidSurfaceView(1000, 40, 20.0f, false, false);
-        }else if(type == "naive"){
-            view = new NaiveSimulationView(1000, 15.0f);
-        }else if(type == "picflip"){
-            view = new PicFlipView();
-        }else if(type == "triangle"){
-            //view = new TriangleView();
-            //view = new SphereMapView();
-            view = new SphereWithFresnelEffectView(Texture::MANDELBROT, 2048);
+        if(type == "simulation"){
+            string simulation = visualizationJSON["simulation_type"];
+            if(simulation == "naive"){
+                string fluidSurface = visualizationJSON["fluid_surface"];
+                int particleCount = visualizationJSON["particle_count"];
+                if(fluidSurface == "true"){
+                    string gravityOn = visualizationJSON["gravity_on"];
+                    string referenceFrameRotates = visualizationJSON["reference_frame_rotates"];
+                    //view = new RGBCubeView();
+                    //view = new TriangleView();
+                    //view = new TriangleWithNormalsView();
+                    //view = new CubeMapView();
+                    //view = new SphereMapView();
+                    //view = new TextureView();
+                    //view = new RenderToTextureView();
+                    //view = new RenderToCubeMapView();
+                    //view = new DrawWithFragmentShaderView();
+                    //view = new SphereView();
+                    //view = new CubeView();
+                    //view = new SphereWithReflectionView();
+                    //view = new SphereWithRefractionView();
+                    //view = new SphereWithFresnelEffectView();
+                    //view = new SimpleNBodySimulationView();
+                    view = new NaiveSimulationFluidSurfaceView(particleCount, 40, 20.0f, referenceFrameRotates == "true", gravityOn == "true");
+                }else{
+                    view = new NaiveSimulationView(particleCount, 15.0f);
+                }
+            }else if(simulation == "nbody"){
+                view = new SimpleNBodySimulationView();
+            }else if(simulation == "picflip"){
+                view = new PicFlipView();
+            }
         }else if(type == "graph"){
-            view = new GraphView(visualizationJSON["settings"]);
+            view = new GraphView(visualizationJSON["equation"]);
+        }else if(type == "other"){
+            view = new SphereWithFresnelEffectView(Texture::MANDELBROT, 2048);
         }
         json rgba = visualizationJSON["background_color"];
         view->backgroundColor = vec4(rgba["r"], rgba["g"], rgba["b"], rgba["a"]) / 255.0f;
