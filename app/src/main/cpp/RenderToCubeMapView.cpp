@@ -27,7 +27,7 @@ void RenderToCubeMapView::render(){
     width = cubeMapFBO.getResolution();
     int storeHeight = height;
     height = cubeMapFBO.getResolution();
-    calculatePerspectiveSetViewport(90.0f);
+    calculatePerspectiveSetViewport(90.0f, zNear, zFar);
 
     Matrix4<float> rotation;
 
@@ -88,7 +88,7 @@ void RenderToCubeMapView::render(){
 
     width = storeWidth;
     height = storeHeight;
-    calculatePerspectiveSetViewport(60.0f);
+    calculatePerspectiveSetViewport(60.0f, zNear, zFar);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);

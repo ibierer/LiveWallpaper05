@@ -20,7 +20,7 @@ float fOfXYZFluidSurface(vec3 _) {
             abs(_.z) > (ImplicitGrapher::offset.z - 0.01f)
     ) {*/
     if(dot(_, _) > (ImplicitGrapher::offset.x - 0.01f) * (ImplicitGrapher::offset.x - 0.01f)) {
-        return -1.0f;
+        //return -1.0f;
     }
 
     _ *= sim->sphereRadiusPlusPointFive / ImplicitGrapher::defaultOffset.x;
@@ -79,7 +79,7 @@ NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView(const int &part
 
     simulation.seed(particleCount, sphereRadius);
     //sphereVAO = VertexArrayObject(Sphere(sphereRadius, 100));
-    sphereVAO = VertexArrayObject(Sphere(1.0f, 100));
+    sphereVAO = VertexArrayObject(Sphere(sphereRadius, 100));
 
     //sphereMap = SphereMap(Texture::DefaultImages::MANDELBROT, 2048, 2048, this);
     sphereMap = SphereMap(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
@@ -170,14 +170,29 @@ void NaiveSimulationFluidSurfaceView::render(){
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         {
             // Prepare model-view-projection matrix
+            model = model.Translation(Vec3<float>(0.0f));
+            view = referenceFrameRotates ? translation : translation * rotation;
+            projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
+            mvp = projection * view * model;
+
+            // Render a sphere
+            glEnable(GL_CULL_FACE);
+            glCullFace(GL_FRONT);
+            glUseProgram(sphereProgram);
+            glUniformMatrix4fv(
+                    glGetUniformLocation(sphereProgram, "mvp"),
+                    1,
+                    GL_FALSE,
+                    (GLfloat *) &mvp);
+            sphereVAO.drawArrays();
+
+            // Prepare model-view-projection matrix
             model = model.Translation(Vec3<float>(ImplicitGrapher::defaultOffset.x, ImplicitGrapher::defaultOffset.y, ImplicitGrapher::defaultOffset.z));
             view = referenceFrameRotates ? translation : translation * rotation;
             projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
             mvp = projection * view * model;
 
             // Render graph
-            glEnable(GL_CULL_FACE);
-            glCullFace(GL_FRONT);
             glUseProgram(graphNormalMapProgram);
             glUniformMatrix4fv(
                     glGetUniformLocation(graphNormalMapProgram, "mvp"),
@@ -238,8 +253,6 @@ void NaiveSimulationFluidSurfaceView::render(){
 
             tilesVAO.drawArrays();
 
-            //glEnable(GL_CULL_FACE);
-
             // Prepare model-view-projection matrix
             model = model.Translation(Vec3<float>(ImplicitGrapher::defaultOffset.x, ImplicitGrapher::defaultOffset.y, ImplicitGrapher::defaultOffset.z));
             view = referenceFrameRotates ? translation : translation * rotation;
@@ -282,25 +295,6 @@ void NaiveSimulationFluidSurfaceView::render(){
             glDrawElements(GL_TRIANGLES, ImplicitGrapher::numIndices, GL_UNSIGNED_INT, ImplicitGrapher::indices);
             glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
             glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
-
-            if(!referenceFrameRotates) {
-                // Prepare model-view-projection matrix
-                model = model.Translation(Vec3<float>(ImplicitGrapher::defaultOffset.x, ImplicitGrapher::defaultOffset.y, ImplicitGrapher::defaultOffset.z));
-                view = referenceFrameRotates ? translation : translation * rotation;
-                projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
-                mvp = projection * view * model/* * model.GetInverse() * rotation.GetInverse() * translation.GetInverse()*/;
-
-                // Render a sphere
-                glCullFace(GL_FRONT);
-                glUseProgram(sphereProgram);
-                glUniformMatrix4fv(
-                        glGetUniformLocation(sphereProgram, "mvp"),
-                        1,
-                        GL_FALSE,
-                        (GLfloat *) &mvp);
-                sphereVAO.drawArrays();
-                glCullFace(GL_BACK);
-            }
         }
 
     }else{

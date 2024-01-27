@@ -167,7 +167,7 @@ public:
             "in vec3 vNormal;\n"
             "out vec4 outColor;\n"
             "void main() {\n"
-            "    outColor = vec4(1.0f, 0.0f, 0.0f, 1.0f); \n"
+            "    outColor = vec4(0.5f * normalize(vNormal) + vec3(0.5f), 1.0f); \n"
             "}\n";
 
     const string SPHERE_MAP_VERTEX_SHADER =

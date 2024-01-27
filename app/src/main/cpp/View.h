@@ -36,6 +36,10 @@ public:
 
     EGLint height;
 
+    const float zNear = 0.1f;
+
+    const float zFar = 1000.0f;
+
     vec3 accelerometerVector;
 
     vec3 linearAccelerationVector;
@@ -74,7 +78,7 @@ public:
 
     static void printGlString(const char* const name, const GLenum& s);
 
-    void calculatePerspectiveSetViewport(const float& maxViewDegrees);
+    void calculatePerspectiveSetViewport(const float& maxViewDegrees, const float& zNear, const float& zFar);
 
     vec3 compensateForOrientation(const vec3& acc);
 
