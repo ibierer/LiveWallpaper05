@@ -15,6 +15,12 @@ public:
 
     Sphere(const float& radius, const int& resolution);
 
+    float getRadius();
+
+private:
+
+    float radius;
+
 };
 
 

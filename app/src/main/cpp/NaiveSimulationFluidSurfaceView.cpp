@@ -14,13 +14,13 @@ float fOfXYZFluidSurface(vec3 _) {
     //return 1.0f - dot(_, _);
     //return 48.0f - dot(_, _);
 
-    /*if (
+    if (
             abs(_.x) > (ImplicitGrapher::offset.x - 0.01f) ||
             abs(_.y) > (ImplicitGrapher::offset.y - 0.01f) ||
             abs(_.z) > (ImplicitGrapher::offset.z - 0.01f)
-    ) {*/
-    if(dot(_, _) > (ImplicitGrapher::offset.x - 0.01f) * (ImplicitGrapher::offset.x - 0.01f)) {
-        //return -1.0f;
+    ) {
+    //if(dot(_, _) > (ImplicitGrapher::offset.x - 0.01f) * (ImplicitGrapher::offset.x - 0.01f)) {
+        return -1.0f;
     }
 
     _ *= sim->sphereRadiusPlusPointFive / ImplicitGrapher::defaultOffset.x;
@@ -64,22 +64,22 @@ float fOfXYZFluidSurface(vec3 _) {
 NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView(const int &particleCount, const int &graphSize, const float &sphereRadius, const bool &referenceFrameRotates, const bool& gravityOn) : View() {
     this->referenceFrameRotates = referenceFrameRotates;
     this->gravityOn = gravityOn;
-    mProgram = createVertexAndFragmentShaderProgram(TILES_VERTEX_SHADER.c_str(), TILES_FRAGMENT_SHADER.c_str());
-    tilesVAO = VertexArrayObject(tilesVertices, sizeof(tilesVertices) / sizeof(PositionXYZ));
 
+    mProgram = createVertexAndFragmentShaderProgram(TILES_VERTEX_SHADER.c_str(), TILES_FRAGMENT_SHADER.c_str());
     cubeProgram = createVertexAndFragmentShaderProgram(CUBE_VERTEX_SHADER.c_str(), CUBE_FRAGMENT_SHADER.c_str());
     graphNormalMapProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_NORMAL_MAP_FRAGMENT_SHADER.c_str());
     graphFluidSurfaceProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_FLUID_SURFACE_FRAGMENT_SHADER.c_str());
     sphereProgram = createVertexAndFragmentShaderProgram(SPHERE_VERTEX_SHADER.c_str(), SPHERE_FRAGMENT_SHADER.c_str());
     sphereMapProgram = createVertexAndFragmentShaderProgram(SPHERE_MAP_VERTEX_SHADER.c_str(), SPHERE_MAP_FRAGMENT_SHADER.c_str());
 
+    tilesVAO = VertexArrayObject(tilesVertices, sizeof(tilesVertices) / sizeof(PositionXYZ));
     cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
 
     implicitGrapher = ImplicitGrapher(ivec3(graphSize));
 
     simulation.seed(particleCount, sphereRadius);
-    //sphereVAO = VertexArrayObject(Sphere(sphereRadius, 100));
-    sphereVAO = VertexArrayObject(Sphere(sphereRadius, 100));
+    sphere = Sphere(sphereRadius, 100);
+    sphereVAO = VertexArrayObject(sphere);
 
     //sphereMap = SphereMap(Texture::DefaultImages::MANDELBROT, 2048, 2048, this);
     sphereMap = SphereMap(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
@@ -133,7 +133,9 @@ void NaiveSimulationFluidSurfaceView::render(){
     Matrix4<float> translation, rotation, model, view, projection, mvp, cameraTransformation, inverseViewProjection;
     Matrix3<float> normalMatrix;
 
-    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 50.0f * (zoom - 1.0f)));
+    float distanceToCenter = 50.0f * (1.0f - zoom);
+
+    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, -distanceToCenter));
     rotation = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
     normalMatrix = referenceFrameRotates ? rotation.GetSubMatrix3().GetInverse() : normalMatrix.Identity();
     inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();
@@ -169,6 +171,9 @@ void NaiveSimulationFluidSurfaceView::render(){
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         {
+            float distanceToTangent = distance(distanceToCenter, sphere.getRadius());
+            calculatePerspectiveSetViewport(60.0f, distanceToTangent, zFar);
+
             // Prepare model-view-projection matrix
             model = model.Translation(Vec3<float>(0.0f));
             view = referenceFrameRotates ? translation : translation * rotation;
@@ -185,6 +190,8 @@ void NaiveSimulationFluidSurfaceView::render(){
                     GL_FALSE,
                     (GLfloat *) &mvp);
             sphereVAO.drawArrays();
+
+            glDepthMask(GL_FALSE);
 
             // Prepare model-view-projection matrix
             model = model.Translation(Vec3<float>(ImplicitGrapher::defaultOffset.x, ImplicitGrapher::defaultOffset.y, ImplicitGrapher::defaultOffset.z));
@@ -211,9 +218,67 @@ void NaiveSimulationFluidSurfaceView::render(){
             glDrawElements(GL_TRIANGLES, ImplicitGrapher::numIndices, GL_UNSIGNED_INT, ImplicitGrapher::indices);
             glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
             glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
+
+            glDepthMask(GL_TRUE);
+
+            calculatePerspectiveSetViewport(60.0f, zNear, distanceToTangent);
+            glClear(GL_DEPTH_BUFFER_BIT);
+
+            // Prepare model-view-projection matrix
+            model = model.Translation(Vec3<float>(0.0f));
+            view = referenceFrameRotates ? translation : translation * rotation;
+            projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
+            mvp = projection * view * model;
+
+            // Render a sphere
+            glEnable(GL_CULL_FACE);
             glCullFace(GL_BACK);
+            GLenum no_draw_buffer[1] = {GL_NONE};
+            glDrawBuffers(1, no_draw_buffer);
+            glUseProgram(sphereProgram);
+            glUniformMatrix4fv(
+                    glGetUniformLocation(sphereProgram, "mvp"),
+                    1,
+                    GL_FALSE,
+                    (GLfloat *) &mvp);
+            sphereVAO.drawArrays();
+
+            glDrawBuffers(1, fbo.drawBuffers);
+            glDepthMask(GL_FALSE);
+            glCullFace(GL_FRONT);
+
+            // Prepare model-view-projection matrix
+            model = model.Translation(Vec3<float>(ImplicitGrapher::defaultOffset.x, ImplicitGrapher::defaultOffset.y, ImplicitGrapher::defaultOffset.z));
+            view = referenceFrameRotates ? translation : translation * rotation;
+            projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
+            mvp = projection * view * model;
+
+            // Render graph
+            glUseProgram(graphNormalMapProgram);
+            glUniformMatrix4fv(
+                    glGetUniformLocation(graphNormalMapProgram, "mvp"),
+                    1,
+                    GL_FALSE,
+                    (GLfloat *) &mvp);
+            glUniformMatrix3fv(
+                    glGetUniformLocation(graphNormalMapProgram, "normalMatrix"),
+                    1,
+                    GL_FALSE,
+                    (GLfloat *) &normalMatrix);
+            glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+            glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
+            glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].p);
+            glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].n);
+            glDrawElements(GL_TRIANGLES, ImplicitGrapher::numIndices, GL_UNSIGNED_INT, ImplicitGrapher::indices);
+            glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+            glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
+
+            glDepthMask(GL_TRUE);
         }
 
+        calculatePerspectiveSetViewport(60.0f, zNear, zFar);
+
+        glCullFace(GL_BACK);
 
         // Render to default frame buffer
         glBindFramebuffer(GL_FRAMEBUFFER, 0);

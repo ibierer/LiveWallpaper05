@@ -12,6 +12,7 @@ Sphere::Sphere(const float& radius, const int& resolution) {
     double phi;
     double sineOfPhi;
 
+    this->radius = radius;
     vertices = (PositionXYZNormalXYZ*)malloc(2 * horizontalSegments * (verticalSegments + 1) * sizeof(PositionXYZNormalXYZ));
     numVertices = 0;
     attributeType = POSITION_XYZ_NORMAL_XYZ;
@@ -35,4 +36,8 @@ Sphere::Sphere(const float& radius, const int& resolution) {
 
 Sphere::Sphere() {
 
+}
+
+float Sphere::getRadius() {
+    return radius;
 }

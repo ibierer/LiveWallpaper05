@@ -33,6 +33,8 @@ public:
 
     NaiveSimulation simulation;
 
+    Sphere sphere;
+
     ImplicitGrapher implicitGrapher;
 
     bool referenceFrameRotates;

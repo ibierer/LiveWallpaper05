@@ -118,10 +118,10 @@ void View::render(){
 
 }
 
-void View::calculatePerspectiveSetViewport(const float& maxViewDegrees, const float& zNear, const float& zFar) {
+void View::calculatePerspectiveSetViewport(const float& maxViewDegrees, const float& znear, const float& zfar) {
     float aspect = (float)width / (float)height;
     float verticalScreenAngle = aspect < 1.0f ? toRadians(maxViewDegrees) : 2.0f * atanf(tanf(0.5f * toRadians(maxViewDegrees)) / aspect);
-    perspective.SetPerspective(verticalScreenAngle, aspect, zNear, zFar);
+    perspective.SetPerspective(verticalScreenAngle, aspect, znear, zfar);
     Matrix4<float> rotation;
     switch(orientation){
         case 0:
