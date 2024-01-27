@@ -39,7 +39,7 @@ public:
 
     bool gravityOn;
 
-    bool sphereClipsGraph = false;
+    bool sphereClipsGraph = true;
 
     const string TILES_VERTEX_SHADER =
             ES_VERSION +

@@ -11,7 +11,7 @@ NaiveSimulation* sim;
 
 float fOfXYZFluidSurface(vec3 _) {
     _ -= ImplicitGrapher::offset;
-    //return 25.0f - dot(_, _);
+    //return 1.0f - dot(_, _);
     //return 48.0f - dot(_, _);
 
     /*if (
@@ -142,13 +142,14 @@ void NaiveSimulationFluidSurfaceView::render(){
     ImplicitGrapher::calculateSurfaceOnCPU(fOfXYZFluidSurface, 0.1f * getFrameCount(), 10, ImplicitGrapher::defaultOffset, 3.0f / 7.0f, false, false, ImplicitGrapher::vertices, ImplicitGrapher::indices, ImplicitGrapher::numIndices);
 
     if(sphereClipsGraph){
+        static Matrix4<float> inverseView;
+        static Vec3<float> camPosition;
+        static vec3 cameraPosition;
         model = model.Translation(Vec3<float>(ImplicitGrapher::defaultOffset.x, ImplicitGrapher::defaultOffset.y, ImplicitGrapher::defaultOffset.z));
         view = referenceFrameRotates ? translation : translation * rotation;
-        // projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
-        // mvp = projection * view * model;
-        static const Matrix4<float> inverseView = referenceFrameRotates ? (view * model).GetInverse() : view * model;
-        static const Vec3<float> camPosition = (inverseView * Vec4<float>(0.0f, 0.0f, 0.0f, 1.0f)).XYZ();
-        static const vec3 cameraPosition = vec3(camPosition.x, camPosition.y, camPosition.z);
+        inverseView = (view * model).GetInverse();
+        camPosition = (inverseView * Vec4<float>(0.0f, 0.0f, 0.0f, 1.0f)).XYZ();
+        cameraPosition = vec3(camPosition.x, camPosition.y, camPosition.z);
         struct sortingUtility {
             static bool compareUvec3(const uvec3& a, const uvec3& b) {
                 vec3 positionA = (1.0f / 3.0f) * (ImplicitGrapher::vertices[a.v[0]].p + ImplicitGrapher::vertices[a.v[1]].p + ImplicitGrapher::vertices[a.v[2]].p);
@@ -282,12 +283,12 @@ void NaiveSimulationFluidSurfaceView::render(){
             glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
             glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
 
-            /*if(!referenceFrameRotates) {
+            if(!referenceFrameRotates) {
                 // Prepare model-view-projection matrix
                 model = model.Translation(Vec3<float>(ImplicitGrapher::defaultOffset.x, ImplicitGrapher::defaultOffset.y, ImplicitGrapher::defaultOffset.z));
                 view = referenceFrameRotates ? translation : translation * rotation;
                 projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
-                mvp = projection * view * model*//* * model.GetInverse() * rotation.GetInverse() * translation.GetInverse()*//*;
+                mvp = projection * view * model/* * model.GetInverse() * rotation.GetInverse() * translation.GetInverse()*/;
 
                 // Render a sphere
                 glCullFace(GL_FRONT);
@@ -299,7 +300,7 @@ void NaiveSimulationFluidSurfaceView::render(){
                         (GLfloat *) &mvp);
                 sphereVAO.drawArrays();
                 glCullFace(GL_BACK);
-            }*/
+            }
         }
 
     }else{
