@@ -131,6 +131,7 @@ public:
             "            refractedColor = Texture(environmentTexture, refractedRay);\n"
             "        }\n"
             "        outColor = mix(refractedColor, reflectedColor, mixRatio);\n"
+            //"        outColor = texture(image, gl_FragCoord.xy/vec2(screenWidth, screenHeight));\n"
             "    }\n"
             "}\n";
 
