@@ -80,7 +80,7 @@ NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView(const int &part
     implicitGrapher = ImplicitGrapher(ivec3(graphSize));
 
     simulation.seed(particleCount, sphereRadius);
-    sphere = Sphere(sphereRadius, 100);
+    sphere = Sphere(sphereRadius + 1.0f, 100);
     sphereVAO = VertexArrayObject(sphere);
 
     //sphereMap = SphereMap(Texture::DefaultImages::MANDELBROT, 2048, 2048, this);
@@ -340,24 +340,6 @@ void NaiveSimulationFluidSurfaceView::render(){
                 glEnable(GL_DEPTH_TEST);
 
                 // Prepare model-view-projection matrix
-                model = model.Translation(Vec3<float>(-0.5f));
-                view = translation * rotation;
-                projection = orientationAdjustedPerspective;
-                mvp = projection * view * model;
-
-                // Render tile
-                glUseProgram(mProgram);
-                glActiveTexture(GL_TEXTURE0);
-                glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
-                glUniform1i(glGetUniformLocation(mProgram, "image"), 0);
-                glUniformMatrix4fv(
-                        glGetUniformLocation(mProgram, "mvp"),
-                        1,
-                        GL_FALSE,
-                        (GLfloat *) &mvp);
-                tilesVAO.drawArrays();
-
-                // Prepare model-view-projection matrix
                 model = model.Translation(Vec3<float>(0.0f));
                 view = referenceFrameRotates ? translation : translation * rotation;
                 projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
@@ -435,6 +417,26 @@ void NaiveSimulationFluidSurfaceView::render(){
                 glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
 
                 glDepthMask(GL_TRUE);
+
+                // Prepare model-view-projection matrix
+                model = model.Translation(Vec3<float>(-0.5f));
+                view = translation.Translation(Vec3<float>(0.0f, 0.0f, -0.1f * distanceToCenter)) * rotation;
+                projection = orientationAdjustedPerspective;
+                mvp = projection * view * model;
+
+                // Render tile
+                glDisable(GL_CULL_FACE);
+                glUseProgram(mProgram);
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
+                glUniform1i(glGetUniformLocation(mProgram, "image"), 0);
+                glUniformMatrix4fv(
+                        glGetUniformLocation(mProgram, "mvp"),
+                        1,
+                        GL_FALSE,
+                        (GLfloat *) &mvp);
+                tilesVAO.drawArrays();
+                glEnable(GL_CULL_FACE);
             }
 
             // Render near frustum
@@ -519,6 +521,26 @@ void NaiveSimulationFluidSurfaceView::render(){
                 glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
                 glDepthMask(GL_TRUE);
                 glDepthFunc(GL_LEQUAL);
+
+                // Prepare model-view-projection matrix
+                model = model.Translation(Vec3<float>(-0.5f));
+                view = translation.Translation(Vec3<float>(0.0f, 0.0f, -0.1f * distanceToCenter)) * rotation;
+                projection = orientationAdjustedPerspective;
+                mvp = projection * view * model;
+
+                // Render tile
+                glDisable(GL_CULL_FACE);
+                glUseProgram(mProgram);
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
+                glUniform1i(glGetUniformLocation(mProgram, "image"), 0);
+                glUniformMatrix4fv(
+                        glGetUniformLocation(mProgram, "mvp"),
+                        1,
+                        GL_FALSE,
+                        (GLfloat *) &mvp);
+                tilesVAO.drawArrays();
+                glEnable(GL_CULL_FACE);
             }
         }
 
