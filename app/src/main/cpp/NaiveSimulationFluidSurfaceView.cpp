@@ -21,7 +21,7 @@ float fOfXYZFluidSurface(vec3 _) {
             abs(_.z) > (ImplicitGrapher::offset.z - 0.01f)
     ) {
     //if(dot(_, _) > (ImplicitGrapher::offset.x - 0.01f) * (ImplicitGrapher::offset.x - 0.01f)) {
-        //return -1.0f;
+        return -1.0f;
     }
 
     _ *= sim->sphereRadiusPlusPointFive / ImplicitGrapher::defaultOffset.x;
@@ -80,7 +80,7 @@ NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView(const int &part
     implicitGrapher = ImplicitGrapher(ivec3(graphSize));
 
     simulation.seed(particleCount, sphereRadius);
-    sphere = Sphere(sphereRadius + 1.0f, 100);
+    sphere = Sphere(sphereRadius + 0.25f, 100);
     sphereVAO = VertexArrayObject(sphere);
 
     //sphereMap = SphereMap(Texture::DefaultImages::MANDELBROT, 2048, 2048, this);
@@ -182,28 +182,6 @@ void NaiveSimulationFluidSurfaceView::render(){
             calculatePerspectiveSetViewport(60.0f, distanceToTangent, zFar);
             {
                 // Prepare model-view-projection matrix
-                model = model.Translation(Vec3<float>(0.0f));
-                view = referenceFrameRotates ? translation : translation * rotation;
-                projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
-                mvp = projection * view * model;
-
-                // Render a sphere
-                glDepthFunc(GL_GEQUAL);
-                glEnable(GL_DEPTH_TEST);
-                glEnable(GL_CULL_FACE);
-                glCullFace(GL_FRONT);
-                glUseProgram(sphereProgram);
-                glUniformMatrix4fv(
-                        glGetUniformLocation(sphereProgram, "mvp"),
-                        1,
-                        GL_FALSE,
-                        (GLfloat *) &mvp);
-                sphereVAO.drawArrays();
-
-                glDepthFunc(GL_LEQUAL);
-                glDepthMask(GL_FALSE);
-
-                // Prepare model-view-projection matrix
                 model = model.Translation(Vec3<float>(ImplicitGrapher::defaultOffset.x,
                                                       ImplicitGrapher::defaultOffset.y,
                                                       ImplicitGrapher::defaultOffset.z));
@@ -212,6 +190,10 @@ void NaiveSimulationFluidSurfaceView::render(){
                 mvp = projection * view * model;
 
                 // Render graph
+                glDepthFunc(GL_GEQUAL);
+                glEnable(GL_DEPTH_TEST);
+                glEnable(GL_CULL_FACE);
+                glCullFace(GL_FRONT);
                 glUseProgram(graphNormalMapProgram);
                 glUniformMatrix4fv(
                         glGetUniformLocation(graphNormalMapProgram, "mvp"),
@@ -236,7 +218,24 @@ void NaiveSimulationFluidSurfaceView::render(){
                 glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
                 glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
 
-                glDepthMask(GL_TRUE);
+                glDepthFunc(GL_LEQUAL);
+
+                // Prepare model-view-projection matrix
+                model = model.Translation(Vec3<float>(0.0f));
+                view = referenceFrameRotates ? translation : translation * rotation;
+                projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
+                mvp = projection * view * model;
+
+                // Render a sphere
+                glUseProgram(sphereProgram);
+                glUniformMatrix4fv(
+                        glGetUniformLocation(sphereProgram, "mvp"),
+                        1,
+                        GL_FALSE,
+                        (GLfloat *) &mvp);
+                sphereVAO.drawArrays();
+
+                glCullFace(GL_BACK);
             }
 
             // Render near frustum
@@ -253,7 +252,6 @@ void NaiveSimulationFluidSurfaceView::render(){
 
                 // Render a sphere
                 glEnable(GL_CULL_FACE);
-                glCullFace(GL_BACK);
                 glDrawBuffers(1, no_draw_buffer);
                 glUseProgram(sphereProgram);
                 glUniformMatrix4fv(
