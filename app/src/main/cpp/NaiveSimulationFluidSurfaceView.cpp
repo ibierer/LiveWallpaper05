@@ -70,6 +70,7 @@ NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView(const int &part
     cubeProgram = createVertexAndFragmentShaderProgram(CUBE_VERTEX_SHADER.c_str(), CUBE_FRAGMENT_SHADER.c_str());
     graphNormalMapProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_NORMAL_MAP_FRAGMENT_SHADER.c_str());
     graphFluidSurfaceProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_FLUID_SURFACE_FRAGMENT_SHADER.c_str());
+    graphFluidSurfaceClipsSphereProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_FLUID_SURFACE_CLIPS_SPHERE_FRAGMENT_SHADER.c_str());
     sphereProgram = createVertexAndFragmentShaderProgram(SPHERE_VERTEX_SHADER.c_str(), SPHERE_FRAGMENT_SHADER.c_str());
     sphereMapProgram = createVertexAndFragmentShaderProgram(SPHERE_MAP_VERTEX_SHADER.c_str(), SPHERE_MAP_FRAGMENT_SHADER.c_str());
 
@@ -387,39 +388,39 @@ void NaiveSimulationFluidSurfaceView::render(){
 
                 // Render graph
                 glDepthMask(GL_FALSE);
-                glUseProgram(graphFluidSurfaceProgram);
+                glUseProgram(graphFluidSurfaceClipsSphereProgram);
                 glUniformMatrix4fv(
-                        glGetUniformLocation(graphFluidSurfaceProgram, "mvp"),
+                        glGetUniformLocation(graphFluidSurfaceClipsSphereProgram, "mvp"),
                         1,
                         GL_FALSE,
                         (GLfloat *) &mvp);
                 glUniformMatrix4fv(
-                        glGetUniformLocation(graphFluidSurfaceProgram, "viewTransformation"),
+                        glGetUniformLocation(graphFluidSurfaceClipsSphereProgram, "viewTransformation"),
                         1,
                         GL_FALSE,
                         (GLfloat *) &cameraTransformation);
                 glUniformMatrix3fv(
-                        glGetUniformLocation(graphFluidSurfaceProgram, "normalMatrix"),
+                        glGetUniformLocation(graphFluidSurfaceClipsSphereProgram, "normalMatrix"),
                         1,
                         GL_FALSE,
                         (GLfloat *) &normalMatrix);
                 glActiveTexture(GL_TEXTURE0);
                 glBindTexture(GL_TEXTURE_2D, sphereMap.getTextureId());
-                glUniform1i(glGetUniformLocation(graphFluidSurfaceProgram, "environmentTexture"),
+                glUniform1i(glGetUniformLocation(graphFluidSurfaceClipsSphereProgram, "environmentTexture"),
                             0);
                 glActiveTexture(GL_TEXTURE1);
                 glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
-                glUniform1i(glGetUniformLocation(graphFluidSurfaceProgram, "image"), 1);
-                glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "reflectivity"),
+                glUniform1i(glGetUniformLocation(graphFluidSurfaceClipsSphereProgram, "image"), 1);
+                glUniform1f(glGetUniformLocation(graphFluidSurfaceClipsSphereProgram, "reflectivity"),
                             reflectivity);
-                glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "indexOfRefraction"),
+                glUniform1f(glGetUniformLocation(graphFluidSurfaceClipsSphereProgram, "indexOfRefraction"),
                             indexOfRefraction);
-                glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "inverseIOR"),
+                glUniform1f(glGetUniformLocation(graphFluidSurfaceClipsSphereProgram, "inverseIOR"),
                             1.0f / indexOfRefraction);
-                glUniform1i(glGetUniformLocation(graphFluidSurfaceProgram, "twoSidedRefraction"),
+                glUniform1i(glGetUniformLocation(graphFluidSurfaceClipsSphereProgram, "twoSidedRefraction"),
                             twoSidedRefraction);
-                glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenWidth"), width);
-                glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenHeight"), height);
+                glUniform1f(glGetUniformLocation(graphFluidSurfaceClipsSphereProgram, "screenWidth"), width);
+                glUniform1f(glGetUniformLocation(graphFluidSurfaceClipsSphereProgram, "screenHeight"), height);
                 glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
                 glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
                 glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE,
@@ -471,39 +472,39 @@ void NaiveSimulationFluidSurfaceView::render(){
                 // Render graph
                 glDepthMask(GL_FALSE);
                 glDepthFunc(GL_GEQUAL);
-                glUseProgram(graphFluidSurfaceProgram);
+                glUseProgram(graphFluidSurfaceClipsSphereProgram);
                 glUniformMatrix4fv(
-                        glGetUniformLocation(graphFluidSurfaceProgram, "mvp"),
+                        glGetUniformLocation(graphFluidSurfaceClipsSphereProgram, "mvp"),
                         1,
                         GL_FALSE,
                         (GLfloat *) &mvp);
                 glUniformMatrix4fv(
-                        glGetUniformLocation(graphFluidSurfaceProgram, "viewTransformation"),
+                        glGetUniformLocation(graphFluidSurfaceClipsSphereProgram, "viewTransformation"),
                         1,
                         GL_FALSE,
                         (GLfloat *) &cameraTransformation);
                 glUniformMatrix3fv(
-                        glGetUniformLocation(graphFluidSurfaceProgram, "normalMatrix"),
+                        glGetUniformLocation(graphFluidSurfaceClipsSphereProgram, "normalMatrix"),
                         1,
                         GL_FALSE,
                         (GLfloat *) &normalMatrix);
                 glActiveTexture(GL_TEXTURE0);
                 glBindTexture(GL_TEXTURE_2D, sphereMap.getTextureId());
-                glUniform1i(glGetUniformLocation(graphFluidSurfaceProgram, "environmentTexture"),
+                glUniform1i(glGetUniformLocation(graphFluidSurfaceClipsSphereProgram, "environmentTexture"),
                             0);
                 glActiveTexture(GL_TEXTURE1);
                 glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
-                glUniform1i(glGetUniformLocation(graphFluidSurfaceProgram, "image"), 1);
-                glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "reflectivity"),
+                glUniform1i(glGetUniformLocation(graphFluidSurfaceClipsSphereProgram, "image"), 1);
+                glUniform1f(glGetUniformLocation(graphFluidSurfaceClipsSphereProgram, "reflectivity"),
                             reflectivity);
-                glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "indexOfRefraction"),
+                glUniform1f(glGetUniformLocation(graphFluidSurfaceClipsSphereProgram, "indexOfRefraction"),
                             indexOfRefraction);
-                glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "inverseIOR"),
+                glUniform1f(glGetUniformLocation(graphFluidSurfaceClipsSphereProgram, "inverseIOR"),
                             1.0f / indexOfRefraction);
-                glUniform1i(glGetUniformLocation(graphFluidSurfaceProgram, "twoSidedRefraction"),
+                glUniform1i(glGetUniformLocation(graphFluidSurfaceClipsSphereProgram, "twoSidedRefraction"),
                             twoSidedRefraction);
-                glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenWidth"), width);
-                glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenHeight"), height);
+                glUniform1f(glGetUniformLocation(graphFluidSurfaceClipsSphereProgram, "screenWidth"), width);
+                glUniform1f(glGetUniformLocation(graphFluidSurfaceClipsSphereProgram, "screenHeight"), height);
                 glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
                 glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
                 glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE,
