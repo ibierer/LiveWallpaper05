@@ -182,7 +182,7 @@ void Texture::generateTexture(const DefaultImages& option, const int& w, const i
 Texture::Texture(const GLint& internalFormat, const int& width, const int& height, const float *pixelBuffer, const GLenum param) : width(width), height(height) {
     glGenTextures(1, &textureId);
     glBindTexture(GL_TEXTURE_2D, textureId);
-    glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, pixelBuffer == NULL ? 0 : (const GLvoid*)pixelBuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, internalFormat, GL_UNSIGNED_BYTE, pixelBuffer == NULL ? 0 : (const GLvoid*)pixelBuffer);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, param);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, param);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);

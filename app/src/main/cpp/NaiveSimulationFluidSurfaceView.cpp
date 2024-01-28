@@ -71,7 +71,9 @@ NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView(const int &part
     graphNormalMapProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_NORMAL_MAP_FRAGMENT_SHADER.c_str());
     graphFluidSurfaceProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_FLUID_SURFACE_FRAGMENT_SHADER.c_str());
     graphFluidSurfaceClipsSphereProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_FLUID_SURFACE_CLIPS_SPHERE_FRAGMENT_SHADER.c_str());
-    sphereProgram = createVertexAndFragmentShaderProgram(SPHERE_VERTEX_SHADER.c_str(), SPHERE_FRAGMENT_SHADER.c_str());
+    sphereNormalMapProgram = createVertexAndFragmentShaderProgram(SPHERE_VERTEX_SHADER.c_str(), SPHERE_NORMAL_MAP_FRAGMENT_SHADER.c_str());
+    //sphereDoubleAngleRefractionProgram = createVertexAndFragmentShaderProgram(SPHERE_VERTEX_SHADER.c_str(), SPHERE_DOUBLE_ANGLE_REFRACTION_FRAGMENT_SHADER.c_str());
+    sphereMapDoubleRefractionProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(), SPHERE_MAP_DOUBLE_REFRACTION_FRAGMENT_SHADER.c_str());
     sphereMapProgram = createVertexAndFragmentShaderProgram(SPHERE_MAP_VERTEX_SHADER.c_str(), SPHERE_MAP_FRAGMENT_SHADER.c_str());
 
     tilesVAO = VertexArrayObject(tilesVertices, sizeof(tilesVertices) / sizeof(PositionXYZ));
@@ -80,7 +82,7 @@ NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView(const int &part
     implicitGrapher = ImplicitGrapher(ivec3(graphSize));
 
     simulation.seed(particleCount, sphereRadius);
-    sphere = Sphere(sphereRadius + 0.25f, 100);
+    sphere = Sphere(sphereRadius, 100);
     sphereVAO = VertexArrayObject(sphere);
 
     //sphereMap = SphereMap(Texture::DefaultImages::MANDELBROT, 2048, 2048, this);
@@ -99,7 +101,7 @@ void NaiveSimulationFluidSurfaceView::render(){
 
     if(getFrameCount() == 0){
         fbo = FBO(
-                (void*) new Texture(GL_RGB, width, height, 0, GL_LINEAR),
+                (void*) new Texture(GL_RGBA, width, height, 0, GL_LINEAR),
                 YES,
                 NO);
     }
@@ -174,7 +176,7 @@ void NaiveSimulationFluidSurfaceView::render(){
         // Render to texture
         glBindFramebuffer(GL_FRAMEBUFFER, fbo.getFrameBuffer());
         glDrawBuffers(1, fbo.drawBuffers);
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClearDepthf(0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         {
@@ -227,9 +229,9 @@ void NaiveSimulationFluidSurfaceView::render(){
                 mvp = projection * view * model;
 
                 // Render a sphere
-                glUseProgram(sphereProgram);
+                glUseProgram(sphereNormalMapProgram);
                 glUniformMatrix4fv(
-                        glGetUniformLocation(sphereProgram, "mvp"),
+                        glGetUniformLocation(sphereNormalMapProgram, "mvp"),
                         1,
                         GL_FALSE,
                         (GLfloat *) &mvp);
@@ -253,9 +255,9 @@ void NaiveSimulationFluidSurfaceView::render(){
                 // Render a sphere
                 glEnable(GL_CULL_FACE);
                 glDrawBuffers(1, no_draw_buffer);
-                glUseProgram(sphereProgram);
+                glUseProgram(sphereNormalMapProgram);
                 glUniformMatrix4fv(
-                        glGetUniformLocation(sphereProgram, "mvp"),
+                        glGetUniformLocation(sphereNormalMapProgram, "mvp"),
                         1,
                         GL_FALSE,
                         (GLfloat *) &mvp);
@@ -347,9 +349,9 @@ void NaiveSimulationFluidSurfaceView::render(){
                 glCullFace(GL_FRONT);
                 glDepthFunc(GL_GEQUAL);
                 glDrawBuffers(1, no_draw_buffer);
-                glUseProgram(sphereProgram);
+                glUseProgram(sphereNormalMapProgram);
                 glUniformMatrix4fv(
-                        glGetUniformLocation(sphereProgram, "mvp"),
+                        glGetUniformLocation(sphereNormalMapProgram, "mvp"),
                         1,
                         GL_FALSE,
                         (GLfloat *) &mvp);
@@ -450,16 +452,46 @@ void NaiveSimulationFluidSurfaceView::render(){
                 projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
                 mvp = projection * view * model;
 
+                cameraTransformation = rotation.GetInverse() * view;
+
                 // Render a sphere
-                glDrawBuffers(1, no_draw_buffer);
-                glUseProgram(sphereProgram);
+                //glDrawBuffers(1, no_draw_buffer);
+                /*glUseProgram(sphereDoubleAngleRefractionProgram);
                 glUniformMatrix4fv(
-                        glGetUniformLocation(sphereProgram, "mvp"),
+                        glGetUniformLocation(sphereDoubleAngleRefractionProgram, "mvp"),
                         1,
                         GL_FALSE,
                         (GLfloat *) &mvp);
+                sphereVAO.drawArrays();*/
+                glUseProgram(sphereMapDoubleRefractionProgram);
+                glUniformMatrix4fv(
+                        glGetUniformLocation(sphereMapDoubleRefractionProgram, "mvp"),
+                        1,
+                        GL_FALSE,
+                        (GLfloat*)&mvp);
+                glUniformMatrix4fv(
+                        glGetUniformLocation(sphereMapDoubleRefractionProgram, "viewTransformation"),
+                        1,
+                        GL_FALSE,
+                        (GLfloat*)&cameraTransformation);
+                glBindTexture(GL_TEXTURE_2D, sphereMap.getTextureId());
+                glActiveTexture(GL_TEXTURE0);
+                glUniform1i(glGetUniformLocation(sphereMapDoubleRefractionProgram, "environmentTexture"), 0);
+                glActiveTexture(GL_TEXTURE1);
+                glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
+                glUniform1i(glGetUniformLocation(sphereMapDoubleRefractionProgram, "image"), 1);
+                glUniform1f(glGetUniformLocation(sphereMapDoubleRefractionProgram, "reflectivity"),
+                            reflectivity);
+                glUniform1f(glGetUniformLocation(sphereMapDoubleRefractionProgram, "indexOfRefraction"),
+                            indexOfRefraction);
+                glUniform1f(glGetUniformLocation(sphereMapDoubleRefractionProgram, "inverseIOR"),
+                            1.0f / indexOfRefraction);
+                glUniform1i(glGetUniformLocation(sphereMapDoubleRefractionProgram, "twoSidedRefraction"),
+                            twoSidedRefraction);
+                glUniform1f(glGetUniformLocation(sphereMapDoubleRefractionProgram, "screenWidth"), width);
+                glUniform1f(glGetUniformLocation(sphereMapDoubleRefractionProgram, "screenHeight"), height);
                 sphereVAO.drawArrays();
-                glDrawBuffers(1, draw_buffer);
+                //glDrawBuffers(1, draw_buffer);
 
                 // Prepare model-view-projection matrix
                 model = model.Translation(Vec3<float>(ImplicitGrapher::defaultOffset.x,
