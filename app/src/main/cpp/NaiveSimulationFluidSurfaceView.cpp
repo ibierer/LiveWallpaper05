@@ -424,7 +424,7 @@ void NaiveSimulationFluidSurfaceView::render(){
                 projection = orientationAdjustedPerspective;
                 mvp = projection * view * model;
 
-                // Render tile
+                // Render tiles
                 glDisable(GL_CULL_FACE);
                 glUseProgram(mProgram);
                 glActiveTexture(GL_TEXTURE0);
@@ -449,49 +449,25 @@ void NaiveSimulationFluidSurfaceView::render(){
                 // Prepare model-view-projection matrix
                 model = model.Translation(Vec3<float>(0.0f));
                 view = referenceFrameRotates ? translation : translation * rotation;
-                projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
+                projection = referenceFrameRotates ? perspective
+                                                   : orientationAdjustedPerspective;
                 mvp = projection * view * model;
 
-                cameraTransformation = rotation.GetInverse() * view;
-
-                // Render a sphere
-                //glDrawBuffers(1, no_draw_buffer);
-                /*glUseProgram(sphereDoubleAngleRefractionProgram);
+                // Define stencil by rendering a sphere
+                glDepthFunc(GL_ALWAYS);
+                glEnable(GL_STENCIL_TEST);
+                glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+                glStencilFunc(GL_ALWAYS, 1, 0xff);
+                glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+                glUseProgram(sphereNormalMapProgram);
                 glUniformMatrix4fv(
-                        glGetUniformLocation(sphereDoubleAngleRefractionProgram, "mvp"),
+                        glGetUniformLocation(sphereNormalMapProgram, "mvp"),
                         1,
                         GL_FALSE,
                         (GLfloat *) &mvp);
-                sphereVAO.drawArrays();*/
-                glUseProgram(sphereMapDoubleRefractionProgram);
-                glUniformMatrix4fv(
-                        glGetUniformLocation(sphereMapDoubleRefractionProgram, "mvp"),
-                        1,
-                        GL_FALSE,
-                        (GLfloat*)&mvp);
-                glUniformMatrix4fv(
-                        glGetUniformLocation(sphereMapDoubleRefractionProgram, "viewTransformation"),
-                        1,
-                        GL_FALSE,
-                        (GLfloat*)&cameraTransformation);
-                glBindTexture(GL_TEXTURE_2D, sphereMap.getTextureId());
-                glActiveTexture(GL_TEXTURE0);
-                glUniform1i(glGetUniformLocation(sphereMapDoubleRefractionProgram, "environmentTexture"), 0);
-                glActiveTexture(GL_TEXTURE1);
-                glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
-                glUniform1i(glGetUniformLocation(sphereMapDoubleRefractionProgram, "image"), 1);
-                glUniform1f(glGetUniformLocation(sphereMapDoubleRefractionProgram, "reflectivity"),
-                            reflectivity);
-                glUniform1f(glGetUniformLocation(sphereMapDoubleRefractionProgram, "indexOfRefraction"),
-                            indexOfRefraction);
-                glUniform1f(glGetUniformLocation(sphereMapDoubleRefractionProgram, "inverseIOR"),
-                            1.0f / indexOfRefraction);
-                glUniform1i(glGetUniformLocation(sphereMapDoubleRefractionProgram, "twoSidedRefraction"),
-                            twoSidedRefraction);
-                glUniform1f(glGetUniformLocation(sphereMapDoubleRefractionProgram, "screenWidth"), width);
-                glUniform1f(glGetUniformLocation(sphereMapDoubleRefractionProgram, "screenHeight"), height);
                 sphereVAO.drawArrays();
-                //glDrawBuffers(1, draw_buffer);
+                glStencilFunc(GL_EQUAL, 1, 0xFF);
+                glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
                 // Prepare model-view-projection matrix
                 model = model.Translation(Vec3<float>(ImplicitGrapher::defaultOffset.x,
@@ -502,8 +478,6 @@ void NaiveSimulationFluidSurfaceView::render(){
                 mvp = projection * view * model;
 
                 // Render graph
-                glDepthMask(GL_FALSE);
-                glDepthFunc(GL_GEQUAL);
                 glUseProgram(graphFluidSurfaceClipsSphereProgram);
                 glUniformMatrix4fv(
                         glGetUniformLocation(graphFluidSurfaceClipsSphereProgram, "mvp"),
@@ -549,28 +523,69 @@ void NaiveSimulationFluidSurfaceView::render(){
                                ImplicitGrapher::indices);
                 glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
                 glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
-                glDepthMask(GL_TRUE);
-                glDepthFunc(GL_LEQUAL);
+
+                glDepthFunc(GL_ALWAYS);
+                glDisable(GL_STENCIL_TEST);
 
                 // Prepare model-view-projection matrix
-                model = model.Translation(Vec3<float>(-0.5f));
-                view = translation.Translation(Vec3<float>(0.0f, 0.0f, -0.1f * distanceToCenter)) * rotation;
-                projection = orientationAdjustedPerspective;
+                model = model.Translation(Vec3<float>(0.0f));
+                view = referenceFrameRotates ? translation : translation * rotation;
+                projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
                 mvp = projection * view * model;
 
-                // Render tile
-                glDisable(GL_CULL_FACE);
-                glUseProgram(mProgram);
-                glActiveTexture(GL_TEXTURE0);
-                glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
-                glUniform1i(glGetUniformLocation(mProgram, "image"), 0);
+                cameraTransformation = rotation.GetInverse() * view;
+
+                // Render a sphere
+                glDepthFunc(GL_GREATER);
+                glUseProgram(sphereMapDoubleRefractionProgram);
                 glUniformMatrix4fv(
-                        glGetUniformLocation(mProgram, "mvp"),
+                        glGetUniformLocation(sphereMapDoubleRefractionProgram, "mvp"),
                         1,
                         GL_FALSE,
-                        (GLfloat *) &mvp);
-                tilesVAO.drawArrays();
-                glEnable(GL_CULL_FACE);
+                        (GLfloat*)&mvp);
+                glUniformMatrix4fv(
+                        glGetUniformLocation(sphereMapDoubleRefractionProgram, "viewTransformation"),
+                        1,
+                        GL_FALSE,
+                        (GLfloat*)&cameraTransformation);
+                glBindTexture(GL_TEXTURE_2D, sphereMap.getTextureId());
+                glActiveTexture(GL_TEXTURE0);
+                glUniform1i(glGetUniformLocation(sphereMapDoubleRefractionProgram, "environmentTexture"), 0);
+                glActiveTexture(GL_TEXTURE1);
+                glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
+                glUniform1i(glGetUniformLocation(sphereMapDoubleRefractionProgram, "image"), 1);
+                glUniform1f(glGetUniformLocation(sphereMapDoubleRefractionProgram, "reflectivity"),
+                            reflectivity);
+                glUniform1f(glGetUniformLocation(sphereMapDoubleRefractionProgram, "indexOfRefraction"),
+                            indexOfRefraction);
+                glUniform1f(glGetUniformLocation(sphereMapDoubleRefractionProgram, "inverseIOR"),
+                            1.0f / indexOfRefraction);
+                glUniform1i(glGetUniformLocation(sphereMapDoubleRefractionProgram, "twoSidedRefraction"),
+                            twoSidedRefraction);
+                glUniform1f(glGetUniformLocation(sphereMapDoubleRefractionProgram, "screenWidth"), width);
+                glUniform1f(glGetUniformLocation(sphereMapDoubleRefractionProgram, "screenHeight"), height);
+                sphereVAO.drawArrays();
+                glDepthFunc(GL_LEQUAL);
+
+                //// Prepare model-view-projection matrix
+                //model = model.Translation(Vec3<float>(-0.5f));
+                //view = translation.Translation(Vec3<float>(0.0f, 0.0f, -0.1f * distanceToCenter)) * rotation;
+                //projection = orientationAdjustedPerspective;
+                //mvp = projection * view * model;
+//
+                //// Render tiles
+                //glDisable(GL_CULL_FACE);
+                //glUseProgram(mProgram);
+                //glActiveTexture(GL_TEXTURE0);
+                //glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
+                //glUniform1i(glGetUniformLocation(mProgram, "image"), 0);
+                //glUniformMatrix4fv(
+                //        glGetUniformLocation(mProgram, "mvp"),
+                //        1,
+                //        GL_FALSE,
+                //        (GLfloat *) &mvp);
+                //tilesVAO.drawArrays();
+                //glEnable(GL_CULL_FACE);
             }
         }
 
@@ -705,7 +720,7 @@ void NaiveSimulationFluidSurfaceView::render(){
 
     // Simulate
     for(int i = 0; i < 5; i++){
-        float linearAccelerationMultiplier = 4.0f * (getFrameCount() > 10 ? 1.0f : 1.0f / 10 * getFrameCount());
+        float linearAccelerationMultiplier = 8.0f * (getFrameCount() > 10 ? 1.0f : 1.0f / 10 * getFrameCount());
         if(referenceFrameRotates){
             if(gravityOn) {
                 simulation.simulate(compensateForOrientation(accelerometerVector));

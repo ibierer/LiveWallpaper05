@@ -19,7 +19,6 @@ public:
 
     GLuint sphereNormalMapProgram;
 
-    GLuint sphereDoubleAngleRefractionProgram;
     GLuint sphereMapDoubleRefractionProgram;
 
     GLuint sphereMapProgram;
@@ -198,6 +197,7 @@ public:
             //"        outColor = texture(image, gl_FragCoord.xy/vec2(screenWidth, screenHeight));\n"
             "    }\n"
             "}\n";
+
     const string SPHERE_MAP_DOUBLE_REFRACTION_FRAGMENT_SHADER =
             ES_VERSION +
             "precision mediump float;\n"
