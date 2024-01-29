@@ -112,6 +112,9 @@ class PreviewActivity : AppCompatActivity() {
         // setup equation editor
         equationEditor.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus) {
+                // check equation validity here
+
+                // update equation in repo if valid
                 viewModel.updateEquation(equationEditor.text.toString())
                 mView!!.onPause()
                 mView!!.onResume()
