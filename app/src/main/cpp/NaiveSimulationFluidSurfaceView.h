@@ -219,6 +219,7 @@ public:
             DOUBLE_REFRACT2_FUNCTION +
             FRESNEL_EFFECT_FUNCTION +
             "void main() {\n"
+            "    outColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);\n"
             "    vec4 bufferColor = texture(image, gl_FragCoord.xy/vec2(screenWidth, screenHeight));\n"
             "    if(bufferColor.a == 0.0f){\n"
             "        outColor = Texture(environmentTexture, direction);\n"
@@ -231,7 +232,6 @@ public:
             "       vec4 refractedColor = Texture(environmentTexture, doubleRefract2(normalizedDirection, normalizedNormal, 0.75, dotNI));\n"
             "       outColor = mix(refractedColor, reflectedColor, fresnel(dotNI));\n"
             "    }else{\n"
-            //"        outColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);\n"
             "        vec3 normalizedDirection = normalize(direction);\n"
             "        vec3 normalizedNormal = normalize(vNormal);\n"
             "        float dotNI = dot(normalizedDirection, normalizedNormal);\n"

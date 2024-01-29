@@ -19,8 +19,8 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
     init {
         // Pick an EGLConfig with RGB8 color, 24-bit depth, no stencil,
         // supporting OpenGL ES 2.0 or later backwards-compatible versions.
-        setEGLConfigChooser(8, 8, 8, 0, 24, 0)
         setEGLContextClientVersion(3)
+        setEGLConfigChooser(8, 8, 8, 8, 24, 8)
         setRenderer(Renderer(context, vm))
     }
 

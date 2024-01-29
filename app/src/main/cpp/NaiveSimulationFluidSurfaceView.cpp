@@ -15,12 +15,12 @@ float fOfXYZFluidSurface(vec3 _) {
     //return 48.0f - dot(_, _);
     //return 52.0f - dot(_.xy, _.xy);
 
-    if (
+    /*if (
             abs(_.x) > (ImplicitGrapher::offset.x - 0.01f) ||
             abs(_.y) > (ImplicitGrapher::offset.y - 0.01f) ||
             abs(_.z) > (ImplicitGrapher::offset.z - 0.01f)
-    ) {
-    //if(dot(_, _) > (ImplicitGrapher::offset.x - 0.01f) * (ImplicitGrapher::offset.x - 0.01f)) {
+    ) {*/
+    if(dot(_, _) > (ImplicitGrapher::offset.x - 0.01f) * (ImplicitGrapher::offset.x - 0.01f)) {
         return -1.0f;
     }
 
@@ -72,7 +72,6 @@ NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView(const int &part
     graphFluidSurfaceProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_FLUID_SURFACE_FRAGMENT_SHADER.c_str());
     graphFluidSurfaceClipsSphereProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_FLUID_SURFACE_CLIPS_SPHERE_FRAGMENT_SHADER.c_str());
     sphereNormalMapProgram = createVertexAndFragmentShaderProgram(SPHERE_VERTEX_SHADER.c_str(), SPHERE_NORMAL_MAP_FRAGMENT_SHADER.c_str());
-    //sphereDoubleAngleRefractionProgram = createVertexAndFragmentShaderProgram(SPHERE_VERTEX_SHADER.c_str(), SPHERE_DOUBLE_ANGLE_REFRACTION_FRAGMENT_SHADER.c_str());
     sphereMapDoubleRefractionProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(), SPHERE_MAP_DOUBLE_REFRACTION_FRAGMENT_SHADER.c_str());
     sphereMapProgram = createVertexAndFragmentShaderProgram(SPHERE_MAP_VERTEX_SHADER.c_str(), SPHERE_MAP_FRAGMENT_SHADER.c_str());
 
@@ -82,7 +81,7 @@ NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView(const int &part
     implicitGrapher = ImplicitGrapher(ivec3(graphSize));
 
     simulation.seed(particleCount, sphereRadius);
-    sphere = Sphere(sphereRadius, 100);
+    sphere = Sphere(sphereRadius + 0.5f, 100);
     sphereVAO = VertexArrayObject(sphere);
 
     //sphereMap = SphereMap(Texture::DefaultImages::MANDELBROT, 2048, 2048, this);
@@ -148,7 +147,7 @@ void NaiveSimulationFluidSurfaceView::render(){
     ImplicitGrapher::calculateSurfaceOnCPU(fOfXYZFluidSurface, 0.1f * getFrameCount(), 10, ImplicitGrapher::defaultOffset, 3.0f / 7.0f, false, false, ImplicitGrapher::vertices, ImplicitGrapher::indices, ImplicitGrapher::numIndices);
 
     if(sphereClipsGraph){
-        float distanceToTangent = distanceToCenter - sphere.getRadius() * sphere.getRadius() / distanceToCenter;
+        float distanceToTangent = (pow(distanceToCenter, 2.0f) - pow(sphere.getRadius(), 2.0f)) / distanceToCenter;
         GLenum no_draw_buffer[1] = {GL_NONE};
         GLenum draw_buffer[1] = {GL_BACK};
         static Matrix4<float> inverseView;
@@ -442,22 +441,23 @@ void NaiveSimulationFluidSurfaceView::render(){
             // Render near frustum
             calculatePerspectiveSetViewport(60.0f, zNear, distanceToTangent);
             {
-                glClearDepthf(1.0f);
+                glClearDepthf(0.0f);
                 glClear(GL_DEPTH_BUFFER_BIT);
                 glEnable(GL_CULL_FACE);
 
                 // Prepare model-view-projection matrix
-                model = model.Translation(Vec3<float>(0.0f));
-                view = referenceFrameRotates ? translation : translation * rotation;
+                Matrix4<float> translation2, scale;
+                translation2 = translation2.Translation(Vec3<float>(0.0f, 0.0f, -distanceToTangent));
+                float ratio = sqrt(powf(distanceToCenter, 2.0f) - powf(sphere.getRadius(), 2.0f)) / distanceToCenter;
+                scale = scale.Identity().Scale(Vec3<float>(ratio, ratio, 0.0f));
+                model = scale;
+                view = translation2;
                 projection = referenceFrameRotates ? perspective
                                                    : orientationAdjustedPerspective;
                 mvp = projection * view * model;
 
                 // Define stencil by rendering a sphere
                 glDepthFunc(GL_ALWAYS);
-                glEnable(GL_STENCIL_TEST);
-                glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-                glStencilFunc(GL_ALWAYS, 1, 0xff);
                 glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
                 glUseProgram(sphereNormalMapProgram);
                 glUniformMatrix4fv(
@@ -466,8 +466,8 @@ void NaiveSimulationFluidSurfaceView::render(){
                         GL_FALSE,
                         (GLfloat *) &mvp);
                 sphereVAO.drawArrays();
-                glStencilFunc(GL_EQUAL, 1, 0xFF);
                 glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+                glDepthFunc(GL_LEQUAL);
 
                 // Prepare model-view-projection matrix
                 model = model.Translation(Vec3<float>(ImplicitGrapher::defaultOffset.x,
@@ -524,8 +524,23 @@ void NaiveSimulationFluidSurfaceView::render(){
                 glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
                 glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
 
-                glDepthFunc(GL_ALWAYS);
-                glDisable(GL_STENCIL_TEST);
+                // Prepare model-view-projection matrix
+                model = model.Translation(Vec3<float>(0.0f));
+                view = referenceFrameRotates ? translation : translation * rotation;
+                projection = referenceFrameRotates ? perspective
+                                                   : orientationAdjustedPerspective;
+                mvp = projection * view * model;
+
+                // Render a sphere
+                glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+                glUseProgram(sphereNormalMapProgram);
+                glUniformMatrix4fv(
+                        glGetUniformLocation(sphereNormalMapProgram, "mvp"),
+                        1,
+                        GL_FALSE,
+                        (GLfloat *) &mvp);
+                sphereVAO.drawArrays();
+                glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
                 // Prepare model-view-projection matrix
                 model = model.Translation(Vec3<float>(0.0f));
@@ -720,7 +735,7 @@ void NaiveSimulationFluidSurfaceView::render(){
 
     // Simulate
     for(int i = 0; i < 5; i++){
-        float linearAccelerationMultiplier = 8.0f * (getFrameCount() > 10 ? 1.0f : 1.0f / 10 * getFrameCount());
+        float linearAccelerationMultiplier = 16.0f * (getFrameCount() > 10 ? 1.0f : 1.0f / 10 * getFrameCount());
         if(referenceFrameRotates){
             if(gravityOn) {
                 simulation.simulate(compensateForOrientation(accelerometerVector));
