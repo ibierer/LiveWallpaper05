@@ -1,14 +1,11 @@
 package com.example.livewallpaper05
 
-import android.app.Activity
-import android.app.Application.ActivityLifecycleCallbacks
 import android.content.Context
 import android.opengl.GLSurfaceView
 import android.os.SystemClock
 import android.util.Log
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
-import kotlinx.coroutines.selects.select
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 

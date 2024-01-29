@@ -1,19 +1,15 @@
 package com.example.livewallpaper05
 
 import android.app.ActivityManager
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
 import android.opengl.GLSurfaceView
 import android.service.wallpaper.WallpaperService
 import android.view.SurfaceHolder
+import android.view.WindowManager
 import android.widget.Toast
-import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
-import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModelFactory
 
 class GLWallpaperService() : WallpaperService() {
 
@@ -30,6 +26,10 @@ class GLWallpaperService() : WallpaperService() {
 
             // create view model from config string
             val viewModel = ActiveWallpaperViewModel(ActiveWallpaperRepo.getInstance((application as ActiveWallpaperApplication).applicationScope))
+
+            // update screen orientation variable in view model
+            val display = (getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay
+            viewModel.updateOrientation(display.rotation)
 
             // Check if the system supports OpenGL ES 2.0.
             val activityManager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
