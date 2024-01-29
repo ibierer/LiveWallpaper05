@@ -160,6 +160,14 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         if (preview != null)
             repo.preview = preview
     }
+
+    fun updateEquation(toString: String) {
+        repo.equation = toString
+    }
+
+    fun getEquation(): String {
+        return repo.equation
+    }
 }
 
 /**

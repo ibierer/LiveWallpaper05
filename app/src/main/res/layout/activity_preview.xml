@@ -26,8 +26,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:fillViewport="true"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:fadeScrollbars="false">
+        android:layout_height="300dp"
+        android:fadeScrollbars="false"
+        android:background="@drawable/border_background"
+        >
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -52,25 +55,50 @@
             android:max="100"/>
 
         <TextView
-            android:id="@+id/sim_selector_text"
-            android:text="Simulation Type"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            />
+            android:text="Simulation Type Selection"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"/>
 
         <Spinner
             android:id="@+id/simulation_type_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:background="@color/black"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            style="@style/Widget.AppCompat.Spinner"
             />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Background Color"/>
 
         <Button
             android:id="@+id/b_color_picker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Select Color"
+            />
+
+        <TextView
+            android:id="@+id/tv_equation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Input Equation:"
+            android:layout_marginTop="10dp"/>
+
+        <EditText
+            android:id="@+id/et_equation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:inputType="text"
+            android:hint="Enter equation here"
+            android:text="x^2 + y^2 + z^2"
+            android:background="@drawable/border_background"
             />
 
     </LinearLayout>

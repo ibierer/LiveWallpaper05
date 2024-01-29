@@ -77,6 +77,11 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             val g = (color.green()*255).toInt()
             val b = (color.blue()*255).toInt()
             val a = (color.alpha()*255).toInt()
+            var eq = mViewModel.getEquation()
+            // if eq is empty set to default
+            if(eq == ""){
+                eq = "1/((sqrt(x^2 + y^2) - 1.6 + sin(t))^2 + (z + cos(t))^2) + 1/((sqrt(x^2 + y^2) - 1.6 + sin(t + π/2))^2 + (z + cos(t + π/2))^2) + 1/((sqrt(x^2 + y^2) - 1.6 + sin(t + π))^2 + (z + cos(t + π))^2) + 1/((sqrt(x^2 + y^2) - 1.6 + sin(t + 3π/2))^2 + (z + cos(t + 3π/2))^2) = 7.3"
+            }
 
             val boxJSON = """{
                     "visualization_type": "simulation",
@@ -110,7 +115,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             val graphJSON = """{
                     "visualization_type": "graph",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a},
-                    "equation": "1/((sqrt(x^2 + y^2) - 1.6 + sin(t))^2 + (z + cos(t))^2) + 1/((sqrt(x^2 + y^2) - 1.6 + sin(t + π/2))^2 + (z + cos(t + π/2))^2) + 1/((sqrt(x^2 + y^2) - 1.6 + sin(t + π))^2 + (z + cos(t + π))^2) + 1/((sqrt(x^2 + y^2) - 1.6 + sin(t + 3π/2))^2 + (z + cos(t + 3π/2))^2) = 7.3"
+                    "equation": "$eq"
                 }""".trimIndent()
 
             val nbodyJSON = """{

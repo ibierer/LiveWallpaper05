@@ -14,6 +14,7 @@ class ActiveWallpaperRepo private constructor () : SensorEventListener {
 
     // initialize default values
     var wid: Int = 0
+    var equation: String = ""
     var color: Color = Color.valueOf(0.0f,0.0f,0.0f,0.0f)
     var orientation: Int = 0
     var fps: MutableLiveData<Float> = MutableLiveData<Float>(0.0f)

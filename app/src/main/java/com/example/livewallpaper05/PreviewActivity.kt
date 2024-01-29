@@ -15,6 +15,7 @@ import android.view.WindowManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.EditText
 import android.widget.SeekBar
 import android.widget.Spinner
 import android.widget.TextView
@@ -49,6 +50,7 @@ class PreviewActivity : AppCompatActivity() {
         val rotationScrollBar = findViewById<SeekBar>(R.id.rotation_rate_seekbar)
         val simSelectorSpinner = findViewById<Spinner>(R.id.simulation_type_spinner)
         val colorButton = findViewById<Button>(R.id.b_color_picker)
+        val equationEditor = findViewById<EditText>(R.id.et_equation)
 
         // fill sim selector box with wallpaper options from native-lib.cpp
         val simSelectorAdapter = ArrayAdapter.createFromResource(
@@ -64,8 +66,12 @@ class PreviewActivity : AppCompatActivity() {
         layout.addView(mView)
 
         // update orientation in repo
-        Log.d("Livewallpaper", "orientation preview: ${this.display!!.rotation}")
-        viewModel.updateOrientation(this.display!!.rotation)
+        try{
+            //Log.d("Livewallpaper", "orientation preview: ${this.display!!.rotation}")
+            viewModel.updateOrientation(this.display!!.rotation)
+        } catch (e: Exception){
+            Log.d("Livewallpaper", "api level too low!")
+        }
 
         // register scrollbar actions to update rotation rate in repo
         rotationScrollBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -101,6 +107,15 @@ class PreviewActivity : AppCompatActivity() {
         colorButton.setOnClickListener {
             val colorIntent = Intent(this, ColorActivity::class.java)
             colorActivity.launch(colorIntent)
+        }
+
+        // setup equation editor
+        equationEditor.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus) {
+                viewModel.updateEquation(equationEditor.text.toString())
+                mView!!.onPause()
+                mView!!.onResume()
+            }
         }
 
         // connect fps data to ui fps meter
