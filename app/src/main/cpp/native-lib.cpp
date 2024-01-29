@@ -121,7 +121,12 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
             view = new SphereWithFresnelEffectView(Texture::MANDELBROT, 2048);
         }
         json rgba = visualizationJSON["background_color"];
-        view->backgroundColor = vec4(rgba["r"], rgba["g"], rgba["b"], rgba["a"]) / 255.0f;
+        uint r = rgba["r"];
+        uint g = rgba["g"];
+        uint b = rgba["b"];
+        // print visualizationJSON to logcat with tag "Livewallpaper05"
+        //view->backgroundColor = vec4(rgba["r"], rgba["g"], rgba["b"], rgba["a"]) / 255.0f;
+        view->backgroundColor = vec4((float)r, (float)g, (float)b, 255) / 255.0f;
         ALOGV("Using OpenGL ES 3.0 renderer");
     } else if (strstr(versionStr, "OpenGL ES 2.")) {
         //g_renderer = createES2Renderer();
