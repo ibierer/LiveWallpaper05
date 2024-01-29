@@ -46,6 +46,7 @@ android {
 }
 
 dependencies {
+    implementation(files("libs/mysql-connector-j-8.3.0.jar"))
     var room_version = "2.4.3"
     var activity_version = "1.6.1"
 

@@ -10,6 +10,7 @@ import java.time.LocalDateTime
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.SQLException
+import java.util.Properties
 
 class ExplorerActivity : AppCompatActivity() {
 
@@ -24,7 +25,27 @@ class ExplorerActivity : AppCompatActivity() {
         mTestButton = findViewById(R.id.b_test_button)
 
         mTestButton?.setOnClickListener {
+            // connect to mysql server
+            val connectionProps = Properties()
+            connectionProps.put("user", "postgres")
+            connectionProps.put("password", "UtahUtesLiveWallz!")
+            try {
+                Class.forName("com.mysql.jdbc.Driver").newInstance()
+                var conn = DriverManager.getConnection(
+                    "jdbc:" + "mysql" + "://" +
+                            "localhost" +
+                            ":" + "5432" + "/" +
+                            "",
+                    connectionProps
+                )
+            } catch (e: SQLException) {
+                e.printStackTrace()
+            } catch (e: Exception){
+                e.printStackTrace()
+            }
+
             // write aws test code here -------------
+            /*
             val tmpImg = ByteArray(0)
             Log.d("LiveWallpaper05", "In on Click Listener")
             val url = "jdbc:postgresql://localhost:5432/postgres"
@@ -42,6 +63,8 @@ class ExplorerActivity : AppCompatActivity() {
             Log.d("LiveWallpaper05", insertRes.toString())
             val result = query.executeQuery()
             Log.d("LiveWallpaper05", result.toString())
+
+             */
 //                profileDao.updateProfileData(ProfileTable(result.getInt("uid"), result.getString("username"), result.getString("name"),
 //                    result.getString("bio"), result.getString("date_created"), result.getBytes("profile_pic")))
             }
