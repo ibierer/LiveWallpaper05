@@ -3,75 +3,53 @@ package com.example.livewallpaper05.profiledata
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Environment
+import androidx.annotation.WorkerThread
+import androidx.lifecycle.MutableLiveData
+import androidx.room.TypeConverter
+import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import java.io.File
 import java.io.FileOutputStream
+import kotlinx.coroutines.launch
 
-class ProfileRepo() {
-    private var username: String? = null
-    private var bio: String? = null
-    private var uid: Int? = null
-    private var pic: Bitmap? = null
-    private var picPath: String? = null
+class ProfileRepo private constructor(profileDao: ProfileDao) {
 
-    init {
-        username = "Username"
-        bio = "Bio"
-        uid = 0
-        pic = null
+    val data = MutableLiveData<ProfileTable>()
 
-        if (picPath != null) {
-            // load picture from local storage
-            pic = BitmapFactory.decodeFile(picPath)
+    private var mProfileDao: ProfileDao = profileDao
+
+    fun setProfile(profileTable: ProfileTable){
+        mScope.launch(Dispatchers.IO){
+            //val profileInfo = mProfileDao.getProfileData()
+            val profileInfo = profileTable
+            if(profileInfo != null){
+                data.postValue(profileInfo)
+                mProfileDao.updateProfileData(profileTable)
+            }
         }
     }
 
-    fun getUsername(): String? {
-        return username
+    @WorkerThread
+    suspend fun insert() {
+        if(data.value != null)
+            mProfileDao.updateProfileData(data.value!!)
     }
 
-    fun setUsername(username: String) {
-        this.username = username
-    }
+    companion object {
+        @Volatile
+        private var instance: ProfileRepo? = null
+        private lateinit var mScope: CoroutineScope
 
-    fun getBio(): String? {
-        return bio
-    }
-
-    fun setBio(bio: String) {
-        this.bio = bio
-    }
-
-    fun getUid(): Int? {
-        return uid
-    }
-
-    fun setUid(uid: Int) {
-        this.uid = uid
-    }
-
-    fun getPic(): Bitmap? {
-        return pic
-    }
-
-    fun updateProfilePic(pic: Bitmap) {
-        this.pic = pic
-
-        // save picture locally
-        if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED){
-            val file = File(
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).absolutePath,
-                "profile_pic.jpg")
-            if (file.exists()) file.delete()
-            try {
-                val out = FileOutputStream(file)
-                pic.compress(Bitmap.CompressFormat.JPEG, 100, out)
-                out.flush()
-                out.close()
-            } catch (e: Exception) {
-                e.printStackTrace()
+        @Synchronized
+        fun getInstance(
+            profileDao: ProfileDao,
+            scope: CoroutineScope
+        ): ProfileRepo {
+            return instance ?: ProfileRepo(profileDao).also {
+                instance = it
+                mScope = scope
             }
-
-            picPath = file.absolutePath
         }
     }
 }

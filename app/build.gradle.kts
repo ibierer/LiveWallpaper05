@@ -1,6 +1,5 @@
 plugins {
     id("com.android.application")
-    //id("org.jetbrains.kotlin.android")
     id("kotlin-android")
     id("kotlin-kapt")
 }
@@ -47,19 +46,35 @@ android {
 }
 
 dependencies {
+    var room_version = "2.4.3"
+    var activity_version = "1.6.1"
 
-    //implementation("androidx.core:core-ktx:1.9.0")
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("androidx.activity:activity-ktx:1.6.1")
+    implementation("androidx.core:core-ktx:1.9.0")
+    implementation("org.postgresql:postgresql:42.7.1")
+    implementation("androidx.appcompat:appcompat:$activity_version")
+    implementation("androidx.activity:activity-ktx:$activity_version")
     implementation("com.google.android.material:material:1.8.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
+    // room database dependencies
+    implementation("androidx.room:room-runtime:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
+    kapt("androidx.room:room-compiler:$room_version")
+    annotationProcessor("android.arch.persistence.room:compiler:1.0.0")
+    //annotationProcessor("androidx.room:room-compiler:$room_version")
+    implementation("com.google.code.gson:gson:2.8.8")
+
+    // postgreSQL JDBC dependencies
+    implementation("org.postgresql:postgresql:42.3.1")
+
+    // view model dependencies
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.0")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.0")
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
+    implementation("androidx.fragment:fragment-ktx:1.6.2")
     kapt("androidx.lifecycle:lifecycle-compiler:2.2.0")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")

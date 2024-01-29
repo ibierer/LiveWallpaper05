@@ -1,12 +1,17 @@
 package com.example.livewallpaper05.activewallpaperdata
 
 import android.app.Activity
+import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
 import android.hardware.SensorManager
 import android.util.Log
 import androidx.lifecycle.*
+import com.example.livewallpaper05.savedWallpapers.SavedWallpaperTable
 import org.json.JSONObject
 import java.math.RoundingMode
+import java.util.Random
 
 /**
  * View Model to keep a reference to the active wallpaper data
@@ -14,6 +19,29 @@ import java.math.RoundingMode
 class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewModel() {
     // reference repo from constructor value
     val mRepo: ActiveWallpaperRepo = repo
+
+    fun getPreviewImg(seed: Int): Bitmap {
+        if (repo.preview != null && false)
+            return repo.preview!!
+        else {
+            var rng = Random()
+            rng.setSeed(seed.toLong())
+            var color = Color.argb(255,
+                rng.nextInt(256),
+                rng.nextInt(256),
+                rng.nextInt(256))
+
+            val screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels
+            val screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels
+            val imgWidth = screenWidth/4
+            val imgHeight = screenHeight/4
+
+            var tmp = Bitmap.createBitmap(imgWidth, imgHeight, Bitmap.Config.ARGB_8888)
+            tmp.eraseColor(color)
+
+            return tmp
+        }
+    }
 
     // return rotation rate value from repo
     fun getRotationRate(): Float {
@@ -104,14 +132,33 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
     // return config string from repo
     fun getConfig(): String {
         var config = JSONObject()
-        config.put("rotationRate", repo.rotationRate)
+        // store simulation type, background color, and settings (with default values for now
+        config.put("name", "New Wallpaper")
+        config.put("type", repo.simulationType)
+        config.put("backgroundColor", JSONObject("{\"r\": 51, \"g\": 51, \"b\": 77, \"a\": 255}"))
+        config.put("settings", "1/((sqrt(x^2 + y^2) - 2 + 1.25cos(t))^2 + (z - 1.5sin(t))^2) + 1/((sqrt(x^2 + y^2) - 2 - 1.25cos(t))^2 + (z + 1.5sin(t))^2) = 1.9")
+
         return config.toString()
     }
 
     // load config string into repo
-    fun loadConfig(config: String) {
-        val configJson = JSONObject(config)
+    fun loadConfig(table: SavedWallpaperTable) {
+        repo.wid = table.wid
+        val configJson = JSONObject(table.config)
         repo.rotationRate = configJson.getDouble("rotationRate").toFloat()
+    }
+
+    fun getWid(): Int {
+        return repo.wid
+    }
+
+    fun setWid(wid: Int) {
+        repo.wid = wid
+    }
+
+    fun updatePreviewImg(preview: Bitmap?) {
+        if (preview != null)
+            repo.preview = preview
     }
 }
 

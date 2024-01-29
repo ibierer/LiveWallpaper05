@@ -1,6 +1,7 @@
 package com.example.livewallpaper05.activewallpaperdata
 
 import android.graphics.Color
+import android.graphics.Bitmap
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -12,6 +13,7 @@ import kotlinx.coroutines.CoroutineScope
 class ActiveWallpaperRepo private constructor () : SensorEventListener {
 
     // initialize default values
+    var wid: Int = 0
     var color: Color = Color.valueOf(0.0f,0.0f,0.0f,0.0f)
     var orientation: Int = 0
     var fps: MutableLiveData<Float> = MutableLiveData<Float>(0.0f)
@@ -21,6 +23,7 @@ class ActiveWallpaperRepo private constructor () : SensorEventListener {
     var accelerationData: Array<Float> = arrayOf(0.0f,0.0f,0.0f)
     var linearAccelerationData: Array<Float> = arrayOf(0.0f,0.0f,0.0f)
     var simulationType: Int = 0
+    var preview: Bitmap? = null
 
     private lateinit var mSensorManager: SensorManager
 

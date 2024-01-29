@@ -4,10 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/cl_profile_layout"
     tools:context=".ProfileActivity">
 
     <ImageView
-        android:id="@+id/profile_pic"
+        android:id="@+id/iv_profile_pic"
         android:layout_width="match_parent"
         android:layout_height="220sp"
         app:layout_constraintTop_toTopOf="parent"
@@ -17,31 +18,82 @@
         android:layout_marginEnd="30sp"
         android:layout_marginTop="30sp"
         android:contentDescription="@string/img_description"
+        android:src="@drawable/baseline_account_circle_24"
         />
 
     <TextView
-        android:id="@+id/username"
+        android:id="@+id/tv_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_pic"
+        app:layout_constraintTop_toBottomOf="@id/iv_profile_pic"
         android:layout_marginTop="20sp"
         android:text="@string/username"
         />
 
     <TextView
-        android:id="@+id/biography"
+        android:id="@+id/tv_biography"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/username"
+        app:layout_constraintTop_toBottomOf="@id/tv_username"
         android:layout_marginTop="20sp"
         android:layout_marginStart="20sp"
         android:layout_marginEnd="20sp"
         android:text="@string/biography"
         />
+
+    <ScrollView
+        android:id="@+id/sv_wallpapers"
+        android:layout_width="wrap_content"
+        android:layout_height="400dp"
+        app:layout_constraintTop_toBottomOf="@id/tv_biography"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:fadeScrollbars="false"
+        android:layout_margin="10dp"
+        >
+
+        <LinearLayout
+            android:id="@+id/sv_ll_wallpapers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <GridLayout
+                android:id="@+id/sv_ll_gl_wallpapers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:columnCount="3"
+                android:layout_margin="30dp"
+                android:useDefaultMargins="true"
+                />
+        </LinearLayout>
+        <!--
+        <LinearLayout
+            android:id="@+id/sv_ll_wallpapers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/tv_biography"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:orientation="vertical"/>
+            -->
+
+    </ScrollView>
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/b_new_wallpaper"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_margin="10dp"
+        android:src="@drawable/plus_symbol" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/f_toolbar"
@@ -49,7 +101,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         />
 

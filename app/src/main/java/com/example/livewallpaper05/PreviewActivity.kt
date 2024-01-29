@@ -2,9 +2,12 @@ package com.example.livewallpaper05
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
 import android.widget.LinearLayout
 import android.view.View
@@ -114,6 +117,8 @@ class PreviewActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         mView!!.onPause()
+
+        viewModel.updatePreviewImg(updatePreviewImage())
     }
 
     /* this is run when the app is 'resumed'
@@ -138,6 +143,23 @@ class PreviewActivity : AppCompatActivity() {
             mView!!.onPause()
             mView!!.onResume()
         }
+    }
+
+    fun updatePreviewImage() : Bitmap{
+        // store view as preview image
+        /**
+        var preview = Bitmap.createBitmap(mView!!.width, mView!!.height, Bitmap.Config.ARGB_8888)
+        var canvas = Canvas(preview)
+        mView!!.draw(canvas)*/
+        var preview = Bitmap.createBitmap(mView!!.width, mView!!.height, Bitmap.Config.ARGB_8888)
+        var canvas = Canvas(preview)
+        var background = mView!!.background
+        if (background != null) {
+            background.draw(canvas)
+        }
+        mView!!.draw(canvas)
+
+        return preview
     }
 
     companion object {
