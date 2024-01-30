@@ -117,6 +117,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
             }
         }else if(type == "graph"){
             view = new GraphView(visualizationJSON["equation"]);
+            ALOGI("equation = %s\n", to_string(visualizationJSON["equation"]).c_str());
         }else if(type == "other"){
             view = new SphereWithFresnelEffectView(Texture::MANDELBROT, 2048);
         }
