@@ -735,7 +735,7 @@ void NaiveSimulationFluidSurfaceView::render(){
 
     // Simulate
     for(int i = 0; i < 5; i++){
-        float linearAccelerationMultiplier = 16.0f * (getFrameCount() > 10 ? 1.0f : 1.0f / 10 * getFrameCount());
+        float linearAccelerationMultiplier = 8.0f * (getFrameCount() > 10 ? 1.0f : 1.0f / 10 * getFrameCount());
         if(referenceFrameRotates){
             if(gravityOn) {
                 simulation.simulate(compensateForOrientation(accelerometerVector));
