@@ -27,27 +27,27 @@ class ExplorerActivity : AppCompatActivity() {
         mTestButton?.setOnClickListener {
             // connect to mysql server
             val connectionProps = Properties()
-            //connectionProps["user"] = "admin"
-            connectionProps["user"] = "postgres"
+            connectionProps["user"] = "admin"
+            //connectionProps["user"] = "postgres"
             connectionProps["password"] = "UtahUtesLiveWallz!"
             //connectionProps["password"] = "password"
             try {
-                Class.forName("com.postgres.jdbc.Driver").newInstance()
-                //Class.forName("com.mysql.jdbc.Driver").newInstance()
-                /*var conn = DriverManager.getConnection(
+                //Class.forName("org.postgresql.Driver").newInstance()
+                Class.forName("com.mysql.jdbc.Driver").newInstance()
+                var conn = DriverManager.getConnection(
                     "jdbc:" + "mysql" + "://" +
                             "database-1.cxo8mkcogo8p.us-east-1.rds.amazonaws.com" +
                             ":" + "3306" + "/" +
                             "myDatabase",
                     connectionProps
-                )*/
-                var conn = DriverManager.getConnection(
+                )
+                /*var conn = DriverManager.getConnection(
                  "jdbc:" + "postgres" + "://" +
-                            "database-1.cxo8mkcogo8p.us-east-1.rds.amazonaws.com" +
+                            "database-2.cxo8mkcogo8p.us-east-1.rds.amazonaws.com" +
                             ":" + "5432" + "/" +
                             "myDatabase2",
                     connectionProps
-                )
+                )*/
                 Log.d("LiveWallpaper05", "made MySQL connection to AWS!")
             } catch (e: SQLException) {
                 Log.d("LiveWallpaper05", "SQL Exception: ${e.message}")

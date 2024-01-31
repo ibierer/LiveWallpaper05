@@ -48,12 +48,12 @@ android {
 dependencies {
     implementation(files("libs/mysql-connector-j-8.3.0.jar"))
     implementation(files("libs\\mysql-connector-j-8.3.0.jar"))
-    implementation(files("libs\\postgresql-42.7.1 (1).jar"))
     var room_version = "2.4.3"
     var activity_version = "1.6.1"
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("org.postgresql:postgresql:42.7.1")
+
     implementation("androidx.appcompat:appcompat:$activity_version")
     implementation("androidx.activity:activity-ktx:$activity_version")
     implementation("com.google.android.material:material:1.8.0")
@@ -71,7 +71,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.8.8")
 
     // postgreSQL JDBC dependencies
-    implementation("org.postgresql:postgresql:42.3.1")
+    implementation("org.postgresql:postgresql:42.7.1")
 
     // view model dependencies
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.0")
