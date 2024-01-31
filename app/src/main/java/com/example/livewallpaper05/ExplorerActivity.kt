@@ -29,8 +29,8 @@ class ExplorerActivity : AppCompatActivity() {
             val connectionProps = Properties()
             //connectionProps["user"] = "admin"
             connectionProps["user"] = "postgres"
-            //connectionProps["password"] = "UtahUtesLiveWallz!"
-            connectionProps["password"] = "password"
+            connectionProps["password"] = "UtahUtesLiveWallz!"
+            //connectionProps["password"] = "password"
             try {
                 Class.forName("com.postgres.jdbc.Driver").newInstance()
                 //Class.forName("com.mysql.jdbc.Driver").newInstance()
