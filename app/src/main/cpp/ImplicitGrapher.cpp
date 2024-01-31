@@ -260,6 +260,14 @@ string ImplicitGrapher::decode(const int* const codedEquation, const int& length
     return equation;
 }
 
+void ImplicitGrapher::convertPiSymbol(string &equation) {
+    string piString = "π";
+    string enquiryString = "";
+    for (int32_t pos = equation.find(piString.c_str(), 0); pos != string::npos; pos = equation.find(piString.c_str(), pos + enquiryString.length())) {
+        equation.replace(pos, piString.length(), enquiryString.c_str(), enquiryString.length());
+    }
+}
+
 bool ImplicitGrapher::aDigit(const char& character) {
     return character >= '0' && character <= '9';
 }
@@ -1492,12 +1500,4 @@ void ImplicitGrapher::refactor(const ivec3& inputSize) {
 
 size_t ImplicitGrapher::getRecommendedIndicesArraySize() {
     return 3 * maxSolutionCount * sizeof(uvec3);
-}
-
-void ImplicitGrapher::convertPiSymbol(string &equation) {
-    string piReplacement = "π";
-    string fiveReplacement = "";
-    for (int32_t pos = equation.find(piReplacement.c_str(), 0); pos != std::string::npos; pos = equation.find(piReplacement.c_str(), pos + fiveReplacement.length())) {
-        equation.replace(pos, piReplacement.length(), fiveReplacement.c_str(), fiveReplacement.length());
-    }
 }

@@ -418,7 +418,7 @@ void NaiveSimulationFluidSurfaceView::render(){
                 glDepthMask(GL_TRUE);
 
                 // Prepare model-view-projection matrix
-                model = model.Translation(Vec3<float>(-0.5f));
+                /*model = model.Translation(Vec3<float>(-0.5f));
                 view = translation.Translation(Vec3<float>(0.0f, 0.0f, -0.1f * distanceToCenter)) * rotation;
                 projection = orientationAdjustedPerspective;
                 mvp = projection * view * model;
@@ -435,7 +435,7 @@ void NaiveSimulationFluidSurfaceView::render(){
                         GL_FALSE,
                         (GLfloat *) &mvp);
                 tilesVAO.drawArrays();
-                glEnable(GL_CULL_FACE);
+                glEnable(GL_CULL_FACE);*/
             }
 
             // Render near frustum
@@ -447,7 +447,8 @@ void NaiveSimulationFluidSurfaceView::render(){
 
                 // Prepare model-view-projection matrix
                 Matrix4<float> translation2, scale;
-                translation2 = translation2.Translation(Vec3<float>(0.0f, 0.0f, -distanceToTangent));
+                float bias = 0.001f;
+                translation2 = translation2.Translation(Vec3<float>(0.0f, 0.0f, bias - distanceToTangent));
                 float ratio = sqrt(powf(distanceToCenter, 2.0f) - powf(sphere.getRadius(), 2.0f)) / distanceToCenter;
                 scale = scale.Identity().Scale(Vec3<float>(ratio, ratio, 0.0f));
                 model = scale;
