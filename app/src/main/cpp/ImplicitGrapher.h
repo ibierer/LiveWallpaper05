@@ -579,6 +579,8 @@ public:
 
     static const string defaultEquations[numOfDefaultEquations][2];
 
+    static void convertPiSymbol(string &basicString);
+
 private:
 
     static const char pi = 5;

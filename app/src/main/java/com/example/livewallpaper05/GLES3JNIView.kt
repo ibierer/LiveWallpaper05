@@ -77,7 +77,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             var eq = mViewModel.getEquation()
             // if eq is empty set to default
             /*if(eq == ""){
-                eq = "1/((sqrt(x^2 + y^2) - 1.6 + sin(t))^2 + (z + cos(t))^2) + 1/((sqrt(x^2 + y^2) - 1.6 + sin(t + π/2))^2 + (z + cos(t + π/2))^2) + 1/((sqrt(x^2 + y^2) - 1.6 + sin(t + π))^2 + (z + cos(t + π))^2) + 1/((sqrt(x^2 + y^2) - 1.6 + sin(t + 3π/2))^2 + (z + cos(t + 3π/2))^2) = 7.3"
+                eq = "x^2 + y^2 + z^2 = 1"
             }*/
 
             val boxJSON = """{

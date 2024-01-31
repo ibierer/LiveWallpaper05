@@ -68,6 +68,287 @@ using nlohmann::json;
 
 View* view = nullptr;
 
+bool aDigit(char character){
+    return character >= '0' && character <= '9';
+}
+bool aCharacter(char character){
+    return
+            character == 'x' ||
+            character == 'y' ||
+            character == 'z' ||
+            character == 't' ||
+            character == 'e' ||
+            character == 5;
+}
+bool anOperator(char character){
+    return
+            character == '^' ||
+            character == '/' ||
+            character == '*' ||
+            character == '-' ||
+            character == '+';
+}
+string checkEquationSyntax(const string& editable){
+    string syntaxError = "";
+    int i;
+    bool containsEqualSign = false;
+    int parenthesisCountLeft = 0;
+    int parenthesisCountRight = 0;
+    bool improperParenthesisLeft = false;
+    bool improperParenthesisRight = false;
+    for(i = 0; i < editable.length(); i++){
+        if(editable.at(i) == '('){
+            if(containsEqualSign){
+                parenthesisCountRight++;
+            }else{
+                parenthesisCountLeft++;
+            }
+        }else if(editable.at(i) == ')'){
+            if(containsEqualSign){
+                parenthesisCountRight--;
+            }else{
+                parenthesisCountLeft--;
+            }
+        }else if(editable.at(i) == '='){
+            if(containsEqualSign){
+                syntaxError = "Syntax Error:  contains more than one equal sign.";
+                return syntaxError;
+            }else{
+                containsEqualSign = true;
+            }
+        }
+        if(parenthesisCountLeft < 0){
+            improperParenthesisLeft = true;
+        }else if(parenthesisCountRight < 0){
+            improperParenthesisRight = true;
+        }
+    }
+    if(!containsEqualSign){
+        syntaxError = "Syntax Error:  lacks an equal sign.";
+        return syntaxError;
+    }
+    if(improperParenthesisLeft || improperParenthesisRight){
+        syntaxError = "Syntax Error:  improper parenthesis on ";
+        if(!improperParenthesisLeft){
+            syntaxError += "right.";
+        }else if(improperParenthesisRight){
+            syntaxError += "both sides.";
+        }else{
+            syntaxError += "left.";
+        }
+        return syntaxError;
+    }
+    if(parenthesisCountLeft != 0 || parenthesisCountRight != 0){
+        syntaxError = "Syntax Error:  invalid parenthesis count on ";
+        if(parenthesisCountLeft == 0){
+            syntaxError += "right.";
+        }else if(parenthesisCountRight != 0){
+            syntaxError += "both sides.";
+        }else{
+            syntaxError += "left.";
+        }
+        return syntaxError;
+    }
+
+    //Check for expressions
+    bool termOnLeft = false;
+    bool termOnRight = false;
+    bool passedEqualSign = false;
+    for(int i = 0; i < editable.length() && !termOnRight; i++){
+        if(aDigit(editable.at(i)) || aCharacter(editable.at(i))){
+            if(passedEqualSign){
+                termOnRight = true;
+            }else{
+                termOnLeft = true;
+            }
+        }else if(editable.at(i) == '='){
+            passedEqualSign = true;
+        }
+    }
+    if(!termOnLeft || !termOnRight){
+        syntaxError = "Syntax Error:  no expression on ";
+        if(termOnLeft){
+            syntaxError += "right side.";
+        }else if(!termOnRight){
+            syntaxError += "either side.";
+        }else{
+            syntaxError += "left side.";
+        }
+        return syntaxError;
+    }
+
+    //Improper term I
+    bool badTermOnLeft = false;
+    bool badTermOnRight = false;
+    passedEqualSign = false;
+    for(int i = 0; i < editable.length() - 1 && !badTermOnRight; i++){
+        if(
+                aCharacter(editable.at(i)) &&
+                (
+                        editable.at(i + 1) == '.' ||
+                        aDigit(editable.at(i + 1))
+                )
+                ){
+            if(!passedEqualSign){
+                badTermOnLeft = true;
+            }else{
+                badTermOnRight = true;
+            }
+        }else if(editable.at(i) == '='){
+            passedEqualSign = true;
+        }
+    }
+    if(badTermOnLeft || badTermOnRight){
+        syntaxError = "Syntax Error:  improper term on ";
+        if(!badTermOnLeft){
+            syntaxError += "right side.";
+        }else if(badTermOnRight){
+            syntaxError += "each side.";
+        }else{
+            syntaxError += "left side.";
+        }
+        return syntaxError;
+    }
+
+    //Convert to noSpaces
+    string noSpaces = "";
+    for(int i = 0; i < editable.length(); i++){
+        if(editable.at(i) != ' '){
+            noSpaces += editable.at(i);
+        }
+    }
+
+    //Improper term II
+    passedEqualSign = false;
+    for(int i = 0; i < noSpaces.length() - 1 && !badTermOnRight; i++){
+        if(noSpaces.at(i) == '='){
+            passedEqualSign = true;
+        }
+        if(
+                (
+                        noSpaces.at(i) == '(' &&
+                        (
+                                noSpaces.at(i + 1) == ')' ||
+                                (
+                                        anOperator(noSpaces.at(i + 1)) &&
+                                        noSpaces.at(i + 1) != '-'
+                                )
+                        )
+                ) || (
+                        (
+                                noSpaces.at(i) == '(' ||
+                                anOperator(noSpaces.at(i))
+                        ) &&
+                        noSpaces.at(i + 1) == ')'
+                )
+                ){
+            if(!passedEqualSign){
+                badTermOnLeft = true;
+            }else{
+                badTermOnRight = true;
+            }
+        }
+    }
+    if(badTermOnLeft || badTermOnRight){
+        syntaxError = "Syntax Error:  improper term on ";
+        if(!badTermOnLeft){
+            syntaxError += "right side.";
+        }else if(badTermOnRight){
+            syntaxError += "each side.";
+        }else{
+            syntaxError += "left side.";
+        }
+        return syntaxError;
+    }
+
+    //Improper Decimal
+    passedEqualSign = false;
+    for(int i = 0; i < noSpaces.length() - 1 && !badTermOnRight; i++){
+        if(noSpaces.at(i) == '='){
+            passedEqualSign = true;
+        }
+        if(
+                (
+                        noSpaces.at(i) == '.' &&
+                        !aDigit(noSpaces.at(i + 1))
+                ) ||
+                (
+                        i == noSpaces.length() - 2 &&
+                        noSpaces.at(noSpaces.length() - 1) == '.'
+                )
+                ){
+            if(!passedEqualSign){
+                badTermOnLeft = true;
+            }else{
+                badTermOnRight = true;
+            }
+        }
+    }
+    if(badTermOnLeft || badTermOnRight){
+        syntaxError = "Syntax Error:  improper decimal on ";
+        if(!badTermOnLeft){
+            syntaxError += "right side.";
+        }else if(badTermOnRight){
+            syntaxError += "each side.";
+        }else{
+            syntaxError += "left side.";
+        }
+        return syntaxError;
+    }
+
+    //Invalid Operator
+    passedEqualSign = false;
+    for(int i = 0; i < noSpaces.length() - 1 && !badTermOnRight; i++){
+        if(noSpaces.at(i) == '='){
+            passedEqualSign = true;
+        }
+        if(
+                (
+                        i == noSpaces.length() - 2 &&
+                        anOperator(noSpaces.at(noSpaces.length() - 1))
+                ) || (
+                        anOperator(noSpaces.at(i)) &&
+                        (
+                                noSpaces.at(i + 1) == ')' ||
+                                noSpaces.at(i + 1) == '=' ||
+                                (
+                                        i == 0 &&
+                                        noSpaces.at(i) != '-'
+                                )
+                        )
+                ) || (
+                        (
+                                noSpaces.at(i) == '(' ||
+                                noSpaces.at(i) == '='
+                        ) && (
+                                anOperator(noSpaces.at(i + 1)) &&
+                                noSpaces.at(i + 1) != '-'
+                        )
+                )
+                ){
+            if(!passedEqualSign){
+                badTermOnLeft = true;
+            }else{
+                badTermOnRight = true;
+            }
+        }
+    }
+    if(badTermOnLeft || badTermOnRight){
+        syntaxError = "Syntax Error:  invalid operator on ";
+        if(!badTermOnLeft){
+            syntaxError += "right side.";
+        }else if(badTermOnRight){
+            syntaxError += "each side.";
+        }else{
+            syntaxError += "left side.";
+        }
+        return syntaxError;
+    }
+
+    syntaxError = "";
+    return syntaxError;
+}
+
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env, jobject thiz, jstring JSON) {
@@ -116,7 +397,15 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
                 view = new PicFlipView();
             }
         }else if(type == "graph"){
-            view = new GraphView(visualizationJSON["equation"]);
+            string equation = visualizationJSON["equation"];
+            ImplicitGrapher::convertPiSymbol(equation);
+            string syntaxCheck = checkEquationSyntax(equation);
+            ALOGI("Result of syntax check: %s\n", syntaxCheck.c_str());
+            if(syntaxCheck == "") {
+                view = new GraphView(equation);
+            }else{
+                view = new GraphView("");
+            }
             ALOGI("equation = %s\n", to_string(visualizationJSON["equation"]).c_str());
         }else if(type == "other"){
             view = new SphereWithFresnelEffectView(Texture::MANDELBROT, 2048);
