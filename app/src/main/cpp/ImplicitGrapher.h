@@ -581,6 +581,8 @@ public:
 
     static void convertPiSymbol(string &basicString);
 
+    static string checkEquationSyntax(const string& editable);
+
 private:
 
     static const char pi = 5;
@@ -712,6 +714,8 @@ private:
     static bool getPlusMinus(const int& i, const int& j, const int& k);
 
     static inline ivec3 getXYZLineIndex(const int& i, const int& j, const int& k);
+
+    static bool anOperator(const char& character);
 
 };
 
