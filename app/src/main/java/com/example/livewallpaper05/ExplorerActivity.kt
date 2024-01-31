@@ -33,7 +33,7 @@ class ExplorerActivity : AppCompatActivity() {
             //connectionProps["password"] = "password"
             try {
                 //Class.forName("org.postgresql.Driver").newInstance()
-                Class.forName("com.mysql.jdbc.Driver").newInstance()
+                Class.forName("com.mysql.cj.jdbc.Driver").newInstance()
                 var conn = DriverManager.getConnection(
                     "jdbc:" + "mysql" + "://" +
                             "database-1.cxo8mkcogo8p.us-east-1.rds.amazonaws.com" +
@@ -51,9 +51,10 @@ class ExplorerActivity : AppCompatActivity() {
                 Log.d("LiveWallpaper05", "made MySQL connection to AWS!")
             } catch (e: SQLException) {
                 Log.d("LiveWallpaper05", "SQL Exception: ${e.message}")
-                e.printStackTrace()
+                Log.d("LiveWallpaper05", e.printStackTrace().toString())
             } catch (e: Exception){
                 Log.d("LiveWallpaper05", "SQL Exception: ${e.message}")
+                Log.d("LiveWallpaper05", e.printStackTrace().toString())
                 e.printStackTrace()
             }
 
