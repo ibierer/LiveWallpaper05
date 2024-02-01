@@ -2,14 +2,11 @@ package com.example.livewallpaper05.helpful_fragments
 
 import android.content.Intent
 import android.graphics.Bitmap
-import android.media.Image
-import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.SeekBar
+import androidx.appcompat.app.AppCompatActivity
 import com.example.livewallpaper05.R
 
 class ColorActivity : AppCompatActivity() {
@@ -21,9 +18,9 @@ class ColorActivity : AppCompatActivity() {
     private var mAcceptColor: Button? = null
     private var mColorBitmap: Bitmap? = null
 
-    private var mRed: Int = 255
-    private var mGreen: Int = 0
-    private var mBlue: Int = 0
+    private var mRed: Int = 200
+    private var mGreen: Int = 200
+    private var mBlue: Int = 200
     private var mAlpha: Int = 255
 
     override fun onCreate(savedInstanceState: Bundle?) {

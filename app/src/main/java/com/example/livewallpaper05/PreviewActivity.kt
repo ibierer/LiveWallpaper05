@@ -69,7 +69,6 @@ class PreviewActivity : AppCompatActivity() {
 
         // update orientation in repo
         try{
-            //Log.d("Livewallpaper", "orientation preview: ${this.display!!.rotation}")
             viewModel.updateOrientation(this.display!!.rotation)
         } catch (e: Exception){
             Log.d("Livewallpaper", "api level too low!")
