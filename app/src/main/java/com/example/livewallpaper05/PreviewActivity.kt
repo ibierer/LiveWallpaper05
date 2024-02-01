@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.hardware.SensorManager
 import android.os.Build
 import android.os.Bundle
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
@@ -111,16 +112,21 @@ class PreviewActivity : AppCompatActivity() {
         }
 
         // setup equation editor
-        equationEditor.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus) {
-                // check equation validity here
-
+        viewModel.updateEquation(equationEditor.text.toString())
+        equationEditor.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: android.text.Editable?) {
                 // update equation in repo if valid
                 viewModel.updateEquation(equationEditor.text.toString())
                 mView!!.onPause()
                 mView!!.onResume()
             }
-        }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // Do nothing
+            }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // Do nothing
+            }
+        })
 
         // connect fps data to ui fps meter
         var fpsMeter = findViewById<TextView>(R.id.tv_fps_meter)
