@@ -6,22 +6,22 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.hardware.SensorManager
+import android.os.Build
 import android.os.Bundle
-import android.util.DisplayMetrics
 import android.util.Log
-import android.widget.LinearLayout
 import android.view.View
 import android.view.WindowManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.toColor
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
@@ -37,6 +37,7 @@ class PreviewActivity : AppCompatActivity() {
         ActiveWallpaperViewModelFactory((application as ActiveWallpaperApplication).repository)
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(icicle: Bundle?) {
         super.onCreate(icicle)
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);

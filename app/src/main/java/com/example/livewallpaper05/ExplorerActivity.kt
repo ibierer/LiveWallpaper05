@@ -1,14 +1,14 @@
 package com.example.livewallpaper05
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.WindowManager
 import android.widget.Button
-import java.sql.*
-import java.time.LocalDateTime
-import java.sql.Connection
-import java.sql.PreparedStatement
+import androidx.appcompat.app.AppCompatActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import java.sql.DriverManager
 import java.sql.SQLException
 import java.util.Properties
 
@@ -25,37 +25,42 @@ class ExplorerActivity : AppCompatActivity() {
         mTestButton = findViewById(R.id.b_test_button)
 
         mTestButton?.setOnClickListener {
-            // connect to mysql server
-            val connectionProps = Properties()
-            connectionProps["user"] = "admin"
-            //connectionProps["user"] = "postgres"
-            connectionProps["password"] = "UtahUtesLiveWallz!"
-            //connectionProps["password"] = "password"
-            try {
-                //Class.forName("org.postgresql.Driver").newInstance()
-                Class.forName("com.mysql.cj.jdbc.Driver").newInstance()
-                var conn = DriverManager.getConnection(
-                    "jdbc:" + "mysql" + "://" +
-                            "database-1.cxo8mkcogo8p.us-east-1.rds.amazonaws.com" +
-                            ":" + "3306" + "/" +
-                            "myDatabase",
-                    connectionProps
-                )
-                /*var conn = DriverManager.getConnection(
-                 "jdbc:" + "postgres" + "://" +
-                            "database-2.cxo8mkcogo8p.us-east-1.rds.amazonaws.com" +
-                            ":" + "5432" + "/" +
-                            "myDatabase2",
-                    connectionProps
-                )*/
-                Log.d("LiveWallpaper05", "made MySQL connection to AWS!")
-            } catch (e: SQLException) {
-                Log.d("LiveWallpaper05", "SQL Exception: ${e.message}")
-                Log.d("LiveWallpaper05", e.printStackTrace().toString())
-            } catch (e: Exception){
-                Log.d("LiveWallpaper05", "SQL Exception: ${e.message}")
-                Log.d("LiveWallpaper05", e.printStackTrace().toString())
-                e.printStackTrace()
+            // launch async task to connect to postgre mock server
+            GlobalScope.launch(Dispatchers.IO) {
+                // connect to mysql server
+                val connectionProps = Properties()
+                connectionProps.put("user", "admin")
+                connectionProps.put("password", "UtahUtesLiveWallz!")
+                //connectionProps.put("ssl", "true")
+
+                val host = "database-1.cxo8mkcogo8p.us-east-1.rds.amazonaws.com"
+                //val host = "database-2.cxo8mkcogo8p.us-east-1.rds.amazonaws.com"
+                val port = 3306
+                try {
+                    Class.forName("com.mysql.jdbc.Driver").newInstance()
+                    // connect to mysql server
+                    val conn = DriverManager.getConnection(
+                        "jdbc:mysql://$host:$port",
+                        connectionProps
+                    )
+
+                    Log.d("LiveWallpaper05", "Connected to database")
+
+                    // send query "SELECT * FROM users;
+                    //val query = "SELECT * FROM users;"
+                    val query = "SHOW DATABASES;"
+                    val statement = conn.createStatement()
+                    val result = statement.executeQuery(query)
+                    while (result.next()) {
+                        Log.d("LiveWallpaper05", "DB returned: " + result.getString("username"))
+                    }
+
+
+                } catch (e: SQLException) {
+                    e.printStackTrace()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
 
             // write aws test code here -------------
