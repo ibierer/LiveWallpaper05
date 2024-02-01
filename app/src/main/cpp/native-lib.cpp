@@ -119,13 +119,11 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
             string equation = visualizationJSON["equation"];
             ImplicitGrapher::convertPiSymbol(equation);
             string syntaxCheck = ImplicitGrapher::checkEquationSyntax(equation);
-            ALOGI("Result of syntax check: %s\n", syntaxCheck.c_str());
             if(syntaxCheck == "") {
                 view = new GraphView(equation);
             }else{
                 view = new GraphView("");
             }
-            ALOGI("equation = %s\n", to_string(visualizationJSON["equation"]).c_str());
         }else if(type == "other"){
             view = new SphereWithFresnelEffectView(Texture::MANDELBROT, 16384);
         }
