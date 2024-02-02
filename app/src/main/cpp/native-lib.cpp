@@ -125,7 +125,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
                 view = new GraphView("");
             }
         }else if(type == "other"){
-            view = new SphereWithFresnelEffectView(Texture::MANDELBROT, 16384);
+            view = new SphereWithFresnelEffectView(Texture::MANDELBROT, 2048);
         }
         json rgba = visualizationJSON["background_color"];
         uint r = rgba["r"];
