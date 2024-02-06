@@ -17,6 +17,7 @@ class ExplorerActivity : AppCompatActivity() {
     private var mPreviewButton: Button? = null
     private var mTestButton: Button? = null
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -29,9 +30,11 @@ class ExplorerActivity : AppCompatActivity() {
             GlobalScope.launch(Dispatchers.IO) {
                 // connect to mysql server
                 val connectionProps = Properties()
+                //connectionProps.put("user", "postgres")
                 connectionProps.put("user", "admin")
                 connectionProps.put("password", "UtahUtesLiveWallz!")
                 //connectionProps.put("ssl", "true")
+                val jdbcConnectionString = "jdbc:mysql://database-1.cxo8mkcogo8p.us-east-1.rds.amazonaws.com:3306/?user=admin"
 
                 val host = "database-1.cxo8mkcogo8p.us-east-1.rds.amazonaws.com"
                 //val host = "database-2.cxo8mkcogo8p.us-east-1.rds.amazonaws.com"
@@ -39,27 +42,26 @@ class ExplorerActivity : AppCompatActivity() {
                 try {
                     Class.forName("com.mysql.jdbc.Driver").newInstance()
                     // connect to mysql server
+                    Log.d("LiveWallpaper05", "Point A!")
                     val conn = DriverManager.getConnection(
-                        "jdbc:mysql://$host:$port",
-                        connectionProps
+                        jdbcConnectionString, "admin", "UtahUtesLiveWallz!"
+                        /*connectionProps*/
                     )
 
                     Log.d("LiveWallpaper05", "Connected to database")
 
-                    // send query "SELECT * FROM users;
-                    //val query = "SELECT * FROM users;"
-                    val query = "SHOW DATABASES;"
+                    //query "SELECT * FROM users;"
+                    val query = "SELECT * FROM users;"
+                    val query2 = "SHOW DATABASES;"
                     val statement = conn.createStatement()
-                    val result = statement.executeQuery(query)
+                    val result = statement.executeQuery(query2)
                     while (result.next()) {
-                        Log.d("LiveWallpaper05", "DB returned: " + result.getString("username"))
+                        Log.d("LiveWallpaper05", "DB returned: " + result.getString("Database"))
                     }
-
-
-                } catch (e: SQLException) {
-                    e.printStackTrace()
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                } /*catch (e: SQLException) {
+                    Log.d("LiveWallpaper05", e.printStackTrace().toString())
+                }*/ catch (e: Exception) {
+                    Log.d("LiveWallpaper05", e.printStackTrace().toString())
                 }
             }
 
