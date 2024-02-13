@@ -1,16 +1,17 @@
 package com.example.livewallpaper05.activewallpaperdata
 
-import android.graphics.Color
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
 
 class ActiveWallpaperRepo private constructor () : SensorEventListener {
+
+    var speed: Float = 1.0f
 
     // initialize default values
     var wid: Int = 0

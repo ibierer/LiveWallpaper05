@@ -1,12 +1,9 @@
 package com.example.livewallpaper05.activewallpaperdata
 
-import android.app.Activity
 import android.content.res.Resources
 import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.graphics.Color
 import android.hardware.SensorManager
-import android.util.Log
 import androidx.lifecycle.*
 import com.example.livewallpaper05.savedWallpapers.SavedWallpaperTable
 import org.json.JSONObject

@@ -53,6 +53,7 @@ class PreviewActivity : AppCompatActivity() {
         val simSelectorSpinner = findViewById<Spinner>(R.id.simulation_type_spinner)
         val colorButton = findViewById<Button>(R.id.b_color_picker)
         val equationEditor = findViewById<EditText>(R.id.et_equation)
+        val speedScrollBar = findViewById<SeekBar>(R.id.speed_seekbar)
 
         // fill sim selector box with wallpaper options from native-lib.cpp
         val simSelectorAdapter = ArrayAdapter.createFromResource(
@@ -86,6 +87,21 @@ class PreviewActivity : AppCompatActivity() {
             override fun onStopTrackingTouch(seekBar: SeekBar) {
                 //mRepo!!.rotationRate = seekBar.progress.toFloat() / 100.0f
                 viewModel.updateRotationRate(seekBar.progress.toFloat() / 100.0f)
+            }
+        })
+
+        // register scrollbar actions to update speed in repo
+        speedScrollBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean){
+                // Do nothing until changes are stopped for smooth ui updates
+                viewModel.updateSpeed(seekBar.progress.toFloat() / 100.0f)
+            }
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+                // Do nothing when changes are started
+            }
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                //mRepo!!.rotationRate = seekBar.progress.toFloat() / 100.0f
+                viewModel.updateSpeed(seekBar.progress.toFloat() / 100.0f)
             }
         })
 

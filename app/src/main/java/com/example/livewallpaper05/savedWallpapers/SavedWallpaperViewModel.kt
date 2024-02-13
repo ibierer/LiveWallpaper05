@@ -3,7 +3,6 @@ package com.example.livewallpaper05.savedWallpapers
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import java.io.ByteArrayOutputStream
 
 class SavedWallpaperViewModel(repo: SavedWallpaperRepo) : ViewModel() {
 
@@ -17,7 +16,7 @@ class SavedWallpaperViewModel(repo: SavedWallpaperRepo) : ViewModel() {
     }
 
     // save wallpaper from config string
-    fun saveWallpaper(config: String) {
+    fun saveWallpaper(config: String) : Int {
         // create new wallpaper table with given data
         var wallpaper = SavedWallpaperTable(
             0,
@@ -31,6 +30,8 @@ class SavedWallpaperViewModel(repo: SavedWallpaperRepo) : ViewModel() {
         } catch (e: Exception) {}
         // update profile table
         mRepo.setWallpaper(wallpaper)
+
+        return wallpaper.wid
     }
 
     // delete wallpaper

@@ -3,7 +3,6 @@ package com.example.livewallpaper05
 import android.content.Context
 import android.opengl.GLSurfaceView
 import android.os.SystemClock
-import android.util.Log
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import javax.microedition.khronos.egl.EGLConfig
@@ -33,7 +32,12 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             // default values in ActiveWallpaperViewModel
             val accelData = mViewModel.getAccelerationData()
             val rotData = mViewModel.getRotationData()
-            val linearAccelData = mViewModel.getLinearAccelerationData()
+            var linearAccelData = mViewModel.getLinearAccelerationData()
+            val speed = mViewModel.getSpeed()
+            // update linear acceleration data
+            linearAccelData[0] = linearAccelData[0] * speed
+            linearAccelData[1] = linearAccelData[1] * speed
+            linearAccelData[2] = linearAccelData[2] * speed
 
             // run step in the simulation (also updates opengl view)
             PreviewActivity.step(
@@ -63,7 +67,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
 
         override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {
             val orientation = mViewModel.getOrientation()
-            Log.d("Livewallpaper", "orientation: $orientation")
+            //Log.d("Livewallpaper", "orientation: $orientation")
             PreviewActivity.resize(width, height, orientation)
         }
 
