@@ -32,7 +32,7 @@ class ExplorerActivity : AppCompatActivity() {
             // launch async task to connect to postgre mock server
             GlobalScope.launch(Dispatchers.IO) {
                 // write aws test code here -------------
-                val jdbcConnectionString =
+                val jdbcConnectionString = 
                     "jdbc:mysql://database-1.cxo8mkcogo8p.us-east-1.rds.amazonaws.com:3306/?user=admin"
                 //val host = "database-1.cxo8mkcogo8p.us-east-1.rds.amazonaws.com"
                 try {
@@ -44,15 +44,22 @@ class ExplorerActivity : AppCompatActivity() {
                     )
 
                     Log.d("LiveWallpaper05", "Connected to database")
-
-                    //query "SELECT * FROM users;"
-                    val query = "SELECT * FROM users;"
-                    val query2 = "SHOW DATABASES;"
+                    val query = "USE myDatabase; SELECT * FROM users;"
                     val statement = conn.createStatement()
-                    val result = statement.executeQuery(query2)
+                    val result = statement.executeQuery(query)
                     while (result.next()) {
-                        Log.d("LiveWallpaper05", "DB returned: " + result.getString("Database"))
+                        val username = result.getString("username")
+                        val name = result.getString("name")
+                        val bio = result.getString("bio")
+                        var resultStr = "User Returned: Username: $username, Name:  $name"
+                        if (bio != null){
+                            resultStr += ", bio: $bio"
+                        }
+                        Log.d("LiveWallpaper05", resultStr)
+                        /*can use similar idea from login dialog to check whether user with username 'value'
+                        already exists and if so, pull information from db.*/
                     }
+
                 } catch (e: Exception) {
                     Log.d("LiveWallpaper05", e.printStackTrace().toString())
                 }
