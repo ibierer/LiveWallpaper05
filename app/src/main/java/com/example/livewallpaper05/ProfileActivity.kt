@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.View
 import android.widget.GridLayout
 import android.widget.ImageView
@@ -23,6 +24,11 @@ import com.example.livewallpaper05.helpful_fragments.WallpaperFragment
 import com.example.livewallpaper05.profiledata.ProfileViewModel
 import com.example.livewallpaper05.savedWallpapers.SavedWallpaperViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import java.sql.DriverManager
+import java.sql.SQLException
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -49,7 +55,7 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // From Jo to Cam: connect to postgre mock server here and query basic profile info into class instance declared below
+        // From Jo to Cam: connect to aws MySQL server here and query basic profile info into class instance declared below
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
 
@@ -68,15 +74,15 @@ class ProfileActivity : AppCompatActivity() {
 
         // link profile view elements to profile live data via callback function
         mProfileViewModel.profileData.observe(this, Observer { profileData ->
-            if(profileData != null){
+            if (profileData != null) {
                 // if profile data username is Dummy_user do nothing
-                if(profileData.username == "Dummy_user"){
+                if (profileData.username == "Dummy_user") {
                     return@Observer
                 }
                 mUsername!!.text = profileData.username
                 mBio!!.text = profileData.bio
                 val imageData = profileData.profilepic
-                if(imageData != null && imageData.isNotEmpty()){
+                if (imageData != null && imageData.isNotEmpty()) {
                     val imageBitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.size)
                     mProfilePic!!.setImageBitmap(imageBitmap)
                 } else {
@@ -97,13 +103,13 @@ class ProfileActivity : AppCompatActivity() {
 
         // link saved wallpaper view elements to saved wallpaper live data via callback function
         mSavedWallpaperViewModel.savedWallpapers.observe(this, Observer { wallpapers ->
-            if(wallpapers != null){
+            if (wallpapers != null) {
                 // clear wallpaper layout
                 //mWallpaperLayout!!.removeAllViews()
                 mWallpaperGrid!!.removeAllViews()
 
                 // add each wallpaper to layout
-                for(wallpaper in wallpapers){
+                for (wallpaper in wallpapers) {
                     // find if wallpaper is active
                     val is_active = wallpaper.wid == mActiveWallpaperViewModel.getWid()
                     // create random color bitmap preview based on wid
@@ -122,7 +128,47 @@ class ProfileActivity : AppCompatActivity() {
                 }
             }
         })
-
+        /* Added code that connects to database and gathers values for the existing users
+        * this will need to be modified to check whether the current user already exists inside the database:
+        * if so: pull relevant user data (profile data, userID)
+        * otherwise: insert user into database to pull from later in this function. */
+        GlobalScope.launch(Dispatchers.IO) {
+            // write aws test code here -------------
+            val jdbcConnectionString =
+                "jdbc:mysql://database-1.cxo8mkcogo8p.us-east-1.rds.amazonaws.com:3306/?user=admin"
+            //val host = "database-1.cxo8mkcogo8p.us-east-1.rds.amazonaws.com"
+            try {
+                Class.forName("com.mysql.jdbc.Driver").newInstance()
+                // connect to mysql server
+                val conn = DriverManager.getConnection(
+                    jdbcConnectionString, "admin", "UtahUtesLiveWallz!"
+                ).use { conn -> // this syntax ensures that connection will be closed whether normally or from exception
+                    Log.d("LiveWallpaper05", "Connected to database")
+                    val query = "USE myDatabase; SELECT * FROM users;"
+                    val statement = conn.createStatement()
+                    val result = statement.executeQuery(query)
+                    while (result.next()) {
+                        val uid: Int = result.getInt("uid")
+                        val dateCreated: String = result.getString("dateCreated")
+                        val username = result.getString("username")
+                        val name = result.getString("name")
+                        val bio = result.getString("bio")
+                        val profilePicture = result.getBlob("profile_picture")
+                        var resultStr =
+                            "User Returned: uid: $uid, Username: $username, Name:  $name"
+                        if (bio != null) {
+                            resultStr += ", bio: $bio"
+                        }
+                        if (profilePicture != null) {
+                            resultStr += ", profile_picture: $profilePicture"
+                        }
+                        //Log.d("LiveWallpaper05", resultStr)
+                    }
+                }
+            } catch (e: SQLException) {
+                Log.e("LiveWallpaper05", e.printStackTrace().toString())
+            }
+        }
     }
 
     // creates popup dialog to prompt user to chose how to update profile picture
@@ -142,7 +188,8 @@ class ProfileActivity : AppCompatActivity() {
         }
         dialog.setNegativeButton("Gallery") { _, _ ->
             // open gallery
-            val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            val galleryIntent =
+                Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
             try {
                 galleryActivity.launch(galleryIntent)
             } catch (e: Exception) {
@@ -153,34 +200,37 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     // opens camera to take picture for profile picture
-    private val cameraActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == RESULT_OK) {
-            val data = result.data
-            val imageBitmap = data?.extras?.get("data") as Bitmap
-            if (imageBitmap == null) {
-                return@registerForActivityResult
+    private val cameraActivity =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val data = result.data
+                val imageBitmap = data?.extras?.get("data") as Bitmap
+                if (imageBitmap == null) {
+                    return@registerForActivityResult
+                }
+                updateProfilePicture(imageBitmap)
             }
-            updateProfilePicture(imageBitmap)
         }
-    }
 
     // opens phone photo gallery to grab picture for profile picture
-    private val galleryActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == RESULT_OK) {
-            val data = result.data
-            // get image from uri returned in data
-            val imageBitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, data?.data)
-            updateProfilePicture(imageBitmap)
+    private val galleryActivity =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val data = result.data
+                // get image from uri returned in data
+                val imageBitmap =
+                    MediaStore.Images.Media.getBitmap(this.contentResolver, data?.data)
+                updateProfilePicture(imageBitmap)
+            }
         }
-    }
 
     // [PHASE OUT] calls view model to update local storage of profile picture
-    fun updateProfilePicture(pic: Bitmap){
+    fun updateProfilePicture(pic: Bitmap) {
         // update profile pic in database
         mProfileViewModel.updateProfilePic(pic)
     }
 
-    private fun showLoginDialog(){
+    private fun showLoginDialog() {
         val dialog = Dialog(this)
         dialog.requestWindowFeature(android.view.Window.FEATURE_NO_TITLE)
         dialog.setCancelable(false)
@@ -188,7 +238,7 @@ class ProfileActivity : AppCompatActivity() {
 
     }
 
-    fun newWallpaper(view: View){
+    fun newWallpaper(view: View) {
         // save current wallpaper
         val activeConfig = mActiveWallpaperViewModel.getConfig()
         //mProfileViewModel.updateSavedWallpapers(listOf(activeConfig.toString()))
