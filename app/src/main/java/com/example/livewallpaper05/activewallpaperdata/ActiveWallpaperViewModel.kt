@@ -165,6 +165,14 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
     fun getEquation(): String {
         return repo.equation
     }
+
+    fun getSpeed(): Float {
+        return repo.speed
+    }
+
+    fun updateSpeed(speed: Float) {
+        repo.speed = speed
+    }
 }
 
 /**
