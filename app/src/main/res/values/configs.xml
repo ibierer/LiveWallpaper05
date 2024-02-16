@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="fluid_sim">"""{
+                    "visualization_type": "simulation",
+                    "simulation_type": "naive",
+                    "fluid_surface": "true",
+                    "particle_count": 1000,
+                    "gravity_on": "false",
+                    "reference_frame_rotates": "false",
+                    "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
+                }""""
+    </string>
+
+</resources>
