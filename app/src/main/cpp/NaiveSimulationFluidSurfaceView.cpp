@@ -8,6 +8,7 @@ using std::min;
 using std::max;
 
 NaiveSimulation* sim;
+bool sphereClipsGraph;
 
 float fOfXYZFluidSurface(vec3 _) {
     _ -= ImplicitGrapher::offset;
@@ -20,8 +21,14 @@ float fOfXYZFluidSurface(vec3 _) {
             abs(_.y) > (ImplicitGrapher::offset.y - 0.01f) ||
             abs(_.z) > (ImplicitGrapher::offset.z - 0.01f)
     ) {*/
-    if(dot(_, _) > (ImplicitGrapher::offset.x - 0.01f) * (ImplicitGrapher::offset.x - 0.01f)) {
-        return -1.0f;
+    if (sphereClipsGraph) {
+        if (dot(_, _) > (ImplicitGrapher::offset.x - 0.01f) * (ImplicitGrapher::offset.x - 0.01f)) {
+            return -1.0f;
+        }
+    } else {
+        if (dot(_, _) > (ImplicitGrapher::offset.x - 0.5f) * (ImplicitGrapher::offset.x - 0.5f)) {
+            return -1.0f;
+        }
     }
 
     _ *= sim->sphereRadiusPlusPointFive / ImplicitGrapher::defaultOffset.x;
@@ -62,7 +69,7 @@ float fOfXYZFluidSurface(vec3 _) {
     return sum - 2.0f;
 }
 
-NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView(const int &particleCount, const int &graphSize, const float &sphereRadius, const bool &referenceFrameRotates, const bool& gravityOn) : View() {
+NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView(const int &particleCount, const int &graphSize, const float &sphereRadius, const bool &referenceFrameRotates, const bool &gravityOn, const bool &smoothSphereSurface) : View() {
     this->referenceFrameRotates = referenceFrameRotates;
     this->gravityOn = gravityOn;
 
@@ -89,6 +96,7 @@ NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView(const int &part
     environmentTriangleVAO = VertexArrayObject(EnvironmentMap::environmentTriangleVertices, sizeof(sphereMap.environmentTriangleVertices) / sizeof(PositionXYZ));
 
     sim = &simulation;
+    sphereClipsGraph = smoothSphereSurface;
 }
 
 NaiveSimulationFluidSurfaceView::~NaiveSimulationFluidSurfaceView(){

@@ -85,6 +85,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     "simulation_type": "naive",
                     "fluid_surface": "true",
                     "particle_count": 1000,
+                    "smooth_sphere_surface": "true",
                     "gravity_on": "false",
                     "reference_frame_rotates": "false",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}

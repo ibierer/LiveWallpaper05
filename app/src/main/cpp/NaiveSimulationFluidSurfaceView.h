@@ -45,8 +45,6 @@ public:
 
     bool gravityOn;
 
-    bool sphereClipsGraph = true;
-
     const string VERTEX_SHADER =
             ES_VERSION +
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
@@ -341,7 +339,12 @@ public:
             "    outColor = Texture(environmentTexture, direction);\n"
             "}\n";
 
-    NaiveSimulationFluidSurfaceView(const int &particleCount, const int &graphSize, const float &sphereRadius, const bool &referenceFrameRotates, const bool& gravityOn);
+    NaiveSimulationFluidSurfaceView(const int &particleCount,
+                                    const int &graphSize,
+                                    const float &sphereRadius,
+                                    const bool &referenceFrameRotates,
+                                    const bool &gravityOn,
+                                    const bool &smoothSphereSurface);
 
     ~NaiveSimulationFluidSurfaceView();
 

@@ -91,6 +91,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
                 if(fluidSurface == "true"){
                     string gravityOn = visualizationJSON["gravity_on"];
                     string referenceFrameRotates = visualizationJSON["reference_frame_rotates"];
+                    string smoothSphereSurface = visualizationJSON["smooth_sphere_surface"];
                     //view = new RGBCubeView();
                     //view = new TriangleView();
                     //view = new TriangleWithNormalsView();
@@ -106,7 +107,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
                     //view = new SphereWithRefractionView();
                     //view = new SphereWithFresnelEffectView();
                     //view = new SimpleNBodySimulationView();
-                    view = new NaiveSimulationFluidSurfaceView(particleCount, 40, 20.0f, referenceFrameRotates == "true", gravityOn == "true");
+                    view = new NaiveSimulationFluidSurfaceView(particleCount, 40, 20.0f, referenceFrameRotates == "true", gravityOn == "true", smoothSphereSurface == "true");
                 }else{
                     view = new NaiveSimulationView(particleCount, 15.0f);
                 }
