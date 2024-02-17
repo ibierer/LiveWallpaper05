@@ -223,7 +223,7 @@ void NaiveSimulationFluidSurfaceView::render(){
 
                 // Prepare model-view-projection matrix
                 model = model.Translation(Vec3<float>(0.0f));
-                view = referenceFrameRotates ? translation : translation * rotation;
+                view = translation * rotation;
                 projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
                 mvp = projection * view * model;
 
@@ -247,7 +247,7 @@ void NaiveSimulationFluidSurfaceView::render(){
 
                 // Prepare model-view-projection matrix
                 model = model.Translation(Vec3<float>(0.0f));
-                view = referenceFrameRotates ? translation : translation * rotation;
+                view = translation * rotation;
                 projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
                 mvp = projection * view * model;
 
@@ -527,7 +527,7 @@ void NaiveSimulationFluidSurfaceView::render(){
 
                 // Prepare model-view-projection matrix
                 model = model.Translation(Vec3<float>(0.0f));
-                view = referenceFrameRotates ? translation : translation * rotation;
+                view = translation * rotation;
                 projection = referenceFrameRotates ? perspective
                                                    : orientationAdjustedPerspective;
                 mvp = projection * view * model;
@@ -545,7 +545,7 @@ void NaiveSimulationFluidSurfaceView::render(){
 
                 // Prepare model-view-projection matrix
                 model = model.Translation(Vec3<float>(0.0f));
-                view = referenceFrameRotates ? translation : translation * rotation;
+                view = translation * rotation;
                 projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
                 mvp = projection * view * model;
 
