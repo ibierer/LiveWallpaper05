@@ -83,11 +83,11 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             val boxJSON = """{
                     "visualization_type": "simulation",
                     "simulation_type": "naive",
-                    "fluid_surface": "false",
+                    "fluid_surface": "true",
                     "particle_count": 1000,
-                    "smooth_sphere_surface": "false",
+                    "smooth_sphere_surface": "true",
                     "gravity_on": "false",
-                    "reference_frame_rotates": "true",
+                    "reference_frame_rotates": "false",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
                 }""".trimIndent()
 
