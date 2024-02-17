@@ -87,7 +87,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     "particle_count": 1000,
                     "smooth_sphere_surface": "false",
                     "gravity_on": "false",
-                    "reference_frame_rotates": "false",
+                    "reference_frame_rotates": "true",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
                 }""".trimIndent()
 

@@ -51,10 +51,19 @@ void NaiveSimulationView::render(){
     }
 
     for(int i = 0; i < 5; i++){
+        float linearAccelerationMultiplier = 8.0f * (getFrameCount() > 10 ? 1.0f : 1.0f / 10 * getFrameCount());
         if(referenceFrameRotates){
-            simulation.simulate(compensateForOrientation(accelerometerVector));
+            if(gravityOn) {
+                simulation.simulate(compensateForOrientation(accelerometerVector));
+            }else{
+                simulation.simulate(compensateForOrientation(linearAccelerationMultiplier * linearAccelerationVector));
+            }
         }else {
-            simulation.simulate(quaternionTo3x3(rotationVector) * (-accelerometerVector));
+            if(gravityOn){
+                simulation.simulate(quaternionTo3x3(rotationVector) * (-accelerometerVector));
+            }else{
+                simulation.simulate(quaternionTo3x3(rotationVector) * (-linearAccelerationMultiplier * linearAccelerationVector));
+            }
         }
     }
 
