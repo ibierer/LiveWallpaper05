@@ -86,31 +86,27 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
         if(type == "simulation"){
             string simulation = visualizationJSON["simulation_type"];
             if(simulation == "naive"){
-                string fluidSurface = visualizationJSON["fluid_surface"];
+                //view = new RGBCubeView();
+                //view = new TriangleView();
+                //view = new TriangleWithNormalsView();
+                //view = new CubeMapView();
+                //view = new SphereMapView();
+                //view = new TextureView();
+                //view = new RenderToTextureView();
+                //view = new RenderToCubeMapView();
+                //view = new DrawWithFragmentShaderView();
+                //view = new SphereView();
+                //view = new CubeView();
+                //view = new SphereWithReflectionView();
+                //view = new SphereWithRefractionView();
+                //view = new SphereWithFresnelEffectView();
+                //view = new SimpleNBodySimulationView();
                 int particleCount = visualizationJSON["particle_count"];
+                string fluidSurface = visualizationJSON["fluid_surface"];
                 string gravityOn = visualizationJSON["gravity_on"];
                 string referenceFrameRotates = visualizationJSON["reference_frame_rotates"];
-                if(fluidSurface == "true"){
-                    string smoothSphereSurface = visualizationJSON["smooth_sphere_surface"];
-                    //view = new RGBCubeView();
-                    //view = new TriangleView();
-                    //view = new TriangleWithNormalsView();
-                    //view = new CubeMapView();
-                    //view = new SphereMapView();
-                    //view = new TextureView();
-                    //view = new RenderToTextureView();
-                    //view = new RenderToCubeMapView();
-                    //view = new DrawWithFragmentShaderView();
-                    //view = new SphereView();
-                    //view = new CubeView();
-                    //view = new SphereWithReflectionView();
-                    //view = new SphereWithRefractionView();
-                    //view = new SphereWithFresnelEffectView();
-                    //view = new SimpleNBodySimulationView();
-                    view = new NaiveSimulationFluidSurfaceView(particleCount, 40, 20.0f, referenceFrameRotates == "true", gravityOn == "true", smoothSphereSurface == "true");
-                }else{
-                    view = new NaiveSimulationView(particleCount, 15.0f, referenceFrameRotates == "true", gravityOn == "true");
-                }
+                string smoothSphereSurface = visualizationJSON["smooth_sphere_surface"];
+                view = new NaiveSimulationFluidSurfaceView(particleCount, fluidSurface == "true", 40, 20.0f, referenceFrameRotates == "true", gravityOn == "true", smoothSphereSurface == "true");
             }else if(simulation == "nbody"){
                 view = new SimpleNBodySimulationView();
             }else if(simulation == "picflip"){

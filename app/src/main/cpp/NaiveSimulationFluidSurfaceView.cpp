@@ -69,34 +69,39 @@ float fOfXYZFluidSurface(vec3 _) {
     return sum - 2.0f;
 }
 
-NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView(const int &particleCount, const int &graphSize, const float &sphereRadius, const bool &referenceFrameRotates, const bool &gravityOn, const bool &smoothSphereSurface) : View() {
+NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView(const int &particleCount, const bool& fluidSurface, const int &graphSize, const float &sphereRadius, const bool &referenceFrameRotates, const bool &gravityOn, const bool &smoothSphereSurface) : View() {
     this->referenceFrameRotates = referenceFrameRotates;
     this->gravityOn = gravityOn;
-
-    mProgram = createVertexAndFragmentShaderProgram(TILES_VERTEX_SHADER.c_str(), TILES_FRAGMENT_SHADER.c_str());
-    cubeProgram = createVertexAndFragmentShaderProgram(CUBE_VERTEX_SHADER.c_str(), CUBE_FRAGMENT_SHADER.c_str());
-    graphNormalMapProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_NORMAL_MAP_FRAGMENT_SHADER.c_str());
-    graphFluidSurfaceProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_FLUID_SURFACE_FRAGMENT_SHADER.c_str());
-    graphFluidSurfaceClipsSphereProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_FLUID_SURFACE_CLIPS_SPHERE_FRAGMENT_SHADER.c_str());
-    sphereNormalMapProgram = createVertexAndFragmentShaderProgram(SPHERE_VERTEX_SHADER.c_str(), SPHERE_NORMAL_MAP_FRAGMENT_SHADER.c_str());
-    sphereMapDoubleRefractionProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(), SPHERE_MAP_DOUBLE_REFRACTION_FRAGMENT_SHADER.c_str());
-    sphereMapProgram = createVertexAndFragmentShaderProgram(SPHERE_MAP_VERTEX_SHADER.c_str(), SPHERE_MAP_FRAGMENT_SHADER.c_str());
-
-    tilesVAO = VertexArrayObject(tilesVertices, sizeof(tilesVertices) / sizeof(PositionXYZ));
-    cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
-
-    implicitGrapher = ImplicitGrapher(ivec3(graphSize));
+    this->fluidSurface = fluidSurface;
 
     simulation.seed(particleCount, sphereRadius);
-    sphere = Sphere(sphereRadius + 0.5f, 100);
-    sphereVAO = VertexArrayObject(sphere);
 
-    //sphereMap = SphereMap(Texture::DefaultImages::MANDELBROT, 2048, 2048, this);
-    sphereMap = SphereMap(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
-    environmentTriangleVAO = VertexArrayObject(EnvironmentMap::environmentTriangleVertices, sizeof(sphereMap.environmentTriangleVertices) / sizeof(PositionXYZ));
+    if (fluidSurface) {
+        mProgram = createVertexAndFragmentShaderProgram(TILES_VERTEX_SHADER.c_str(), TILES_FRAGMENT_SHADER.c_str());
+        graphNormalMapProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_NORMAL_MAP_FRAGMENT_SHADER.c_str());
+        graphFluidSurfaceProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_FLUID_SURFACE_FRAGMENT_SHADER.c_str());
+        graphFluidSurfaceClipsSphereProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_FLUID_SURFACE_CLIPS_SPHERE_FRAGMENT_SHADER.c_str());
+        sphereNormalMapProgram = createVertexAndFragmentShaderProgram(SPHERE_VERTEX_SHADER.c_str(), SPHERE_NORMAL_MAP_FRAGMENT_SHADER.c_str());
+        sphereMapDoubleRefractionProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(), SPHERE_MAP_DOUBLE_REFRACTION_FRAGMENT_SHADER.c_str());
+        sphereMapProgram = createVertexAndFragmentShaderProgram(SPHERE_MAP_VERTEX_SHADER.c_str(), SPHERE_MAP_FRAGMENT_SHADER.c_str());
 
-    sim = &simulation;
-    sphereClipsGraph = smoothSphereSurface;
+        tilesVAO = VertexArrayObject(tilesVertices, sizeof(tilesVertices) / sizeof(PositionXYZ));
+
+        implicitGrapher = ImplicitGrapher(ivec3(graphSize));
+
+        sphere = Sphere(sphereRadius + 0.5f, 100);
+        sphereVAO = VertexArrayObject(sphere);
+
+        //sphereMap = SphereMap(Texture::DefaultImages::MANDELBROT, 2048, 2048, this);
+        sphereMap = SphereMap(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
+        environmentTriangleVAO = VertexArrayObject(EnvironmentMap::environmentTriangleVertices, sizeof(sphereMap.environmentTriangleVertices) / sizeof(PositionXYZ));
+
+        sim = &simulation;
+        sphereClipsGraph = smoothSphereSurface;
+    } else {
+        cubeProgram = createVertexAndFragmentShaderProgram(_VERTEX_SHADER.c_str(), _FRAGMENT_SHADER.c_str());
+        cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
+    }
 }
 
 NaiveSimulationFluidSurfaceView::~NaiveSimulationFluidSurfaceView(){
@@ -105,6 +110,61 @@ NaiveSimulationFluidSurfaceView::~NaiveSimulationFluidSurfaceView(){
 }
 
 void NaiveSimulationFluidSurfaceView::render(){
+    if(!fluidSurface){
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
+        glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glUseProgram(cubeProgram);
+        Matrix4<float> mvp;
+        Matrix4<float> projection = referenceFrameRotates ? perspective
+                                                          : orientationAdjustedPerspective;
+        Matrix4<float> view;
+        Matrix4<float> model;
+        Matrix4<float> translation;
+        translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 50.0f * (zoom - 1.0f)));
+        Matrix4<float> rotation = Matrix4<float>(quaternionTo3x3(
+                Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z,
+                            rotationVector.w)));
+        for (int i = 0; i < simulation.particleCount; i++) {
+            model = model.Translation(Vec3<float>(simulation.particles[i].position.x,
+                                                  simulation.particles[i].position.y,
+                                                  simulation.particles[i].position.z));
+            view = referenceFrameRotates ? translation : translation * rotation;
+            mvp = projection * view * model;
+            glUniformMatrix4fv(
+                    glGetUniformLocation(cubeProgram, "mvp"),
+                    1,
+                    GL_FALSE,
+                    (GLfloat *) &mvp);
+            vec4 color = vec4(
+                    0.06125f * simulation.particles[i].velocity.x + 0.5f,
+                    -0.06125f * simulation.particles[i].velocity.y + 0.5f,
+                    -0.06125f * simulation.particles[i].velocity.z + 0.5f,
+                    1.0f
+            );
+            glUniform4fv(glGetUniformLocation(cubeProgram, "color"), 1, color.v);
+            cubeVAO.drawArrays();
+        }
+
+        for(int i = 0; i < 5; i++){
+            float linearAccelerationMultiplier = 8.0f * (getFrameCount() > 10 ? 1.0f : 1.0f / 10 * getFrameCount());
+            if(referenceFrameRotates){
+                if(gravityOn) {
+                    simulation.simulate(compensateForOrientation(accelerometerVector));
+                }else{
+                    simulation.simulate(compensateForOrientation(linearAccelerationMultiplier * linearAccelerationVector));
+                }
+            }else {
+                if(gravityOn){
+                    simulation.simulate(quaternionTo3x3(rotationVector) * (-accelerometerVector));
+                }else{
+                    simulation.simulate(quaternionTo3x3(rotationVector) * (-linearAccelerationMultiplier * linearAccelerationVector));
+                }
+            }
+        }
+        return;
+    }
 
     if(getFrameCount() == 0){
         fbo = FBO(

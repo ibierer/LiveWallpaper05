@@ -66,6 +66,4 @@ void NaiveSimulationView::render(){
             }
         }
     }
-
-    checkGlError("Renderer::render");
 }

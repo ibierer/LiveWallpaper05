@@ -41,9 +41,29 @@ public:
 
     ImplicitGrapher implicitGrapher;
 
+    bool fluidSurface;
+
     bool referenceFrameRotates;
 
     bool gravityOn;
+
+    const string _VERTEX_SHADER =
+            ES_VERSION +
+            "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
+            "uniform mat4 mvp;\n"
+            "out vec4 vColor;\n"
+            "void main() {\n"
+            "    gl_Position = mvp * vec4(pos, 1.0);\n"
+            "}\n";
+
+    const string _FRAGMENT_SHADER =
+            ES_VERSION +
+            "precision mediump float;\n"
+            "uniform vec4 color;\n"
+            "out vec4 outColor;\n"
+            "void main() {\n"
+            "    outColor = color;\n"
+            "}\n";
 
     const string VERTEX_SHADER =
             ES_VERSION +
@@ -340,6 +360,7 @@ public:
             "}\n";
 
     NaiveSimulationFluidSurfaceView(const int &particleCount,
+                                    const bool& fluidSurface,
                                     const int &graphSize,
                                     const float &sphereRadius,
                                     const bool &referenceFrameRotates,
