@@ -88,9 +88,9 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
             if(simulation == "naive"){
                 string fluidSurface = visualizationJSON["fluid_surface"];
                 int particleCount = visualizationJSON["particle_count"];
+                string gravityOn = visualizationJSON["gravity_on"];
+                string referenceFrameRotates = visualizationJSON["reference_frame_rotates"];
                 if(fluidSurface == "true"){
-                    string gravityOn = visualizationJSON["gravity_on"];
-                    string referenceFrameRotates = visualizationJSON["reference_frame_rotates"];
                     string smoothSphereSurface = visualizationJSON["smooth_sphere_surface"];
                     //view = new RGBCubeView();
                     //view = new TriangleView();
@@ -109,7 +109,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
                     //view = new SimpleNBodySimulationView();
                     view = new NaiveSimulationFluidSurfaceView(particleCount, 40, 20.0f, referenceFrameRotates == "true", gravityOn == "true", smoothSphereSurface == "true");
                 }else{
-                    view = new NaiveSimulationView(particleCount, 15.0f);
+                    view = new NaiveSimulationView(particleCount, 15.0f, referenceFrameRotates == "true", gravityOn == "true");
                 }
             }else if(simulation == "nbody"){
                 view = new SimpleNBodySimulationView();

@@ -13,6 +13,10 @@ public:
 
     NaiveSimulation simulation;
 
+    bool referenceFrameRotates;
+
+    bool gravityOn;
+
     const string VERTEX_SHADER =
             ES_VERSION +
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
@@ -31,7 +35,8 @@ public:
             "    outColor = color;\n"
             "}\n";
 
-    NaiveSimulationView(const int &particleCount, const float &sphereRadius);
+    NaiveSimulationView(const int &particleCount, const float &sphereRadius,
+                        const bool &referenceFrameRotates, const bool &gravityOn);
 
     ~NaiveSimulationView();
 

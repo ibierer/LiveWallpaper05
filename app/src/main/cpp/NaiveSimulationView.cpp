@@ -4,7 +4,10 @@
 
 #include "NaiveSimulationView.h"
 
-NaiveSimulationView::NaiveSimulationView(const int &particleCount, const float &sphereRadius) : View() {
+NaiveSimulationView::NaiveSimulationView(const int &particleCount, const float &sphereRadius, const bool &referenceFrameRotates, const bool &gravityOn) : View() {
+    this->referenceFrameRotates = referenceFrameRotates;
+    this->gravityOn = gravityOn;
+
     mProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
     simulation.seed(particleCount, sphereRadius);
@@ -21,11 +24,17 @@ void NaiveSimulationView::render(){
     glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(mProgram);
+    Matrix4<float> mvp;
+    Matrix4<float> projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
+    Matrix4<float> view;
+    Matrix4<float> model;
     Matrix4<float> translation;
+    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 50.0f * (zoom - 1.0f)));
+    Matrix4<float> rotation = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
     for(int i = 0; i < simulation.particleCount; i++) {
-        translation = translation.Translation(
-                Vec3<float>(simulation.particles[i].position.x, simulation.particles[i].position.y, simulation.particles[i].position.z + 50.0f * (zoom - 1.0f)));
-        Matrix4<float> mvp = perspective * translation;
+        model = model.Translation(Vec3<float>(simulation.particles[i].position.x, simulation.particles[i].position.y, simulation.particles[i].position.z));
+        view = referenceFrameRotates ? translation : translation * rotation;
+        mvp = projection * view * model;
         glUniformMatrix4fv(
                 glGetUniformLocation(mProgram, "mvp"),
                 1,
@@ -42,7 +51,11 @@ void NaiveSimulationView::render(){
     }
 
     for(int i = 0; i < 5; i++){
-        simulation.simulate(compensateForOrientation(accelerometerVector));
+        if(referenceFrameRotates){
+            simulation.simulate(compensateForOrientation(accelerometerVector));
+        }else {
+            simulation.simulate(quaternionTo3x3(rotationVector) * (-accelerometerVector));
+        }
     }
 
     checkGlError("Renderer::render");
