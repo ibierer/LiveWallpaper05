@@ -13,6 +13,10 @@ public:
 
     VertexArrayObject cubeVAO;
 
+    bool referenceFrameRotates;
+
+    bool gravityOn;
+
     const string VERTEX_SHADER =
             ES_VERSION +
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
@@ -33,7 +37,7 @@ public:
 
     void render() override;
 
-    PicFlipView();
+    PicFlipView(const bool &referenceFrameRotates, const bool &gravityOn);
 
     ~PicFlipView();
 

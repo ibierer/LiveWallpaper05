@@ -4,7 +4,10 @@
 
 #include "PicFlipView.h"
 
-PicFlipView::PicFlipView() : View() {
+PicFlipView::PicFlipView(const bool &referenceFrameRotates, const bool &gravityOn) : View() {
+    this->referenceFrameRotates = referenceFrameRotates;
+    this->gravityOn = gravityOn;
+
     mProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
     setupScene();
@@ -100,15 +103,15 @@ void PicFlipView::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(mProgram);
     Matrix4<float> translation;
-    translation = translation.Translation(
-            Vec3<float>(0.0f, 0.0f, 50.0f * (zoom - 1.0f)) - Vec3<float>(15.f));
+    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 50.0f * (zoom - 1.0f)));
     Matrix4<float> translation2;
     for (int i = 0; i < fluid->numParticles; i++) {
-        translation2 = translation2.Translation(
-                10.0f * Vec3<float>(fluid->particlePos[i].x, fluid->particlePos[i].y,
-                                    fluid->particlePos[i].z));
+        translation2 = translation2.Translation(10.0f * Vec3<float>(fluid->particlePos[i].x, fluid->particlePos[i].y, fluid->particlePos[i].z) - Vec3<float>(15.f));
         Matrix4<float> rotation = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
-        Matrix4<float> mvp = perspective * translation * translation2;
+        Matrix4<float> model = translation2;
+        Matrix4<float> view = referenceFrameRotates ? translation : translation * rotation;
+        Matrix4<float> projection = perspective;
+        Matrix4<float> mvp = projection * view * model;
         glUniformMatrix4fv(
                 glGetUniformLocation(mProgram, "mvp"),
                 1,
@@ -125,12 +128,24 @@ void PicFlipView::render() {
     }
 
     for (int i = 0; i < 2; i++) {
-        if (distance(accelerometerVector) == 0.0f) {
+        /*if (distance(accelerometerVector) == 0.0f) {
             simulate(vec3(0.0f, -9.81f, 0.0f));
         } else {
             simulate(compensateForOrientation(accelerometerVector));
+        }*/
+        float linearAccelerationMultiplier = 8.0f * (getFrameCount() > 10 ? 1.0f : 1.0f / 10 * getFrameCount());
+        if(referenceFrameRotates){
+            if(gravityOn) {
+                simulate(compensateForOrientation(accelerometerVector));
+            }else{
+                simulate(compensateForOrientation(linearAccelerationMultiplier * linearAccelerationVector));
+            }
+        }else {
+            if(gravityOn){
+                simulate(quaternionTo3x3(rotationVector) * (-accelerometerVector));
+            }else{
+                simulate(quaternionTo3x3(rotationVector) * (-linearAccelerationMultiplier * linearAccelerationVector));
+            }
         }
     }
-
-    checkGlError("Renderer::render");
 }

@@ -102,6 +102,8 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             val picflipJSON = """{
                     "visualization_type": "simulation",
                     "simulation_type": "picflip",
+                    "gravity_on": "false",
+                    "reference_frame_rotates": "false",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
                 }""".trimIndent()
 

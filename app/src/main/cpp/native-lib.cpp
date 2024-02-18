@@ -110,7 +110,9 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
             }else if(simulation == "nbody"){
                 view = new SimpleNBodySimulationView();
             }else if(simulation == "picflip"){
-                view = new PicFlipView();
+                string gravityOn = visualizationJSON["gravity_on"];
+                string referenceFrameRotates = visualizationJSON["reference_frame_rotates"];
+                view = new PicFlipView(referenceFrameRotates == "true", gravityOn == "true");
             }
         }else if(type == "graph"){
             string equation = visualizationJSON["equation"];
