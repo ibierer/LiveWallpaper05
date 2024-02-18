@@ -126,12 +126,13 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
             string equation = visualizationJSON["equation"];
             ImplicitGrapher::convertPiSymbol(equation);
             string syntaxCheck = ImplicitGrapher::checkEquationSyntax(equation);
+            string referenceFrameRotates = visualizationJSON["reference_frame_rotates"];
             if(syntaxCheck == "") {
                 //view = new GraphView(equation);
-                view = new Graph2View(equation, 40, false, 0.0);
+                view = new Graph2View(equation, 40, referenceFrameRotates == "true");
             }else{
                 //view = new GraphView("");
-                view = new Graph2View("", 40, false, 0.0);
+                view = new Graph2View("", 40, referenceFrameRotates == "true");
             }
         }else if(type == "other"){
             view = new SphereWithFresnelEffectView(Texture::MANDELBROT, 2048);

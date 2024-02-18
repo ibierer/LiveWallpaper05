@@ -7,10 +7,8 @@
 using std::min;
 using std::max;
 
-Graph2View::Graph2View(const string &equation, const int &graphSize,
-                       const bool &referenceFrameRotates, const float &gravity) : View() {
+Graph2View::Graph2View(const string &equation, const int &graphSize, const bool &referenceFrameRotates) : View() {
     this->referenceFrameRotates = referenceFrameRotates;
-    this->gravity = gravity;
 
     sphereMapProgram = createVertexAndFragmentShaderProgram(SPHERE_MAP_VERTEX_SHADER.c_str(), SPHERE_MAP_FRAGMENT_SHADER.c_str());
     if(backgroundTexture == Texture::DefaultImages::MS_PAINT_COLORS){
@@ -51,12 +49,13 @@ void Graph2View::render(){
     rotation = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
     inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();
 
-    if (getFrameCount() == 0/* || !(&fbo.getRenderedTexture<Texture>())*/) {
+    if (getFrameCount() == 0) {
         fbo = FBO(
                 (void *) new Texture(GL_RGBA, width, height, 0, GL_LINEAR),
                 YES,
                 NO);
     }
+
     enum Material {
         MERCURY,
         WATER,
@@ -69,18 +68,22 @@ void Graph2View::render(){
             indexOfRefraction = 1.0f;
             reflectivity = 1.0f;
             twoSidedRefraction = NO;
-            break;case WATER:indexOfRefraction = 4.0f / 3.0f;
+            break;
+        case WATER:indexOfRefraction = 4.0f / 3.0f;
             reflectivity = -1.0f;
             twoSidedRefraction = YES;
-            break;case BUBBLE:indexOfRefraction = 3.0f / 4.0f;
+            break;
+        case BUBBLE:indexOfRefraction = 3.0f / 4.0f;
             reflectivity = 0.0f;
             twoSidedRefraction = NO;
             break;
     }
+
     float distanceToCenter = 50.0f * (1.0f - zoom);
     translation = translation.Translation(Vec3<float>(0.0f, 0.0f, -distanceToCenter));
     normalMatrix = referenceFrameRotates ? rotation.GetSubMatrix3().GetInverse() : normalMatrix.Identity();
     cameraTransformation = rotation.GetInverse() * translation * model.Translation(Vec3<float>(0.0f, 0.0f, 0.0f));
+
     ImplicitGrapher::calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, false, false, ImplicitGrapher::vertices, ImplicitGrapher::indices, ImplicitGrapher::numIndices);
 
     // Render to texture
@@ -94,6 +97,7 @@ void Graph2View::render(){
         view = referenceFrameRotates ? translation : translation * rotation;
         projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
         mvp = projection * view * model;
+
         // Render graph
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
@@ -123,6 +127,7 @@ void Graph2View::render(){
         glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
         glCullFace(GL_BACK);
     }
+
     // Render to default frame buffer
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
