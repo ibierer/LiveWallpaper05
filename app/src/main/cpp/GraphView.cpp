@@ -16,14 +16,14 @@ GraphView::GraphView(const string& equation) : View() {
 
     implicitGrapher = ImplicitGrapher(ivec3(29));
     if(equation == "") {
-        ImplicitGrapher::surfaceEquation = 40; // Resets to 0 on the first render
-        for (int i = 0; i < ImplicitGrapher::numOfDefaultEquations; i++) {
-            ImplicitGrapher::memoryEquations[i][1] = ImplicitGrapher::defaultEquations[i][1];
-            //Convert any 'π' symbols to a ''
-            ImplicitGrapher::convertPiSymbol(ImplicitGrapher::memoryEquations[i][1]);
-            ImplicitGrapher::processEquation(i);
-            ImplicitGrapher::numOfEquationsInMemory++;
-        }
+        //ImplicitGrapher::surfaceEquation = 40; // Resets to 0 on the first render
+        //for (int i = 0; i < ImplicitGrapher::numOfDefaultEquations; i++) {
+        //    ImplicitGrapher::memoryEquations[i][1] = ImplicitGrapher::defaultEquations[i][1];
+        //    //Convert any 'π' symbols to a ''
+        //    ImplicitGrapher::convertPiSymbol(ImplicitGrapher::memoryEquations[i][1]);
+        //    ImplicitGrapher::processEquation(i);
+        //    ImplicitGrapher::numOfEquationsInMemory++;
+        //}
     }else{
         ImplicitGrapher::surfaceEquation = 0;
         ImplicitGrapher::memoryEquations[ImplicitGrapher::surfaceEquation][1] = equation;
@@ -94,12 +94,12 @@ void GraphView::render(){
         environmentTriangleVAO.drawArrays();
     }
 
-    if(getFrameCount() % 100 == 0){
-        ImplicitGrapher::surfaceEquation++;
-        if(ImplicitGrapher::surfaceEquation == ImplicitGrapher::numOfEquationsInMemory){
-            ImplicitGrapher::surfaceEquation = 0;
-        }
-    }
+    //if(getFrameCount() % 100 == 0){
+    //    ImplicitGrapher::surfaceEquation++;
+    //    if(ImplicitGrapher::surfaceEquation == ImplicitGrapher::numOfEquationsInMemory){
+    //        ImplicitGrapher::surfaceEquation = 0;
+    //    }
+    //}
 
     // Render cubes
     /*if(simulation.getComputationOption() == Computation::ComputationOptions::CPU) {

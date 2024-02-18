@@ -111,7 +111,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     "simulation_type": "picflip",
                     "gravity": 0.0,
                     "reference_frame_rotates": "true",
-                    "background_is_solid_color": "true",
+                    "background_is_solid_color": "false",
                     "background_texture": "ms_paint_colors",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
                 }""".trimIndent()
