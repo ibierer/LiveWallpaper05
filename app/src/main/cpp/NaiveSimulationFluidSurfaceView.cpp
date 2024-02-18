@@ -120,7 +120,7 @@ void NaiveSimulationFluidSurfaceView::render(){
 
     if(fluidSurface) {
 
-        if (getFrameCount() == 0) {
+        if (getFrameCount() == 0/* || !(&fbo.getRenderedTexture<Texture>())*/) {
             fbo = FBO(
                     (void *) new Texture(GL_RGBA, width, height, 0, GL_LINEAR),
                     YES,

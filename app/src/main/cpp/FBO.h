@@ -45,7 +45,7 @@ private:
 
     GLuint frameBuffer;
 
-    void* renderedTexture;
+    void* renderedTexture = nullptr;
 
     GLuint depthAndOrStencilRenderBuffer;
 

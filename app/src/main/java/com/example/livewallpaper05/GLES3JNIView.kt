@@ -125,7 +125,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
 
             val graphJSON = """{
                     "visualization_type": "graph",
-                    "background_is_solid_color": "false",
+                    "background_is_solid_color": "true",
                     "background_texture": "ms_paint_colors",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a},
                     "equation": "$eq"

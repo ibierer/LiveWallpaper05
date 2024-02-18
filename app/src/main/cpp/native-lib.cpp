@@ -62,6 +62,7 @@
 #include "SphereWithRefractionView.cpp"
 #include "SphereWithReflectionView.cpp"
 #include "SphereWithFresnelEffectView.cpp"
+#include "Graph2View.cpp"
 
 using std::string;
 using nlohmann::json;
@@ -126,9 +127,11 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
             ImplicitGrapher::convertPiSymbol(equation);
             string syntaxCheck = ImplicitGrapher::checkEquationSyntax(equation);
             if(syntaxCheck == "") {
-                view = new GraphView(equation);
+                //view = new GraphView(equation);
+                view = new Graph2View(equation, 40, false, 0.0);
             }else{
-                view = new GraphView("");
+                //view = new GraphView("");
+                view = new Graph2View("", 40, false, 0.0);
             }
         }else if(type == "other"){
             view = new SphereWithFresnelEffectView(Texture::MANDELBROT, 2048);
