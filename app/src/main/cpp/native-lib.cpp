@@ -101,6 +101,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
                 //view = new SphereWithRefractionView();
                 //view = new SphereWithFresnelEffectView();
                 //view = new SimpleNBodySimulationView();
+                //view = new NaiveSimulationView(particleCount, 15.0f, referenceFrameRotates == "true", gravityOn == "true");
                 int particleCount = visualizationJSON["particle_count"];
                 string fluidSurface = visualizationJSON["fluid_surface"];
                 string gravityOn = visualizationJSON["gravity_on"];

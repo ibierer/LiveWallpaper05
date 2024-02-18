@@ -104,6 +104,10 @@ public:
 
     int getFrameCount();
 
+protected:
+
+    vec3 computeForce(const bool& gravityOn, const bool& referenceFrameRotates, const Matrix4<float> rotation);
+
 private:
 
     int framesRendered;
