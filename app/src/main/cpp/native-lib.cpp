@@ -101,19 +101,19 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
                 //view = new SphereWithRefractionView();
                 //view = new SphereWithFresnelEffectView();
                 //view = new SimpleNBodySimulationView();
-                //view = new NaiveSimulationView(particleCount, 15.0f, referenceFrameRotates == "true", gravityOn == "true");
+                //view = new NaiveSimulationView(particleCount, 15.0f, referenceFrameRotates == "true", gravity);
                 int particleCount = visualizationJSON["particle_count"];
                 string fluidSurface = visualizationJSON["fluid_surface"];
-                string gravityOn = visualizationJSON["gravity_on"];
+                float gravity = visualizationJSON["gravity"];
                 string referenceFrameRotates = visualizationJSON["reference_frame_rotates"];
                 string smoothSphereSurface = visualizationJSON["smooth_sphere_surface"];
-                view = new NaiveSimulationFluidSurfaceView(particleCount, fluidSurface == "true", 40, 20.0f, referenceFrameRotates == "true", gravityOn == "true", smoothSphereSurface == "true");
+                view = new NaiveSimulationFluidSurfaceView(particleCount, fluidSurface == "true", 40, 20.0f, referenceFrameRotates == "true", gravity, smoothSphereSurface == "true");
             }else if(simulation == "nbody"){
                 view = new SimpleNBodySimulationView();
             }else if(simulation == "picflip"){
-                string gravityOn = visualizationJSON["gravity_on"];
+                float gravity = visualizationJSON["gravity"];
                 string referenceFrameRotates = visualizationJSON["reference_frame_rotates"];
-                view = new PicFlipView(referenceFrameRotates == "true", gravityOn == "true");
+                view = new PicFlipView(referenceFrameRotates == "true", gravity);
             }
         }else if(type == "graph"){
             string equation = visualizationJSON["equation"];

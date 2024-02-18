@@ -15,7 +15,7 @@ public:
 
     bool referenceFrameRotates;
 
-    bool gravityOn;
+    float gravity;
 
     const string VERTEX_SHADER =
             ES_VERSION +
@@ -36,7 +36,7 @@ public:
             "}\n";
 
     NaiveSimulationView(const int &particleCount, const float &sphereRadius,
-                        const bool &referenceFrameRotates, const bool &gravityOn);
+                        const bool &referenceFrameRotates, const float &gravity);
 
     ~NaiveSimulationView();
 

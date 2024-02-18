@@ -15,7 +15,7 @@ public:
 
     bool referenceFrameRotates;
 
-    bool gravityOn;
+    float gravity;
 
     const string VERTEX_SHADER =
             ES_VERSION +
@@ -37,7 +37,7 @@ public:
 
     void render() override;
 
-    PicFlipView(const bool &referenceFrameRotates, const bool &gravityOn);
+    PicFlipView(const bool &referenceFrameRotates, const float &gravity);
 
     ~PicFlipView();
 

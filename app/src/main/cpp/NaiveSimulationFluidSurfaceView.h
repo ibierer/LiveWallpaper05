@@ -45,7 +45,7 @@ public:
 
     bool referenceFrameRotates;
 
-    bool gravityOn;
+    float gravity;
 
     const string _VERTEX_SHADER =
             ES_VERSION +
@@ -364,7 +364,7 @@ public:
                                     const int &graphSize,
                                     const float &sphereRadius,
                                     const bool &referenceFrameRotates,
-                                    const bool &gravityOn,
+                                    const float &gravity,
                                     const bool &smoothSphereSurface);
 
     ~NaiveSimulationFluidSurfaceView();

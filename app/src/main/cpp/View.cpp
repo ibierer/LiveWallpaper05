@@ -396,12 +396,12 @@ int View::getFrameCount() {
     return framesRendered;
 }
 
-vec3 View::computeForce(const bool& gravityOn, const bool& referenceFrameRotates, const Matrix4<float> rotation) {
+vec3 View::computeForce(const float& gravity, const bool& referenceFrameRotates, const Matrix4<float> rotation) {
     float linearAccelerationMultiplier = 8.0f * (getFrameCount() > 10 ? 1.0f : 1.0f / 10 * getFrameCount());
     if(referenceFrameRotates){
-        Vec3<float> gravity = (rotation * Vec4<float>(0.0f, 0.0f, -9.81f, 1.0f)).XYZ();
-        return compensateForOrientation(linearAccelerationMultiplier * linearAccelerationVector) + vec3(gravity.x, gravity.y, gravity.z) * (float)gravityOn;
+        Vec3<float> force = (rotation * Vec4<float>(0.0f, 0.0f, -9.81f, 1.0f)).XYZ();
+        return compensateForOrientation(linearAccelerationMultiplier * linearAccelerationVector) + vec3(force.x, force.y, force.z) * gravity;
     }else {
-        return quaternionTo3x3(rotationVector) * (-linearAccelerationMultiplier * linearAccelerationVector) + vec3(0.0f, 0.0f, -9.81f) * (float)gravityOn;
+        return quaternionTo3x3(rotationVector) * (-linearAccelerationMultiplier * linearAccelerationVector) + vec3(0.0f, 0.0f, -9.81f) * gravity;
     }
 }

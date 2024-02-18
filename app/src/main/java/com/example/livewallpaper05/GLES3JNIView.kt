@@ -86,7 +86,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     "fluid_surface": "true",
                     "particle_count": 1000,
                     "smooth_sphere_surface": "true",
-                    "gravity_on": "false",
+                    "gravity": 0.0,
                     "reference_frame_rotates": "false",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
                 }""".trimIndent()
@@ -102,7 +102,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             val picflipJSON = """{
                     "visualization_type": "simulation",
                     "simulation_type": "picflip",
-                    "gravity_on": "false",
+                    "gravity": 0.0,
                     "reference_frame_rotates": "true",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
                 }""".trimIndent()

@@ -4,9 +4,9 @@
 
 #include "PicFlipView.h"
 
-PicFlipView::PicFlipView(const bool &referenceFrameRotates, const bool &gravityOn) : View() {
+PicFlipView::PicFlipView(const bool &referenceFrameRotates, const float &gravity) : View() {
     this->referenceFrameRotates = referenceFrameRotates;
-    this->gravityOn = gravityOn;
+    this->gravity = gravity;
 
     mProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
@@ -128,7 +128,7 @@ void PicFlipView::render() {
     }
 
     // Simulate
-    vec3 forceVector = computeForce(gravityOn, referenceFrameRotates, rotation);
+    vec3 forceVector = computeForce(gravity, referenceFrameRotates, rotation);
     for(int i = 0; i < 2; i++){
         simulate(forceVector);
     }

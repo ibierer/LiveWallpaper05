@@ -106,7 +106,7 @@ public:
 
 protected:
 
-    vec3 computeForce(const bool& gravityOn, const bool& referenceFrameRotates, const Matrix4<float> rotation);
+    vec3 computeForce(const float& gravity, const bool& referenceFrameRotates, const Matrix4<float> rotation);
 
 private:
 
