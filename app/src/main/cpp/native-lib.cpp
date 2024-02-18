@@ -83,6 +83,14 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
         if(view){
             free(view);
         }
+        string background = visualizationJSON["background"];
+        if(background != "solid_color"){
+            if (background == "ms_paint_colors") {
+                View::backgroundTexture = Texture::DefaultImages::MS_PAINT_COLORS;
+            } else if(background == "mandelbrot") {
+                View::backgroundTexture = Texture::DefaultImages::MANDELBROT;
+            }
+        }
         if(type == "simulation"){
             string simulation = visualizationJSON["simulation_type"];
             if(simulation == "naive"){
@@ -127,8 +135,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
         }else if(type == "other"){
             view = new SphereWithFresnelEffectView(Texture::MANDELBROT, 2048);
         }
-        string backgroundIsSolidColor = visualizationJSON["background"];
-        view-> backgroundIsSolidColor = backgroundIsSolidColor == "solid_color";
+        view->backgroundIsSolidColor = background == "solid_color";
         json rgba = visualizationJSON["background_color"];
         uint r = rgba["r"];
         uint g = rgba["g"];

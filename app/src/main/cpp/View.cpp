@@ -94,6 +94,8 @@ const string View::FRESNEL_EFFECT_FUNCTION =
         "    return pow(1.0 + dotNI, 3.0); \n"
         "} \n";
 
+int View:: backgroundTexture = 0;
+
 View::View() : framesRendered(0), zoom(0), mEglContext(eglGetCurrentContext()){
 
 }

@@ -88,7 +88,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     "smooth_sphere_surface": "true",
                     "gravity": 0.0,
                     "reference_frame_rotates": "false",
-                    "background": "solid_color",
+                    "background": "ms_paint_colors",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
                 }""".trimIndent()
 
@@ -100,7 +100,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     "smooth_sphere_surface": "true",
                     "gravity": 0.0,
                     "reference_frame_rotates": "false",
-                    "background": "solid_color",
+                    "background": "ms_paint_colors",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
                 }""".trimIndent()
 
@@ -109,7 +109,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     "simulation_type": "picflip",
                     "gravity": 0.0,
                     "reference_frame_rotates": "true",
-                    "background": "solid_color",
+                    "background": "ms_paint_colors",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
                 }""".trimIndent()
 

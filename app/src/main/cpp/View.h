@@ -28,6 +28,8 @@ public:
 
     bool backgroundIsSolidColor;
 
+    static int backgroundTexture;
+
     EGLContext mEglContext;
 
     float zoom;
