@@ -88,6 +88,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     "smooth_sphere_surface": "true",
                     "gravity": 0.0,
                     "reference_frame_rotates": "false",
+                    "background_is_solid_color": "true",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
                 }""".trimIndent()
 
@@ -96,6 +97,10 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     "simulation_type": "naive",
                     "fluid_surface": "false",
                     "particle_count": 1000,
+                    "smooth_sphere_surface": "true",
+                    "gravity": 0.0,
+                    "reference_frame_rotates": "false",
+                    "background_is_solid_color": "true",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
                 }""".trimIndent()
 
@@ -104,16 +109,19 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     "simulation_type": "picflip",
                     "gravity": 0.0,
                     "reference_frame_rotates": "true",
+                    "background_is_solid_color": "true",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
                 }""".trimIndent()
 
             val triangleJSON = """{
                     "visualization_type": "other",
+                    "background_is_solid_color": "false",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
                 }""".trimIndent()
 
             val graphJSON = """{
                     "visualization_type": "graph",
+                    "background_is_solid_color": "false",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a},
                     "equation": "$eq"
                 }""".trimIndent()
@@ -121,6 +129,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             val nbodyJSON = """{
                     "visualization_type": "simulation",
                     "simulation_type": "nbody",
+                    "background_is_solid_color": "false",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
                 }""".trimIndent()
 

@@ -10,6 +10,10 @@ PicFlipView::PicFlipView(const bool &referenceFrameRotates, const float &gravity
 
     mProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
+    sphereMapProgram = createVertexAndFragmentShaderProgram(SPHERE_MAP_VERTEX_SHADER.c_str(), SPHERE_MAP_FRAGMENT_SHADER.c_str());
+    //sphereMap = SphereMap(Texture::DefaultImages::MANDELBROT, 2048, 2048, this);
+    sphereMap = SphereMap(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
+    environmentTriangleVAO = VertexArrayObject(EnvironmentMap::environmentTriangleVertices, sizeof(sphereMap.environmentTriangleVertices) / sizeof(PositionXYZ));
     setupScene();
 }
 
@@ -108,6 +112,7 @@ void PicFlipView::render() {
     Matrix4<float> rotation = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
     Matrix4<float> view = referenceFrameRotates ? translation : translation * rotation;
     Matrix4<float> projection = perspective;
+    Matrix4<float> inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();
     for (int i = 0; i < fluid->numParticles; i++) {
         translation2 = translation2.Translation(10.0f * Vec3<float>(fluid->particlePos[i].x, fluid->particlePos[i].y, fluid->particlePos[i].z) - Vec3<float>(15.f));
         Matrix4<float> model = translation2;
@@ -125,6 +130,20 @@ void PicFlipView::render() {
         );
         glUniform4fv(glGetUniformLocation(mProgram, "color"), 1, color.v);
         cubeVAO.drawArrays();
+    }
+
+    if(!backgroundIsSolidColor) {
+        // Render sphere map
+        glUseProgram(sphereMapProgram);
+        glUniformMatrix4fv(
+                glGetUniformLocation(sphereMapProgram, "inverseViewProjection"),
+                1,
+                GL_FALSE,
+                (GLfloat *) &inverseViewProjection);
+        glBindTexture(GL_TEXTURE_2D, sphereMap.getTextureId());
+        glActiveTexture(GL_TEXTURE0);
+        glUniform1i(glGetUniformLocation(sphereMapProgram, "environmentTexture"), 0);
+        environmentTriangleVAO.drawArrays();
     }
 
     // Simulate

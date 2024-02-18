@@ -26,6 +26,8 @@ public:
 
     vec4 backgroundColor;
 
+    bool backgroundIsSolidColor;
+
     EGLContext mEglContext;
 
     float zoom;
