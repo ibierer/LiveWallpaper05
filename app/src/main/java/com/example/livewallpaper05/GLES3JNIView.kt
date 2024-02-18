@@ -88,7 +88,8 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     "smooth_sphere_surface": "true",
                     "gravity": 0.0,
                     "reference_frame_rotates": "false",
-                    "background": "ms_paint_colors",
+                    "background_is_solid_color": "false",
+                    "background_texture": "ms_paint_colors",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
                 }""".trimIndent()
 
@@ -100,7 +101,8 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     "smooth_sphere_surface": "true",
                     "gravity": 0.0,
                     "reference_frame_rotates": "false",
-                    "background": "ms_paint_colors",
+                    "background_is_solid_color": "true",
+                    "background_texture": "ms_paint_colors",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
                 }""".trimIndent()
 
@@ -109,19 +111,22 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     "simulation_type": "picflip",
                     "gravity": 0.0,
                     "reference_frame_rotates": "true",
-                    "background": "ms_paint_colors",
+                    "background_is_solid_color": "true",
+                    "background_texture": "ms_paint_colors",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
                 }""".trimIndent()
 
             val triangleJSON = """{
                     "visualization_type": "other",
-                    "background": "false",
+                    "background_is_solid_color": "false",
+                    "background_texture": "mandelbrot",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
                 }""".trimIndent()
 
             val graphJSON = """{
                     "visualization_type": "graph",
-                    "background": "solid_color",
+                    "background_is_solid_color": "false",
+                    "background_texture": "ms_paint_colors",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a},
                     "equation": "$eq"
                 }""".trimIndent()
@@ -130,6 +135,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     "visualization_type": "simulation",
                     "simulation_type": "nbody",
                     "background_is_solid_color": "false",
+                    "background_texture": "ms_paint_colors",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
                 }""".trimIndent()
 

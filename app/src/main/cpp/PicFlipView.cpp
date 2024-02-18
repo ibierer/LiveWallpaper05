@@ -10,15 +10,15 @@ PicFlipView::PicFlipView(const bool &referenceFrameRotates, const float &gravity
 
     mProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
+
     sphereMapProgram = createVertexAndFragmentShaderProgram(SPHERE_MAP_VERTEX_SHADER.c_str(), SPHERE_MAP_FRAGMENT_SHADER.c_str());
-    //sphereMap = SphereMap(Texture::DefaultImages::MANDELBROT, 2048, 2048, this);
-    //sphereMap = SphereMap(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
     if(backgroundTexture == Texture::DefaultImages::MS_PAINT_COLORS){
         sphereMap = SphereMap(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
     }else if(backgroundTexture == Texture::DefaultImages::MANDELBROT){
         sphereMap = SphereMap(Texture::DefaultImages::MANDELBROT, 2048, 2048, this);
     }
     environmentTriangleVAO = VertexArrayObject(EnvironmentMap::environmentTriangleVertices, sizeof(sphereMap.environmentTriangleVertices) / sizeof(PositionXYZ));
+
     setupScene();
 }
 

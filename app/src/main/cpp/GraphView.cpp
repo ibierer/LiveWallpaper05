@@ -31,11 +31,19 @@ GraphView::GraphView(const string& equation) : View() {
         ImplicitGrapher::numOfEquationsInMemory++;
     }
 
-    //simulation.initialize(Computation::ComputationOptions::CPU);
-    simulation.initialize(Computation::ComputationOptions::GPU);
+    simulation.initialize(Computation::ComputationOptions::CPU);
+    //simulation.initialize(Computation::ComputationOptions::GPU);
     simulation.computeShader.gIndexBufferBinding = SimpleNBodySimulation::DEFAULT_INDEX_BUFFER_BINDING;
 
     cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
+
+    sphereMapProgram = createVertexAndFragmentShaderProgram(SPHERE_MAP_VERTEX_SHADER.c_str(), SPHERE_MAP_FRAGMENT_SHADER.c_str());
+    if(backgroundTexture == Texture::DefaultImages::MS_PAINT_COLORS){
+        sphereMap = SphereMap(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
+    }else if(backgroundTexture == Texture::DefaultImages::MANDELBROT){
+        sphereMap = SphereMap(Texture::DefaultImages::MANDELBROT, 2048, 2048, this);
+    }
+    environmentTriangleVAO = VertexArrayObject(EnvironmentMap::environmentTriangleVertices, sizeof(sphereMap.environmentTriangleVertices) / sizeof(PositionXYZ));
 }
 
 GraphView::~GraphView(){
@@ -70,6 +78,21 @@ void GraphView::render(){
     glDrawElements(GL_TRIANGLES, ImplicitGrapher::numIndices, GL_UNSIGNED_INT, ImplicitGrapher::indices);
     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
     glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
+
+    if(!backgroundIsSolidColor) {
+        Matrix4<float> inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();
+        // Render sphere map
+        glUseProgram(sphereMapProgram);
+        glUniformMatrix4fv(
+                glGetUniformLocation(sphereMapProgram, "inverseViewProjection"),
+                1,
+                GL_FALSE,
+                (GLfloat *) &inverseViewProjection);
+        glBindTexture(GL_TEXTURE_2D, sphereMap.getTextureId());
+        glActiveTexture(GL_TEXTURE0);
+        glUniform1i(glGetUniformLocation(sphereMapProgram, "environmentTexture"), 0);
+        environmentTriangleVAO.drawArrays();
+    }
 
     if(getFrameCount() % 100 == 0){
         ImplicitGrapher::surfaceEquation++;

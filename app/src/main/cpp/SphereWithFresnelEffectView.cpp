@@ -20,7 +20,12 @@ SphereWithFresnelEffectView::SphereWithFresnelEffectView(Texture::DefaultImages 
             BACKGROUND_VERTEX_SHADER.c_str(),
             CUBE_MAP_BACKGROUND_FRAGMENT_SHADER.c_str());
     //environmentMap = CubeMap::createSimpleTextureCubemap();
-    environmentMap = SphereMap(option, resolution, resolution, this);
+    //environmentMap = SphereMap(option, resolution, resolution, this);
+    if(backgroundTexture == Texture::DefaultImages::MS_PAINT_COLORS){
+        environmentMap = SphereMap(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
+    }else if(backgroundTexture == Texture::DefaultImages::MANDELBROT){
+        environmentMap = SphereMap(Texture::DefaultImages::MANDELBROT, 2048, 2048, this);
+    }
     sphereVAO = VertexArrayObject(Sphere(1.0f, 100));
     environmentTriangleVAO = VertexArrayObject(EnvironmentMap::environmentTriangleVertices, sizeof(environmentMap.environmentTriangleVertices) / sizeof(PositionXYZ));
 }
@@ -29,7 +34,7 @@ SphereWithFresnelEffectView::~SphereWithFresnelEffectView(){
     glDeleteProgram(mProgram);
 }
 
-void SphereWithFresnelEffectView::render(){
+void SphereWithFresnelEffectView::render() {
     glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
@@ -39,13 +44,17 @@ void SphereWithFresnelEffectView::render(){
     Matrix4<float> translation;
     translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 10.0f * (zoom - 1.0f)));
     Matrix4<float> rotation;
-    rotation = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
+    rotation = Matrix4<float>(quaternionTo3x3(
+            Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
     Matrix3<float> inverse3x3Transpose;
     Matrix4<float> view = translation * rotation;
     Matrix4<float> mvp = orientationAdjustedPerspective * view;
     inverse3x3Transpose = rotation.GetSubMatrix3().Identity();
     Matrix4<float> cameraTransformation = rotation.GetInverse() * view;
     Matrix4<float> inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();
+
+    glBindTexture(GL_TEXTURE_2D, environmentMap.getTextureId());
+    //glActiveTexture(GL_TEXTURE0);
 
     /*glUseProgram(cubeMapRefractionProgram);
     glUniformMatrix4fv(
@@ -61,16 +70,16 @@ void SphereWithFresnelEffectView::render(){
 
     sphereVAO.draw();
 
-    glUseProgram(cubeMapBackgroundProgram);
-    glUniformMatrix4fv(
-            glGetUniformLocation(cubeMapBackgroundProgram, "inverseViewProjection"),
-            1,
-            GL_FALSE,
-            (GLfloat*)&inverseViewProjection);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, environmentMap.getTextureId());
-    //glActiveTexture(GL_TEXTURE0);
+    if(!backgroundIsSolidColor) {
+        glUseProgram(cubeMapBackgroundProgram);
+        glUniformMatrix4fv(
+                glGetUniformLocation(cubeMapBackgroundProgram, "inverseViewProjection"),
+                1,
+                GL_FALSE,
+                (GLfloat*)&inverseViewProjection);
 
-    environmentTriangleVAO.drawArrays();*/
+        environmentTriangleVAO.drawArrays();
+    }*/
 
 
     /*glUseProgram(sphereMapRefractionProgram);
@@ -88,16 +97,16 @@ void SphereWithFresnelEffectView::render(){
     sphereVAO.draw();
 
 
-    glUseProgram(sphereMapBackgroundProgram);
-    glUniformMatrix4fv(
-            glGetUniformLocation(sphereMapBackgroundProgram, "inverseViewProjection"),
-            1,
-            GL_FALSE,
-            (GLfloat*)&inverseViewProjection);
-    glBindTexture(GL_TEXTURE_2D, environmentMap.getTextureId());
-    //glActiveTexture(GL_TEXTURE0);
+    if(!backgroundIsSolidColor) {
+        glUseProgram(sphereMapBackgroundProgram);
+        glUniformMatrix4fv(
+                glGetUniformLocation(sphereMapBackgroundProgram, "inverseViewProjection"),
+                1,
+                GL_FALSE,
+                (GLfloat*)&inverseViewProjection);
 
-    environmentTriangleVAO.drawArrays();*/
+        environmentTriangleVAO.drawArrays();
+    }*/
 
 
     glUseProgram(sphereMapDoubleRefractionProgram);
@@ -105,26 +114,26 @@ void SphereWithFresnelEffectView::render(){
             glGetUniformLocation(sphereMapDoubleRefractionProgram, "mvp"),
             1,
             GL_FALSE,
-            (GLfloat*)&mvp);
+            (GLfloat *) &mvp);
     glUniformMatrix4fv(
             glGetUniformLocation(sphereMapDoubleRefractionProgram, "viewTransformation"),
             1,
             GL_FALSE,
-            (GLfloat*)&cameraTransformation);
+            (GLfloat *) &cameraTransformation);
 
     sphereVAO.drawArrays();
 
 
-    glUseProgram(sphereMapBackgroundProgram);
-    glUniformMatrix4fv(
-            glGetUniformLocation(sphereMapBackgroundProgram, "inverseViewProjection"),
-            1,
-            GL_FALSE,
-            (GLfloat*)&inverseViewProjection);
-    glBindTexture(GL_TEXTURE_2D, environmentMap.getTextureId());
-    //glActiveTexture(GL_TEXTURE0);
+    if (!backgroundIsSolidColor) {
+        glUseProgram(sphereMapBackgroundProgram);
+        glUniformMatrix4fv(
+                glGetUniformLocation(sphereMapBackgroundProgram, "inverseViewProjection"),
+                1,
+                GL_FALSE,
+                (GLfloat *) &inverseViewProjection);
 
-    environmentTriangleVAO.drawArrays();
+        environmentTriangleVAO.drawArrays();
+    }
 
 
     /*glUseProgram(cubeMapDoubleRefractionProgram);
@@ -142,14 +151,14 @@ void SphereWithFresnelEffectView::render(){
     sphereVAO.drawArrays();
 
 
-    glUseProgram(cubeMapBackgroundProgram);
-    glUniformMatrix4fv(
-            glGetUniformLocation(cubeMapBackgroundProgram, "inverseViewProjection"),
-            1,
-            GL_FALSE,
-            (GLfloat*)&inverseViewProjection);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, environmentMap.getTextureId());
-    //glActiveTexture(GL_TEXTURE0);
+    if(!backgroundIsSolidColor) {
+        glUseProgram(cubeMapBackgroundProgram);
+        glUniformMatrix4fv(
+                glGetUniformLocation(cubeMapBackgroundProgram, "inverseViewProjection"),
+                1,
+                GL_FALSE,
+                (GLfloat*)&inverseViewProjection);
 
-    environmentTriangleVAO.drawArrays();*/
+        environmentTriangleVAO.drawArrays();
+    }*/
 }
