@@ -127,8 +127,8 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
         }else if(type == "other"){
             view = new SphereWithFresnelEffectView(Texture::MANDELBROT, 2048);
         }
-        string backgroundIsSolidColor = visualizationJSON["background_is_solid_color"];
-        view-> backgroundIsSolidColor = backgroundIsSolidColor == "true";
+        string backgroundIsSolidColor = visualizationJSON["background"];
+        view-> backgroundIsSolidColor = backgroundIsSolidColor == "solid_color";
         json rgba = visualizationJSON["background_color"];
         uint r = rgba["r"];
         uint g = rgba["g"];

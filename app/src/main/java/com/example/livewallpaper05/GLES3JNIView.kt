@@ -88,7 +88,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     "smooth_sphere_surface": "true",
                     "gravity": 0.0,
                     "reference_frame_rotates": "false",
-                    "background_is_solid_color": "true",
+                    "background": "solid_color",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
                 }""".trimIndent()
 
@@ -100,7 +100,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     "smooth_sphere_surface": "true",
                     "gravity": 0.0,
                     "reference_frame_rotates": "false",
-                    "background_is_solid_color": "true",
+                    "background": "solid_color",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
                 }""".trimIndent()
 
@@ -109,19 +109,19 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     "simulation_type": "picflip",
                     "gravity": 0.0,
                     "reference_frame_rotates": "true",
-                    "background_is_solid_color": "true",
+                    "background": "solid_color",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
                 }""".trimIndent()
 
             val triangleJSON = """{
                     "visualization_type": "other",
-                    "background_is_solid_color": "false",
+                    "background": "false",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
                 }""".trimIndent()
 
             val graphJSON = """{
                     "visualization_type": "graph",
-                    "background_is_solid_color": "false",
+                    "background": "solid_color",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a},
                     "equation": "$eq"
                 }""".trimIndent()
