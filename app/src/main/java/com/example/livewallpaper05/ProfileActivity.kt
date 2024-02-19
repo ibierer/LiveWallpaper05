@@ -235,7 +235,8 @@ class ProfileActivity : AppCompatActivity() {
         dialog.requestWindowFeature(android.view.Window.FEATURE_NO_TITLE)
         dialog.setCancelable(false)
         dialog.setContentView(R.layout.dialog_login)
-
+        // create objects for different textBoxes
+        //check username, query database if valid->update the viewModel
     }
 
     fun newWallpaper(view: View) {
