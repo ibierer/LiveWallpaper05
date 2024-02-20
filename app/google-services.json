@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "317436628214",
+    "project_id": "livewallzapp",
+    "storage_bucket": "livewallzapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:317436628214:android:284699f84077b7c554b0d7",
+        "android_client_info": {
+          "package_name": "com.example.livewallpaper05"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAiXOoK41K28Vqp_IPt_3g4hSugBYHotkU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
