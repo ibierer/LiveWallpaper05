@@ -24,6 +24,7 @@ import com.example.livewallpaper05.helpful_fragments.WallpaperFragment
 import com.example.livewallpaper05.profiledata.ProfileViewModel
 import com.example.livewallpaper05.savedWallpapers.SavedWallpaperViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -133,6 +134,7 @@ class ProfileActivity : AppCompatActivity() {
         * if so: pull relevant user data (profile data, userID)
         * otherwise: insert user into database to pull from later in this function. */
         GlobalScope.launch(Dispatchers.IO) {
+            val auth = FirebaseAuth.getInstance()
             // write aws test code here -------------
             val jdbcConnectionString =
                 "jdbc:mysql://database-1.cxo8mkcogo8p.us-east-1.rds.amazonaws.com:3306/?user=admin"
