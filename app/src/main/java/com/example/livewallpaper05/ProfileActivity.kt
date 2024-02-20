@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.GridLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -23,13 +24,16 @@ import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModelF
 import com.example.livewallpaper05.helpful_fragments.WallpaperFragment
 import com.example.livewallpaper05.profiledata.ProfileViewModel
 import com.example.livewallpaper05.savedWallpapers.SavedWallpaperViewModel
+import com.firebase.ui.auth.AuthUI
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.io.InputStream
 import java.sql.DriverManager
 import java.sql.SQLException
+import java.util.Properties
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -55,6 +59,12 @@ class ProfileActivity : AppCompatActivity() {
         ActiveWallpaperViewModelFactory((application as ActiveWallpaperApplication).repository)
     }
 
+    /* button to pull up login/register form */
+    private var loginRegisterButton: Button? = null
+
+    // auth for firebase
+    private lateinit var auth: FirebaseAuth
+
     override fun onCreate(savedInstanceState: Bundle?) {
         // From Jo to Cam: connect to aws MySQL server here and query basic profile info into class instance declared below
         super.onCreate(savedInstanceState)
@@ -66,6 +76,18 @@ class ProfileActivity : AppCompatActivity() {
         mNewWallpaper = findViewById(R.id.b_new_wallpaper)
         mWallpaperLayout = findViewById(R.id.sv_ll_wallpapers)
         mWallpaperGrid = findViewById(R.id.sv_ll_gl_wallpapers)
+        loginRegisterButton = findViewById<Button>(R.id.loginRegisterButton)
+
+
+        /* Used to securely access db credentials and keep out of source code */
+        val inputStream: InputStream = resources.openRawResource(R.raw.database_config)
+        val properties = Properties()
+        properties.load(inputStream)
+
+        // Set values in DatabaseConfig object
+        DatabaseConfig.jdbcConnectionString = properties.getProperty("jdbcConnectionString", "")
+        DatabaseConfig.dbUser = properties.getProperty("dbUser", "")
+        DatabaseConfig.dbPassword = properties.getProperty("dbPassword", "")
 
         // set profile pic click listener
         mProfilePic!!.setOnClickListener(this::changeProfilePic)
@@ -83,7 +105,7 @@ class ProfileActivity : AppCompatActivity() {
                 mUsername!!.text = profileData.username
                 mBio!!.text = profileData.bio
                 val imageData = profileData.profilepic
-                if (imageData != null && imageData.isNotEmpty()) {
+                if (imageData.isNotEmpty()) {
                     val imageBitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.size)
                     mProfilePic!!.setImageBitmap(imageBitmap)
                 } else {
@@ -133,44 +155,105 @@ class ProfileActivity : AppCompatActivity() {
         * this will need to be modified to check whether the current user already exists inside the database:
         * if so: pull relevant user data (profile data, userID)
         * otherwise: insert user into database to pull from later in this function. */
-        GlobalScope.launch(Dispatchers.IO) {
-            val auth = FirebaseAuth.getInstance()
-            // write aws test code here -------------
-            val jdbcConnectionString =
-                "jdbc:mysql://database-1.cxo8mkcogo8p.us-east-1.rds.amazonaws.com:3306/?user=admin"
-            //val host = "database-1.cxo8mkcogo8p.us-east-1.rds.amazonaws.com"
-            try {
-                Class.forName("com.mysql.jdbc.Driver").newInstance()
-                // connect to mysql server
-                val conn = DriverManager.getConnection(
-                    jdbcConnectionString, "admin", "UtahUtesLiveWallz!"
-                ).use { conn -> // this syntax ensures that connection will be closed whether normally or from exception
-                    Log.d("LiveWallpaper05", "Connected to database")
-                    val query = "USE myDatabase; SELECT * FROM users;"
-                    val statement = conn.createStatement()
-                    val result = statement.executeQuery(query)
-                    while (result.next()) {
-                        val uid: Int = result.getInt("uid")
-                        val dateCreated: String = result.getString("dateCreated")
-                        val username = result.getString("username")
-                        val name = result.getString("name")
-                        val bio = result.getString("bio")
-                        val profilePicture = result.getBlob("profile_picture")
-                        var resultStr =
-                            "User Returned: uid: $uid, Username: $username, Name:  $name"
-                        if (bio != null) {
-                            resultStr += ", bio: $bio"
-                        }
-                        if (profilePicture != null) {
-                            resultStr += ", profile_picture: $profilePicture"
-                        }
-                        //Log.d("LiveWallpaper05", resultStr)
-                    }
-                }
-            } catch (e: SQLException) {
-                Log.e("LiveWallpaper05", e.printStackTrace().toString())
+
+        auth = FirebaseAuth.getInstance()
+
+        if (auth.currentUser != null) {
+            // User is signed in, get (username, bio, profile_picture, uid, etc) from AWS
+            loadUserDataFromAWS(auth.currentUser!!.uid) //TODO: implement function
+        } else {
+            // User is not signed in
+            GlobalScope.launch(Dispatchers.IO) {
+                showLoginOrRegisterOptions() //TODO: implement function
             }
         }
+
+        // write aws test code here -------------
+        /*val jdbcConnectionString = DatabaseConfig.jdbcConnectionString
+        try {
+            Class.forName("com.mysql.jdbc.Driver").newInstance()
+            // connect to mysql server
+            DriverManager.getConnection(
+                jdbcConnectionString, DatabaseConfig.dbUser, DatabaseConfig.dbPassword
+            ).use { conn -> // this syntax ensures that connection will be closed whether normally or from exception
+                Log.d("LiveWallpaper05", "Connected to database")
+                val query = "USE myDatabase; SELECT * FROM users;"
+                val statement = conn.createStatement()
+                val result = statement.executeQuery(query)
+                while (result.next()) {
+                    val uid: Int = result.getInt("uid")
+                    val dateCreated: String = result.getString("dateCreated")
+                    val username = result.getString("username")
+                    val name = result.getString("name")
+                    val bio = result.getString("bio")
+                    val profilePicture = result.getBlob("profile_picture")
+                    var resultStr =
+                        "User Returned: uid: $uid, Username: $username, Name:  $name"
+                    if (bio != null) {
+                        resultStr += ", bio: $bio"
+                    }
+                    if (profilePicture != null) {
+                        resultStr += ", profile_picture: $profilePicture"
+                    }
+                }
+                conn.close()
+            }
+        } catch (e: SQLException) {
+            Log.e("LiveWallpaper05", e.printStackTrace().toString())
+        }*/
+
+    }
+
+    object DatabaseConfig {
+        lateinit var jdbcConnectionString: String
+        lateinit var dbUser: String
+        lateinit var dbPassword: String
+    }
+
+    private fun showLoginOrRegisterOptions() {
+        loginRegisterButton?.setOnClickListener {
+            val authIntent = AuthUI.getInstance()
+                .createSignInIntentBuilder()
+                .setAvailableProviders(
+                    listOf(
+                        AuthUI.IdpConfig.EmailBuilder().build()
+                        // Add more providers as needed
+                    )
+                )
+                .build()
+
+            startActivityForResult(authIntent, 123)
+        }
+    }
+
+    fun registerUser(email: String, password: String) {
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    // Registration successful
+                    val user = auth.currentUser
+                } else {
+                    // Registration failed
+                    Log.w("Registration", "createUserWithEmail:failure", task.exception)
+                }
+            }
+    }
+
+    fun loginUser(email: String, password: String) {
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    // Login successful
+                    val user = auth.currentUser
+                } else {
+                    // Login failed
+                    Log.w("Login", "signInWithEmail:failure", task.exception)
+                }
+            }
+    }
+
+    private fun loadUserDataFromAWS(uid: String) {
+
     }
 
     // creates popup dialog to prompt user to chose how to update profile picture

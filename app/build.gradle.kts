@@ -52,6 +52,7 @@ android {
 
 
 dependencies {
+    implementation("com.google.firebase:firebase-auth:22.3.1")
     var room_version = "2.4.3"
     var activity_version = "1.6.1"
 
@@ -60,8 +61,7 @@ dependencies {
 
     implementation("androidx.appcompat:appcompat:$activity_version")
     implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
-    implementation("com.google.firebase:firebase-auth:22.3.1")
-
+    implementation("com.firebaseui:firebase-ui-auth:7.2.0")
     implementation("androidx.activity:activity-ktx:$activity_version")
     implementation("com.google.android.material:material:1.8.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
