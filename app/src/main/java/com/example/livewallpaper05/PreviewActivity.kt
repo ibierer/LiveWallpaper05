@@ -134,7 +134,7 @@ class PreviewActivity : AppCompatActivity() {
                 val equationChecker = EquationChecker()
                 val result: String = equationChecker.checkEquationSyntax(equationEditor.text.toString())
                 //val result2: String = checkEquationSyntax2(equationEditor.text.toString())
-                Log.d("LiveWallpaper05", "result is: " + result)
+                Log.d("LiveWallpaper05", "result is: $result")
                 //Log.d("LiveWallpaper05", "result2 is: " + result2)
                 if (result == "") {
                     viewModel.updateEquation(equationEditor.text.toString())

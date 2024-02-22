@@ -76,7 +76,7 @@ class ProfileActivity : AppCompatActivity() {
         mNewWallpaper = findViewById(R.id.b_new_wallpaper)
         mWallpaperLayout = findViewById(R.id.sv_ll_wallpapers)
         mWallpaperGrid = findViewById(R.id.sv_ll_gl_wallpapers)
-        loginRegisterButton = findViewById<Button>(R.id.loginRegisterButton)
+        loginRegisterButton = findViewById(R.id.loginRegisterButton)
 
 
         /* Used to securely access db credentials and keep out of source code */
@@ -88,12 +88,19 @@ class ProfileActivity : AppCompatActivity() {
         DatabaseConfig.jdbcConnectionString = properties.getProperty("jdbcConnectionString", "")
         DatabaseConfig.dbUser = properties.getProperty("dbUser", "")
         DatabaseConfig.dbPassword = properties.getProperty("dbPassword", "")
+        // set up loginPageButton
+        loginRegisterButton!!.setOnClickListener{
+            val loginPageIntent = Intent(this, Login::class.java)
+            startActivity(loginPageIntent)
+        }
 
         // set profile pic click listener
         mProfilePic!!.setOnClickListener(this::changeProfilePic)
 
         // set new wallpaper button click listener
         mNewWallpaper!!.setOnClickListener(this::newWallpaper)
+
+
 
         // link profile view elements to profile live data via callback function
         mProfileViewModel.profileData.observe(this, Observer { profileData ->
@@ -163,9 +170,7 @@ class ProfileActivity : AppCompatActivity() {
             loadUserDataFromAWS(auth.currentUser!!.uid) //TODO: implement function
         } else {
             // User is not signed in
-            GlobalScope.launch(Dispatchers.IO) {
-                showLoginOrRegisterOptions() //TODO: implement function
-            }
+
         }
 
         // write aws test code here -------------
@@ -208,22 +213,6 @@ class ProfileActivity : AppCompatActivity() {
         lateinit var jdbcConnectionString: String
         lateinit var dbUser: String
         lateinit var dbPassword: String
-    }
-
-    private fun showLoginOrRegisterOptions() {
-        loginRegisterButton?.setOnClickListener {
-            val authIntent = AuthUI.getInstance()
-                .createSignInIntentBuilder()
-                .setAvailableProviders(
-                    listOf(
-                        AuthUI.IdpConfig.EmailBuilder().build()
-                        // Add more providers as needed
-                    )
-                )
-                .build()
-
-            startActivityForResult(authIntent, 123)
-        }
     }
 
     fun registerUser(email: String, password: String) {
@@ -329,13 +318,7 @@ class ProfileActivity : AppCompatActivity() {
         val activeConfig = mActiveWallpaperViewModel.getConfig()
         //mProfileViewModel.updateSavedWallpapers(listOf(activeConfig.toString()))
         mSavedWallpaperViewModel.saveWallpaper(activeConfig)
-
         // create new empty wallpaper config
         mSavedWallpaperViewModel.createWallpaperTable()
-
     }
-
 }
-
-// rip profile data from postgres server into this
-//data class Profile(val username: String, val name: String, val dateCreated: String, val bio: String)
