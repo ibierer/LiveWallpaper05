@@ -1,8 +1,6 @@
 package com.example.livewallpaper05.savedWallpapers
 
-import androidx.annotation.WorkerThread
 import androidx.lifecycle.MutableLiveData
-import com.example.livewallpaper05.savedWallpapers.SavedWallpaperDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -11,15 +9,20 @@ class SavedWallpaperRepo private constructor(wallpaperDao: SavedWallpaperDao) {
 
     val activeWallpaper: MutableLiveData<SavedWallpaperTable> = MutableLiveData()
     val wallpapers = MutableLiveData<List<SavedWallpaperTable>>()
+    val wallpaperFragIds: MutableList<WallpaperRef> = mutableListOf()
 
     private var mWallpaperDao: SavedWallpaperDao = wallpaperDao
     private var lastId: Int = 0
 
     // create new wallpaper table
-    fun createWallpaperTable() : SavedWallpaperTable {
+    fun createWallpaperTable(id: Int) : SavedWallpaperTable {
         // create unique id
-        var wid = lastId + 1
-        lastId = wid
+        if (id >= 0){
+            lastId = id
+        } else {
+            lastId += 1
+        }
+        var wid = lastId
 
         // create new wallpaper table with default config
         val wallpaper = SavedWallpaperTable(
@@ -118,4 +121,11 @@ class SavedWallpaperRepo private constructor(wallpaperDao: SavedWallpaperDao) {
             }
         }
     }
+
+    class WallpaperRef {
+        var wallpaperId: Int = 0
+        var fragmentId: Int = 0
+        var fragmentTag: String = ""
+    }
+
 }

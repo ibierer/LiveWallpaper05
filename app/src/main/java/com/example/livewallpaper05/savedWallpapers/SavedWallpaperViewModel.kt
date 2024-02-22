@@ -50,9 +50,41 @@ class SavedWallpaperViewModel(repo: SavedWallpaperRepo) : ViewModel() {
     }
 
     // create new wallpaper table
-    fun createWallpaperTable() {
-        var new_wallpaper = mRepo.createWallpaperTable()
+    fun createWallpaperTable(id: Int) {
+        var new_wallpaper = mRepo.createWallpaperTable(id)
         mRepo.setWallpaper(new_wallpaper)
+    }
+
+    fun getWallpaperFragIds() : MutableList<SavedWallpaperRepo.WallpaperRef> {
+        return mRepo.wallpaperFragIds
+    }
+
+    fun updateWallpaperFragIds(wallpaperRef: SavedWallpaperRepo.WallpaperRef) {
+        // if wallpaperRef is already in list ignore
+        var data = mRepo.wallpaperFragIds
+        if (data != null) {
+            for (r in data){
+                if (r.wallpaperId == wallpaperRef.wallpaperId) {
+                    return
+                }
+            }
+            // add new wallpaperRef to list
+            data.add(wallpaperRef)
+        }
+    }
+
+    fun removeWallpaperFragId(wallpaperRef: SavedWallpaperRepo.WallpaperRef) {
+        // remove wallpaperRef from list
+        var data = mRepo.wallpaperFragIds
+        var toRemove = listOf<SavedWallpaperRepo.WallpaperRef>()
+        if (data != null) {
+            for (r in data){
+                if (r.wallpaperId == wallpaperRef.wallpaperId) {
+                    toRemove = toRemove.plus(r)
+                }
+            }
+            data.removeAll(toRemove)
+        }
     }
 
     // update active wallpaper config
