@@ -1,0 +1,124 @@
+CREATE TABLE Users (
+    Name varchar(30) NOT NULL,
+    Username varchar(30) NOT NULL,
+    Bio varchar(255),
+    PRIMARY KEY (Username)
+);
+
+CREATE TABLE Wallpapers (
+    wID int AUTOINCREMENT NOT NULL,
+    CreatorUsername varchar(30) NOT NULL,
+    Name varchar(30) NOT NULL,
+    Description varchar(255),
+    Contents varchar(1024) NOT NULL,
+    PRIMARY KEY (wID),
+    FOREIGN KEY (CreatorUsername) REFERENCES Users(Username)
+);
+
+CREATE TABLE Views (
+    wID int NOT NULL,
+    ViewerUsername varchar(30) NOT NULL,
+    Liked bool NOT NULL,
+    PRIMARY KEY (wID, ViewerUsername),
+    FOREIGN KEY (ViewerUsername) REFERENCES Users(Username),
+    FOREIGN KEY (wID) REFERENCES Wallpapers(wID)
+);
+
+CREATE TABLE Comments (
+    wID int NOT NULL,
+    CommenterUsername varchar(30) NOT NULL,
+    Content varchar(255) NOT NULL,
+    PRIMARY KEY (wID, CommenterUsername, Content),
+    FOREIGN KEY (CommenterUsername) REFERENCES Users(Username),
+    FOREIGN KEY (wID) REFERENCES Wallpapers(wID)
+);
+
+CREATE TABLE Tags (
+    Tag varchar(30) NOT NULL,
+    PRIMARY KEY (Tag)
+);
+
+CREATE TABLE WallpaperTags (
+    wID int NOT NULL,
+    Tag varchar(30) NOT NULL,
+    PRIMARY KEY (wID, Tag),
+    FOREIGN KEY (Tag) REFERENCES Tags(Tag),
+    FOREIGN KEY (wID) REFERENCES Wallpapers(wID)
+);
+
+CREATE TABLE UserTags (
+    Username varchar(30) NOT NULL,
+    Tag varchar(30) NOT NULL,
+    PRIMARY KEY (Username, Tag),
+    FOREIGN KEY (Tag) REFERENCES Tags(Tag),
+    FOREIGN KEY (Username) REFERENCES Users(Username)
+);
+
+//// CREATE A NEW USER
+INSERT INTO Users VALUES ("NAME", "USERNAME", "BIO");
+
+//// ADD A WALLPAPER
+insert into Wallpapers (CreatorUsername, Name, Description, Contents) values("a1", "fourth", "desc", "CONTENTS");
+
+//// VIEW/LIKE A WALLPAPER
+// true if liked, false otherwise
+insert into Views values(5, "a1", true)
+
+//// COMMENT ON A WALLPAPER
+insert into Comments values(1, "username", "comment");
+
+//// ADD A TAG
+insert into Tags values ("Strange");
+
+//// ADD A USER TAG
+insert into UserTags values ("c3", "Food")
+
+//// ADD A WALLPAPER TAG
+insert into WallpaperTags values (5, "Scary")
+
+
+SELECTS
+
+
+// GET A USER BY USERNAME
+select * from Users where Username="a1";
+
+// GET USER GIVEN WALLPAPER ID
+select Username from Users join Wallpapers on Users.Username = Wallpapers.CreatorUsername where wID = 1;
+
+// GET A USERS CREATED WALLPAPERS
+select wID from Wallpapers where CreatorUsername = "a1";
+
+// GET A USERS LIKED WALLPAPERS
+select wID from Views where ViewerUsername = "a1" && Liked = 1;
+
+// GET WALLPAPER LIKE COUNT GIVEN wID
+select count(*) from Views where wID = 1 && Liked = true;
+
+// GET LIKES FOR WALLPAPER GIVEN wID
+select * from Views where wID = 1 && Liked = true;
+
+// GET VIEWS FOR WALLPAPER GIVEN wID
+select * from Views natural join Wallpapers where wID = 1;
+
+// GET WALLPAPER VIEW COUNT GIVEN wID
+select count(*) from Views where wID = 1;
+
+// GET A USERS VIEWED WALLPAPERS
+select wID from Views where ViewerUsername = "a1";
+
+// GET COMMENT GIVEN USERNAME
+// GET WALLPAPER USER HAS COMMENTED ON
+select * from Comments where CommenterUsername = "a1";
+
+// GET WALLPAPER COMMENT COUNT
+select count(*) from Comments where wID = 1;
+
+// GET ALL COMMENTS GIVEN wID
+select * from Comments where wID = 1;
+
+// GET ALL TAGS FOR USER
+select * from UserTags where Username = "a1";
+
+// GET ALL TAGS FOR WALLPAPER
+select * from WallpaperTags where wID = 1;
