@@ -4,11 +4,19 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import com.example.livewallpaper05.databinding.ActivityLoginBinding
+import com.example.livewallpaper05.databinding.ActivityProfileBinding
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import java.sql.DriverManager
+import java.sql.SQLException
 
 class Login : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
@@ -17,17 +25,6 @@ class Login : AppCompatActivity() {
     private lateinit var loginButton: Button
     private lateinit var regPageButton: Button
     private lateinit var mAuth: FirebaseAuth
-
-    /*public override fun onStart() {
-        super.onStart()
-        // Check if user is signed in (non-null) and update UI accordingly.
-        val currentUser = mAuth.currentUser
-        if (currentUser != null) {
-            val profilePageIntent = Intent(this, ProfileActivity::class.java)
-            startActivity(profilePageIntent)
-            finish()
-        }
-    }*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +36,7 @@ class Login : AppCompatActivity() {
         loginButton = findViewById(R.id.loginButton)
         regPageButton = findViewById(R.id.registerPageButton)
 
+        val profileBinding = ActivityProfileBinding.inflate(layoutInflater)
         // Access views from the layout using the binding object
         regPageButton.setOnClickListener {
             val registerPageIntent = Intent(this, Register::class.java)
@@ -61,6 +59,7 @@ class Login : AppCompatActivity() {
                     if (task.isSuccessful) {
                         // Sign in success, update UI with the signed-in user's information
                         Toast.makeText(applicationContext, "Login successful!", Toast.LENGTH_SHORT).show()
+                        profileBinding.loginRegisterButton.visibility = View.GONE
                         val profilePageIntent = Intent(this, ProfileActivity::class.java)
                         startActivity(profilePageIntent)
                         finish()

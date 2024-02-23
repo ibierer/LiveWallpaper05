@@ -29,6 +29,7 @@ import com.example.livewallpaper05.savedWallpapers.SavedWallpaperViewModel
 import com.firebase.ui.auth.AuthUI
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -46,6 +47,14 @@ class ProfileActivity : AppCompatActivity() {
     private var mWallpaperLayout: LinearLayout? = null
     private var mWallpaperGrid: GridLayout? = null
 
+    /* User authentication data */
+    private var authUser: FirebaseUser? = null
+    private var loginRegisterButton: Button? = null
+    private var logoutButton: Button? = null
+
+    // auth for firebase
+    private lateinit var auth: FirebaseAuth
+
     // profile table data
     private val mProfileViewModel: ProfileViewModel by viewModels {
         ProfileViewModel.ProfileViewModelFactory((application as ActiveWallpaperApplication).profileRepo)
@@ -61,11 +70,17 @@ class ProfileActivity : AppCompatActivity() {
         ActiveWallpaperViewModelFactory((application as ActiveWallpaperApplication).repository)
     }
 
-    /* button to pull up login/register form */
-    private var loginRegisterButton: Button? = null
-    private var logoutButton: Button? = null
-    // auth for firebase
-    private lateinit var auth: FirebaseAuth
+    public override fun onStart() {
+        super.onStart()
+        // Check if user is signed in (non-null) and update UI accordingly.
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            Log.d("AUTH", "Current user: $currentUser")
+            // load from AWS
+        } else {
+            Log.d("AUTH", "No user logged in")
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // From Jo to Cam: connect to aws MySQL server here and query basic profile info into class instance declared below
@@ -82,7 +97,6 @@ class ProfileActivity : AppCompatActivity() {
         logoutButton = findViewById(R.id.logoutButton)
 
 
-
         /* Used to securely access db credentials and keep out of source code */
         val inputStream: InputStream = resources.openRawResource(R.raw.database_config)
         val properties = Properties()
@@ -93,13 +107,14 @@ class ProfileActivity : AppCompatActivity() {
         DatabaseConfig.dbUser = properties.getProperty("dbUser", "")
         DatabaseConfig.dbPassword = properties.getProperty("dbPassword", "")
         // set up loginPageButton
-        loginRegisterButton!!.setOnClickListener{
+        loginRegisterButton!!.setOnClickListener {
             val loginPageIntent = Intent(this, Login::class.java)
             startActivity(loginPageIntent)
         }
 
-        logoutButton!!.setOnClickListener{
+        logoutButton!!.setOnClickListener {
             FirebaseAuth.getInstance().signOut()
+            loginRegisterButton!!.visibility = View.VISIBLE
             Toast.makeText(this, "signed out", Toast.LENGTH_SHORT).show()
         }
 
@@ -108,7 +123,6 @@ class ProfileActivity : AppCompatActivity() {
 
         // set new wallpaper button click listener
         mNewWallpaper!!.setOnClickListener(this::newWallpaper)
-
 
 
         // link profile view elements to profile live data via callback function
@@ -132,7 +146,10 @@ class ProfileActivity : AppCompatActivity() {
 
         // if no wallpapers exist, create default wallpaper
         if (mSavedWallpaperViewModel.savedWallpapers.value == null) {
-            mSavedWallpaperViewModel.createDefaultWallpaperTable(mActiveWallpaperViewModel.getWid(), mActiveWallpaperViewModel.getConfig())
+            mSavedWallpaperViewModel.createDefaultWallpaperTable(
+                mActiveWallpaperViewModel.getWid(),
+                mActiveWallpaperViewModel.getConfig()
+            )
         }
 
         // link active wallpaper to active wallpaper live data via callback function
@@ -190,42 +207,7 @@ class ProfileActivity : AppCompatActivity() {
             loadUserDataFromAWS(auth.currentUser!!.uid) //TODO: implement function
         } else {
             // User is not signed in
-
         }
-
-        // write aws test code here -------------
-        /*val jdbcConnectionString = DatabaseConfig.jdbcConnectionString
-        try {
-            Class.forName("com.mysql.jdbc.Driver").newInstance()
-            // connect to mysql server
-            DriverManager.getConnection(
-                jdbcConnectionString, DatabaseConfig.dbUser, DatabaseConfig.dbPassword
-            ).use { conn -> // this syntax ensures that connection will be closed whether normally or from exception
-                Log.d("LiveWallpaper05", "Connected to database")
-                val query = "USE myDatabase; SELECT * FROM users;"
-                val statement = conn.createStatement()
-                val result = statement.executeQuery(query)
-                while (result.next()) {
-                    val uid: Int = result.getInt("uid")
-                    val dateCreated: String = result.getString("dateCreated")
-                    val username = result.getString("username")
-                    val name = result.getString("name")
-                    val bio = result.getString("bio")
-                    val profilePicture = result.getBlob("profile_picture")
-                    var resultStr =
-                        "User Returned: uid: $uid, Username: $username, Name:  $name"
-                    if (bio != null) {
-                        resultStr += ", bio: $bio"
-                    }
-                    if (profilePicture != null) {
-                        resultStr += ", profile_picture: $profilePicture"
-                    }
-                }
-                conn.close()
-            }
-        } catch (e: SQLException) {
-            Log.e("LiveWallpaper05", e.printStackTrace().toString())
-        }*/
 
     }
 
@@ -233,32 +215,6 @@ class ProfileActivity : AppCompatActivity() {
         lateinit var jdbcConnectionString: String
         lateinit var dbUser: String
         lateinit var dbPassword: String
-    }
-
-    fun registerUser(email: String, password: String) {
-        auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    // Registration successful
-                    val user = auth.currentUser
-                } else {
-                    // Registration failed
-                    Log.w("Registration", "createUserWithEmail:failure", task.exception)
-                }
-            }
-    }
-
-    fun loginUser(email: String, password: String) {
-        auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    // Login successful
-                    val user = auth.currentUser
-                } else {
-                    // Login failed
-                    Log.w("Login", "signInWithEmail:failure", task.exception)
-                }
-            }
     }
 
     private fun loadUserDataFromAWS(uid: String) {
@@ -341,7 +297,7 @@ class ProfileActivity : AppCompatActivity() {
         mSavedWallpaperViewModel.createWallpaperTable(-1)
     }
 
-    fun updateFragListeners(){
+    fun updateFragListeners() {
         // for each fragment in fragment list, set delete button listener
         var removeList = mutableListOf<WallpaperRef>()
         val wallpaperFragIds = mSavedWallpaperViewModel.getWallpaperFragIds()
@@ -382,13 +338,15 @@ class ProfileActivity : AppCompatActivity() {
                         val fragTag = r.fragmentTag
                         val innerFrag = supportFragmentManager.findFragmentByTag(fragTag)
                         if (innerFrag != null) {
-                            innerFrag.requireView().findViewById<Button>(R.id.b_active_wallpaper).isEnabled = true
+                            innerFrag.requireView()
+                                .findViewById<Button>(R.id.b_active_wallpaper).isEnabled = true
                             val wallFrag = innerFrag as WallpaperFragment
                             wallFrag.active = false
                         }
                     }
                     // disable active button for this wallpaper
-                    frag.requireView().findViewById<Button>(R.id.b_active_wallpaper).isEnabled = false
+                    frag.requireView().findViewById<Button>(R.id.b_active_wallpaper).isEnabled =
+                        false
                     // set frag active variable to true
                     val wallFrag = frag as WallpaperFragment
                     wallFrag.active = true
