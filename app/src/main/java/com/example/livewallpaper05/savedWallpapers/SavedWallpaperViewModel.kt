@@ -12,7 +12,7 @@ class SavedWallpaperViewModel(repo: SavedWallpaperRepo) : ViewModel() {
 
     // switch wallpaper
     fun switchWallpaper(wid: Int) {
-        mRepo.getWallpaper(wid)
+        mRepo.setLiveWallpaperData(wid)
     }
 
     // save wallpaper from config string
@@ -20,12 +20,12 @@ class SavedWallpaperViewModel(repo: SavedWallpaperRepo) : ViewModel() {
         // create new wallpaper table with given data
         var wallpaper = SavedWallpaperTable(
             0,
-            ""
+            config
         )
         try {
             wallpaper = SavedWallpaperTable(
                 activeWallpaper.value!!.wid,
-                activeWallpaper.value!!.config
+                config
             )
         } catch (e: Exception) {}
         // update profile table
@@ -39,36 +39,50 @@ class SavedWallpaperViewModel(repo: SavedWallpaperRepo) : ViewModel() {
         mRepo.deleteWallpaper(wid)
     }
 
-    // delete all wallpapers
-    fun deleteAll() {
-        mRepo.deleteAll()
-    }
-
-    // get saved wallpaper given id
-    fun getWallpaper(wid: Int) {
-        mRepo.getWallpaper(wid)
-    }
-
     // create new wallpaper table
-    fun createWallpaperTable() {
-        var new_wallpaper = mRepo.createWallpaperTable()
+    fun createWallpaperTable(id: Int) {
+        var new_wallpaper = mRepo.createWallpaperTable(id)
         mRepo.setWallpaper(new_wallpaper)
     }
 
-    // update active wallpaper config
-    fun updateActiveWallpaperConfig(config: String) {
-        var wallpaper = SavedWallpaperTable(
-            0,
-            ""
+    fun createDefaultWallpaperTable(wid: Int, config: String) {
+        val wallpaper = SavedWallpaperTable(
+            wid,
+            config
         )
-        try {
-            wallpaper = SavedWallpaperTable(
-                activeWallpaper.value!!.wid,
-                config
-            )
-        } catch (e: Exception) {}
-        // update profile table
         mRepo.setWallpaper(wallpaper)
+    }
+
+    fun getWallpaperFragIds() : MutableList<SavedWallpaperRepo.WallpaperRef> {
+        return mRepo.wallpaperFragIds
+    }
+
+    fun updateWallpaperFragIds(wallpaperRef: SavedWallpaperRepo.WallpaperRef) {
+        // if wallpaperRef is already in list ignore
+        var data = mRepo.wallpaperFragIds
+        if (data != null) {
+            for (r in data){
+                if (r.wallpaperId == wallpaperRef.wallpaperId) {
+                    return
+                }
+            }
+            // add new wallpaperRef to list
+            data.add(wallpaperRef)
+        }
+    }
+
+    fun removeWallpaperFragId(wallpaperRef: SavedWallpaperRepo.WallpaperRef) {
+        // remove wallpaperRef from list
+        var data = mRepo.wallpaperFragIds
+        var toRemove = listOf<SavedWallpaperRepo.WallpaperRef>()
+        if (data != null) {
+            for (r in data){
+                if (r.wallpaperId == wallpaperRef.wallpaperId) {
+                    toRemove = toRemove.plus(r)
+                }
+            }
+            data.removeAll(toRemove)
+        }
     }
 
     class SavedWallpaperViewModelFactory(private val repo: SavedWallpaperRepo) : ViewModelProvider.Factory {

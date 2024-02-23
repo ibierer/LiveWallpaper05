@@ -4,7 +4,6 @@ import android.app.Dialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -17,12 +16,14 @@ import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModelFactory
 import com.example.livewallpaper05.helpful_fragments.WallpaperFragment
 import com.example.livewallpaper05.profiledata.ProfileViewModel
+import com.example.livewallpaper05.savedWallpapers.SavedWallpaperRepo.WallpaperRef
 import com.example.livewallpaper05.savedWallpapers.SavedWallpaperViewModel
 import com.firebase.ui.auth.AuthUI
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -121,21 +122,24 @@ class ProfileActivity : AppCompatActivity() {
             }
         })
 
-        // add default wallpaper to mSavedWallpaperViewModel
-        mSavedWallpaperViewModel.createWallpaperTable()
+        // if no wallpapers exist, create default wallpaper
+        if (mSavedWallpaperViewModel.savedWallpapers.value == null) {
+            mSavedWallpaperViewModel.createDefaultWallpaperTable(mActiveWallpaperViewModel.getWid(), mActiveWallpaperViewModel.getConfig())
+        }
 
         // link active wallpaper to active wallpaper live data via callback function
         mSavedWallpaperViewModel.activeWallpaper.observe(this, Observer { wallpaper ->
             // set active wallpaper wid to wallpaper wid
             mActiveWallpaperViewModel.setWid(wallpaper.wid)
             // [TODO] use this to update active wallpaper with saved wallpaper data
+            // load new active wallpaper config
+            mActiveWallpaperViewModel.loadConfig(wallpaper)
         })
 
         // link saved wallpaper view elements to saved wallpaper live data via callback function
         mSavedWallpaperViewModel.savedWallpapers.observe(this, Observer { wallpapers ->
             if (wallpapers != null) {
                 // clear wallpaper layout
-                //mWallpaperLayout!!.removeAllViews()
                 mWallpaperGrid!!.removeAllViews()
 
                 // add each wallpaper to layout
@@ -145,19 +149,28 @@ class ProfileActivity : AppCompatActivity() {
                     // create random color bitmap preview based on wid
                     val preview = mActiveWallpaperViewModel.getPreviewImg(wallpaper.wid)
                     // create fragment
-                    val fragment = WallpaperFragment.newInstance(is_active, preview)
-                    // add fragment to layout
-                    /*supportFragmentManager.beginTransaction()
-                        .add(mWallpaperLayout!!.id, fragment)
-                        .commit()
-                    */
+                    val fragment = WallpaperFragment.newInstance(is_active, preview, wallpaper.wid)
+                    val tag = "wallpaper_" + wallpaper.wid.toString()
                     // add fragment to grid
                     supportFragmentManager.beginTransaction()
-                        .add(mWallpaperGrid!!.id, fragment)
+                        .add(mWallpaperGrid!!.id, fragment, tag)
                         .commit()
+
+                    // add fragment id to list
+                    val ref = WallpaperRef()
+                    ref.wallpaperId = wallpaper.wid
+                    ref.fragmentId = fragment.id
+                    ref.fragmentTag = tag
+                    mSavedWallpaperViewModel.updateWallpaperFragIds(ref)
                 }
             }
         })
+
+        // observe amount of wallpapers in mWallpaperGrid and update listeners when it changes
+        mWallpaperGrid!!.viewTreeObserver.addOnGlobalLayoutListener {
+            updateFragListeners()
+        }
+
         /* Added code that connects to database and gathers values for the existing users
         * this will need to be modified to check whether the current user already exists inside the database:
         * if so: pull relevant user data (profile data, userID)
@@ -316,9 +329,66 @@ class ProfileActivity : AppCompatActivity() {
     fun newWallpaper(view: View) {
         // save current wallpaper
         val activeConfig = mActiveWallpaperViewModel.getConfig()
-        //mProfileViewModel.updateSavedWallpapers(listOf(activeConfig.toString()))
         mSavedWallpaperViewModel.saveWallpaper(activeConfig)
         // create new empty wallpaper config
-        mSavedWallpaperViewModel.createWallpaperTable()
+        mSavedWallpaperViewModel.createWallpaperTable(-1)
+    }
+
+    fun updateFragListeners(){
+        // for each fragment in fragment list, set delete button listener
+        var removeList = mutableListOf<WallpaperRef>()
+        val wallpaperFragIds = mSavedWallpaperViewModel.getWallpaperFragIds()
+        Log.d("LiveWallpaper05", "saved frag count: ${wallpaperFragIds.size}")
+        for (ref in wallpaperFragIds) {
+            val fragTag = ref.fragmentTag
+            val frag = supportFragmentManager.findFragmentByTag(fragTag)
+            // if fragment doesn't exist yet, skip
+            if (frag == null) {
+                continue
+            }
+            // connect delete button to delete wallpaper function
+            frag.requireView().findViewById<FloatingActionButton>(R.id.b_delete_wallpaper)
+                .setOnClickListener {
+                    // if wallpaper is active, make pop up telling user to switch wallpaper before removing
+                    val activeId = mActiveWallpaperViewModel.getWid()
+                    if (ref.wallpaperId == activeId) {
+                        val dialog = AlertDialog.Builder(this)
+                        dialog.setTitle("Active Wallpaper")
+                        dialog.setMessage("Please switch wallpapers before removing this wallpaper.")
+                        dialog.setPositiveButton("Ok") { _, _ -> }
+                        dialog.show()
+                        return@setOnClickListener
+                    }
+                    // delete wallpaper from database
+                    mSavedWallpaperViewModel.deleteWallpaper(ref.wallpaperId)
+                    // remove fragment from grid
+                    supportFragmentManager.beginTransaction().remove(frag).commit()
+                    removeList.add(ref)
+                    mSavedWallpaperViewModel.removeWallpaperFragId(ref)
+                }
+
+            // connect set active button to set active wallpaper function
+            frag.requireView().findViewById<Button>(R.id.b_active_wallpaper)
+                .setOnClickListener {
+                    // enable all active buttons
+                    for (r in wallpaperFragIds) {
+                        val fragTag = r.fragmentTag
+                        val innerFrag = supportFragmentManager.findFragmentByTag(fragTag)
+                        if (innerFrag != null) {
+                            innerFrag.requireView().findViewById<Button>(R.id.b_active_wallpaper).isEnabled = true
+                            val wallFrag = innerFrag as WallpaperFragment
+                            wallFrag.active = false
+                        }
+                    }
+                    // disable active button for this wallpaper
+                    frag.requireView().findViewById<Button>(R.id.b_active_wallpaper).isEnabled = false
+                    // set frag active variable to true
+                    val wallFrag = frag as WallpaperFragment
+                    wallFrag.active = true
+
+                    // switch active wallpaper in repo (this data is linked to active wallpaper via live data observer in onCreate)
+                    mSavedWallpaperViewModel.switchWallpaper(ref.wallpaperId)
+                }
+        }
     }
 }

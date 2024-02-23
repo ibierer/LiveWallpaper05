@@ -4,6 +4,7 @@ import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.hardware.SensorManager
+import android.util.Log
 import androidx.lifecycle.*
 import com.example.livewallpaper05.savedWallpapers.SavedWallpaperTable
 import org.json.JSONObject
@@ -132,17 +133,31 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         // store simulation type, background color, and settings (with default values for now
         config.put("name", "New Wallpaper")
         config.put("type", repo.simulationType)
-        config.put("backgroundColor", JSONObject("{\"r\": 51, \"g\": 51, \"b\": 77, \"a\": 255}"))
+        config.put("background_color", JSONObject("{\"r\": 51, \"g\": 51, \"b\": 77, \"a\": 255}"))
         config.put("settings", "1/((sqrt(x^2 + y^2) - 2 + 1.25cos(t))^2 + (z - 1.5sin(t))^2) + 1/((sqrt(x^2 + y^2) - 2 - 1.25cos(t))^2 + (z + 1.5sin(t))^2) = 1.9")
 
         return config.toString()
     }
 
-    // load config string into repo
+    // load config table into repo
     fun loadConfig(table: SavedWallpaperTable) {
-        repo.wid = table.wid
-        val configJson = JSONObject(table.config)
-        repo.rotationRate = configJson.getDouble("rotationRate").toFloat()
+        try {
+            repo.wid = table.wid
+            val configJson = JSONObject(table.config)
+            repo.simulationType = configJson.getInt("type")
+            val red = configJson.getJSONObject("background_color").getInt("r").toFloat()
+            val green = configJson.getJSONObject("background_color").getInt("g").toFloat()
+            val blue = configJson.getJSONObject("background_color").getInt("b").toFloat()
+            val alpha = configJson.getJSONObject("background_color").getInt("a").toFloat()
+
+            repo.color = Color.valueOf(red, green, blue, alpha)
+            repo.equation = configJson.getString("settings")
+            //repo.rotationRate = configJson.getDouble("rotationRate").toFloat()
+        } catch (e: Exception) {
+            Log.d("LiveWallpaperLoad", "Error loading config: $e")
+            Log.d("LiveWallpaperLoad", "Config: ${table.config}")
+            return
+        }
     }
 
     fun getWid(): Int {

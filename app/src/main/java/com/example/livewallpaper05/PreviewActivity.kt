@@ -62,6 +62,8 @@ class PreviewActivity : AppCompatActivity() {
             android.R.layout.simple_spinner_item
         )
         simSelectorSpinner.adapter = simSelectorAdapter
+        // set default to viewmodel simulation type
+        simSelectorSpinner.setSelection(viewModel.getSimulationType())
 
         // register senser event listeners
         viewModel.registerSensorEvents(getSystemService(Context.SENSOR_SERVICE) as SensorManager)
