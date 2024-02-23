@@ -12,7 +12,7 @@ class SavedWallpaperViewModel(repo: SavedWallpaperRepo) : ViewModel() {
 
     // switch wallpaper
     fun switchWallpaper(wid: Int) {
-        mRepo.getWallpaper(wid)
+        mRepo.setLiveWallpaperData(wid)
     }
 
     // save wallpaper from config string
@@ -20,12 +20,12 @@ class SavedWallpaperViewModel(repo: SavedWallpaperRepo) : ViewModel() {
         // create new wallpaper table with given data
         var wallpaper = SavedWallpaperTable(
             0,
-            ""
+            config
         )
         try {
             wallpaper = SavedWallpaperTable(
                 activeWallpaper.value!!.wid,
-                activeWallpaper.value!!.config
+                config
             )
         } catch (e: Exception) {}
         // update profile table
@@ -39,20 +39,18 @@ class SavedWallpaperViewModel(repo: SavedWallpaperRepo) : ViewModel() {
         mRepo.deleteWallpaper(wid)
     }
 
-    // delete all wallpapers
-    fun deleteAll() {
-        mRepo.deleteAll()
-    }
-
-    // get saved wallpaper given id
-    fun getWallpaper(wid: Int) {
-        mRepo.getWallpaper(wid)
-    }
-
     // create new wallpaper table
     fun createWallpaperTable(id: Int) {
         var new_wallpaper = mRepo.createWallpaperTable(id)
         mRepo.setWallpaper(new_wallpaper)
+    }
+
+    fun createDefaultWallpaperTable(wid: Int, config: String) {
+        val wallpaper = SavedWallpaperTable(
+            wid,
+            config
+        )
+        mRepo.setWallpaper(wallpaper)
     }
 
     fun getWallpaperFragIds() : MutableList<SavedWallpaperRepo.WallpaperRef> {
@@ -85,22 +83,6 @@ class SavedWallpaperViewModel(repo: SavedWallpaperRepo) : ViewModel() {
             }
             data.removeAll(toRemove)
         }
-    }
-
-    // update active wallpaper config
-    fun updateActiveWallpaperConfig(config: String) {
-        var wallpaper = SavedWallpaperTable(
-            0,
-            ""
-        )
-        try {
-            wallpaper = SavedWallpaperTable(
-                activeWallpaper.value!!.wid,
-                config
-            )
-        } catch (e: Exception) {}
-        // update profile table
-        mRepo.setWallpaper(wallpaper)
     }
 
     class SavedWallpaperViewModelFactory(private val repo: SavedWallpaperRepo) : ViewModelProvider.Factory {

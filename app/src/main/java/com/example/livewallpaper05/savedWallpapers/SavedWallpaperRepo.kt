@@ -12,12 +12,12 @@ class SavedWallpaperRepo private constructor(wallpaperDao: SavedWallpaperDao) {
     val wallpaperFragIds: MutableList<WallpaperRef> = mutableListOf()
 
     private var mWallpaperDao: SavedWallpaperDao = wallpaperDao
-    private var lastId: Int = 0
+    private var lastId: Int = 1
 
     // create new wallpaper table
     fun createWallpaperTable(id: Int) : SavedWallpaperTable {
         // create unique id
-        if (id >= 0){
+        if (id > 0){
             lastId = id
         } else {
             lastId += 1
@@ -28,8 +28,10 @@ class SavedWallpaperRepo private constructor(wallpaperDao: SavedWallpaperDao) {
         val wallpaper = SavedWallpaperTable(
             wid,
             "{\n" +
-                    "    \"type\": \"box\",\n" +
-                    "    \"background_color\": {\"r\": 51, \"g\": 51, \"b\": 77, \"a\": 255}\n" +
+                    "\"name\": \"New Wallpaper\",\n" +
+                    "\"type\": \"0\",\n" +
+                    "\"background_color\": {\"r\": 51, \"g\": 51, \"b\": 77, \"a\": 255},\n" +
+                    "\"settings\": \"x^2+y^2+z^2=1\"\n" +
                     "}"
         )
 
@@ -38,45 +40,44 @@ class SavedWallpaperRepo private constructor(wallpaperDao: SavedWallpaperDao) {
 
     // save wallpaper
     fun setWallpaper(wallpaper: SavedWallpaperTable) {
-        mScope.launch(Dispatchers.IO) {
-            if (wallpaper != null) {
-                // if wallpapers list is empty, create new list
-                if (wallpapers.value == null) {
-                    wallpapers.postValue(listOf(wallpaper))
-                } else {
-                    // add new wallpaper to list
-                    val list = wallpapers.value!!.toMutableList()
-                    // if wallpaper is already in list, remove it
-                    for (i in 0 until list.size) {
-                        if (list[i].wid == wallpaper.wid) {
-                            list.removeAt(i)
-                            break
+        if (wallpaper.config != "") {
+            mScope.launch(Dispatchers.IO) {
+                if(wallpapers.value != null) {
+                    // if wallpaper not in list, add it
+                    if (!wallpapers.value!!.contains(wallpaper)) {
+                        var list = wallpapers.value!!.toMutableList()
+                        list.add(wallpaper)
+                        wallpapers.postValue(list)
+                    } else {
+                        // replace wallpaper in list
+                        val list = wallpapers.value!!.toMutableList()
+                        for (i in 0 until list.size) {
+                            if (list[i].wid == wallpaper.wid) {
+                                list[i] = wallpaper
+                                break
+                            }
                         }
+                        wallpapers.postValue(list)
                     }
-                    // add new wallpaper to list
-                    list.add(wallpaper)
-                    wallpapers.postValue(list)
+                } else {
+                    wallpapers.postValue(listOf(wallpaper))
                 }
+
+                mWallpaperDao.saveWallpaper(wallpaper)
             }
         }
     }
 
-    // get saved wallpaper given id
-    fun getWallpaper(wid: Int) {
+    // set active wallpaper live data to wallpaper given by id
+    fun setLiveWallpaperData(wid: Int) {
         mScope.launch(Dispatchers.IO) {
-            val wallpaper = mWallpaperDao.getWallpaperData(wid)
+            var wallpaper = mWallpaperDao.getWallpaperData(wid)
             if (wallpaper != null) {
                 activeWallpaper.postValue(wallpaper)
-            }
-        }
-    }
-
-    // get all saved wallpapers
-    fun getAllWallpapers() {
-        mScope.launch(Dispatchers.IO) {
-            val list = mWallpaperDao.getAllWallpapers()
-            if (list != null) {
-                wallpapers.postValue(list)
+            } else {
+                // try again until wallpaper is found
+                var allWallpapers = mWallpaperDao.getAllWallpapers()
+                activeWallpaper.postValue(allWallpapers[0])
             }
         }
     }
@@ -94,14 +95,6 @@ class SavedWallpaperRepo private constructor(wallpaperDao: SavedWallpaperDao) {
                 }
             }
             wallpapers.postValue(list)
-        }
-    }
-
-    // delete all wallpapers
-    fun deleteAll() {
-        mScope.launch(Dispatchers.IO) {
-            mWallpaperDao.deleteAll()
-            wallpapers.postValue(listOf())
         }
     }
 

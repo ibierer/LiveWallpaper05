@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.GridLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -92,14 +93,18 @@ class ProfileActivity : AppCompatActivity() {
             }
         })
 
-        // add default wallpaper to mSavedWallpaperViewModel
-        mSavedWallpaperViewModel.createWallpaperTable(mActiveWallpaperViewModel.getWid())
+        // if no wallpapers exist, create default wallpaper
+        if (mSavedWallpaperViewModel.savedWallpapers.value == null) {
+            mSavedWallpaperViewModel.createDefaultWallpaperTable(mActiveWallpaperViewModel.getWid(), mActiveWallpaperViewModel.getConfig())
+        }
 
         // link active wallpaper to active wallpaper live data via callback function
         mSavedWallpaperViewModel.activeWallpaper.observe(this, Observer { wallpaper ->
             // set active wallpaper wid to wallpaper wid
             mActiveWallpaperViewModel.setWid(wallpaper.wid)
             // [TODO] use this to update active wallpaper with saved wallpaper data
+            // load new active wallpaper config
+            mActiveWallpaperViewModel.loadConfig(wallpaper)
         })
 
         // link saved wallpaper view elements to saved wallpaper live data via callback function
@@ -115,7 +120,7 @@ class ProfileActivity : AppCompatActivity() {
                     // create random color bitmap preview based on wid
                     val preview = mActiveWallpaperViewModel.getPreviewImg(wallpaper.wid)
                     // create fragment
-                    val fragment = WallpaperFragment.newInstance(is_active, preview)
+                    val fragment = WallpaperFragment.newInstance(is_active, preview, wallpaper.wid)
                     val tag = "wallpaper_" + wallpaper.wid.toString()
                     // add fragment to grid
                     supportFragmentManager.beginTransaction()
@@ -254,7 +259,6 @@ class ProfileActivity : AppCompatActivity() {
 
         // create new empty wallpaper config
         mSavedWallpaperViewModel.createWallpaperTable(-1)
-
     }
 
     fun updateFragListeners(){
@@ -269,6 +273,7 @@ class ProfileActivity : AppCompatActivity() {
             if (frag == null) {
                 continue
             }
+            // connect delete button to delete wallpaper function
             frag.requireView().findViewById<FloatingActionButton>(R.id.b_delete_wallpaper)
                 .setOnClickListener {
                     // if wallpaper is active, make pop up telling user to switch wallpaper before removing
@@ -287,6 +292,29 @@ class ProfileActivity : AppCompatActivity() {
                     supportFragmentManager.beginTransaction().remove(frag).commit()
                     removeList.add(ref)
                     mSavedWallpaperViewModel.removeWallpaperFragId(ref)
+                }
+
+            // connect set active button to set active wallpaper function
+            frag.requireView().findViewById<Button>(R.id.b_active_wallpaper)
+                .setOnClickListener {
+                    // enable all active buttons
+                    for (r in wallpaperFragIds) {
+                        val fragTag = r.fragmentTag
+                        val innerFrag = supportFragmentManager.findFragmentByTag(fragTag)
+                        if (innerFrag != null) {
+                            innerFrag.requireView().findViewById<Button>(R.id.b_active_wallpaper).isEnabled = true
+                            val wallFrag = innerFrag as WallpaperFragment
+                            wallFrag.active = false
+                        }
+                    }
+                    // disable active button for this wallpaper
+                    frag.requireView().findViewById<Button>(R.id.b_active_wallpaper).isEnabled = false
+                    // set frag active variable to true
+                    val wallFrag = frag as WallpaperFragment
+                    wallFrag.active = true
+
+                    // switch active wallpaper in repo (this data is linked to active wallpaper via live data observer in onCreate)
+                    mSavedWallpaperViewModel.switchWallpaper(ref.wallpaperId)
                 }
         }
     }
