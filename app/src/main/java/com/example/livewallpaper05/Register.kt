@@ -17,6 +17,16 @@ class Register : AppCompatActivity() {
     private lateinit var registerButton: Button
     private lateinit var loginTextView: TextView
     private lateinit var mAuth: FirebaseAuth
+    public override fun onStart() {
+        super.onStart()
+        // Check if user is signed in (non-null) and update UI accordingly.
+        val currentUser = mAuth.currentUser
+        if (currentUser != null) {
+            val profilePageIntent = Intent(this, ProfileActivity::class.java)
+            startActivity(profilePageIntent)
+            finish()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

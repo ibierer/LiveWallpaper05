@@ -13,6 +13,7 @@ import android.widget.GridLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
@@ -62,7 +63,7 @@ class ProfileActivity : AppCompatActivity() {
 
     /* button to pull up login/register form */
     private var loginRegisterButton: Button? = null
-
+    private var logoutButton: Button? = null
     // auth for firebase
     private lateinit var auth: FirebaseAuth
 
@@ -78,6 +79,8 @@ class ProfileActivity : AppCompatActivity() {
         mWallpaperLayout = findViewById(R.id.sv_ll_wallpapers)
         mWallpaperGrid = findViewById(R.id.sv_ll_gl_wallpapers)
         loginRegisterButton = findViewById(R.id.loginRegisterButton)
+        logoutButton = findViewById(R.id.logoutButton)
+
 
 
         /* Used to securely access db credentials and keep out of source code */
@@ -93,6 +96,11 @@ class ProfileActivity : AppCompatActivity() {
         loginRegisterButton!!.setOnClickListener{
             val loginPageIntent = Intent(this, Login::class.java)
             startActivity(loginPageIntent)
+        }
+
+        logoutButton!!.setOnClickListener{
+            FirebaseAuth.getInstance().signOut()
+            Toast.makeText(this, "signed out", Toast.LENGTH_SHORT).show()
         }
 
         // set profile pic click listener
@@ -177,7 +185,6 @@ class ProfileActivity : AppCompatActivity() {
         * otherwise: insert user into database to pull from later in this function. */
 
         auth = FirebaseAuth.getInstance()
-
         if (auth.currentUser != null) {
             // User is signed in, get (username, bio, profile_picture, uid, etc) from AWS
             loadUserDataFromAWS(auth.currentUser!!.uid) //TODO: implement function
