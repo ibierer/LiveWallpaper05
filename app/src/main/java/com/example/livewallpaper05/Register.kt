@@ -94,7 +94,7 @@ class Register : AppCompatActivity() {
                     }
             }
             else{
-                Toast.makeText(this, "Username already exists!", Toast.LENGTH_SHORT)
+                Toast.makeText(this, "Account with username $username or email $email already exists!", Toast.LENGTH_SHORT)
                     .show()
             }
 

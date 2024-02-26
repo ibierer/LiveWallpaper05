@@ -19,6 +19,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModelFactory
@@ -49,6 +50,7 @@ class ProfileActivity : AppCompatActivity() {
 
     /* User authentication data */
     private var authUser: FirebaseUser? = null
+    private var username: String? = null
     private var loginRegisterButton: Button? = null
     private var logoutButton: Button? = null
 
@@ -203,8 +205,11 @@ class ProfileActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
         if (auth.currentUser != null) {
-            // User is signed in, get (username, bio, profile_picture, uid, etc) from AWS
-            loadUserDataFromAWS(auth.currentUser!!.uid) //TODO: implement function
+            username = intent.getStringExtra("USERNAME")
+            lifecycleScope.launch {
+                // User is signed in, get (username, bio, profile_picture, uid, etc) from AWS
+                loadUserDataFromAWS(username) //TODO: implement function
+            }
         } else {
             // User is not signed in
         }
@@ -217,7 +222,7 @@ class ProfileActivity : AppCompatActivity() {
         lateinit var dbPassword: String
     }
 
-    private fun loadUserDataFromAWS(uid: String) {
+    private suspend fun loadUserDataFromAWS(username: String?) {
 
     }
 
