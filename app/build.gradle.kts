@@ -53,6 +53,7 @@ android {
 
 dependencies {
     implementation("com.google.firebase:firebase-auth:22.3.1")
+    implementation("com.google.firebase:firebase-common-ktx:20.4.2")
     var room_version = "2.4.3"
     var activity_version = "1.6.1"
 

@@ -12,6 +12,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import android.view.inputmethod.EditorInfo
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -131,7 +132,29 @@ class PreviewActivity : AppCompatActivity() {
         // setup equation editor
         viewModel.updateEquation(equationEditor.text.toString())
         equationEditor.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // Do nothing
+            }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // update syntax check message
+                val equationChecker = EquationChecker()
+                val result: String = equationChecker.checkEquationSyntax(equationEditor.text.toString())
+                val message: String
+                if(result == ""){
+                    message = "No syntax errors."
+                }else{
+                    message = result
+                }
+                findViewById<TextView>(R.id.tv_syntax_check).text = message
+            }
             override fun afterTextChanged(s: android.text.Editable?) {
+                // Do nothing
+            }
+        })
+
+        // setup listener for the Done button
+        equationEditor.setOnEditorActionListener { v, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
                 // update equation in repo if valid
                 val equationChecker = EquationChecker()
                 val result: String = equationChecker.checkEquationSyntax(equationEditor.text.toString())
@@ -140,17 +163,17 @@ class PreviewActivity : AppCompatActivity() {
                 //Log.d("LiveWallpaper05", "result2 is: " + result2)
                 if (result == "") {
                     viewModel.updateEquation(equationEditor.text.toString())
-                    mView!!.onPause()
-                    mView!!.onResume()
+                    Log.d("LiveWallpaper05", "Syntax check passed.")
+                } else {
+                    viewModel.updateEquation(getString(R.string.default_equation))
+                    Log.d("LiveWallpaper05", "Syntax check failed.")
                 }
+                mView!!.onPause()
+                mView!!.onResume()
+                return@setOnEditorActionListener true // Return true to consume the event
             }
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                // Do nothing
-            }
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // Do nothing
-            }
-        })
+            return@setOnEditorActionListener false // Return false if you want to allow further handling of the event
+        }
 
         // connect fps data to ui fps meter
         var fpsMeter = findViewById<TextView>(R.id.tv_fps_meter)

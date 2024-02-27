@@ -21,94 +21,98 @@
 
     <ScrollView
         android:id="@+id/settings_scrollview"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:fillViewport="true"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:fadeScrollbars="false"
-        android:background="@drawable/border_background"
-        >
-
-    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_marginTop="10dp">
+        android:background="@drawable/border_background"
+        android:fadeScrollbars="false"
+        android:fillViewport="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/rotation_rate_text"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/rotation_rate"
-            android:layout_marginTop="10dp"/>
-
-        <SeekBar
-            android:id="@+id/rotation_rate_seekbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginTop="10dp"
-            android:min="-100"
-            android:max="100"/>
-
-        <SeekBar
-            android:id="@+id/speed_seekbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginTop="10dp"
-            android:min="0"
-            android:max="100"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Simulation Type Selection"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"/>
-
-        <Spinner
-            android:id="@+id/simulation_type_spinner"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            style="@style/Widget.AppCompat.Spinner"
-            />
+            android:orientation="vertical">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Background Color"/>
+            <TextView
+                android:id="@+id/rotation_rate_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/rotation_rate" />
 
-        <Button
-            android:id="@+id/b_color_picker"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Select Color"
-            />
+            <SeekBar
+                android:id="@+id/rotation_rate_seekbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
+                android:max="100"
+                android:min="-100" />
 
-        <TextView
-            android:id="@+id/tv_equation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Input Equation:"
-            android:layout_marginTop="12dp"/>
+            <SeekBar
+                android:id="@+id/speed_seekbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
+                android:max="100"
+                android:min="0" />
 
-        <EditText
-            android:id="@+id/et_equation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/border_background"
-            android:hint="Enter equation here"
-            android:inputType="text"
-            android:text="@string/default_equation" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:text="Simulation Type Selection" />
 
-    </LinearLayout>
+            <Spinner
+                android:id="@+id/simulation_type_spinner"
+                style="@style/Widget.AppCompat.Spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Background Color" />
+
+            <Button
+                android:id="@+id/b_color_picker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select Color" />
+
+            <TextView
+                android:id="@+id/tv_equation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Input Equation:" />
+
+            <EditText
+                android:id="@+id/et_equation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_background"
+                android:hint="Enter equation here"
+                android:inputType="text"
+                android:text="@string/default_equation" />
+
+            <TextView
+                android:id="@+id/tv_syntax_check"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Syntax:" />
+
+        </LinearLayout>
     </ScrollView>
 
     <androidx.fragment.app.FragmentContainerView
