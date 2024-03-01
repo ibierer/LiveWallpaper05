@@ -3,8 +3,6 @@
 //
 
 #include "LinearithmicNBodySimulation.h"
-#include "View.h"
-#include "gl3stub.h"
 
 void LinearithmicNBodySimulation::initialize(const ComputationOptions &computationOption) {
     this->computationOption = computationOption;
