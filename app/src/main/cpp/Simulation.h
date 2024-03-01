@@ -15,6 +15,10 @@ public:
         vec3 velocity;
     };
 
+    struct Star : Particle {
+        float mass;
+    };
+
     int particleCount;
 
     int cbrtParticleCount;

@@ -87,7 +87,7 @@ void SimpleNBodySimulation::simulateOnGPU(const int &iterations, bool pushDataTo
 void SimpleNBodySimulation::pushData2GPU(){
     // Bind buffer object simulation.computeShader.gVBO to indexed buffer target GL_SHADER_STORAGE_BUFFER at index simulation.computeShader.gIndexBufferBinding
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, computeShader.gIndexBufferBinding, computeShader.gVBO);
-    // Create and initialize data store for buffer object simulation.computeShader.gVBO with a size of sizeof(SimpleNBodySimulationData) and dynamically copy data to it from pointer location verts
+    // Create and initialize data store for buffer object simulation.computeShader.gVBO with a size of sizeof(LinearithmicSimulationData) and dynamically copy data to it from pointer location verts
     glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(SimpleNBodySimulationData), data, GL_DYNAMIC_COPY);// STREAM = infrequent use and changes, STATIC = frequent use and infrequent changes, DYNAMIC = frequent use and frequent changes
 }
 
@@ -100,8 +100,8 @@ bool SimpleNBodySimulation::seed() {
     switch(computationOption){
         case CPU:
             /*for(int i = 0; i < COUNT; i++){
-                data->particles[i].position = vec3(getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f);
-                data->particles[i].velocity = vec3(0.0f);
+                data->stars[i].position = vec3(getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f);
+                data->stars[i].velocity = vec3(0.0f);
             }*/
             for(int i = 0; i < NUM_CACHE_CHUNKS; i++){
                 for(int j = 0; j < PARTICLES_PER_CHUNK && PARTICLES_PER_CHUNK * i + j < COUNT; j++){

@@ -32,7 +32,7 @@ bool NaiveSimulation::seed(const int& count, const float& radius) {
     pNumY = floor(height * pInvSpacing) + 1;
     pNumZ = floor(depth * pInvSpacing) + 1;
     pNumCells = pNumX * pNumY * pNumZ;
-    numCellParticles = (int*)calloc(pNumCells, sizeof(int));              // Initialize the number of particles in each cell
+    numCellParticles = (int*)calloc(pNumCells, sizeof(int));              // Initialize the number of stars in each cell
     firstCellParticle = (int*)calloc((pNumCells + 1), sizeof(int));       // Initialize the index of the first particle in each cell
     cellParticleIds = (int*)calloc(particleCount, sizeof(int));
 
@@ -45,7 +45,7 @@ void NaiveSimulation::simulate(const vec3& gravity) {
     for (int i = 0; i < particleCount; i++) {
         calculateForce(i, gravity, particles[i].sumForceInitial, particles[i].position, 0);
         particles[i].positionFinal = particles[i].position + deltaTime * (particles[i].sumForceInitial * 0.5f * deltaTime + particles[i].velocity);
-        // Bug fix: Stop runaway particles
+        // Bug fix: Stop runaway stars
         float squaredDistance = dot(particles[i].positionFinal, particles[i].positionFinal);
         if(squaredDistance > sphereRadiusPlusPointFive * sphereRadiusPlusPointFive){
             particles[i].positionFinal *= sqrt(sphereRadius * sphereRadius / squaredDistance);
@@ -62,7 +62,7 @@ void NaiveSimulation::simulate(const vec3& gravity) {
             vec3 product = particles[i].velocity * efficiency;
             particles[i].velocity = product;
         }
-        //  Bug fix: stop runaway particles
+        //  Bug fix: stop runaway stars
         float squaredDistance = dot(particles[i].position, particles[i].position);
         if(squaredDistance > sphereRadiusSquared){
             particles[i].position *= sqrt(sphereRadiusSquared / squaredDistance);
@@ -98,7 +98,7 @@ void NaiveSimulation::populateGrid(const int& dataIndex){
     }
     firstCellParticle[pNumCells] = first; // guard
 
-    // fill particles into cells
+    // fill stars into cells
 
     for (int i = 0; i < particleCount; i++) {
         float x = ((vec3*)&particles[i])[dataIndex].x + sphereRadiusPlusPointFive;

@@ -1,17 +1,17 @@
 //
-// Created by Immanuel Bierer on 1/6/2024.
+// Created by camer on 2/29/2024.
 //
 
-#ifndef LIVEWALLPAPER05_SIMPLENBODYSIMULATION_H
-#define LIVEWALLPAPER05_SIMPLENBODYSIMULATION_H
+#ifndef LIVEWALLPAPER05_LINEARITHMICNBODYSIMULATION_H
+#define LIVEWALLPAPER05_LINEARITHMICNBODYSIMULATION_H
 
 
 using std::to_string;
 
-class SimpleNBodySimulation : public Simulation {
+class LinearithmicNBodySimulation : public Simulation {
 public:
 
-    static const int NUM_CACHE_CHUNKS = 512;
+    static const int NUM_CACHE_CHUNKS = 16;
 
     static const int PARTICLES_PER_CHUNK = 16;
 
@@ -28,9 +28,9 @@ public:
         float padding[(512 - sizeof(particles)) / sizeof(float)];
     };
 
-    struct __attribute__((aligned(128))) SimpleNBodySimulationData {
+    struct __attribute__((aligned(128))) LinearithmicNBodySimulationData {
         union {
-            //Particle stars[COUNT]; // CPU computation data
+            Star stars[COUNT]; // CPU computation data
             cacheChunk chunks[NUM_CACHE_CHUNKS]; // GPU computation data
         };
     };
@@ -81,15 +81,15 @@ public:
             "}"
     };
 
-    SimpleNBodySimulationData* data;
+    LinearithmicNBodySimulationData* data;
 
     double t;
 
-    SimpleNBodySimulation(){
+    LinearithmicNBodySimulation(){
 
     }
 
-    ~SimpleNBodySimulation(){
+    ~LinearithmicNBodySimulation(){
 
     }
 
@@ -118,4 +118,4 @@ private:
 };
 
 
-#endif //LIVEWALLPAPER05_SIMPLENBODYSIMULATION_H
+#endif //LIVEWALLPAPER05_LINEARITHMICNBODYSIMULATION_H

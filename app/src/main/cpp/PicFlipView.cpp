@@ -54,7 +54,7 @@ void PicFlipView::setupScene(){
 
     // dam break
 
-    // compute number of particles
+    // compute number of stars
 
     float r = 0.3 * h;    // particle radius w.r.t. cell size
     float dx = 2.0 * r;
@@ -70,7 +70,7 @@ void PicFlipView::setupScene(){
 
     fluid = new FlipFluid(density, tankWidth, tankHeight, tankDepth, h, r, maxParticles);
 
-    // create particles
+    // create stars
 
     fluid->numParticles = numX * numY * numZ;
     int p = 0;

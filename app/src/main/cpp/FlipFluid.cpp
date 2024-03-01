@@ -38,7 +38,7 @@ FlipFluid::FlipFluid(const float& _density, const float& _width, const float& _h
 
     particleVel = (vec3*)calloc(maxParticles, sizeof(vec3));      // Initialize particle velocity (x, y, z)
     particleDensity = (float*)calloc(fNumCells, sizeof(float));         // Initialize particle density
-    particleRestDensity = 0.0;                                            // Set the rest density of the particles
+    particleRestDensity = 0.0;                                            // Set the rest density of the stars
 
     particleRadius = _particleRadius;
     pInvSpacing = 1.0 / (2.2 * _particleRadius);
@@ -47,11 +47,11 @@ FlipFluid::FlipFluid(const float& _density, const float& _width, const float& _h
     pNumZ = floor(_depth * pInvSpacing) + 1;
     pNumCells = pNumX * pNumY * pNumZ;
 
-    numCellParticles = (int*)calloc(pNumCells, sizeof(int));              // Initialize the number of particles in each cell
+    numCellParticles = (int*)calloc(pNumCells, sizeof(int));              // Initialize the number of stars in each cell
     firstCellParticle = (int*)calloc((pNumCells + 1), sizeof(int));       // Initialize the index of the first particle in each cell
     cellParticleIds = (int*)calloc(_maxParticles, sizeof(int));           // Initialize the particle ids
 
-    numParticles = 0;                                                     // Set the initial number of particles to zero
+    numParticles = 0;                                                     // Set the initial number of stars to zero
 }
 
 void FlipFluid::integrateParticles(const float& _dt, const vec3& _gravity)
@@ -66,7 +66,7 @@ void FlipFluid::pushParticlesApart(const float& _numIters)
 {
     float colorDiffusionCoeff = 0.001;
 
-    // particleCount particles per cell
+    // particleCount stars per cell
 
     for (int i = 0; i < pNumCells; i++)
         numCellParticles[i] = 0;
@@ -93,7 +93,7 @@ void FlipFluid::pushParticlesApart(const float& _numIters)
     }
     firstCellParticle[pNumCells] = first; // guard
 
-    // fill particles into cells
+    // fill stars into cells
 
     for (int i = 0; i < numParticles; i++) {
         float x = particlePos[i].x;
@@ -108,7 +108,7 @@ void FlipFluid::pushParticlesApart(const float& _numIters)
         cellParticleIds[firstCellParticle[cellNr]] = i;
     }
 
-    // push particles apart
+    // push stars apart
 
     float minDist = 2.0 * particleRadius;
     float minDist2 = minDist * minDist;
