@@ -4,6 +4,7 @@
 
 #include "LinearithmicNBodySimulation.h"
 #include "View.h"
+#include "gl3stub.h"
 
 void LinearithmicNBodySimulation::initialize(const ComputationOptions &computationOption) {
     this->computationOption = computationOption;
@@ -45,6 +46,20 @@ void LinearithmicNBodySimulation::simulateOnCPU() {
         //update velocity
         data->stars[i].velocity += gravitySum[i] * deltaTime;
     }
+}
+
+struct Node {
+    Node* children[8];
+};
+// for(int i = 0; i < 8; i++){children[i] = null}
+vec4 LinearithmicNBodySimulation::conquerVolume(vector<int> ids){
+
+    for(int i = 0; i < ids.size(); i++){
+        vec3 p = data->stars[ids.at(i)].position;
+        int combo = (p.x>0.0f)*1+(p.y>0.0f)*2+(p.z>0.0f)*4;
+
+    }
+
 }
 
 void LinearithmicNBodySimulation::simulate(const int &iterations, bool pushDataToGPU,

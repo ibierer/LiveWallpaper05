@@ -115,6 +115,7 @@ private:
 
     bool seed();
 
+    vec4 conquerVolume(vector<int> ids);
 };
 
 
