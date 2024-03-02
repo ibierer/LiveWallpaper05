@@ -16,7 +16,7 @@ void LinearithmicNBodySimulation::initialize(const ComputationOptions &computati
 }
 
 void LinearithmicNBodySimulation::simulateOnCPU() {
-    float gravitationalConstant = 6.674e-11f;
+    float gravitationalConstant = 10000000000.0f * 6.674e-11f;
     if (t <= 0.0f) {
         return;
     }
@@ -34,15 +34,16 @@ void LinearithmicNBodySimulation::simulateOnCPU() {
             float dist = sqrt(distSquared);
             gravitySum[i] += delta / (dist * distSquared) * data->stars[j].mass;
         }
-        gravitySum[i] *= data->stars[i].mass;
+        gravitySum[i] *= gravitationalConstant * data->stars[i].mass;
     }
     // INTEGRATION --------------------------------------------------
     float deltaTime = 0.1f;
     for (uint i = 0u; i < COUNT; i++) {
+        vec3 acceleration = gravitySum[i] / data->stars[i].mass;
         //update positions
-        data->stars[i].position += (data->stars[i].velocity + 0.5f * gravitySum[i] * deltaTime) * deltaTime;
+        data->stars[i].position += (data->stars[i].velocity + 0.5f * acceleration * deltaTime) * deltaTime;
         //update velocity
-        data->stars[i].velocity += gravitySum[i] * deltaTime;
+        data->stars[i].velocity += acceleration * deltaTime;
     }
 }
 
