@@ -2,19 +2,30 @@ package com.example.livewallpaper05.activewallpaperdata
 
 import android.content.res.Resources
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.hardware.SensorManager
 import android.util.Log
+import android.widget.ImageView
 import androidx.lifecycle.*
+import com.example.livewallpaper05.PreviewActivity
 import com.example.livewallpaper05.savedWallpapers.SavedWallpaperTable
 import org.json.JSONObject
 import java.math.RoundingMode
+import java.nio.ByteBuffer
 import java.util.Random
 
 /**
  * View Model to keep a reference to the active wallpaper data
  */
 class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewModel() {
+    var width: Int = 0
+    var height: Int = 0
+    private var mBitmap : Bitmap = Bitmap.createBitmap(500, 500, Bitmap.Config.ARGB_8888) as Bitmap
+    var liveDataBitmap : MutableLiveData<Bitmap> = MutableLiveData<Bitmap>(mBitmap)
+    var bitmap : Bitmap = liveDataBitmap.value as Bitmap
+    var getScreenBuffer: Int = 0
+
     // reference repo from constructor value
     val mRepo: ActiveWallpaperRepo = repo
 

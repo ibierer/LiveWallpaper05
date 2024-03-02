@@ -3,6 +3,7 @@ package com.example.livewallpaper05
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.hardware.SensorManager
@@ -17,6 +18,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.Spinner
@@ -26,10 +28,12 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.toColor
+import androidx.lifecycle.Observer
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModelFactory
 import com.example.livewallpaper05.helpful_fragments.ColorActivity
+import java.nio.ByteBuffer
 
 class PreviewActivity : AppCompatActivity() {
 
@@ -127,7 +131,18 @@ class PreviewActivity : AppCompatActivity() {
         colorButton.setOnClickListener {
             val colorIntent = Intent(this, ColorActivity::class.java)
             colorActivity.launch(colorIntent)
+            viewModel.getScreenBuffer = 1
         }
+
+        /*findViewById<ImageView>(R.id.imageView).setOnClickListener{
+            findViewById<ImageView>(R.id.imageView).setImageBitmap(viewModel.liveDataBitmap.value)
+        }*/
+        // Observe changes to liveDataBitmap in the ViewModel
+        viewModel.liveDataBitmap.observe(this, Observer { bitmap ->
+            // This code will be executed on the main (UI) thread whenever liveDataBitmap changes
+            findViewById<ImageView>(R.id.imageView).setImageBitmap(bitmap)
+        })
+
 
         // setup equation editor
         viewModel.updateEquation(equationEditor.text.toString())
@@ -156,7 +171,7 @@ class PreviewActivity : AppCompatActivity() {
         equationEditor.setOnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 // update equation in repo if valid
-                val equationChecker = EquationChecker()
+                val equationChecker : EquationChecker = EquationChecker()
                 val result: String = equationChecker.checkEquationSyntax(equationEditor.text.toString())
                 //val result2: String = checkEquationSyntax2(equationEditor.text.toString())
                 Log.d("LiveWallpaper05", "result is: $result")
@@ -180,7 +195,6 @@ class PreviewActivity : AppCompatActivity() {
         viewModel.getFPS().observe(this) {
             fpsMeter.text = it.toString()
         }
-
     }
 
     /* this is run when the app is 'paused'
@@ -243,7 +257,20 @@ class PreviewActivity : AppCompatActivity() {
         // register simulation functions as external and belonging to the livewallpaper05 library
         external fun init(visualization: String)
         external fun resize(width: Int, height: Int, orientation: Int)
-        external fun step(acc_x: Float, acc_y: Float, acc_z: Float, rot_x: Float, rot_y: Float, rot_z: Float, rot_w: Float, linear_acc_x: Float, linear_acc_y: Float, linear_acc_z: Float, value: Float)
+        external fun step(
+            acc_x: Float,
+            acc_y: Float,
+            acc_z: Float,
+            rot_x: Float,
+            rot_y: Float,
+            rot_z: Float,
+            rot_w: Float,
+            linear_acc_x: Float,
+            linear_acc_y: Float,
+            linear_acc_z: Float,
+            value: Float
+        )
         external fun sendData(value: Float)
+        external fun getScreenBuffer(): ByteArray
     }
 }

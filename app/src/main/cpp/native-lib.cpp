@@ -188,3 +188,18 @@ JNIEXPORT void JNICALL
 Java_com_example_livewallpaper05_PreviewActivity_00024Companion_sendData(JNIEnv *env, jobject thiz, jfloat value) {
     view->zoom = value;
 }
+
+extern "C"
+JNIEXPORT jbyteArray JNICALL
+Java_com_example_livewallpaper05_PreviewActivity_00024Companion_getScreenBuffer(JNIEnv *env,
+                                                                                jobject thiz) {
+    // Capture the screen buffer
+    vector<unsigned char> pixels = vector<unsigned char>(view->width * view->height * 4); // Assuming RGB format
+    glReadPixels(0, 0, view->width, view->height, GL_RGBA, GL_UNSIGNED_BYTE, &pixels[0]);
+
+    // Convert the pixel data to a Java byte array
+    jbyteArray byteArray = env->NewByteArray(pixels.size());
+    env->SetByteArrayRegion(byteArray, 0, pixels.size(), reinterpret_cast<jbyte*>(pixels.data()));
+
+    return byteArray;
+}

@@ -1,10 +1,18 @@
 package com.example.livewallpaper05
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.opengl.GLSurfaceView
 import android.os.SystemClock
+import android.util.Log
+import android.view.View
+import android.widget.ImageView
+import androidx.lifecycle.viewModelScope
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
+import java.nio.ByteBuffer
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
@@ -39,7 +47,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             linearAccelData[1] = linearAccelData[1] * speed
             linearAccelData[2] = linearAccelData[2] * speed
 
-            // run step in the simulation (also updates opengl view)
+            // Run C++ visualization logic and render OpenGL view
             PreviewActivity.step(
                 accelData[0],
                 accelData[1],
@@ -53,6 +61,24 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                 linearAccelData[2],
                 mViewModel.getRotationRate()
             )
+            if(mViewModel.getScreenBuffer > 0){
+                mViewModel.getScreenBuffer = 0
+                val byteArray: ByteArray = PreviewActivity.getScreenBuffer()
+                val bitmap = Bitmap.createBitmap(mViewModel.width, mViewModel.height, Bitmap.Config.ARGB_8888)
+                // Set pixel data manually by iterating over the byte array
+                val buffer = ByteBuffer.wrap(byteArray)
+                for (y in 0 until mViewModel.height) {
+                    for (x in 0 until mViewModel.width) {
+                        // Extract RGB components from the byte array and set the pixel
+                        val r = buffer.get().toInt() and 0xFF
+                        val g = buffer.get().toInt() and 0xFF
+                        val b = buffer.get().toInt() and 0xFF
+                        val a = buffer.get().toInt() and 0xFF
+                        bitmap.setPixel(x, y, Color.argb(a, r, g, b))
+                    }
+                }
+                mViewModel.liveDataBitmap.postValue(Bitmap.createScaledBitmap(bitmap, bitmap.width / 4, bitmap.height / 4, true))
+            }
 
             // get time after frame
             val currentFrame = SystemClock.elapsedRealtimeNanos()
@@ -69,6 +95,8 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             val orientation = mViewModel.getOrientation()
             //Log.d("Livewallpaper", "orientation: $orientation")
             PreviewActivity.resize(width, height, orientation)
+            mViewModel.width = width
+            mViewModel.height = height
         }
 
         override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
