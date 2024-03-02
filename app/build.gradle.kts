@@ -52,6 +52,8 @@ android {
 
 
 dependencies {
+    implementation("com.github.yukuku:ambilwarna:2.0.1")
+
     implementation("com.google.firebase:firebase-auth:22.3.1")
     implementation("com.google.firebase:firebase-common-ktx:20.4.2")
     var room_version = "2.4.3"

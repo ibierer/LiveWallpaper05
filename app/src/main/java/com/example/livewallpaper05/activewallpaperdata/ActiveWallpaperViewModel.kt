@@ -4,6 +4,7 @@ import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.Paint
 import android.hardware.SensorManager
 import android.util.Log
 import android.widget.ImageView
@@ -23,8 +24,8 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
     var height: Int = 0
     private var mBitmap : Bitmap = Bitmap.createBitmap(500, 500, Bitmap.Config.ARGB_8888) as Bitmap
     var liveDataBitmap : MutableLiveData<Bitmap> = MutableLiveData<Bitmap>(mBitmap)
-    var bitmap : Bitmap = liveDataBitmap.value as Bitmap
     var getScreenBuffer: Int = 0
+    var paint = Paint()
 
     // reference repo from constructor value
     val mRepo: ActiveWallpaperRepo = repo

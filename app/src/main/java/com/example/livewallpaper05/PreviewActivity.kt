@@ -1,9 +1,7 @@
 package com.example.livewallpaper05
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.hardware.SensorManager
@@ -32,8 +30,7 @@ import androidx.lifecycle.Observer
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModelFactory
-import com.example.livewallpaper05.helpful_fragments.ColorActivity
-import java.nio.ByteBuffer
+import yuku.ambilwarna.AmbilWarnaDialog
 
 class PreviewActivity : AppCompatActivity() {
 
@@ -129,8 +126,27 @@ class PreviewActivity : AppCompatActivity() {
 
         // setup color selection dialog
         colorButton.setOnClickListener {
-            val colorIntent = Intent(this, ColorActivity::class.java)
-            colorActivity.launch(colorIntent)
+            val initColor = 0
+            val colorPickerDialog = AmbilWarnaDialog(
+                this,
+                initColor,
+                object : AmbilWarnaDialog.OnAmbilWarnaListener {
+                    override fun onCancel(dialog: AmbilWarnaDialog?) {
+                        dialog?.dialog?.dismiss()
+                    }
+
+                    override fun onOk(dialog: AmbilWarnaDialog?, color: Int) {
+                        Log.d("colorPicker", "color selected is: $color")
+                        viewModel.updateColor(Color.valueOf(color))
+                        dialog?.dialog?.dismiss()
+                        mView!!.onPause()
+                        mView!!.onResume()
+                    }
+                }
+            )
+            colorPickerDialog.show()
+
+            // Temporary signal to trigger screen buffer capture
             viewModel.getScreenBuffer = 1
         }
 
