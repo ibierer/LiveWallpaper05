@@ -70,7 +70,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/border_background"
-                android:text="Visulization Type Selection" />
+                android:text="Visualization Type Selection" />
 
             <Spinner
                 android:id="@+id/simulation_type_spinner"
