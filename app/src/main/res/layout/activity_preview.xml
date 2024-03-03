@@ -140,6 +140,7 @@
         android:id="@+id/tv_fps_meter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@drawable/border_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
