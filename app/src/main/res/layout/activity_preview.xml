@@ -70,7 +70,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/border_background"
-                android:text="Visualization Type Selection" />
+                android:text="Visualization Type Selection:" />
 
             <Spinner
                 android:id="@+id/simulation_type_spinner"
@@ -85,7 +85,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/border_background"
-                android:text="Background Color" />
+                android:text="Background Color:" />
 
             <ImageView
                 android:id="@+id/imageView"
@@ -121,7 +121,8 @@
                 android:id="@+id/tv_syntax_check"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/border_background" />
+                android:background="@drawable/border_background"
+                android:text="Syntax check result" />
 
         </LinearLayout>
     </ScrollView>
