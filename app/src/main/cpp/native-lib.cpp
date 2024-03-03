@@ -183,7 +183,6 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_step(JNIEnv *env
         view->zoom = value;
         view->render();
         view->incrementFrameCount();
-        //ALOGD("DIMENSIONS_XY%s", (string("width = ") + to_string(view->width) + ", height = " + to_string(view->height)).c_str());
     }
 }
 
@@ -197,7 +196,7 @@ extern "C"
 JNIEXPORT jbyteArray JNICALL
 Java_com_example_livewallpaper05_PreviewActivity_00024Companion_getScreenBuffer(JNIEnv *env, jobject thiz) {
     // Capture the screen buffer
-    vector<unsigned char> pixels = vector<unsigned char>(view->width * view->height * 4); // Assuming RGB format
+    vector<unsigned char> pixels = vector<unsigned char>(view->width * view->height * 4);
     glReadPixels(0, 0, view->width, view->height, GL_RGBA, GL_UNSIGNED_BYTE, &pixels[0]);
 
     // Convert the pixel data to a Java byte array
