@@ -111,12 +111,12 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             val boxJSON = """{
                     "visualization_type": "simulation",
                     "simulation_type": "naive",
-                    "fluid_surface": "true",
+                    "fluid_surface": "false",
                     "particle_count": 1000,
                     "smooth_sphere_surface": "true",
                     "gravity": 0.0,
                     "reference_frame_rotates": "false",
-                    "background_is_solid_color": "false",
+                    "background_is_solid_color": "true",
                     "background_texture": "ms_paint_colors",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
                 }""".trimIndent()
@@ -124,12 +124,12 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             val naiveJSON = """{
                     "visualization_type": "simulation",
                     "simulation_type": "naive",
-                    "fluid_surface": "false",
+                    "fluid_surface": "true",
                     "particle_count": 1000,
                     "smooth_sphere_surface": "true",
                     "gravity": 0.0,
                     "reference_frame_rotates": "false",
-                    "background_is_solid_color": "true",
+                    "background_is_solid_color": "false",
                     "background_texture": "ms_paint_colors",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
                 }""".trimIndent()
@@ -213,7 +213,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             var selectionJSON = boxJSON
             when (mViewModel.getSimulationType()) {
                 0 -> {
-                    selectionJSON = boxJSON
+                    selectionJSON = nbodyJSON
                 }
                 1 -> {
                     selectionJSON = naiveJSON

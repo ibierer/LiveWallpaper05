@@ -111,16 +111,17 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
                 //view = new SphereWithRefractionView();
                 //view = new SphereWithFresnelEffectView();
                 //view = new SimpleNBodySimulationView();
-                view = new LinearithmicNBodySimulationView();
+                //view = new LinearithmicNBodySimulationView();
                 //view = new NaiveSimulationView(particleCount, 15.0f, referenceFrameRotates == "true", gravity);
                 int particleCount = visualizationJSON["particle_count"];
                 string fluidSurface = visualizationJSON["fluid_surface"];
                 float gravity = visualizationJSON["gravity"];
                 string referenceFrameRotates = visualizationJSON["reference_frame_rotates"];
                 string smoothSphereSurface = visualizationJSON["smooth_sphere_surface"];
-                //view = new NaiveSimulationFluidSurfaceView(particleCount, fluidSurface == "true", 40, 20.0f, referenceFrameRotates == "true", gravity, smoothSphereSurface == "true");
+                view = new NaiveSimulationFluidSurfaceView(particleCount, fluidSurface == "true", 40, 20.0f, referenceFrameRotates == "true", gravity, smoothSphereSurface == "true");
             }else if(simulation == "nbody"){
-                view = new SimpleNBodySimulationView();
+                //view = new SimpleNBodySimulationView();
+                view = new LinearithmicNBodySimulationView();
             }else if(simulation == "picflip"){
                 float gravity = visualizationJSON["gravity"];
                 string referenceFrameRotates = visualizationJSON["reference_frame_rotates"];
