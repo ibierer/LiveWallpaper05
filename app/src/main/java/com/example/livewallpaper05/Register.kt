@@ -72,64 +72,49 @@ class Register : AppCompatActivity() {
                 Toast.makeText(this, "Enter username", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            var userExists = false
+
+
             lifecycleScope.launch {
-                userExists = isUserInDB(username)
-            }
-            if (!userExists) {
-                mAuth.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(this) { task ->
-                        if (task.isSuccessful) {
-                            Toast.makeText(this, "Account created!", Toast.LENGTH_SHORT).show()
-                            insertIntoUsers(username, email)
-                            // Navigate to the login page
-                            val loginPageIntent = Intent(this, Login::class.java)
-                            startActivity(loginPageIntent)
-                            finish()
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT)
-                                .show()
-                        }
-                    }
-            }
-            else{
-                Toast.makeText(this, "Account with username $username or email $email already exists!", Toast.LENGTH_SHORT)
-                    .show()
+                val userExists = isUserInDB(username)
+
+                if (userExists) {
+                    // User already exists, display a message or handle accordingly
+                    Toast.makeText(applicationContext, "User already exists.", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    // User doesn't exist, proceed with user creation
+                    createUserWithEmailAndPassword(email, password)
+                    insertIntoUsers(username, email)
+                }
             }
 
         }
 
     }
 
-    fun insertIntoUsers(username: String, name: String) {
-        GlobalScope.launch(Dispatchers.IO) {
-            val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
-            try {
-                Class.forName("com.mysql.jdbc.Driver").newInstance()
-                // connect to mysql server
-                val connectionProperties = Properties()
-                connectionProperties["user"] = ProfileActivity.DatabaseConfig.dbUser
-                connectionProperties["password"] = ProfileActivity.DatabaseConfig.dbPassword
-                connectionProperties["useSSL"] = "false"
-
-                DriverManager.getConnection(jdbcConnectionString, connectionProperties)
-                    .use { conn -> // this syntax ensures that connection will be closed whether normally or from exception
-                        val useDbQuery = "USE myDatabase;"
-                        val statement = conn.prepareStatement(useDbQuery)
-                        statement.execute()
-                        val insertQuery = "INSERT INTO users (username, name) VALUES (?, ?);"
-                        val preparedStatement = conn.prepareStatement(insertQuery)
-                        preparedStatement.setString(1, username)
-                        preparedStatement.setString(2, name)
-                        preparedStatement.executeUpdate()
-                        conn.close()
-                    }
-            } catch (e: SQLException) {
-                Log.e("LiveWallpaper05", e.printStackTrace().toString())
-                Log.d("LiveWallpaper05", e.toString())
+    private fun createUserWithEmailAndPassword(email: String, password: String) {
+        mAuth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    // User creation success, update UI or perform other actions
+                    Toast.makeText(
+                        applicationContext,
+                        "Registration successful!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    // Optionally, you can navigate to another activity or perform other actions here
+                    val intent = Intent(this, Login::class.java)
+                    startActivity(intent)
+                    finish()
+                } else {
+                    // If user creation fails, display a message to the user
+                    Toast.makeText(
+                        this@Register,
+                        "Registration failed.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
-        }
     }
 
     suspend fun isUserInDB(username: String): Boolean {
@@ -145,25 +130,59 @@ class Register : AppCompatActivity() {
                 connectionProperties["password"] = ProfileActivity.DatabaseConfig.dbPassword
                 connectionProperties["useSSL"] = "false"
 
-                DriverManager.getConnection(jdbcConnectionString, connectionProperties).use { conn ->
-                    // this syntax ensures that the connection will be closed whether normally or from an exception
+                DriverManager.getConnection(jdbcConnectionString, connectionProperties)
+                    .use { conn ->
+                        // this syntax ensures that the connection will be closed whether normally or from an exception
 
-                    val useDbQuery = "USE myDatabase;"
-                    val useDbStatement = conn.prepareStatement(useDbQuery)
-                    useDbStatement.execute()
-                    val checkUserQuery = "SELECT COUNT(*) FROM users WHERE username = ?;"
-                    val checkUserStatement = conn.prepareStatement(checkUserQuery)
-                    checkUserStatement.setString(1, username)
-                    val resultSet = checkUserStatement.executeQuery()
+                        val useDbQuery = "USE myDatabase;"
+                        val useDbStatement = conn.prepareStatement(useDbQuery)
+                        useDbStatement.execute()
+                        val checkUserQuery = "SELECT COUNT(*) FROM users WHERE username = ?;"
+                        val checkUserStatement = conn.prepareStatement(checkUserQuery)
+                        checkUserStatement.setString(1, username)
+                        val resultSet = checkUserStatement.executeQuery()
 
-                    resultSet.next()
-                    val userCount = resultSet.getInt(1)
-                    userExists = userCount > 0
-                }
+                        resultSet.next()
+                        val userCount = resultSet.getInt(1)
+                        userExists = userCount > 0
+                    }
             } catch (e: SQLException) {
                 Log.d("CHECKDBUSER", e.message.toString())
             }
             userExists
+        }
+    }
+
+    fun insertIntoUsers(username: String, name: String) {
+        GlobalScope.launch(Dispatchers.IO) {
+            // write aws test code here -------------
+            val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
+            try {
+                Class.forName("com.mysql.jdbc.Driver").newInstance()
+                // connect to mysql server
+                val connectionProperties = Properties()
+                connectionProperties["user"] = ProfileActivity.DatabaseConfig.dbUser
+                connectionProperties["password"] = ProfileActivity.DatabaseConfig.dbPassword
+                connectionProperties["useSSL"] = "false"
+
+                DriverManager.getConnection(jdbcConnectionString, connectionProperties)
+                    .use { conn -> // this syntax ensures that connection will be closed whether normally or from exception
+                        Log.d("LiveWallpaper05", "Connected to database")
+                        val useDbQuery = "USE myDatabase;"
+                        val statement = conn.prepareStatement(useDbQuery)
+                        statement.execute()
+                        Log.d("LiveWallpaper05", "Pt A REACHED")
+                        val insertQuery = "INSERT INTO users (username, name) VALUES (?, ?);"
+                        val preparedStatement = conn.prepareStatement(insertQuery)
+                        preparedStatement.setString(1, username)
+                        preparedStatement.setString(2, name)
+                        preparedStatement.executeUpdate()
+                        conn.close()
+                    }
+            } catch (e: SQLException) {
+                Log.e("LiveWallpaper05", e.printStackTrace().toString())
+                Log.d("LiveWallpaper05", e.toString())
+            }
         }
     }
 
