@@ -214,6 +214,7 @@ class ProfileActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         if (auth.currentUser != null) {
             username = intent.getStringExtra("USERNAME")
+            Log.d("OKAY", "user was found!!: $username")
             mUsername!!.text = username
             loginRegisterButton!!.visibility = View.GONE
             logoutButton!!.visibility = View.VISIBLE
@@ -222,6 +223,7 @@ class ProfileActivity : AppCompatActivity() {
                 loadUserDataFromAWS(username) //TODO: implement function
             }
         } else {
+            Log.d("OH_NO", "user was not found!!")
             //logoutButton!!.visibility = View.GONE
             // User is not signed in
         }
@@ -276,6 +278,7 @@ class ProfileActivity : AppCompatActivity() {
                     return@registerForActivityResult
                 }
                 updateProfilePicture(imageBitmap)
+
             }
         }
 
@@ -312,6 +315,39 @@ class ProfileActivity : AppCompatActivity() {
         mSavedWallpaperViewModel.saveWallpaper(activeConfig)
         // create new empty wallpaper config
         mSavedWallpaperViewModel.createWallpaperTable(-1)
+    }
+
+    fun insertWallpaper(name: String, image: Bitmap){
+        GlobalScope.launch(Dispatchers.IO) {
+            // write aws test code here -------------
+            val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
+            try {
+                Class.forName("com.mysql.jdbc.Driver").newInstance()
+                // connect to mysql server
+                val connectionProperties = Properties()
+                connectionProperties["user"] = ProfileActivity.DatabaseConfig.dbUser
+                connectionProperties["password"] = ProfileActivity.DatabaseConfig.dbPassword
+                connectionProperties["useSSL"] = "false"
+
+                DriverManager.getConnection(jdbcConnectionString, connectionProperties)
+                    .use { conn -> // this syntax ensures that connection will be closed whether normally or from exception
+                        Log.d("LiveWallpaper05", "Connected to database")
+                        val useDbQuery = "USE myDatabase;"
+                        val statement = conn.prepareStatement(useDbQuery)
+                        statement.execute()
+                        val insertQuery = "INSERT INTO wallpapers (username, name) VALUES (?, ?);"
+                        val preparedStatement = conn.prepareStatement(insertQuery)
+                        preparedStatement.setString(1, username)
+                        preparedStatement.setString(2, name)
+                        preparedStatement.executeUpdate()
+                        Log.d("LiveWallpaper05", "Pt B REACHED")
+                        conn.close()
+                    }
+            } catch (e: SQLException) {
+                Log.e("LiveWallpaper05", e.printStackTrace().toString())
+                Log.d("LiveWallpaper05", e.toString())
+            }
+        }
     }
 
     fun updateFragListeners() {

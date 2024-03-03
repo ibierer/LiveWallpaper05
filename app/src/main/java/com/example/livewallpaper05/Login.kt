@@ -50,6 +50,7 @@ class Login : AppCompatActivity() {
         loginButton.setOnClickListener{
             val email = etEmail.text.toString()
             val password = etPassword.text.toString()
+            // Check if email or password are empty
             if (TextUtils.isEmpty(email)){
                 Toast.makeText(this, "Enter email", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -62,32 +63,37 @@ class Login : AppCompatActivity() {
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
                         lifecycleScope.launch {
-                            // Used to get username from AWS db
-                            getUsernameFromEmail(email)
-                        }
+                            try {
+                                val username : String = getUsernameFromEmail(email)
+                                // Switch to the main thread before UI operations
+                                withContext(Dispatchers.Main) {
+                                    // Sign in success, update UI with the signed-in user's information
+                                    Toast.makeText(applicationContext, "Login successful!", Toast.LENGTH_SHORT).show()
 
-                        // Sign in success, update UI with the signed-in user's information
-                        Toast.makeText(applicationContext, "Login successful!", Toast.LENGTH_SHORT).show()
-                        profileBinding.loginRegisterButton.visibility = View.GONE
-
-                        // Move this part inside the onCompleteListener
-                        val profilePageIntent = Intent(this, ProfileActivity::class.java).apply {
-                            putExtra("USERNAME", username)
+                                    val profilePageIntent = Intent(this@Login, ProfileActivity::class.java).apply {
+                                        putExtra("USERNAME", username)
+                                    }
+                                    startActivity(profilePageIntent)
+                                    finish()
+                                }
+                            } catch (e: Exception) {
+                                Log.e("LoginActivity", "Error getting username: ${e.message}")
+                                // Handle the error as needed
+                            }
                         }
-                        startActivity(profilePageIntent)
-                        finish()
                     } else {
                         // If sign in fails, display a message to the user.
                         Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show()
                     }
-
                 }
         }
     }
 
-    suspend fun getUsernameFromEmail(email : String) {
+    private suspend fun getUsernameFromEmail(email: String): String {
         return withContext(Dispatchers.IO) {
             val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
+            var username = "" // Initialize with an empty string or any default value
+
             try {
                 Class.forName("com.mysql.jdbc.Driver").newInstance()
                 val connectionProperties = Properties()
@@ -99,15 +105,23 @@ class Login : AppCompatActivity() {
                         val useDbQuery = "USE myDatabase;"
                         val useDbStatement = conn.prepareStatement(useDbQuery)
                         useDbStatement.execute()
-                        val getUsernameQuery = "SELECT username FROM users WHERE email = ?;"
+                        val getUsernameQuery = "SELECT username FROM users WHERE name = ?;"
                         val checkUserStatement = conn.prepareStatement(getUsernameQuery)
                         checkUserStatement.setString(1, email)
                         val resultSet = checkUserStatement.executeQuery()
-                        username = resultSet.getString("username")
+
+                        if (resultSet.next()) {
+                            // Assign the value to the 'username' variable
+                            username = resultSet.getString("username")
+                        } else {
+                            // Handle the case where no username is found for the given email
+                            Log.d("getUsernameFromEmail", "No username found for email: $email")
+                        }
                     }
             } catch (e: SQLException) {
                 Log.d("getUsernameFromEmail", e.message.toString())
             }
+            username
         }
     }
 }
