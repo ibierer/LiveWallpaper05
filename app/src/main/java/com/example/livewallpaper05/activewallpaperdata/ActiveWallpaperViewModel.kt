@@ -115,7 +115,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
     // update fps in repo (scale float to 2 decimal places)
     fun updateFPS(fps: Float) {
         // update fps in repo
-        var rounded = fps.toBigDecimal().setScale(2, RoundingMode.UP).toDouble()
+        val rounded = fps.toBigDecimal().setScale(2, RoundingMode.UP).toDouble()
         repo.fps.postValue(rounded.toFloat())
     }
 
@@ -141,7 +141,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
 
     // return config string from repo
     fun getConfig(): String {
-        var config = JSONObject()
+        val config = JSONObject()
         // store simulation type, background color, and settings (with default values for now
         config.put("name", "New Wallpaper")
         config.put("type", repo.simulationType)
