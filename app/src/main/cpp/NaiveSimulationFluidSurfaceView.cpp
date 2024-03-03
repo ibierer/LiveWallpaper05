@@ -456,9 +456,9 @@ void NaiveSimulationFluidSurfaceView::render(){
                                                      "twoSidedRefraction"),
                                 twoSidedRefraction);
                     glUniform1f(glGetUniformLocation(graphFluidSurfaceClipsSphereProgram,
-                                                     "screenWidth"), width);
+                                                     "screenWidth"), initialWidth);
                     glUniform1f(glGetUniformLocation(graphFluidSurfaceClipsSphereProgram,
-                                                     "screenHeight"), height);
+                                                     "screenHeight"), initialHeight);
                     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
                     glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
                     glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE,
@@ -580,9 +580,9 @@ void NaiveSimulationFluidSurfaceView::render(){
                                                      "twoSidedRefraction"),
                                 twoSidedRefraction);
                     glUniform1f(glGetUniformLocation(graphFluidSurfaceClipsSphereProgram,
-                                                     "screenWidth"), width);
+                                                     "screenWidth"), initialWidth);
                     glUniform1f(glGetUniformLocation(graphFluidSurfaceClipsSphereProgram,
-                                                     "screenHeight"), height);
+                                                     "screenHeight"), initialHeight);
                     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
                     glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
                     glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE,
@@ -658,10 +658,10 @@ void NaiveSimulationFluidSurfaceView::render(){
                                 twoSidedRefraction);
                     glUniform1f(
                             glGetUniformLocation(sphereMapDoubleRefractionProgram, "screenWidth"),
-                            width);
+                            initialWidth);
                     glUniform1f(
                             glGetUniformLocation(sphereMapDoubleRefractionProgram, "screenHeight"),
-                            height);
+                            initialHeight);
                     sphereVAO.drawArrays();
                     glDepthFunc(GL_LEQUAL);
 
@@ -804,8 +804,8 @@ void NaiveSimulationFluidSurfaceView::render(){
                             1.0f / indexOfRefraction);
                 glUniform1i(glGetUniformLocation(graphFluidSurfaceProgram, "twoSidedRefraction"),
                             twoSidedRefraction);
-                glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenWidth"), width);
-                glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenHeight"), height);
+                glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenWidth"), initialWidth);
+                glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenHeight"), initialHeight);
                 glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
                 glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
                 glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE,

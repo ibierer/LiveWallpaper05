@@ -43,7 +43,10 @@ class PreviewActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(icicle: Bundle?) {
         super.onCreate(icicle)
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().setFlags(
+            WindowManager.LayoutParams.FLAG_FULLSCREEN,
+            WindowManager.LayoutParams.FLAG_FULLSCREEN
+        );
         setContentView(R.layout.activity_preview)
 
         // get view window from GLES3JNIView
@@ -73,21 +76,23 @@ class PreviewActivity : AppCompatActivity() {
         layout.addView(mView)
 
         // update orientation in repo
-        try{
+        try {
             viewModel.updateOrientation(this.display!!.rotation)
-        } catch (e: Exception){
+        } catch (e: Exception) {
             Log.d("Livewallpaper", "api level too low!")
         }
 
         // register scrollbar actions to update rotation rate in repo
         rotationScrollBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean){
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 // Do nothing until changes are stopped for smooth ui updates
                 viewModel.updateRotationRate(seekBar.progress.toFloat() / 100.0f)
             }
+
             override fun onStartTrackingTouch(seekBar: SeekBar) {
                 // Do nothing when changes are started
             }
+
             override fun onStopTrackingTouch(seekBar: SeekBar) {
                 //mRepo!!.rotationRate = seekBar.progress.toFloat() / 100.0f
                 viewModel.updateRotationRate(seekBar.progress.toFloat() / 100.0f)
@@ -96,13 +101,15 @@ class PreviewActivity : AppCompatActivity() {
 
         // register scrollbar actions to update speed in repo
         speedScrollBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean){
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 // Do nothing until changes are stopped for smooth ui updates
                 viewModel.updateSpeed(seekBar.progress.toFloat() / 100.0f)
             }
+
             override fun onStartTrackingTouch(seekBar: SeekBar) {
                 // Do nothing when changes are started
             }
+
             override fun onStopTrackingTouch(seekBar: SeekBar) {
                 //mRepo!!.rotationRate = seekBar.progress.toFloat() / 100.0f
                 viewModel.updateSpeed(seekBar.progress.toFloat() / 100.0f)
@@ -113,12 +120,13 @@ class PreviewActivity : AppCompatActivity() {
         simSelectorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
                 val changed = viewModel.updateSimulationType(pos)
-                if (changed){
+                if (changed) {
                     // tell view it needs to be reloaded
                     mView!!.onPause()
                     mView!!.onResume()
                 }
             }
+
             override fun onNothingSelected(parent: AdapterView<*>) {
                 // Do nothing
             }
@@ -166,18 +174,21 @@ class PreviewActivity : AppCompatActivity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
                 // Do nothing
             }
+
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 // update syntax check message
                 val equationChecker = EquationChecker()
-                val result: String = equationChecker.checkEquationSyntax(equationEditor.text.toString())
+                val result: String =
+                    equationChecker.checkEquationSyntax(equationEditor.text.toString())
                 val message: String
-                if(result == ""){
+                if (result == "") {
                     message = "No syntax errors."
-                }else{
+                } else {
                     message = result
                 }
                 findViewById<TextView>(R.id.tv_syntax_check).text = message
             }
+
             override fun afterTextChanged(s: android.text.Editable?) {
                 // Do nothing
             }
@@ -187,8 +198,9 @@ class PreviewActivity : AppCompatActivity() {
         equationEditor.setOnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 // update equation in repo if valid
-                val equationChecker : EquationChecker = EquationChecker()
-                val result: String = equationChecker.checkEquationSyntax(equationEditor.text.toString())
+                val equationChecker: EquationChecker = EquationChecker()
+                val result: String =
+                    equationChecker.checkEquationSyntax(equationEditor.text.toString())
                 //val result2: String = checkEquationSyntax2(equationEditor.text.toString())
                 Log.d("LiveWallpaper05", "result is: $result")
                 //Log.d("LiveWallpaper05", "result2 is: " + result2)
@@ -231,23 +243,24 @@ class PreviewActivity : AppCompatActivity() {
         mView!!.onResume()
     }
 
-    private val colorActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == RESULT_OK) {
-            val data = result.data
-            //val color = data?.extras?.get("data")
-            val color = data?.getIntExtra("color", Color.WHITE)
+    private val colorActivity =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val data = result.data
+                //val color = data?.extras?.get("data")
+                val color = data?.getIntExtra("color", Color.WHITE)
 
-            if (color == null) {
-                return@registerForActivityResult
+                if (color == null) {
+                    return@registerForActivityResult
+                }
+                val trueColor = color.toColor()
+                viewModel.updateColor(trueColor)
+                mView!!.onPause()
+                mView!!.onResume()
             }
-            val trueColor = color.toColor()
-            viewModel.updateColor(trueColor)
-            mView!!.onPause()
-            mView!!.onResume()
         }
-    }
 
-    fun updatePreviewImage() : Bitmap{
+    fun updatePreviewImage(): Bitmap {
         // store view as preview image
         /**
         var preview = Bitmap.createBitmap(mView!!.width, mView!!.height, Bitmap.Config.ARGB_8888)
@@ -286,6 +299,7 @@ class PreviewActivity : AppCompatActivity() {
             linear_acc_z: Float,
             value: Float
         )
+
         external fun sendData(value: Float)
         external fun getScreenBuffer(): ByteArray
     }

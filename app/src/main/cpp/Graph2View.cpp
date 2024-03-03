@@ -59,7 +59,8 @@ void Graph2View::render(){
     enum Material {
         MERCURY,
         WATER,
-        BUBBLE,} material = WATER;
+        BUBBLE
+    } material = WATER;
     float indexOfRefraction;
     float reflectivity;
     int twoSidedRefraction;
@@ -179,8 +180,8 @@ void Graph2View::render(){
                     1.0f / indexOfRefraction);
         glUniform1i(glGetUniformLocation(graphFluidSurfaceProgram, "twoSidedRefraction"),
                     twoSidedRefraction);
-        glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenWidth"), width);
-        glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenHeight"), height);
+        glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenWidth"), initialWidth);
+        glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenHeight"), initialHeight);
         glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
         glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
         glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE,

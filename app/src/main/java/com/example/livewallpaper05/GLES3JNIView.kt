@@ -25,22 +25,22 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
         // supporting OpenGL ES 2.0 or later backwards-compatible versions.
         setEGLContextClientVersion(3)
         setEGLConfigChooser(8, 8, 8, 8, 24, 8)
-        setRenderer(Renderer(context, vm))
+        setRenderer(Renderer(context, vm, this))
     }
 
-    class Renderer(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceView.Renderer {
+    class Renderer(context: Context, vm: ActiveWallpaperViewModel, private val glSurfaceView: GLSurfaceView) : GLSurfaceView.Renderer {
         private var context: Context? = null
         private var mViewModel: ActiveWallpaperViewModel = vm
 
-        fun Renderer(context: Context, repo: ActiveWallpaperRepo) {
+        /*fun Renderer(context: Context, repo: ActiveWallpaperRepo) {
             this.context = context
-        }
+        }*/
 
         override fun onDrawFrame(gl: GL10) {
             // default values in ActiveWallpaperViewModel
             val accelData = mViewModel.getAccelerationData()
             val rotData = mViewModel.getRotationData()
-            var linearAccelData = mViewModel.getLinearAccelerationData()
+            val linearAccelData = mViewModel.getLinearAccelerationData()
             val speed = mViewModel.getSpeed()
             // update linear acceleration data
             linearAccelData[0] = linearAccelData[0] * speed
@@ -61,9 +61,12 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                 linearAccelData[2],
                 mViewModel.getRotationRate()
             )
+
+            // Get screen buffer if requested
             if(mViewModel.getScreenBuffer > 0){
                 mViewModel.getScreenBuffer = 0
                 val byteArray: ByteArray = PreviewActivity.getScreenBuffer()
+                // Construct Bitmap from ByteArray
                 val bitmap = Bitmap.createBitmap(mViewModel.width, mViewModel.height, Bitmap.Config.ARGB_8888)
                 // Set pixel data manually by iterating over the byte array
                 val buffer = ByteBuffer.wrap(byteArray)
@@ -106,7 +109,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             val g = (color.green()*255).toInt()
             val b = (color.blue()*255).toInt()
             val a = (color.alpha()*255).toInt()
-            var eq = mViewModel.getEquation()
+            val eq = mViewModel.getEquation()
 
             val boxJSON = """{
                     "visualization_type": "simulation",

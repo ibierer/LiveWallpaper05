@@ -161,10 +161,14 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_livewallpaper05_PreviewActivity_00024Companion_resize(JNIEnv *env, jobject thiz, jint width, jint height, jint orientation) {
     if (view) {
+        if(view->initialWidth == 0 || view->initialHeight == 0){
+            view->initialWidth = width;
+            view->initialHeight = height;
+        }
         view->width = width;
         view->height = height;
         view->orientation = orientation;
-        ALOGI("Orientation_update = %s\n", to_string(orientation).c_str());
+        //ALOGI("Orientation_update = %s\n", to_string(orientation).c_str());
         view->calculatePerspectiveSetViewport(60.0f, view->zNear, view->zFar);
     }
 }
@@ -179,6 +183,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_step(JNIEnv *env
         view->zoom = value;
         view->render();
         view->incrementFrameCount();
+        //ALOGD("DIMENSIONS_XY%s", (string("width = ") + to_string(view->width) + ", height = " + to_string(view->height)).c_str());
     }
 }
 
@@ -190,15 +195,14 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_sendData(JNIEnv 
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_com_example_livewallpaper05_PreviewActivity_00024Companion_getScreenBuffer(JNIEnv *env,
-                                                                                jobject thiz) {
+Java_com_example_livewallpaper05_PreviewActivity_00024Companion_getScreenBuffer(JNIEnv *env, jobject thiz) {
     // Capture the screen buffer
     vector<unsigned char> pixels = vector<unsigned char>(view->width * view->height * 4); // Assuming RGB format
     glReadPixels(0, 0, view->width, view->height, GL_RGBA, GL_UNSIGNED_BYTE, &pixels[0]);
 
     // Convert the pixel data to a Java byte array
     jbyteArray byteArray = env->NewByteArray(pixels.size());
-    env->SetByteArrayRegion(byteArray, 0, pixels.size(), reinterpret_cast<jbyte*>(pixels.data()));
+    env->SetByteArrayRegion(byteArray, 0, pixels.size(), (jbyte*)pixels.data());
 
     return byteArray;
 }

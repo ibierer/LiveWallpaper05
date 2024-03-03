@@ -36,6 +36,10 @@ public:
 
     int orientation;
 
+    EGLint initialWidth = 0;
+
+    EGLint initialHeight = 0;
+
     EGLint width;
 
     EGLint height;
