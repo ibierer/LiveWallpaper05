@@ -67,7 +67,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                 val bitmap = Bitmap.createBitmap(mViewModel.width, mViewModel.height, Bitmap.Config.ARGB_8888)
                 // Set pixel data manually by iterating over the byte array
                 val buffer = ByteBuffer.wrap(byteArray)
-                for (y in 0 until mViewModel.height) {
+                for (y in mViewModel.height - 1 downTo 0) { // Reverse order for y-axis
                     for (x in 0 until mViewModel.width) {
                         // Extract RGB components from the byte array and set the pixel
                         val r = buffer.get().toInt() and 0xFF
