@@ -43,17 +43,12 @@ class PreviewActivity : AppCompatActivity() {
     private fun updateSyntaxResult() {
         // update syntax check message
         val equationChecker = EquationChecker()
-        // Replace "pi" with "π"
-        //val newText : String = findViewById<EditText>(R.id.et_equation).text.toString().replace("pi", "pe")
-        //viewModel.updateEquation(newText)
-        //findViewById<EditText>(R.id.et_equation).setText(newText)
-        //val result: String = equationChecker.checkEquationSyntax(newText)
         val result: String = equationChecker.checkEquationSyntax(findViewById<EditText>(R.id.et_equation).text.toString())
         val message: String
-        if (result == "") {
-            message = "No syntax errors."
+        message = if (result == "") {
+            "No syntax errors."
         } else {
-            message = result
+            result
         }
         findViewById<TextView>(R.id.tv_syntax_check).text = message
     }

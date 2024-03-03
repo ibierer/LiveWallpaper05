@@ -25,18 +25,17 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
     private var mBitmap : Bitmap = Bitmap.createBitmap(500, 500, Bitmap.Config.ARGB_8888) as Bitmap
     var liveDataBitmap : MutableLiveData<Bitmap> = MutableLiveData<Bitmap>(mBitmap)
     var getScreenBuffer: Int = 0
-    var paint = Paint()
 
     // reference repo from constructor value
     val mRepo: ActiveWallpaperRepo = repo
 
     fun getPreviewImg(seed: Int): Bitmap {
-        if (repo.preview != null && false)
+        if (repo.preview != null && false) // This condition is always false... hmm...
             return repo.preview!!
-        else {
-            var rng = Random()
+        else { // This branch is never executed!
+            val rng = Random()
             rng.setSeed(seed.toLong())
-            var color = Color.argb(255,
+            val color = Color.argb(255,
                 rng.nextInt(256),
                 rng.nextInt(256),
                 rng.nextInt(256))
@@ -46,7 +45,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
             val imgWidth = screenWidth/4
             val imgHeight = screenHeight/4
 
-            var tmp = Bitmap.createBitmap(imgWidth, imgHeight, Bitmap.Config.ARGB_8888)
+            val tmp = Bitmap.createBitmap(imgWidth, imgHeight, Bitmap.Config.ARGB_8888)
             tmp.eraseColor(color)
 
             return tmp
