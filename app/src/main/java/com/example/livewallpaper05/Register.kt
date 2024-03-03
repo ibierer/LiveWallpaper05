@@ -76,7 +76,7 @@ class Register : AppCompatActivity() {
             lifecycleScope.launch {
                 userExists = isUserInDB(username)
             }
-            if (userExists) {
+            if (!userExists) {
                 mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {

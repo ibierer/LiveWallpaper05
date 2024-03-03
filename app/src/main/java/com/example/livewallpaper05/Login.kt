@@ -61,12 +61,16 @@ class Login : AppCompatActivity() {
             mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
-                        lifecycleScope.launch {//used to get username from AWS db
+                        lifecycleScope.launch {
+                            // Used to get username from AWS db
                             getUsernameFromEmail(email)
                         }
+
                         // Sign in success, update UI with the signed-in user's information
                         Toast.makeText(applicationContext, "Login successful!", Toast.LENGTH_SHORT).show()
                         profileBinding.loginRegisterButton.visibility = View.GONE
+
+                        // Move this part inside the onCompleteListener
                         val profilePageIntent = Intent(this, ProfileActivity::class.java).apply {
                             putExtra("USERNAME", username)
                         }
@@ -76,6 +80,7 @@ class Login : AppCompatActivity() {
                         // If sign in fails, display a message to the user.
                         Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show()
                     }
+
                 }
         }
     }

@@ -115,9 +115,17 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         logoutButton!!.setOnClickListener {
-            FirebaseAuth.getInstance().signOut()
-            loginRegisterButton!!.visibility = View.VISIBLE
-            Toast.makeText(this, "signed out", Toast.LENGTH_SHORT).show()
+            val currentUser = FirebaseAuth.getInstance().currentUser
+
+            if (currentUser != null) {
+                // User is signed in, perform sign-out
+                FirebaseAuth.getInstance().signOut()
+                loginRegisterButton!!.visibility = View.VISIBLE
+                Toast.makeText(this, "Signed out", Toast.LENGTH_SHORT).show()
+            } else {
+                // User is not signed in, display a toast
+                Toast.makeText(this, "You are not signed in", Toast.LENGTH_SHORT).show()
+            }
         }
 
         // set profile pic click listener
@@ -206,11 +214,15 @@ class ProfileActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         if (auth.currentUser != null) {
             username = intent.getStringExtra("USERNAME")
+            mUsername!!.text = username
+            loginRegisterButton!!.visibility = View.GONE
+            logoutButton!!.visibility = View.VISIBLE
             lifecycleScope.launch {
                 // User is signed in, get (username, bio, profile_picture, uid, etc) from AWS
                 loadUserDataFromAWS(username) //TODO: implement function
             }
         } else {
+            //logoutButton!!.visibility = View.GONE
             // User is not signed in
         }
 
