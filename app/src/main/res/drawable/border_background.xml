@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <stroke
-        android:width="4dp"
-        android:color="#000000"
-    />  <!-- Adjust the color of the border as needed -->
+    <!-- Background color with transparency (alpha) -->
+    <solid android:color="#22000000" /> <!-- Adjust alpha value (00 to FF) for desired opacity -->
     <corners android:radius="4dp" />  <!-- Adjust the corner radius as needed -->
 </shape>

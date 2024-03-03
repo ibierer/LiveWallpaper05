@@ -22,7 +22,6 @@
         android:id="@+id/settings_scrollview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/border_background"
         android:fadeScrollbars="false"
         android:fillViewport="true"
         app:layout_constraintEnd_toEndOf="parent"
@@ -37,9 +36,10 @@
 
             <TextView
                 android:id="@+id/rotation_rate_text"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:background="@drawable/border_background"
                 android:text="@string/rotation_rate" />
 
             <SeekBar
@@ -49,6 +49,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="20dp"
+                android:background="@drawable/border_background"
                 android:max="100"
                 android:min="-100" />
 
@@ -59,15 +60,17 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="20dp"
+                android:background="@drawable/border_background"
                 android:max="100"
                 android:min="0" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
-                android:text="Simulation Type Selection" />
+                android:background="@drawable/border_background"
+                android:text="Visulization Type Selection" />
 
             <Spinner
                 android:id="@+id/simulation_type_spinner"
@@ -75,35 +78,39 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp" />
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/border_background" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@drawable/border_background"
                 android:text="Background Color" />
 
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 app:srcCompat="@drawable/ic_launcher_background" />
 
             <Button
                 android:id="@+id/b_color_picker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Select Color" />
+                android:background="@drawable/border_background"
+                android:text="Background Color" />
 
             <TextView
                 android:id="@+id/tv_equation"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
+                android:background="@drawable/border_background"
                 android:text="Input Equation:" />
 
             <EditText
                 android:id="@+id/et_equation"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/border_background"
                 android:hint="Enter equation here"
@@ -112,10 +119,9 @@
 
             <TextView
                 android:id="@+id/tv_syntax_check"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="Syntax:" />
+                android:background="@drawable/border_background" />
 
         </LinearLayout>
     </ScrollView>

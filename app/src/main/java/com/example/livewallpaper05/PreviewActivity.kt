@@ -40,6 +40,19 @@ class PreviewActivity : AppCompatActivity() {
         ActiveWallpaperViewModelFactory((application as ActiveWallpaperApplication).repository)
     }
 
+    private fun updateSyntaxResult() {
+        // update syntax check message
+        val equationChecker = EquationChecker()
+        val result: String = equationChecker.checkEquationSyntax(findViewById<EditText>(R.id.et_equation).text.toString())
+        val message: String
+        if (result == "") {
+            message = "No syntax errors."
+        } else {
+            message = result
+        }
+        findViewById<TextView>(R.id.tv_syntax_check).text = message
+    }
+
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(icicle: Bundle?) {
         super.onCreate(icicle)
@@ -167,7 +180,6 @@ class PreviewActivity : AppCompatActivity() {
             findViewById<ImageView>(R.id.imageView).setImageBitmap(bitmap)
         })
 
-
         // setup equation editor
         viewModel.updateEquation(equationEditor.text.toString())
         equationEditor.addTextChangedListener(object : TextWatcher {
@@ -176,17 +188,7 @@ class PreviewActivity : AppCompatActivity() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // update syntax check message
-                val equationChecker = EquationChecker()
-                val result: String =
-                    equationChecker.checkEquationSyntax(equationEditor.text.toString())
-                val message: String
-                if (result == "") {
-                    message = "No syntax errors."
-                } else {
-                    message = result
-                }
-                findViewById<TextView>(R.id.tv_syntax_check).text = message
+                updateSyntaxResult()
             }
 
             override fun afterTextChanged(s: android.text.Editable?) {
@@ -219,10 +221,12 @@ class PreviewActivity : AppCompatActivity() {
         }
 
         // connect fps data to ui fps meter
-        var fpsMeter = findViewById<TextView>(R.id.tv_fps_meter)
+        val fpsMeter = findViewById<TextView>(R.id.tv_fps_meter)
         viewModel.getFPS().observe(this) {
-            fpsMeter.text = it.toString()
+            fpsMeter.text = "fps = " + it.toString()
         }
+
+        updateSyntaxResult()
     }
 
     /* this is run when the app is 'paused'
@@ -266,9 +270,9 @@ class PreviewActivity : AppCompatActivity() {
         var preview = Bitmap.createBitmap(mView!!.width, mView!!.height, Bitmap.Config.ARGB_8888)
         var canvas = Canvas(preview)
         mView!!.draw(canvas)*/
-        var preview = Bitmap.createBitmap(mView!!.width, mView!!.height, Bitmap.Config.ARGB_8888)
-        var canvas = Canvas(preview)
-        var background = mView!!.background
+        val preview = Bitmap.createBitmap(mView!!.width, mView!!.height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(preview)
+        val background = mView!!.background
         if (background != null) {
             background.draw(canvas)
         }
