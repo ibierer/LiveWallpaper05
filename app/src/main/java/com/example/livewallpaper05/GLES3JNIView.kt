@@ -171,7 +171,9 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
                 }""".trimIndent()
 
-            /*"settings": "1/((sqrt(x^2 + y^2) - 2 + 1.25cos(t))^2 + (z - 1.5sin(t))^2) + 1/((sqrt(x^2 + y^2) - 2 - 1.25cos(t))^2 + (z + 1.5sin(t))^2) = 1.9"
+            /*"saturn": "1/(x^2 + y^2 + z^2) + 1/((1.2*sqrt(x^2 + y^2) - 2.7)^20 + (20z)^20) = 1"
+            "pill": "4 = x^2 + y^2 + ((abs(z - 1.15) - abs(z + 1.15))/2 + z)^2"
+            "settings": "1/((sqrt(x^2 + y^2) - 2 + 1.25cos(t))^2 + (z - 1.5sin(t))^2) + 1/((sqrt(x^2 + y^2) - 2 - 1.25cos(t))^2 + (z + 1.5sin(t))^2) = 1.9"
             "settings": "1/((sqrt(x^2 + y^2) - 1.5 + sin(t))^2 + (z + cos(t))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 2π/3))^2 + (z + cos(t + 2π/3))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 4π/3))^2 + (z + cos(t + 4π/3))^2) = 5"
             "settings": "1/((sqrt(x^2 + y^2) - 1.6 + sin(t))^2 + (z + cos(t))^2) + 1/((sqrt(x^2 + y^2) - 1.6 + sin(t + π/2))^2 + (z + cos(t + π/2))^2) + 1/((sqrt(x^2 + y^2) - 1.6 + sin(t + π))^2 + (z + cos(t + π))^2) + 1/((sqrt(x^2 + y^2) - 1.6 + sin(t + 3π/2))^2 + (z + cos(t + 3π/2))^2) = 7.3"
             "settings": "sin(sqrt(x^2 + y^2 + z^2) - t) = 0"
