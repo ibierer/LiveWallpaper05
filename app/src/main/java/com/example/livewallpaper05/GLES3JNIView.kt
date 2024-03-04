@@ -127,7 +127,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             val naiveJSON = """{
                     "visualization_type": "simulation",
                     "simulation_type": "naive",
-                    "fluid_surface": "true",
+                    "fluid_surface": "false",
                     "particle_count": 1000,
                     "smooth_sphere_surface": "true",
                     "gravity": 0.0,

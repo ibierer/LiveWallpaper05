@@ -843,8 +843,7 @@ void NaiveSimulationFluidSurfaceView::render(){
         glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(cubeProgram);
-        projection = referenceFrameRotates ? perspective
-                                           : orientationAdjustedPerspective;
+        projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
         translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 50.0f * (zoom - 1.0f)));
         rotation = Matrix4<float>(quaternionTo3x3(
                 Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z,

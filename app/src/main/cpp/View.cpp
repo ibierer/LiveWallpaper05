@@ -105,14 +105,19 @@ View::~View(){
 }
 
 vec3 View::compensateForOrientation(const vec3& acc){
-    if(width < height) {
-        return -1.0f * acc;
-    }else{
-        if(acc.x < 0.0f) {
-            return vec3(-acc.y, acc.x, -acc.z);
-        }else{
+    switch(orientation){
+        case 0:
+            return -1.0f * acc;
+            break;
+        case 1:
             return vec3(acc.y, -acc.x, -acc.z);
-        }
+            break;
+        case 2:
+            return -1.0f * acc;
+            break;
+        case 3:
+            return vec3(-acc.y, acc.x, -acc.z);
+            break;
     }
 }
 
@@ -401,9 +406,9 @@ int View::getFrameCount() {
 vec3 View::computeForce(const float& gravity, const bool& referenceFrameRotates, const Matrix4<float> rotation) {
     float linearAccelerationMultiplier = 8.0f * (getFrameCount() > 10 ? 1.0f : 1.0f / 10 * getFrameCount());
     if(referenceFrameRotates){
-        Vec3<float> force = (rotation * Vec4<float>(0.0f, 0.0f, -9.81f, 1.0f)).XYZ();
-        return compensateForOrientation(linearAccelerationMultiplier * linearAccelerationVector) + vec3(force.x, force.y, force.z) * gravity;
+        Vec3<float> force = (rotation * Vec4<float>(0.0f, 0.0f, 9.81f, 1.0f)).XYZ();
+        return compensateForOrientation(linearAccelerationMultiplier * linearAccelerationVector + gravity * vec3(force.x, force.y, force.z));
     }else {
-        return quaternionTo3x3(rotationVector) * (-linearAccelerationMultiplier * linearAccelerationVector) + vec3(0.0f, 0.0f, -9.81f) * gravity;
+        return quaternionTo3x3(rotationVector) * (-linearAccelerationMultiplier * linearAccelerationVector) + gravity * vec3(0.0f, 0.0f, -9.81f);
     }
 }
