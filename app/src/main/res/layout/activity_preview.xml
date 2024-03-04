@@ -31,14 +31,13 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/rotation_rate_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_margin="@dimen/preview_ui_margin"
                 android:background="@drawable/border_background"
                 android:text="@string/rotation_rate" />
 
@@ -46,9 +45,7 @@
                 android:id="@+id/rotation_rate_seekbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="20dp"
+                android:layout_margin="@dimen/preview_ui_margin"
                 android:background="@drawable/border_background"
                 android:max="100"
                 android:min="-100" />
@@ -57,9 +54,7 @@
                 android:id="@+id/speed_seekbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="20dp"
+                android:layout_margin="@dimen/preview_ui_margin"
                 android:background="@drawable/border_background"
                 android:max="100"
                 android:min="0" />
@@ -67,8 +62,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
+                android:layout_margin="@dimen/preview_ui_margin"
                 android:background="@drawable/border_background"
                 android:text="Visualization Type Selection:" />
 
@@ -77,13 +71,13 @@
                 style="@style/Widget.AppCompat.Spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
+                android:layout_margin="@dimen/preview_ui_margin"
                 android:background="@drawable/border_background" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
                 android:background="@drawable/border_background"
                 android:text="Background Color:" />
 
@@ -91,12 +85,14 @@
                 android:id="@+id/imageView"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
+                android:layout_margin="@dimen/preview_ui_margin"
                 app:srcCompat="@drawable/ic_launcher_background" />
 
             <Button
                 android:id="@+id/b_color_picker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
                 android:background="@drawable/border_background"
                 android:text="Background Color" />
 
@@ -104,7 +100,7 @@
                 android:id="@+id/tv_equation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_margin="@dimen/preview_ui_margin"
                 android:background="@drawable/border_background"
                 android:text="Input Equation:" />
 
@@ -112,6 +108,7 @@
                 android:id="@+id/et_equation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
                 android:background="@drawable/border_background"
                 android:hint="Enter equation here"
                 android:inputType="text"
@@ -121,6 +118,7 @@
                 android:id="@+id/tv_syntax_check"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
                 android:background="@drawable/border_background"
                 android:text="Syntax check result" />
 
@@ -140,6 +138,7 @@
         android:id="@+id/tv_fps_meter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/preview_ui_margin"
         android:background="@drawable/border_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
