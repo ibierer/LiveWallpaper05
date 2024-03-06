@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="simulation_types">
-        <item>box</item>
-        <item>naive</item>
-        <item>picflip</item>
-        <item>triangle</item>
+        <item>celestial mechanics</item>
+        <item>naive fluid</item>
+        <item>eulerian fluid</item>
+        <item>sphere</item>
         <item>graph</item>
     </string-array>
 </resources>

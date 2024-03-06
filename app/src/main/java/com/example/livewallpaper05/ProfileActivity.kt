@@ -352,7 +352,7 @@ class ProfileActivity : AppCompatActivity() {
 
     fun updateFragListeners() {
         // for each fragment in fragment list, set delete button listener
-        var removeList = mutableListOf<WallpaperRef>()
+        val removeList = mutableListOf<WallpaperRef>()
         val wallpaperFragIds = mSavedWallpaperViewModel.getWallpaperFragIds()
         Log.d("LiveWallpaper05", "saved frag count: ${wallpaperFragIds.size}")
         for (ref in wallpaperFragIds) {

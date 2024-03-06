@@ -41,7 +41,6 @@ class ExplorerActivity : AppCompatActivity() {
                 try {
                     Class.forName("com.mysql.jdbc.Driver").newInstance()
                     // connect to mysql server
-                    Log.d("LiveWallpaper05", "Point A!")
                     val conn = DriverManager.getConnection(
                         jdbcConnectionString, "admin", "UtahUtesLiveWallz!"
                     )

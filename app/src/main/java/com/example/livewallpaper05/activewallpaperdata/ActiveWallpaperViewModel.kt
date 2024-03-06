@@ -2,18 +2,13 @@ package com.example.livewallpaper05.activewallpaperdata
 
 import android.content.res.Resources
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.graphics.Paint
 import android.hardware.SensorManager
 import android.util.Log
-import android.widget.ImageView
 import androidx.lifecycle.*
-import com.example.livewallpaper05.PreviewActivity
 import com.example.livewallpaper05.savedWallpapers.SavedWallpaperTable
 import org.json.JSONObject
 import java.math.RoundingMode
-import java.nio.ByteBuffer
 import java.util.Random
 
 /**
@@ -73,7 +68,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
     }
 
     // return simulation type from repo
-    fun getSimulationType(): Int {
+    fun getVisualizationType(): Int {
         return repo.simulationType
     }
 

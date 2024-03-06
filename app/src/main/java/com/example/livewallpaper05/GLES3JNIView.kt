@@ -2,15 +2,9 @@ package com.example.livewallpaper05
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.opengl.GLSurfaceView
 import android.os.SystemClock
-import android.util.Log
-import android.view.View
-import android.widget.ImageView
-import androidx.lifecycle.viewModelScope
-import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import java.nio.ByteBuffer
 import javax.microedition.khronos.egl.EGLConfig
@@ -217,7 +211,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             "settings": "1/(x^2 + ((y^2)sin(y)) + z^2) + 0.89/((x - 3sin(t))^2+(y - 3cos(t))^2 + z^40) = 1"*/
 
             var selectionJSON = boxJSON
-            when (mViewModel.getSimulationType()) {
+            when (mViewModel.getVisualizationType()) {
                 0 -> {
                     selectionJSON = nbodyJSON
                 }
