@@ -124,12 +124,20 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
                 }""".trimIndent()
 
+            val nbodyJSON = """{
+                    "visualization_type": "simulation",
+                    "simulation_type": "nbody",
+                    "background_is_solid_color": "false",
+                    "background_texture": "ms_paint_colors",
+                    "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
+                }""".trimIndent()
+
             val naiveJSON = """{
                     "visualization_type": "simulation",
                     "simulation_type": "naive",
                     "fluid_surface": "true",
                     "particle_count": 1000,
-                    "smooth_sphere_surface": "true",
+                    "smooth_sphere_surface": "true"
                     "gravity": 0.0,
                     "reference_frame_rotates": "false",
                     "background_is_solid_color": "false",
@@ -159,16 +167,9 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     "reference_frame_rotates": "false",
                     "background_is_solid_color": "false",
                     "background_texture": "ms_paint_colors",
+                    "vector_points_positive": "false",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a},
                     "equation": "$eq"
-                }""".trimIndent()
-
-            val nbodyJSON = """{
-                    "visualization_type": "simulation",
-                    "simulation_type": "nbody",
-                    "background_is_solid_color": "false",
-                    "background_texture": "ms_paint_colors",
-                    "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
                 }""".trimIndent()
 
             /*"saturn": "1/(x^2 + y^2 + z^2) + 1/((1.2*sqrt(x^2 + y^2) - 2.7)^20 + (20z)^20) = 1"

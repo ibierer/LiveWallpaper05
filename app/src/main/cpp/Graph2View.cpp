@@ -7,7 +7,8 @@
 using std::min;
 using std::max;
 
-Graph2View::Graph2View(const string &equation, const int &graphSize, const bool &referenceFrameRotates) : View() {
+Graph2View::Graph2View(const string &equation, const int &graphSize,
+                       const bool &referenceFrameRotates, const bool& vectorPointsPositive) : View() {
     this->referenceFrameRotates = referenceFrameRotates;
 
     sphereMapProgram = createVertexAndFragmentShaderProgram(SPHERE_MAP_VERTEX_SHADER.c_str(), SPHERE_MAP_FRAGMENT_SHADER.c_str());
@@ -22,6 +23,7 @@ Graph2View::Graph2View(const string &equation, const int &graphSize, const bool 
     graphFluidSurfaceProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_FLUID_SURFACE_FRAGMENT_SHADER.c_str());
 
     implicitGrapher = ImplicitGrapher(ivec3(graphSize));
+    implicitGrapher.vectorPointsPositive = vectorPointsPositive;
     if(equation == "") {
         //ImplicitGrapher::surfaceEquation = 40; // Resets to 0 on the first render
         //for (int i = 0; i < ImplicitGrapher::numOfDefaultEquations; i++) {
@@ -85,7 +87,7 @@ void Graph2View::render(){
     normalMatrix = referenceFrameRotates ? rotation.GetSubMatrix3().GetInverse() : normalMatrix.Identity();
     cameraTransformation = rotation.GetInverse() * translation * model.Translation(Vec3<float>(0.0f, 0.0f, 0.0f));
 
-    ImplicitGrapher::calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, false, false, ImplicitGrapher::vertices, ImplicitGrapher::indices, ImplicitGrapher::numIndices);
+    ImplicitGrapher::calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, implicitGrapher.vectorPointsPositive, false, ImplicitGrapher::vertices, ImplicitGrapher::indices, ImplicitGrapher::numIndices);
 
     // Render to texture
     glBindFramebuffer(GL_FRAMEBUFFER, fbo.getFrameBuffer());

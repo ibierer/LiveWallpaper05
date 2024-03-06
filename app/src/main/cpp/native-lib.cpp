@@ -100,7 +100,8 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
             string simulation = visualizationJSON["simulation_type"];
             if(simulation == "nbody"){
                 //view = new SimpleNBodySimulationView();
-                view = new LinearithmicNBodySimulationView();
+                //view = new LinearithmicNBodySimulationView();
+                view = new RenderToCubeMapView();
             }else if(simulation == "naive"){
                 //view = new RGBCubeView();
                 //view = new TriangleView();
@@ -137,12 +138,13 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
             ImplicitGrapher::convertPiSymbol(equation);
             string syntaxCheck = ImplicitGrapher::checkEquationSyntax(equation);
             string referenceFrameRotates = visualizationJSON["reference_frame_rotates"];
+            string vectorPointsPositive = visualizationJSON["vector_points_positive"];
             if(syntaxCheck == "") {
                 //view = new GraphView(equation);
-                view = new Graph2View(equation, 40, referenceFrameRotates == "true");
+                view = new Graph2View(equation, 40, referenceFrameRotates == "true", vectorPointsPositive == "true");
             }else{
                 //view = new GraphView("");
-                view = new Graph2View("", 40, referenceFrameRotates == "true");
+                view = new Graph2View("", 40, referenceFrameRotates == "true", vectorPointsPositive == "true");
             }
         }
         view->backgroundIsSolidColor = visualizationJSON["background_is_solid_color"] == "true";
