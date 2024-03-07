@@ -47,7 +47,7 @@ class GLWallpaperService() : WallpaperService() {
             val configurationInfo = activityManager
                 .deviceConfigurationInfo
             val supportsEs3 = configurationInfo.reqGlEsVersion >= 0x3
-            val renderer: GLES3JNIView.Renderer = GLES3JNIView.Renderer(this@GLWallpaperService, viewModel)
+            val renderer: GLES3JNIView.Renderer = GLES3JNIView.Renderer(viewModel)
             rendererSet = if (supportsEs3) {
                 glSurfaceView!!.setEGLContextClientVersion(3)
                 glSurfaceView!!.setRenderer(renderer)

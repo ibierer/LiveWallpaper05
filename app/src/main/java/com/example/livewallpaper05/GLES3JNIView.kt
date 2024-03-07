@@ -19,16 +19,11 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
         // supporting OpenGL ES 2.0 or later backwards-compatible versions.
         setEGLContextClientVersion(3)
         setEGLConfigChooser(8, 8, 8, 8, 24, 8)
-        setRenderer(Renderer(context, vm))
+        setRenderer(Renderer(vm))
     }
 
-    class Renderer(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceView.Renderer {
-        private var context: Context? = null
+    class Renderer(vm: ActiveWallpaperViewModel) : GLSurfaceView.Renderer {
         private var mViewModel: ActiveWallpaperViewModel = vm
-
-        /*fun Renderer(context: Context, repo: ActiveWallpaperRepo) {
-            this.context = context
-        }*/
 
         override fun onDrawFrame(gl: GL10) {
             // default values in ActiveWallpaperViewModel
