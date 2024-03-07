@@ -41,24 +41,54 @@ void LinearithmicNBodySimulation::simulateOnCPU() {
     for (uint i = 0u; i < COUNT; i++) {
         vec3 acceleration = gravitySum[i] / data->stars[i].mass;
         //update positions
-        data->stars[i].position += (data->stars[i].velocity + 0.5f * acceleration * deltaTime) * deltaTime;
+        data->stars[i].position +=
+                (data->stars[i].velocity + 0.5f * acceleration * deltaTime) * deltaTime;
         //update velocity
         data->stars[i].velocity += acceleration * deltaTime;
     }
 }
 
-struct Node {
-    Node* children[8];
-};
-// for(int i = 0; i < 8; i++){children[i] = null}
-vec4 LinearithmicNBodySimulation::conquerVolume(vector<int> ids){
-
-    for(int i = 0; i < ids.size(); i++){
+vec4 LinearithmicNBodySimulation::conquerVolume(const vector<int> &ids, Node *node) {
+    // 1. Accumulate all masses to each node
+    vector<int> childIDs[8];
+    float mass = 0.0f;
+    for (int i = 0; i < ids.size(); i++) {
         vec3 p = data->stars[ids.at(i)].position;
-        int combo = (p.x>0.0f)*1+(p.y>0.0f)*2+(p.z>0.0f)*4;
-
+        int combo = (p.x > node->centerOfGravity.x) * 1 + (p.y > node->centerOfGravity.y) * 2 +
+                    (p.z > node->centerOfGravity.z) * 4;
+        childIDs[combo].push_back(ids[i]);
     }
 
+    vec3 numerator = vec3(0.0f);
+    float denominator = 0.0f;
+    float halfSize = node->size/2;
+    // iterate over 'octant'
+    for (int i = 0; i < 8; i++) {
+        if (childIDs[i].size() > 0) {
+            if (node->children[i] == nullptr) {
+                node->children[i] = new Node(); // Allocate child node if not already created
+                node->children[i]->parent = node;
+                node->children[i]->size = halfSize;
+            }
+            vec4 centerOfGravity = conquerVolume(childIDs[i], node->children[i]);
+            node->children[i]->centerOfGravity = centerOfGravity;
+            mass += centerOfGravity.w;
+            numerator += centerOfGravity.w * centerOfGravity.xyz;
+            denominator += centerOfGravity.w;
+            if (childIDs[i].size() == 1) {
+                data->stars[childIDs[i].at(0)].leaf = node->children[i];
+            }
+        }
+    }
+    vec3 quotient = numerator / denominator;
+    return vec4(quotient.x, quotient.y, quotient.z, mass);
+}
+
+void LinearithmicNBodySimulation::ComputeForceNBody() {
+    for (int i = 0; i < COUNT; i++) {
+        //traverse upwards via parents
+        Node *Papa = data->stars[i].leaf->parent;
+    }
 }
 
 void LinearithmicNBodySimulation::simulate(const int &iterations, bool pushDataToGPU,
@@ -66,7 +96,23 @@ void LinearithmicNBodySimulation::simulate(const int &iterations, bool pushDataT
     switch (computationOption) {
         case CPU:
             for (int i = 0; i < iterations; i++) {
-                simulateOnCPU();
+                // compute size of root node
+                float size = 1.0f;
+                for (int j = 0; j < COUNT; j++) {
+                    while (abs(data->stars[j].position.x) < size / 2 &&
+                           abs(data->stars[j].position.y) < size / 2 &&
+                           abs(data->stars[j].position.z) < size / 2) {
+                        size *= 2;
+                    }
+                }
+                root = new Node();
+                root->size = size;
+                vector<int> ids;
+                for (int j = 0; j < COUNT; j++) {
+                    ids.push_back(j);
+                }
+                conquerVolume(ids, root);
+                //simulateOnCPU();
             }
             break;
         case GPU:
@@ -123,8 +169,8 @@ bool LinearithmicNBodySimulation::seed() {
         case CPU:
             for (int i = 0; i < COUNT; i++) {
                 data->stars[i].position = vec3(getRandomFloat(100.0f) - 50.0f,
-                                              getRandomFloat(100.0f) - 50.0f,
-                                              getRandomFloat(100.0f) - 50.0f);
+                                               getRandomFloat(100.0f) - 50.0f,
+                                               getRandomFloat(100.0f) - 50.0f);
                 data->stars[i].velocity = vec3(0.0f);
                 data->stars[i].mass = 1.0f;
             }
@@ -156,3 +202,4 @@ bool LinearithmicNBodySimulation::seed() {
 Computation::ComputationOptions LinearithmicNBodySimulation::getComputationOption() {
     return computationOption;
 }
+

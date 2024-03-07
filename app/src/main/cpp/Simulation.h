@@ -15,8 +15,17 @@ public:
         vec3 velocity;
     };
 
+    struct Node {
+        Node *parent;
+        Node *children[8];
+        vec4 centerOfGravity;
+        float size;
+    };
+
     struct Star : Particle {
         float mass;
+        vec3 force;
+        Node* leaf;
     };
 
     int particleCount;

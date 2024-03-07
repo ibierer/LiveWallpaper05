@@ -52,6 +52,7 @@ class ProfileActivity : AppCompatActivity() {
     /* User authentication data */
     private var authUser: FirebaseUser? = null
     private var uid: Int = 0
+    private var bio: String? = null
     private lateinit var username: String
     private var loginRegisterButton: Button? = null
     private var logoutButton: Button? = null
@@ -136,16 +137,16 @@ class ProfileActivity : AppCompatActivity() {
         mNewWallpaper!!.setOnClickListener(this::newWallpaper)
         auth = FirebaseAuth.getInstance()
         if (auth.currentUser != null) {
-            //TODO: clean this up
             val sharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
             username = sharedPreferences.getString("USERNAME", "").toString()
             uid = sharedPreferences.getInt("UID", 0)
+            Log.d("OKAY", "uid is $uid\n username is $username")
             mUsername!!.text = username
             loginRegisterButton!!.visibility = View.GONE
             logoutButton!!.visibility = View.VISIBLE
             lifecycleScope.launch {
                 // User is signed in, get (username, bio, profile_picture, uid, etc) from AWS
-                Log.d("OH_YES", "Calling LoadUserDataFromAWS")
+                Log.d("OKAY", "Calling LoadUserDataFromAWS")
                 loadUserDataFromAWS(username)
             }
         } else {
@@ -160,7 +161,12 @@ class ProfileActivity : AppCompatActivity() {
                     return@Observer
                 }
                 mUsername!!.text = username
-                mBio!!.text = profileData.bio
+                if (bio != null){
+                    mBio!!.text = bio
+                }
+                else{
+                    mBio!!.text = profileData.bio
+                }
                 if (username != "Default User"){
                     insertBio(profileData.bio, username)
                 }
@@ -228,6 +234,7 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun insertBio(bio: String, username: String) {
+        Log.d("OKAY", "in insertBio")
         GlobalScope.launch(Dispatchers.IO) {
             val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
             try {
@@ -244,7 +251,7 @@ class ProfileActivity : AppCompatActivity() {
                         val statement = conn.prepareStatement(useDbQuery)
                         statement.execute()
 
-                        val updateQuery = "UPDATE users SET bio = ? WHERE uid = ?;"
+                        val updateQuery = "UPDATE users SET bio = ? WHERE username = ?;"
                         val updateStatement = conn.prepareStatement(updateQuery)
                         updateStatement.setString(1, bio)
                         updateStatement.setString(2, username)
@@ -264,6 +271,7 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private suspend fun loadUserDataFromAWS(username: String) {
+        Log.d("OKAY", "in loadUserDataFromAWS")
         val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance()
@@ -284,7 +292,7 @@ class ProfileActivity : AppCompatActivity() {
                     val resultSet = selectStatement.executeQuery()
                     while (resultSet.next()) {
                         uid = resultSet.getInt("uid")
-                        val bio = resultSet.getString("bio")
+                        bio = resultSet.getString("bio")
                         val bioNullable = if (resultSet.wasNull()) null else bio
                         val profilePicture = resultSet.getBlob("profile_picture")
                         val profilePictureNullable =
@@ -388,21 +396,20 @@ class ProfileActivity : AppCompatActivity() {
 
                 DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                     .use { conn -> // this syntax ensures that connection will be closed whether normally or from exception
-                        Log.d("OH_YES", "Connected to database")
+                        Log.d("OH_YES", "Connected to database in insertProfilePicture!")
                         val useDbQuery = "USE myDatabase;"
                         val statement = conn.prepareStatement(useDbQuery)
                         statement.execute()
                         val updateQuery = "UPDATE users SET profile_picture = ? WHERE username = ?;"
-                        val updateStatement = conn.prepareStatement(updateQuery)
-                        val convertedImage = convertBitmapToByteArray(image)
-                        updateStatement.setBytes(1, convertedImage)
-                        updateStatement.setString(2, username)
-                        updateStatement.executeUpdate()
-                        conn.close()
+                        conn.prepareStatement(updateQuery).use { updateStatement ->
+                            val convertedImage = convertBitmapToByteArray(image)
+                            updateStatement.setBytes(1, convertedImage)
+                            updateStatement.setString(2, username)
+                            updateStatement.executeUpdate()
+                        }
                     }
             } catch (e: SQLException) {
                 Log.d("OH_NO", e.message.toString())
-                Log.e("LiveWallpaper05", e.printStackTrace().toString())
             }
         }
     }
@@ -458,8 +465,7 @@ class ProfileActivity : AppCompatActivity() {
                         conn.close()
                     }
             } catch (e: SQLException) {
-                Log.e("LiveWallpaper05", e.printStackTrace().toString())
-                Log.d("LiveWallpaper05", e.toString())
+                Log.d("OH_NO", e.message.toString())
             }
         }
     }
