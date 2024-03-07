@@ -1,5 +1,6 @@
 package com.example.livewallpaper05
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -28,7 +29,7 @@ class Login : AppCompatActivity() {
     private lateinit var loginButton: Button
     private lateinit var regPageButton: Button
     private lateinit var mAuth: FirebaseAuth
-    private lateinit var username : String
+    private lateinit var username: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,15 +48,15 @@ class Login : AppCompatActivity() {
             startActivity(registerPageIntent)
         }
 
-        loginButton.setOnClickListener{
+        loginButton.setOnClickListener {
             val email = etEmail.text.toString()
             val password = etPassword.text.toString()
             // Check if email or password are empty
-            if (TextUtils.isEmpty(email)){
+            if (TextUtils.isEmpty(email)) {
                 Toast.makeText(this, "Enter email", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            if (TextUtils.isEmpty(password)){
+            if (TextUtils.isEmpty(password)) {
                 Toast.makeText(this, "Enter password", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -64,35 +65,42 @@ class Login : AppCompatActivity() {
                     if (task.isSuccessful) {
                         lifecycleScope.launch {
                             try {
-                                val username : String = getUsernameFromEmail(email)
+                                val (username, uid) = getUsernameAndUidFromEmail(email)
                                 // Switch to the main thread before UI operations
                                 withContext(Dispatchers.Main) {
                                     // Sign in success, update UI with the signed-in user's information
-                                    Toast.makeText(applicationContext, "Login successful!", Toast.LENGTH_SHORT).show()
-
-                                    val profilePageIntent = Intent(this@Login, ProfileActivity::class.java).apply {
-                                        putExtra("USERNAME", username)
-                                    }
+                                    Toast.makeText(
+                                        applicationContext,
+                                        "Login successful!",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    val sharedPreferences =
+                                        getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+                                    val editor = sharedPreferences.edit()
+                                    editor.putString("USERNAME", username)
+                                    editor.putInt("UID", uid)
+                                    editor.apply()
+                                    val profilePageIntent =
+                                        Intent(this@Login, ProfileActivity::class.java)
                                     startActivity(profilePageIntent)
                                     finish()
                                 }
                             } catch (e: Exception) {
                                 Log.e("LoginActivity", "Error getting username: ${e.message}")
-                                // Handle the error as needed
                             }
                         }
                     } else {
-                        // If sign in fails, display a message to the user.
                         Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show()
                     }
                 }
         }
     }
 
-    private suspend fun getUsernameFromEmail(email: String): String {
+    private suspend fun getUsernameAndUidFromEmail(email: String): Pair<String, Int> {
         return withContext(Dispatchers.IO) {
             val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
             var username = "" // Initialize with an empty string or any default value
+            var uid = 0
 
             try {
                 Class.forName("com.mysql.jdbc.Driver").newInstance()
@@ -109,19 +117,18 @@ class Login : AppCompatActivity() {
                         val checkUserStatement = conn.prepareStatement(getUsernameQuery)
                         checkUserStatement.setString(1, email)
                         val resultSet = checkUserStatement.executeQuery()
-
                         if (resultSet.next()) {
                             // Assign the value to the 'username' variable
                             username = resultSet.getString("username")
+                            uid = resultSet.getInt("uid")
                         } else {
                             // Handle the case where no username is found for the given email
-                            Log.d("getUsernameFromEmail", "No username found for email: $email")
                         }
                     }
             } catch (e: SQLException) {
                 Log.d("getUsernameFromEmail", e.message.toString())
             }
-            username
+            Pair(username, uid)
         }
     }
 }
