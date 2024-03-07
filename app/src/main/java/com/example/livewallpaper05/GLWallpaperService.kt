@@ -44,8 +44,7 @@ class GLWallpaperService() : WallpaperService() {
 
             // Check if the system supports OpenGL ES 2.0.
             val activityManager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
-            val configurationInfo = activityManager
-                .deviceConfigurationInfo
+            val configurationInfo = activityManager.deviceConfigurationInfo
             val supportsEs3 = configurationInfo.reqGlEsVersion >= 0x3
             val renderer: GLES3JNIView.Renderer = GLES3JNIView.Renderer(viewModel)
             rendererSet = if (supportsEs3) {
