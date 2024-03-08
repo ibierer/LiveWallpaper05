@@ -96,6 +96,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
         }
 
         string visualizationType = visualizationJSON["visualization_type"];
+
         if(visualizationType == "simulation"){
             string simulation = visualizationJSON["simulation_type"];
             if(simulation == "nbody"){
