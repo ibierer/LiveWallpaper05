@@ -108,7 +108,7 @@ private:
 
     float dt;
 
-    void simulateOnCPU();
+    void computeForcesOnCPUQuadratic();
 
     void simulateOnGPU(const int &iterations, bool pushDataToGPU,
                        bool retrieveDataFromGPU);
@@ -121,7 +121,11 @@ private:
 
     vec4 conquerVolume(const vector<int> &ids, Node *node);
 
-    void ComputeForceNBody();
+    void computeForcesOnCPULinearithmic();
+
+    vec3 addForces(Node *node, int index);
+
+    void integrate();
 };
 
 

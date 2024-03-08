@@ -16,6 +16,7 @@ public:
     };
 
     struct Node {
+        bool isLeaf;
         Node *parent;
         Node *children[8];
         vec4 centerOfGravity;
