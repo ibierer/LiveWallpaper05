@@ -67,11 +67,11 @@ class PreviewActivity : AppCompatActivity() {
 
         // grab ui element for preview page
         val layout = findViewById<LinearLayout>(R.id.render_layout)
-        val rotationScrollBar = findViewById<SeekBar>(R.id.rotation_rate_seekbar)
-        val simSelectorSpinner = findViewById<Spinner>(R.id.simulation_type_spinner)
+        val distanceSeekBar = findViewById<SeekBar>(R.id.distance_seekbar)
+        val fieldOfViewSeekBar = findViewById<SeekBar>(R.id.field_of_view_seekbar)
+        val visualizationSelectorSpinner = findViewById<Spinner>(R.id.simulation_type_spinner)
         val colorButton = findViewById<Button>(R.id.b_color_picker)
         val equationEditor = findViewById<EditText>(R.id.et_equation)
-        val speedScrollBar = findViewById<SeekBar>(R.id.speed_seekbar)
 
         // fill sim selector box with wallpaper options from native-lib.cpp
         val simSelectorAdapter = ArrayAdapter.createFromResource(
@@ -79,9 +79,9 @@ class PreviewActivity : AppCompatActivity() {
             R.array.simulation_types,
             android.R.layout.simple_spinner_item
         )
-        simSelectorSpinner.adapter = simSelectorAdapter
+        visualizationSelectorSpinner.adapter = simSelectorAdapter
         // set default to viewmodel simulation type
-        simSelectorSpinner.setSelection(viewModel.getVisualizationType())
+        visualizationSelectorSpinner.setSelection(viewModel.getVisualizationType())
 
         // register senser event listeners
         viewModel.registerSensorEvents(getSystemService(Context.SENSOR_SERVICE) as SensorManager)
@@ -95,11 +95,14 @@ class PreviewActivity : AppCompatActivity() {
             Log.d("Livewallpaper", "api level too low!")
         }
 
-        // register scrollbar actions to update rotation rate in repo
-        rotationScrollBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        distanceSeekBar.progress = 50
+        viewModel.updateDistanceFromCenter(distanceSeekBar.progress.toFloat() / 100.0f)
+
+        // register seekbar actions to update distance in repo
+        distanceSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 // Do nothing until changes are stopped for smooth ui updates
-                viewModel.updateRotationRate(seekBar.progress.toFloat() / 100.0f)
+                viewModel.updateDistanceFromCenter(seekBar.progress.toFloat() / 100.0f)
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {
@@ -107,16 +110,19 @@ class PreviewActivity : AppCompatActivity() {
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar) {
-                //mRepo!!.rotationRate = seekBar.progress.toFloat() / 100.0f
-                viewModel.updateRotationRate(seekBar.progress.toFloat() / 100.0f)
+                //mRepo!!.distanceFromCenter = seekBar.progress.toFloat() / 100.0f
+                viewModel.updateDistanceFromCenter(seekBar.progress.toFloat() / 100.0f)
             }
         })
 
-        // register scrollbar actions to update speed in repo
-        speedScrollBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        fieldOfViewSeekBar.progress = 6000
+        viewModel.updateFieldOfView(fieldOfViewSeekBar.progress.toFloat() / 100.0f)
+
+        // register seekbar actions to update speed in repo
+        fieldOfViewSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 // Do nothing until changes are stopped for smooth ui updates
-                viewModel.updateSpeed(seekBar.progress.toFloat() / 100.0f)
+                viewModel.updateFieldOfView(seekBar.progress.toFloat() / 100.0f)
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {
@@ -124,15 +130,15 @@ class PreviewActivity : AppCompatActivity() {
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar) {
-                //mRepo!!.rotationRate = seekBar.progress.toFloat() / 100.0f
-                viewModel.updateSpeed(seekBar.progress.toFloat() / 100.0f)
+                //mRepo!!.fieldOfView = seekBar.progress.toFloat() / 100.0f
+                viewModel.updateFieldOfView(seekBar.progress.toFloat() / 100.0f)
             }
         })
 
         // register spinner actions to update simulation type in repo
-        simSelectorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        visualizationSelectorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
-                val changed = viewModel.updateSimulationType(pos)
+                val changed = viewModel.updateVisualizationSelection(pos)
                 if (changed) {
                     // tell view it needs to be reloaded
                     mView!!.onPause()
@@ -301,10 +307,10 @@ class PreviewActivity : AppCompatActivity() {
             linear_acc_x: Float,
             linear_acc_y: Float,
             linear_acc_z: Float,
-            value: Float
+            distance: Float,
+            field_of_view: Float
         )
 
-        external fun sendData(value: Float)
         external fun getScreenBuffer(): ByteArray
     }
 }

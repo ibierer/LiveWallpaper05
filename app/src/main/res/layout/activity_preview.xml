@@ -34,30 +34,38 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/rotation_rate_text"
+                android:id="@+id/distance_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:background="@drawable/border_background"
-                android:text="@string/rotation_rate" />
+                android:text="@string/distance_label" />
 
             <SeekBar
-                android:id="@+id/rotation_rate_seekbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/preview_ui_margin"
-                android:background="@drawable/border_background"
-                android:max="100"
-                android:min="-100" />
-
-            <SeekBar
-                android:id="@+id/speed_seekbar"
+                android:id="@+id/distance_seekbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:background="@drawable/border_background"
                 android:max="100"
                 android:min="0" />
+
+            <TextView
+                android:id="@+id/field_of_view_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/border_background"
+                android:text="@string/field_of_view_label" />
+
+            <SeekBar
+                android:id="@+id/field_of_view_seekbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/border_background"
+                android:max="17999"
+                android:min="1" />
 
             <TextView
                 android:layout_width="wrap_content"

@@ -99,10 +99,6 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
         if(visualizationType == "simulation"){
             string simulation = visualizationJSON["simulation_type"];
             if(simulation == "nbody"){
-                //view = new SimpleNBodySimulationView();
-                //view = new LinearithmicNBodySimulationView();
-                view = new RenderToCubeMapView();
-            }else if(simulation == "naive"){
                 //view = new RGBCubeView();
                 //view = new TriangleView();
                 //view = new TriangleWithNormalsView();
@@ -115,16 +111,16 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
                 //view = new SphereView();
                 //view = new CubeView();
                 //view = new SphereWithReflectionView();
-                //view = new SphereWithRefractionView();
                 //view = new SphereWithFresnelEffectView();
                 //view = new SimpleNBodySimulationView();
-                //view = new LinearithmicNBodySimulationView();
-                //view = new NaiveSimulationView(particleCount, 15.0f, referenceFrameRotates == "true", gravity);
+                view = new LinearithmicNBodySimulationView();
+            }else if(simulation == "naive"){
                 int particleCount = visualizationJSON["particle_count"];
                 string fluidSurface = visualizationJSON["fluid_surface"];
                 float gravity = visualizationJSON["gravity"];
                 string referenceFrameRotates = visualizationJSON["reference_frame_rotates"];
                 string smoothSphereSurface = visualizationJSON["smooth_sphere_surface"];
+                //view = new NaiveSimulationView(particleCount, 15.0f, referenceFrameRotates == "true", gravity);
                 view = new NaiveSimulationFluidSurfaceView(particleCount, fluidSurface == "true", 40, 20.0f, referenceFrameRotates == "true", gravity, smoothSphereSurface == "true");
             }else if(simulation == "picflip"){
                 float gravity = visualizationJSON["gravity"];
@@ -170,28 +166,23 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_resize(JNIEnv *e
         view->width = width;
         view->height = height;
         view->orientation = orientation;
-        //ALOGI("Orientation_update = %s\n", to_string(orientation).c_str());
-        view->calculatePerspectiveSetViewport(60.0f, view->zNear, view->zFar);
     }
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_livewallpaper05_PreviewActivity_00024Companion_step(JNIEnv *env, jobject thiz, jfloat acc_x, jfloat acc_y, jfloat acc_z, jfloat rot_x, jfloat rot_y, jfloat rot_z, jfloat rot_w, jfloat linear_acc_x, jfloat linear_acc_y, jfloat linear_acc_z, jfloat value) {
+Java_com_example_livewallpaper05_PreviewActivity_00024Companion_step(JNIEnv *env, jobject thiz, jfloat acc_x, jfloat acc_y, jfloat acc_z, jfloat rot_x, jfloat rot_y, jfloat rot_z, jfloat rot_w, jfloat linear_acc_x, jfloat linear_acc_y, jfloat linear_acc_z, jfloat distance, jfloat field_of_view) {
     if (view) {
         view->accelerometerVector = vec3(acc_x, acc_y, acc_z);
         view->linearAccelerationVector = vec3(linear_acc_x, linear_acc_y, linear_acc_z);
         view->rotationVector = vec4(rot_x, rot_y, rot_z, rot_w);
-        view->zoom = value;
+        view->distanceToOrigin = distance;
+        view->maxViewAngle = field_of_view;
+        //ALOGI("field_of_view = %s\n", to_string(field_of_view).c_str());
+        view->calculatePerspectiveSetViewport(view->maxViewAngle, view->zNear, view->zFar);
         view->render();
         view->incrementFrameCount();
     }
-}
-
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_example_livewallpaper05_PreviewActivity_00024Companion_sendData(JNIEnv *env, jobject thiz, jfloat value) {
-    view->zoom = value;
 }
 
 extern "C"

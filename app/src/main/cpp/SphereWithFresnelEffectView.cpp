@@ -42,7 +42,7 @@ void SphereWithFresnelEffectView::render() {
     glCullFace(GL_BACK);
 
     Matrix4<float> translation;
-    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 10.0f * (zoom - 1.0f)));
+    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, -20.0f * distanceToOrigin));
     Matrix4<float> rotation;
     rotation = Matrix4<float>(quaternionTo3x3(
             Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));

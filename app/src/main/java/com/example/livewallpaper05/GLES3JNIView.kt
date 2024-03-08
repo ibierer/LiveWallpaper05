@@ -48,7 +48,8 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                 linearAccelData[0],
                 linearAccelData[1],
                 linearAccelData[2],
-                mViewModel.getRotationRate()
+                mViewModel.getDistanceFromOrigin(),
+                mViewModel.getFieldOfView()
             )
 
             // Get screen buffer if requested

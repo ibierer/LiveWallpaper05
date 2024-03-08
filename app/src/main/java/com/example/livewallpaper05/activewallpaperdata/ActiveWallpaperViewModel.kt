@@ -47,9 +47,14 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         }
     }
 
-    // return rotation rate value from repo
-    fun getRotationRate(): Float {
-        return repo.rotationRate
+    // return distance value from repo
+    fun getDistanceFromOrigin(): Float {
+        return repo.distanceFromOrigin
+    }
+
+    // return field of view value from repo
+    fun getFieldOfView(): Float {
+        return repo.fieldOfView
     }
 
     // return rotation data from repo
@@ -82,13 +87,18 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         return repo.orientation
     }
 
-    // update rotation rate in repo
-    fun updateRotationRate(rate: Float) {
-        repo.rotationRate = rate
+    // update distance from origin in repo
+    fun updateDistanceFromCenter(distance: Float) {
+        repo.distanceFromOrigin = distance
     }
 
+
+    // update field of view in repo
+    fun updateFieldOfView(angle: Float) {
+        repo.fieldOfView = angle
+    }
     // update simulation type in repo, return true if value changed
-    fun updateSimulationType(type: Int): Boolean {
+    fun updateVisualizationSelection(type: Int): Boolean {
         if (type != repo.simulationType) {
             repo.simulationType = type
             return true

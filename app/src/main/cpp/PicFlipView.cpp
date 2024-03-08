@@ -110,7 +110,7 @@ void PicFlipView::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(mProgram);
     Matrix4<float> translation;
-    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 50.0f * (zoom - 1.0f)));
+    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, -100.0f * distanceToOrigin));
     Matrix4<float> translation2;
     Matrix4<float> rotation = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
     Matrix4<float> view = referenceFrameRotates ? translation : translation * rotation;

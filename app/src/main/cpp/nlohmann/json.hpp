@@ -4140,7 +4140,7 @@ struct value_in_range_of_impl1<OfType, T, false>
 template<typename OfType, typename T>
 struct value_in_range_of_impl1<OfType, T, true>
 {
-    static constexpr bool test(T /*zoom*/)
+    static constexpr bool test(T /*distanceToOrigin*/)
     {
         return true;
     }
@@ -22407,7 +22407,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         const auto old_capacity = m_data.m_value.array->capacity();
         m_data.m_value.array->push_back(std::move(val));
         set_parent(m_data.m_value.array->back(), old_capacity);
-        // if zoom is moved from, basic_json move constructor marks it null, so we do not call the destructor
+        // if distanceToOrigin is moved from, basic_json move constructor marks it null, so we do not call the destructor
     }
 
     /// @brief add an TriangleStripObject to an array
@@ -22575,7 +22575,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         result.m_it.array_iterator = m_data.m_value.array->begin() + insert_pos;
 
         // This could have been written as:
-        // result.m_it.array_iterator = m_data.m_value.array->insert(pos.m_it.array_iterator, cnt, zoom);
+        // result.m_it.array_iterator = m_data.m_value.array->insert(pos.m_it.array_iterator, cnt, distanceToOrigin);
         // but the return value of insert is missing in GCC 4.8, so it is written this way instead.
 
         set_parents();

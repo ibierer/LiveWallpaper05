@@ -82,7 +82,7 @@ void Graph2View::render(){
             break;
     }
 
-    float distanceToCenter = 50.0f * (1.0f - zoom);
+    float distanceToCenter = 100.0f * distanceToOrigin;
     translation = translation.Translation(Vec3<float>(0.0f, 0.0f, -distanceToCenter));
     normalMatrix = referenceFrameRotates ? rotation.GetSubMatrix3().GetInverse() : normalMatrix.Identity();
     cameraTransformation = rotation.GetInverse() * translation * model.Translation(Vec3<float>(0.0f, 0.0f, 0.0f));

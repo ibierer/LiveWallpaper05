@@ -20,7 +20,7 @@ void SphereMapView::render(){
     glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    calculatePerspectiveSetViewport(60.0f * (1.0f - zoom), zNear, zFar);
+    calculatePerspectiveSetViewport(maxViewAngle, zNear, zFar);
     Matrix4<float> rotation = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
     Matrix4<float> inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();
 

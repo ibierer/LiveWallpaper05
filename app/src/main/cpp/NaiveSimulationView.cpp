@@ -29,7 +29,7 @@ void NaiveSimulationView::render(){
     Matrix4<float> view;
     Matrix4<float> model;
     Matrix4<float> translation;
-    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 50.0f * (zoom - 1.0f)));
+    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, -100.0f * distanceToOrigin));
     Matrix4<float> rotation = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
     for(int i = 0; i < simulation.particleCount; i++) {
         model = model.Translation(Vec3<float>(simulation.particles[i].position.x, simulation.particles[i].position.y, simulation.particles[i].position.z));
