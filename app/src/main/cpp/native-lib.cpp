@@ -193,10 +193,8 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_getScreenBuffer(
     // Capture the screen buffer
     vector<unsigned char> pixels = vector<unsigned char>(view->width * view->height * 4);
     glReadPixels(0, 0, view->width, view->height, GL_RGBA, GL_UNSIGNED_BYTE, &pixels[0]);
-
     // Convert the pixel data to a Java byte array
     jbyteArray byteArray = env->NewByteArray(pixels.size());
     env->SetByteArrayRegion(byteArray, 0, pixels.size(), (jbyte*)pixels.data());
-
     return byteArray;
 }
