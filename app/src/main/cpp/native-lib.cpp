@@ -87,8 +87,8 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
         }
 
         json visualizationJSON = json::parse(View::jstringToString(env, JSON));
-
         string backgroundTexture = visualizationJSON["background_texture"];
+
         if (backgroundTexture == "ms_paint_colors") {
             View::backgroundTexture = Texture::DefaultImages::MS_PAINT_COLORS;
         } else if(backgroundTexture == "mandelbrot") {
