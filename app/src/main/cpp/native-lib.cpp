@@ -143,6 +143,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
                 view = new Graph2View("", 40, referenceFrameRotates == "true", vectorPointsPositive == "true");
             }
         }
+
         view->backgroundIsSolidColor = visualizationJSON["background_is_solid_color"] == "true";
         json rgba = visualizationJSON["background_color"];
         view->backgroundColor = vec4((float)rgba["r"], (float)rgba["g"], (float)rgba["b"], 255.0f) / 255.0f;
