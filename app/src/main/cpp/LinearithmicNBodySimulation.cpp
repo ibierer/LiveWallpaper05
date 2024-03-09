@@ -15,16 +15,14 @@ void LinearithmicNBodySimulation::initialize(const ComputationOptions &computati
     glGenBuffers(1, &computeShader.gVBO);
 }
 
-void LinearithmicNBodySimulation::simulateOnCPU() {
+void LinearithmicNBodySimulation::computeForcesOnCPUQuadratic() {
     float gravitationalConstant = 10000000000.0f * 6.674e-11f;
     if (t <= 0.0f) {
         return;
     }
     // Sum forces
-    vec3 gravitySum[COUNT];
     for (uint i = 0u; i < COUNT; i++) {
-        // set grav sum to
-        gravitySum[i] = vec3(0.0f);
+        data->stars[i].force = vec3(0.0f);
         for (uint j = 0u; j < COUNT; j++) {
             if (i == j) {
                 continue;
@@ -32,33 +30,89 @@ void LinearithmicNBodySimulation::simulateOnCPU() {
             vec3 delta = data->stars[j].position - data->stars[i].position;
             float distSquared = dot(delta, delta);
             float dist = sqrt(distSquared);
-            gravitySum[i] += delta / (dist * distSquared) * data->stars[j].mass;
+            data->stars[i].force += delta / (dist * distSquared) * data->stars[j].mass;
         }
-        gravitySum[i] *= gravitationalConstant * data->stars[i].mass;
+        data->stars[i].force *= gravitationalConstant * data->stars[i].mass;
     }
-    // INTEGRATION --------------------------------------------------
+}
+
+void LinearithmicNBodySimulation::integrate() {
     float deltaTime = 0.1f;
     for (uint i = 0u; i < COUNT; i++) {
-        vec3 acceleration = gravitySum[i] / data->stars[i].mass;
+        vec3 acceleration = data->stars[i].force / data->stars[i].mass;
         //update positions
-        data->stars[i].position += (data->stars[i].velocity + 0.5f * acceleration * deltaTime) * deltaTime;
+        data->stars[i].position +=
+                (data->stars[i].velocity + 0.5f * acceleration * deltaTime) * deltaTime;
         //update velocity
         data->stars[i].velocity += acceleration * deltaTime;
     }
 }
 
-struct Node {
-    Node* children[8];
-};
-// for(int i = 0; i < 8; i++){children[i] = null}
-vec4 LinearithmicNBodySimulation::conquerVolume(vector<int> ids){
-
-    for(int i = 0; i < ids.size(); i++){
+vec4 LinearithmicNBodySimulation::conquerVolume(const vector<int> &ids, Node *node) {
+    // 1. Accumulate all masses to each node
+    vector<int> childIDs[8];
+    float mass = 0.0f;
+    for (int i = 0; i < ids.size(); i++) {
         vec3 p = data->stars[ids.at(i)].position;
-        int combo = (p.x>0.0f)*1+(p.y>0.0f)*2+(p.z>0.0f)*4;
-
+        int combo = (p.x > node->centerOfGravity.x) * 1 + (p.y > node->centerOfGravity.y) * 2 +
+                    (p.z > node->centerOfGravity.z) * 4;
+        childIDs[combo].push_back(ids[i]);
     }
 
+    vec3 numerator = vec3(0.0f);
+    float denominator = 0.0f;
+    float halfSize = node->size / 2;
+    // iterate over 'octant'
+    for (int i = 0; i < 8; i++) {
+        if (childIDs[i].size() > 0) {
+            if (!node->children[i]) {
+                node->children[i] = new Node(); // Allocate child node if not already created
+                node->children[i]->parent = node;
+                node->children[i]->size = halfSize;
+                for (int j = 0; j < 8; j++) {
+                    node->children[i]->children[j] = nullptr;
+                }
+            }
+            vec4 centerOfGravity = conquerVolume(childIDs[i], node->children[i]);
+            node->children[i]->centerOfGravity = centerOfGravity;
+            mass += centerOfGravity.w;
+            numerator += centerOfGravity.w * centerOfGravity.xyz;
+            denominator += centerOfGravity.w;
+            if (childIDs[i].size() == 1) {
+                node->children[i]->isLeaf = true;
+                data->stars[childIDs[i].at(0)].leaf = node->children[i];
+            }
+        }
+    }
+    vec3 quotient = numerator / denominator;
+    return vec4(quotient.x, quotient.y, quotient.z, mass);
+}
+
+vec3 LinearithmicNBodySimulation::addForces(Node *node, int index) {
+    float theta = 0.7f;
+    vec3 forces = 0.0f;
+    // BASE CASE
+    if (node->isLeaf ||
+        node->size / distance(data->stars[index].position, node->centerOfGravity.xyz) < theta) {
+        vec3 delta = node->centerOfGravity.xyz - data->stars[index].position;
+        float distSquared = dot(delta, delta);
+        float dist = sqrt(distSquared);
+        return delta / (dist * distSquared) * node->centerOfGravity.w;
+    } else {
+        vec3 sumForces = vec3(0.0f);
+        for (int i = 0; i < 8; i++) {
+            if (node->children[i]) {
+                sumForces += addForces(node->children[i], index);
+            }
+        }
+        return sumForces;
+    }
+}
+
+void LinearithmicNBodySimulation::computeForcesOnCPULinearithmic() {
+    for (int i = 0; i < COUNT; i++) {
+        data->stars[i].force = addForces(root, i);
+    }
 }
 
 void LinearithmicNBodySimulation::simulate(const int &iterations, bool pushDataToGPU,
@@ -66,7 +120,25 @@ void LinearithmicNBodySimulation::simulate(const int &iterations, bool pushDataT
     switch (computationOption) {
         case CPU:
             for (int i = 0; i < iterations; i++) {
-                simulateOnCPU();
+                // compute size of root node
+                /*float size = 1.0f;
+                for (int j = 0; j < COUNT; j++) {
+                    while (abs(data->stars[j].position.x) < size / 2 &&
+                           abs(data->stars[j].position.y) < size / 2 &&
+                           abs(data->stars[j].position.z) < size / 2) {
+                        size *= 2;
+                    }
+                }
+                root = new Node();
+                root->size = size;
+                vector<int> ids;
+                for (int j = 0; j < COUNT; j++) {
+                    ids.push_back(j);
+                }
+                conquerVolume(ids, root);
+                computeForcesOnCPULinearithmic();*/
+                computeForcesOnCPUQuadratic();
+                integrate();
             }
             break;
         case GPU:
@@ -123,8 +195,8 @@ bool LinearithmicNBodySimulation::seed() {
         case CPU:
             for (int i = 0; i < COUNT; i++) {
                 data->stars[i].position = vec3(getRandomFloat(100.0f) - 50.0f,
-                                              getRandomFloat(100.0f) - 50.0f,
-                                              getRandomFloat(100.0f) - 50.0f);
+                                               getRandomFloat(100.0f) - 50.0f,
+                                               getRandomFloat(100.0f) - 50.0f);
                 data->stars[i].velocity = vec3(0.0f);
                 data->stars[i].mass = 1.0f;
             }
@@ -156,3 +228,4 @@ bool LinearithmicNBodySimulation::seed() {
 Computation::ComputationOptions LinearithmicNBodySimulation::getComputationOption() {
     return computationOption;
 }
+

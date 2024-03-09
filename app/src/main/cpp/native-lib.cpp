@@ -159,7 +159,7 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_livewallpaper05_PreviewActivity_00024Companion_resize(JNIEnv *env, jobject thiz, jint width, jint height, jint orientation) {
     if (view) {
-        if(view->initialWidth == 0 || view->initialHeight == 0){
+        if (view->initialWidth == 0 || view->initialHeight == 0) {
             view->initialWidth = width;
             view->initialHeight = height;
         }
