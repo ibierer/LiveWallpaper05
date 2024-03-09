@@ -137,10 +137,8 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
             string referenceFrameRotates = visualizationJSON["reference_frame_rotates"];
             string vectorPointsPositive = visualizationJSON["vector_points_positive"];
             if(syntaxCheck == "") {
-                //view = new GraphView(equation);
                 view = new Graph2View(equation, 40, referenceFrameRotates == "true", vectorPointsPositive == "true");
             }else{
-                //view = new GraphView("");
                 view = new Graph2View("", 40, referenceFrameRotates == "true", vectorPointsPositive == "true");
             }
         }
