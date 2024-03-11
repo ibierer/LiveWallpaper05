@@ -105,21 +105,6 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             val a = (color.alpha()*255).toInt()
             val eq = mViewModel.getEquation()
 
-            val boxJSON = """{
-                    "visualization_type": "simulation",
-                    "simulation_type": "naive",
-                    "fluid_surface": "false",
-                    "particle_count": 1000,
-                    "smooth_sphere_surface": "true",
-                    "gravity": 0.0,
-                    "distance": 0.5,
-                    "field_of_view": 60.0,
-                    "reference_frame_rotates": "false",
-                    "background_is_solid_color": "true",
-                    "background_texture": "ms_paint_colors",
-                    "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
-                }""".trimIndent()
-
             val nbodyJSON = """{
                     "visualization_type": "simulation",
                     "simulation_type": "nbody",
@@ -136,9 +121,10 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     "fluid_surface": "true",
                     "particle_count": 1000,
                     "smooth_sphere_surface": "true",
-                    "gravity": 0.0,
                     "distance": 0.5,
                     "field_of_view": 60.0,
+                    "gravity": 0.0,
+                    "linear_acceleration": 1.0,
                     "reference_frame_rotates": "false",
                     "background_is_solid_color": "false",
                     "background_texture": "ms_paint_colors",
@@ -148,9 +134,10 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             val picflipJSON = """{
                     "visualization_type": "simulation",
                     "simulation_type": "picflip",
-                    "gravity": 0.0,
                     "distance": 0.5,
                     "field_of_view": 60.0,
+                    "gravity": 0.0,
+                    "linear_acceleration": 1.0,
                     "reference_frame_rotates": "true",
                     "background_is_solid_color": "false",
                     "background_texture": "ms_paint_colors",
@@ -222,8 +209,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             "settings": "(x + zsin(z + t))^2 + (y + zcos(z + t))^2 = 1"
             "settings": "1/(x^2 + ((y^2)sin(y)) + z^2) + 0.89/((x - 3sin(t))^2+(y - 3cos(t))^2 + z^40) = 1"*/
 
-            var selectionJSON = boxJSON
-            lateinit var jsonObject : JSONObject
+            lateinit var selectionJSON : String
             when (mViewModel.getVisualizationType()) {
                 0 -> {
                     selectionJSON = nbodyJSON
@@ -241,7 +227,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     selectionJSON = graphJSON
                 }
             }
-            jsonObject = JSONObject(selectionJSON)
+            val jsonObject : JSONObject = JSONObject(selectionJSON)
             val distance: Float = jsonObject.getDouble("distance").toFloat()
             val fieldOfView: Float = jsonObject.getDouble("field_of_view").toFloat()
             mViewModel.mRepo.distanceFromOrigin.postValue(distance)
