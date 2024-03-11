@@ -5,7 +5,11 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.opengl.GLSurfaceView
 import android.os.SystemClock
+import android.util.Log
+import android.view.View
+import android.widget.SeekBar
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
+import org.json.JSONObject
 import java.nio.ByteBuffer
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
@@ -19,10 +23,10 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
         // supporting OpenGL ES 2.0 or later backwards-compatible versions.
         setEGLContextClientVersion(3)
         setEGLConfigChooser(8, 8, 8, 8, 24, 8)
-        setRenderer(Renderer(vm))
+        setRenderer(Renderer(vm, this))
     }
 
-    class Renderer(vm: ActiveWallpaperViewModel) : GLSurfaceView.Renderer {
+    class Renderer(vm: ActiveWallpaperViewModel, var view: View) : GLSurfaceView.Renderer {
         private var mViewModel: ActiveWallpaperViewModel = vm
 
         override fun onDrawFrame(gl: GL10) {
@@ -108,6 +112,8 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     "particle_count": 1000,
                     "smooth_sphere_surface": "true",
                     "gravity": 0.0,
+                    "distance": 0.5,
+                    "field_of_view": 60.0,
                     "reference_frame_rotates": "false",
                     "background_is_solid_color": "true",
                     "background_texture": "ms_paint_colors",
@@ -117,6 +123,8 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             val nbodyJSON = """{
                     "visualization_type": "simulation",
                     "simulation_type": "nbody",
+                    "distance": 0.5,
+                    "field_of_view": 60.0,
                     "background_is_solid_color": "false",
                     "background_texture": "ms_paint_colors",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
@@ -129,6 +137,8 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     "particle_count": 1000,
                     "smooth_sphere_surface": "true",
                     "gravity": 0.0,
+                    "distance": 0.5,
+                    "field_of_view": 60.0,
                     "reference_frame_rotates": "false",
                     "background_is_solid_color": "false",
                     "background_texture": "ms_paint_colors",
@@ -139,6 +149,8 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     "visualization_type": "simulation",
                     "simulation_type": "picflip",
                     "gravity": 0.0,
+                    "distance": 0.5,
+                    "field_of_view": 60.0,
                     "reference_frame_rotates": "true",
                     "background_is_solid_color": "false",
                     "background_texture": "ms_paint_colors",
@@ -147,6 +159,8 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
 
             val triangleJSON = """{
                     "visualization_type": "other",
+                    "distance": 0.5,
+                    "field_of_view": 60.0,
                     "background_is_solid_color": "false",
                     "background_texture": "mandelbrot",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
@@ -155,6 +169,8 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             val graphJSON = """{
                     "visualization_type": "graph",
                     "reference_frame_rotates": "false",
+                    "distance": 0.5,
+                    "field_of_view": 60.0,
                     "background_is_solid_color": "false",
                     "background_texture": "ms_paint_colors",
                     "vector_points_positive": "false",
@@ -207,6 +223,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             "settings": "1/(x^2 + ((y^2)sin(y)) + z^2) + 0.89/((x - 3sin(t))^2+(y - 3cos(t))^2 + z^40) = 1"*/
 
             var selectionJSON = boxJSON
+            lateinit var jsonObject : JSONObject
             when (mViewModel.getVisualizationType()) {
                 0 -> {
                     selectionJSON = nbodyJSON
@@ -223,8 +240,12 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                 4 -> {
                     selectionJSON = graphJSON
                 }
-
             }
+            jsonObject = JSONObject(selectionJSON)
+            val distance: Float = jsonObject.getDouble("distance").toFloat()
+            val fieldOfView: Float = jsonObject.getDouble("field_of_view").toFloat()
+            mViewModel.mRepo.distanceFromOrigin.postValue(distance)
+            mViewModel.mRepo.fieldOfView.postValue(fieldOfView)
 
             PreviewActivity.init(selectionJSON)
         }

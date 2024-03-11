@@ -49,12 +49,12 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
 
     // return distance value from repo
     fun getDistanceFromOrigin(): Float {
-        return repo.distanceFromOrigin
+        return repo.distanceFromOrigin.value!!
     }
 
     // return field of view value from repo
     fun getFieldOfView(): Float {
-        return repo.fieldOfView
+        return repo.fieldOfView.value!!
     }
 
     // return rotation data from repo
@@ -89,13 +89,13 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
 
     // update distance from origin in repo
     fun updateDistanceFromCenter(distance: Float) {
-        repo.distanceFromOrigin = distance
+        repo.distanceFromOrigin.value = distance
     }
 
 
     // update field of view in repo
     fun updateFieldOfView(angle: Float) {
-        repo.fieldOfView = angle
+        repo.fieldOfView.value = angle
     }
     // update simulation type in repo, return true if value changed
     fun updateVisualizationSelection(type: Int): Boolean {

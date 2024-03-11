@@ -95,9 +95,6 @@ class PreviewActivity : AppCompatActivity() {
             Log.d("Livewallpaper", "api level too low!")
         }
 
-        distanceSeekBar.progress = 50
-        viewModel.updateDistanceFromCenter(distanceSeekBar.progress.toFloat() / 100.0f)
-
         // register seekbar actions to update distance in repo
         distanceSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
@@ -115,8 +112,9 @@ class PreviewActivity : AppCompatActivity() {
             }
         })
 
-        fieldOfViewSeekBar.progress = 6000
-        viewModel.updateFieldOfView(fieldOfViewSeekBar.progress.toFloat() / 100.0f)
+        viewModel.mRepo.distanceFromOrigin.observe(this) { float ->
+            distanceSeekBar.progress = (float * 100.0f).toInt()
+        }
 
         // register seekbar actions to update speed in repo
         fieldOfViewSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -135,6 +133,10 @@ class PreviewActivity : AppCompatActivity() {
             }
         })
 
+        viewModel.mRepo.fieldOfView.observe(this) { float ->
+            fieldOfViewSeekBar.progress = (float * 100.0f).toInt()
+        }
+
         // register spinner actions to update simulation type in repo
         visualizationSelectorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
@@ -150,6 +152,12 @@ class PreviewActivity : AppCompatActivity() {
                 // Do nothing
             }
         }
+
+        // Observe changes to liveDataBitmap in the ViewModel
+        viewModel.liveDataBitmap.observe(this, Observer { bitmap ->
+            // This code will be executed on the main (UI) thread whenever liveDataBitmap changes
+            findViewById<ImageView>(R.id.imageView).setImageBitmap(bitmap)
+        })
 
         // setup color selection dialog
         colorButton.setOnClickListener {
@@ -176,15 +184,6 @@ class PreviewActivity : AppCompatActivity() {
             // Temporary signal to trigger screen buffer capture
             viewModel.getScreenBuffer = 1
         }
-
-        /*findViewById<ImageView>(R.id.imageView).setOnClickListener{
-            findViewById<ImageView>(R.id.imageView).setImageBitmap(viewModel.liveDataBitmap.value)
-        }*/
-        // Observe changes to liveDataBitmap in the ViewModel
-        viewModel.liveDataBitmap.observe(this, Observer { bitmap ->
-            // This code will be executed on the main (UI) thread whenever liveDataBitmap changes
-            findViewById<ImageView>(R.id.imageView).setImageBitmap(bitmap)
-        })
 
         // setup equation editor
         viewModel.updateEquation(equationEditor.text.toString())
