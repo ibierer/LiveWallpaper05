@@ -68,6 +68,57 @@
                 android:min="1" />
 
             <TextView
+                android:id="@+id/gravity_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/border_background"
+                android:text="@string/gravity_label" />
+
+            <SeekBar
+                android:id="@+id/gravity_seekbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/border_background"
+                android:max="200"
+                android:min="0" />
+
+            <TextView
+                android:id="@+id/linear_acceleration_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/border_background"
+                android:text="@string/linear_acceleration_label" />
+
+            <SeekBar
+                android:id="@+id/linear_acceleration_seekbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/border_background"
+                android:max="200"
+                android:min="0" />
+
+            <TextView
+                android:id="@+id/efficiency"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/border_background"
+                android:text="@string/efficiency_label" />
+
+            <SeekBar
+                android:id="@+id/efficiency_seekbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/border_background"
+                android:max="200"
+                android:min="0" />
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"

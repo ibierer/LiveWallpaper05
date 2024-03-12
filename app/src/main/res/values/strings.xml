@@ -37,5 +37,8 @@
     <string name="registerButtonText">REGISTER</string>
     <string name="usernameHint">username</string>
     <string name="no_account_register">No account? Register!</string>
+    <string name="gravity_label">Gravity:</string>
+    <string name="linear_acceleration_label">Linear Acceleration:</string>
+    <string name="efficiency_label">Efficiency:</string>
 
 </resources>

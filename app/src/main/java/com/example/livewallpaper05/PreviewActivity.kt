@@ -69,6 +69,9 @@ class PreviewActivity : AppCompatActivity() {
         val layout = findViewById<LinearLayout>(R.id.render_layout)
         val distanceSeekBar = findViewById<SeekBar>(R.id.distance_seekbar)
         val fieldOfViewSeekBar = findViewById<SeekBar>(R.id.field_of_view_seekbar)
+        val gravitySeekBar = findViewById<SeekBar>(R.id.gravity_seekbar)
+        val linearAccelerationSeekBar = findViewById<SeekBar>(R.id.linear_acceleration_seekbar)
+        val efficiencySeekBar = findViewById<SeekBar>(R.id.efficiency_seekbar)
         val visualizationSelectorSpinner = findViewById<Spinner>(R.id.visualization_type_spinner)
         val colorButton = findViewById<Button>(R.id.b_color_picker)
         val equationEditor = findViewById<EditText>(R.id.et_equation)
@@ -135,6 +138,66 @@ class PreviewActivity : AppCompatActivity() {
 
         viewModel.mRepo.fieldOfView.observe(this) { float ->
             fieldOfViewSeekBar.progress = (float * 100.0f).toInt()
+        }
+
+        // register seekbar actions to update gravity in repo
+        gravitySeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                // Do nothing until changes are stopped for smooth ui updates
+                viewModel.updateGravity(seekBar.progress.toFloat() / 100.0f)
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+                // Do nothing when changes are started
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                viewModel.updateGravity(seekBar.progress.toFloat() / 100.0f)
+            }
+        })
+
+        viewModel.mRepo.gravity.observe(this) { float ->
+            gravitySeekBar.progress = (float * 100.0f).toInt()
+        }
+
+        // register seekbar actions to update linear acceleration in repo
+        linearAccelerationSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                // Do nothing until changes are stopped for smooth ui updates
+                viewModel.updateLinearAcceleration(seekBar.progress.toFloat() / 100.0f)
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+                // Do nothing when changes are started
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                viewModel.updateLinearAcceleration(seekBar.progress.toFloat() / 100.0f)
+            }
+        })
+
+        viewModel.mRepo.linearAcceleration.observe(this) { float ->
+            linearAccelerationSeekBar.progress = (float * 100.0f).toInt()
+        }
+
+        // register seekbar actions to update efficiency in repo
+        efficiencySeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                // Do nothing until changes are stopped for smooth ui updates
+                viewModel.updateEfficiency(seekBar.progress.toFloat() / 100.0f)
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+                // Do nothing when changes are started
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                viewModel.updateEfficiency(seekBar.progress.toFloat() / 100.0f)
+            }
+        })
+
+        viewModel.mRepo.efficiency.observe(this) { float ->
+            efficiencySeekBar.progress = (float * 100.0f).toInt()
         }
 
         // register spinner actions to update simulation type in repo
