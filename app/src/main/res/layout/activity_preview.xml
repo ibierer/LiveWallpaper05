@@ -181,6 +181,13 @@
                 android:background="@drawable/border_background"
                 android:text="Syntax check result" />
 
+            <Button
+                android:id="@+id/save_button"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:text="Save"/>
+
         </LinearLayout>
     </ScrollView>
 
