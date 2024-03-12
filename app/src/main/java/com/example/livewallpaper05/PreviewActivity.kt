@@ -69,7 +69,7 @@ class PreviewActivity : AppCompatActivity() {
         val layout = findViewById<LinearLayout>(R.id.render_layout)
         val distanceSeekBar = findViewById<SeekBar>(R.id.distance_seekbar)
         val fieldOfViewSeekBar = findViewById<SeekBar>(R.id.field_of_view_seekbar)
-        val visualizationSelectorSpinner = findViewById<Spinner>(R.id.simulation_type_spinner)
+        val visualizationSelectorSpinner = findViewById<Spinner>(R.id.visualization_type_spinner)
         val colorButton = findViewById<Button>(R.id.b_color_picker)
         val equationEditor = findViewById<EditText>(R.id.et_equation)
 
