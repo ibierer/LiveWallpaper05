@@ -266,6 +266,11 @@ void ImplicitGrapher::convertPiSymbol(string &equation) {
     for (int32_t pos = equation.find(piString.c_str(), 0); pos != string::npos; pos = equation.find(piString.c_str(), pos + enquiryString.length())) {
         equation.replace(pos, piString.length(), enquiryString.c_str(), enquiryString.length());
     }
+    piString = "pi";
+    enquiryString = "";
+    for (int32_t pos = equation.find(piString.c_str(), 0); pos != string::npos; pos = equation.find(piString.c_str(), pos + enquiryString.length())) {
+        equation.replace(pos, piString.length(), enquiryString.c_str(), enquiryString.length());
+    }
 }
 
 bool ImplicitGrapher::aDigit(const char& character) {

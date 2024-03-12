@@ -32,9 +32,15 @@ public:
 
     EGLContext mEglContext;
 
-    float zoom;
+    float distanceToOrigin;
+
+    float maxViewAngle;
 
     int orientation;
+
+    EGLint initialWidth = 0;
+
+    EGLint initialHeight = 0;
 
     EGLint width;
 

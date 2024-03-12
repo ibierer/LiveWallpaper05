@@ -20,7 +20,8 @@ class ActiveWallpaperRepo private constructor () : SensorEventListener {
     var orientation: Int = 0
     var fps: MutableLiveData<Float> = MutableLiveData<Float>(0.0f)
     var lastFrame: Long = 0
-    var rotationRate: Float = 0.0f
+    var distanceFromOrigin: MutableLiveData<Float> = MutableLiveData<Float>(0.0f)
+    var fieldOfView: MutableLiveData<Float> = MutableLiveData<Float>(0.0f)
     var rotationData: Array<Float> = arrayOf(0.0f,0.0f,0.0f,0.0f)
     var accelerationData: Array<Float> = arrayOf(0.0f,0.0f,0.0f)
     var linearAccelerationData: Array<Float> = arrayOf(0.0f,0.0f,0.0f)

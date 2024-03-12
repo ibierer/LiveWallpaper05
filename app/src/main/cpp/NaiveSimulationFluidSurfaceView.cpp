@@ -155,7 +155,7 @@ void NaiveSimulationFluidSurfaceView::render(){
                 break;
         }
 
-        float distanceToCenter = 50.0f * (1.0f - zoom);
+        float distanceToCenter = 100.0f * distanceToOrigin;
 
         translation = translation.Translation(Vec3<float>(0.0f, 0.0f, -distanceToCenter));
         normalMatrix = referenceFrameRotates ? rotation.GetSubMatrix3().GetInverse()
@@ -214,7 +214,7 @@ void NaiveSimulationFluidSurfaceView::render(){
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             {
                 // Render far frustum
-                calculatePerspectiveSetViewport(60.0f, distanceToTangent, zFar);
+                calculatePerspectiveSetViewport(maxViewAngle, distanceToTangent, zFar);
                 {
                     // Prepare model-view-projection matrix
                     model = model.Translation(Vec3<float>(ImplicitGrapher::defaultOffset.x,
@@ -276,7 +276,7 @@ void NaiveSimulationFluidSurfaceView::render(){
                 }
 
                 // Render near frustum
-                calculatePerspectiveSetViewport(60.0f, zNear, distanceToTangent);
+                calculatePerspectiveSetViewport(maxViewAngle, zNear, distanceToTangent);
                 {
                     glClearDepthf(1.0f);
                     glClear(GL_DEPTH_BUFFER_BIT);
@@ -350,7 +350,7 @@ void NaiveSimulationFluidSurfaceView::render(){
                          backgroundColor.a);
             {
                 // Render far frustum
-                calculatePerspectiveSetViewport(60.0f, distanceToTangent, zFar);
+                calculatePerspectiveSetViewport(maxViewAngle, distanceToTangent, zFar);
                 {
                     glClearDepthf(0.0f);
                     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -456,9 +456,9 @@ void NaiveSimulationFluidSurfaceView::render(){
                                                      "twoSidedRefraction"),
                                 twoSidedRefraction);
                     glUniform1f(glGetUniformLocation(graphFluidSurfaceClipsSphereProgram,
-                                                     "screenWidth"), width);
+                                                     "screenWidth"), initialWidth);
                     glUniform1f(glGetUniformLocation(graphFluidSurfaceClipsSphereProgram,
-                                                     "screenHeight"), height);
+                                                     "screenHeight"), initialHeight);
                     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
                     glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
                     glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE,
@@ -496,7 +496,7 @@ void NaiveSimulationFluidSurfaceView::render(){
                 }
 
                 // Render near frustum
-                calculatePerspectiveSetViewport(60.0f, zNear, distanceToTangent);
+                calculatePerspectiveSetViewport(maxViewAngle, zNear, distanceToTangent);
                 {
                     glClearDepthf(0.0f);
                     glClear(GL_DEPTH_BUFFER_BIT);
@@ -580,9 +580,9 @@ void NaiveSimulationFluidSurfaceView::render(){
                                                      "twoSidedRefraction"),
                                 twoSidedRefraction);
                     glUniform1f(glGetUniformLocation(graphFluidSurfaceClipsSphereProgram,
-                                                     "screenWidth"), width);
+                                                     "screenWidth"), initialWidth);
                     glUniform1f(glGetUniformLocation(graphFluidSurfaceClipsSphereProgram,
-                                                     "screenHeight"), height);
+                                                     "screenHeight"), initialHeight);
                     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
                     glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
                     glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE,
@@ -658,10 +658,10 @@ void NaiveSimulationFluidSurfaceView::render(){
                                 twoSidedRefraction);
                     glUniform1f(
                             glGetUniformLocation(sphereMapDoubleRefractionProgram, "screenWidth"),
-                            width);
+                            initialWidth);
                     glUniform1f(
                             glGetUniformLocation(sphereMapDoubleRefractionProgram, "screenHeight"),
-                            height);
+                            initialHeight);
                     sphereVAO.drawArrays();
                     glDepthFunc(GL_LEQUAL);
 
@@ -804,8 +804,8 @@ void NaiveSimulationFluidSurfaceView::render(){
                             1.0f / indexOfRefraction);
                 glUniform1i(glGetUniformLocation(graphFluidSurfaceProgram, "twoSidedRefraction"),
                             twoSidedRefraction);
-                glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenWidth"), width);
-                glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenHeight"), height);
+                glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenWidth"), initialWidth);
+                glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenHeight"), initialHeight);
                 glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
                 glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
                 glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE,
@@ -843,9 +843,8 @@ void NaiveSimulationFluidSurfaceView::render(){
         glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(cubeProgram);
-        projection = referenceFrameRotates ? perspective
-                                           : orientationAdjustedPerspective;
-        translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 50.0f * (zoom - 1.0f)));
+        projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
+        translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 50.0f * (distanceToOrigin - 1.0f)));
         rotation = Matrix4<float>(quaternionTo3x3(
                 Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z,
                             rotationVector.w)));

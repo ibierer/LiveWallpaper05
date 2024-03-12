@@ -20,14 +20,14 @@
     <!-- Simple strings. -->
     <string name="gles3jni_activity">GLES3JNI</string>
     <string name="app_name">Physics In Color</string>
-    <string name="rotation_rate">Zoom: </string>
+    <string name="distance_label">Distance:</string>
+    <string name="field_of_view_label">Field of View:</string>
     <string name="img_description">Profile Image</string>
     <string name="username">Username</string>
     <string name="biography">Hello! Aspiring physicist and mathematician here to show off my mad skillz!</string>
     <string name="login">Login</string>
     <string name="password">Password</string>
     <string name="default_equation">1/((sqrt(x^2 + y^2) - 1.5 + sin(t))^2 + (z + cos(t))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 2π/3))^2 + (z + cos(t + 2π/3))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 4π/3))^2 + (z + cos(t + 4π/3))^2) = 5</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="loginTextView">Login</string>
     <string name="email">email</string>

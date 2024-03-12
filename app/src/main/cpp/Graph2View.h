@@ -118,7 +118,8 @@ public:
             "    outColor = Texture(environmentTexture, direction);\n"
             "}\n";
 
-    Graph2View(const string &equation, const int &graphSize, const bool &referenceFrameRotates);
+    Graph2View(const string &equation, const int &graphSize,
+               const bool &referenceFrameRotates, const bool &vectorPointsPositive);
 
     ~Graph2View();
 

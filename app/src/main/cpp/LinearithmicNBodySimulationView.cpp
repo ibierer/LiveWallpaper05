@@ -26,7 +26,7 @@ void LinearithmicNBodySimulationView::render(){
     glEnable(GL_DEPTH_TEST);
 
     Matrix4<float> translation;
-    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 60.0f * (zoom - 1.0f)));
+    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, -120.0f * distanceToOrigin));
     Matrix4<float> rotation;
     rotation = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
     Matrix4<float> mvp = orientationAdjustedPerspective * translation * rotation;
@@ -50,7 +50,7 @@ void LinearithmicNBodySimulationView::render(){
     for(int i = 0; i < 1; i++){
         glVertexAttribPointer(LinearithmicNBodySimulation::OFFSET_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(SimpleNBodySimulation::Star), (const GLvoid*)(offsetof(Simulation::Star, position) + sizeof(Simulation::Star) * i));
         glVertexAttribPointer(LinearithmicNBodySimulation::VELOCITY_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(SimpleNBodySimulation::Star), (const GLvoid*)(offsetof(Simulation::Star, velocity) + sizeof(Simulation::Star) * i));
-        glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, cubeVAO.getNumVertices(), SimpleNBodySimulation::COUNT);
+        glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, cubeVAO.getNumVertices(), LinearithmicNBodySimulation::COUNT);
     }
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glDisableVertexAttribArray(LinearithmicNBodySimulation::OFFSET_ATTRIBUTE_LOCATION);

@@ -2,104 +2,102 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_activity"
+    android:name='com.example.lifestyle_app_refactor.MainActivity'
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:name='com.example.lifestyle_app_refactor.MainActivity'
-    android:id="@+id/main_activity"
-    tools:context=".PreviewActivity"
-    >
+    tools:context=".PreviewActivity">
 
     <LinearLayout
         android:id="@+id/render_layout"
-        android:orientation="vertical"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ScrollView
         android:id="@+id/settings_scrollview"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:fillViewport="true"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="match_parent"
         android:fadeScrollbars="false"
+        android:fillViewport="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         android:paddingBottom="20dp"
         android:background="@drawable/border_background"
         >
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_marginTop="10dp">
-
-        <TextView
-            android:id="@+id/rotation_rate_text"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/rotation_rate"
-            android:layout_marginTop="10dp"/>
+            android:orientation="vertical">
 
-        <SeekBar
-            android:id="@+id/rotation_rate_seekbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginTop="10dp"
-            android:min="-100"
-            android:max="100"/>
+            <TextView
+                android:id="@+id/distance_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/border_background"
+                android:text="@string/distance_label" />
 
-        <SeekBar
-            android:id="@+id/speed_seekbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginTop="10dp"
-            android:min="0"
-            android:max="100"/>
+            <SeekBar
+                android:id="@+id/distance_seekbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/border_background"
+                android:max="100"
+                android:min="0" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Simulation Type Selection"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"/>
+            <TextView
+                android:id="@+id/field_of_view_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/border_background"
+                android:text="@string/field_of_view_label" />
 
-        <Spinner
-            android:id="@+id/simulation_type_spinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            style="@style/Widget.AppCompat.Spinner"
-            />
+            <SeekBar
+                android:id="@+id/field_of_view_seekbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/border_background"
+                android:max="17999"
+                android:min="1" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Background Color"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/border_background"
+                android:text="Visualization Type Selection:" />
 
-        <Button
-            android:id="@+id/b_color_picker"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Select Color"
-            />
+            <Spinner
+                android:id="@+id/simulation_type_spinner"
+                style="@style/Widget.AppCompat.Spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/border_background" />
 
-        <TextView
-            android:id="@+id/tv_equation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Input Equation:"
-            android:layout_marginTop="12dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/border_background"
+                android:text="Background Color:" />
 
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_margin="@dimen/preview_ui_margin"
+                app:srcCompat="@drawable/ic_launcher_background" />
         <EditText
             android:id="@+id/et_equation"
             android:layout_width="match_parent"
@@ -111,7 +109,41 @@
             android:scrollHorizontally="false"
             android:text="@string/default_equation" />
 
-    </LinearLayout>
+            <Button
+                android:id="@+id/b_color_picker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/border_background"
+                android:text="Background Color" />
+
+            <TextView
+                android:id="@+id/tv_equation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/border_background"
+                android:text="Input Equation:" />
+
+            <EditText
+                android:id="@+id/et_equation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/border_background"
+                android:hint="Enter equation here"
+                android:inputType="text"
+                android:text="@string/default_equation" />
+
+            <TextView
+                android:id="@+id/tv_syntax_check"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/border_background"
+                android:text="Syntax check result" />
+
+        </LinearLayout>
     </ScrollView>
 
     <androidx.fragment.app.FragmentContainerView
@@ -120,14 +152,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        />
+        app:layout_constraintStart_toStartOf="parent" />
+
     <TextView
         android:id="@+id/tv_fps_meter"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/preview_ui_margin"
+        android:background="@drawable/border_background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

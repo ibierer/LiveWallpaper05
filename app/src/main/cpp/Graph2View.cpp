@@ -7,7 +7,8 @@
 using std::min;
 using std::max;
 
-Graph2View::Graph2View(const string &equation, const int &graphSize, const bool &referenceFrameRotates) : View() {
+Graph2View::Graph2View(const string &equation, const int &graphSize,
+                       const bool &referenceFrameRotates, const bool& vectorPointsPositive) : View() {
     this->referenceFrameRotates = referenceFrameRotates;
 
     sphereMapProgram = createVertexAndFragmentShaderProgram(SPHERE_MAP_VERTEX_SHADER.c_str(), SPHERE_MAP_FRAGMENT_SHADER.c_str());
@@ -22,6 +23,7 @@ Graph2View::Graph2View(const string &equation, const int &graphSize, const bool 
     graphFluidSurfaceProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_FLUID_SURFACE_FRAGMENT_SHADER.c_str());
 
     implicitGrapher = ImplicitGrapher(ivec3(graphSize));
+    implicitGrapher.vectorPointsPositive = vectorPointsPositive;
     if(equation == "") {
         //ImplicitGrapher::surfaceEquation = 40; // Resets to 0 on the first render
         //for (int i = 0; i < ImplicitGrapher::numOfDefaultEquations; i++) {
@@ -59,7 +61,8 @@ void Graph2View::render(){
     enum Material {
         MERCURY,
         WATER,
-        BUBBLE,} material = WATER;
+        BUBBLE
+    } material = WATER;
     float indexOfRefraction;
     float reflectivity;
     int twoSidedRefraction;
@@ -79,12 +82,12 @@ void Graph2View::render(){
             break;
     }
 
-    float distanceToCenter = 50.0f * (1.0f - zoom);
+    float distanceToCenter = 100.0f * distanceToOrigin;
     translation = translation.Translation(Vec3<float>(0.0f, 0.0f, -distanceToCenter));
     normalMatrix = referenceFrameRotates ? rotation.GetSubMatrix3().GetInverse() : normalMatrix.Identity();
     cameraTransformation = rotation.GetInverse() * translation * model.Translation(Vec3<float>(0.0f, 0.0f, 0.0f));
 
-    ImplicitGrapher::calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, false, false, ImplicitGrapher::vertices, ImplicitGrapher::indices, ImplicitGrapher::numIndices);
+    ImplicitGrapher::calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, implicitGrapher.vectorPointsPositive, false, ImplicitGrapher::vertices, ImplicitGrapher::indices, ImplicitGrapher::numIndices);
 
     // Render to texture
     glBindFramebuffer(GL_FRAMEBUFFER, fbo.getFrameBuffer());
@@ -179,8 +182,8 @@ void Graph2View::render(){
                     1.0f / indexOfRefraction);
         glUniform1i(glGetUniformLocation(graphFluidSurfaceProgram, "twoSidedRefraction"),
                     twoSidedRefraction);
-        glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenWidth"), width);
-        glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenHeight"), height);
+        glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenWidth"), initialWidth);
+        glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenHeight"), initialHeight);
         glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
         glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
         glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE,

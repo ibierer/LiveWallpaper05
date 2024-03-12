@@ -47,9 +47,11 @@ public:
             "};\n",
             "struct cacheChunk {\n",
             "    Particle stars[" + to_string(PARTICLES_PER_CHUNK) + "];\n",
-            "    float padding[" + to_string((int)sizeof(cacheChunk::padding) / sizeof(float)) + "];\n",
+            "    float padding[" + to_string((int) sizeof(cacheChunk::padding) / sizeof(float)) +
+            "];\n",
             "};\n",
-            "layout(packed, binding = " + to_string(DEFAULT_INDEX_BUFFER_BINDING) + ") buffer destBuffer {\n",
+            "layout(packed, binding = " + to_string(DEFAULT_INDEX_BUFFER_BINDING) +
+            ") buffer destBuffer {\n",
             "	  cacheChunk chunks[" + to_string(NUM_CACHE_CHUNKS) + "];\n",
             "} outBuffer;\n",
             "uniform float t;\n",
@@ -81,19 +83,19 @@ public:
             "}"
     };
 
-    LinearithmicNBodySimulationData* data;
+    LinearithmicNBodySimulationData *data;
 
     double t;
 
-    LinearithmicNBodySimulation(){
+    LinearithmicNBodySimulation() {
 
     }
 
-    ~LinearithmicNBodySimulation(){
+    ~LinearithmicNBodySimulation() {
 
     }
 
-    void initialize(const ComputationOptions& computationOption);
+    void initialize(const ComputationOptions &computationOption);
 
     void simulate(const int &iterations, bool pushDataToGPU,
                   bool retrieveDataFromGPU);
@@ -106,7 +108,7 @@ private:
 
     float dt;
 
-    void simulateOnCPU();
+    void computeForcesOnCPUQuadratic();
 
     void simulateOnGPU(const int &iterations, bool pushDataToGPU,
                        bool retrieveDataFromGPU);
@@ -115,6 +117,15 @@ private:
 
     bool seed();
 
+    Node *root = nullptr;
+
+    vec4 conquerVolume(const vector<int> &ids, Node *node);
+
+    void computeForcesOnCPULinearithmic();
+
+    vec3 addForces(Node *node, int index);
+
+    void integrate();
 };
 
 

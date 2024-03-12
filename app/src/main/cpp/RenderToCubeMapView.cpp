@@ -65,7 +65,7 @@ void RenderToCubeMapView::render(){
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
 
-        Vec3<float> position = Vec3<float>(0.0f, 0.0f, 3.0f * (zoom - 1.0f));
+        Vec3<float> position = Vec3<float>(0.0f, 0.0f, -6.0f * distanceToOrigin);
         Matrix4<float> rotation2;
         rotation2.SetRotation(Vec3<float>(0.0f, 0.0f, 1.0f), 0.005 * getFrameCount());
         Matrix4<float> rotation3 = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
@@ -88,7 +88,7 @@ void RenderToCubeMapView::render(){
 
     width = storeWidth;
     height = storeHeight;
-    calculatePerspectiveSetViewport(60.0f, zNear, zFar);
+    calculatePerspectiveSetViewport(maxViewAngle, zNear, zFar);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);

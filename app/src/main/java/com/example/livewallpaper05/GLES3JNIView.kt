@@ -1,10 +1,16 @@
 package com.example.livewallpaper05
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Color
 import android.opengl.GLSurfaceView
 import android.os.SystemClock
-import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo
+import android.util.Log
+import android.view.View
+import android.widget.SeekBar
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
+import org.json.JSONObject
+import java.nio.ByteBuffer
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
@@ -17,29 +23,24 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
         // supporting OpenGL ES 2.0 or later backwards-compatible versions.
         setEGLContextClientVersion(3)
         setEGLConfigChooser(8, 8, 8, 8, 24, 8)
-        setRenderer(Renderer(context, vm))
+        setRenderer(Renderer(vm, this))
     }
 
-    class Renderer(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceView.Renderer {
-        private var context: Context? = null
+    class Renderer(vm: ActiveWallpaperViewModel, var view: View) : GLSurfaceView.Renderer {
         private var mViewModel: ActiveWallpaperViewModel = vm
-
-        fun Renderer(context: Context, repo: ActiveWallpaperRepo) {
-            this.context = context
-        }
 
         override fun onDrawFrame(gl: GL10) {
             // default values in ActiveWallpaperViewModel
             val accelData = mViewModel.getAccelerationData()
             val rotData = mViewModel.getRotationData()
-            var linearAccelData = mViewModel.getLinearAccelerationData()
+            val linearAccelData = mViewModel.getLinearAccelerationData()
             val speed = mViewModel.getSpeed()
             // update linear acceleration data
             linearAccelData[0] = linearAccelData[0] * speed
             linearAccelData[1] = linearAccelData[1] * speed
             linearAccelData[2] = linearAccelData[2] * speed
 
-            // run step in the simulation (also updates opengl view)
+            // Run C++ visualization logic and render OpenGL view
             PreviewActivity.step(
                 accelData[0],
                 accelData[1],
@@ -51,8 +52,30 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                 linearAccelData[0],
                 linearAccelData[1],
                 linearAccelData[2],
-                mViewModel.getRotationRate()
+                mViewModel.getDistanceFromOrigin(),
+                mViewModel.getFieldOfView()
             )
+
+            // Get screen buffer if requested
+            if(mViewModel.getScreenBuffer > 0){
+                mViewModel.getScreenBuffer = 0
+                val byteArray: ByteArray = PreviewActivity.getScreenBuffer()
+                // Construct Bitmap from ByteArray
+                val bitmap = Bitmap.createBitmap(mViewModel.width, mViewModel.height, Bitmap.Config.ARGB_8888)
+                // Set pixel data manually by iterating over the byte array
+                val buffer = ByteBuffer.wrap(byteArray)
+                for (y in mViewModel.height - 1 downTo 0) { // Reverse order for y-axis
+                    for (x in 0 until mViewModel.width) {
+                        // Extract RGB components from the byte array and set the pixel
+                        val r = buffer.get().toInt() and 0xFF
+                        val g = buffer.get().toInt() and 0xFF
+                        val b = buffer.get().toInt() and 0xFF
+                        val a = buffer.get().toInt() and 0xFF
+                        bitmap.setPixel(x, y, Color.argb(a, r, g, b))
+                    }
+                }
+                mViewModel.liveDataBitmap.postValue(Bitmap.createScaledBitmap(bitmap, bitmap.width / 4, bitmap.height / 4, true))
+            }
 
             // get time after frame
             val currentFrame = SystemClock.elapsedRealtimeNanos()
@@ -69,6 +92,8 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             val orientation = mViewModel.getOrientation()
             //Log.d("Livewallpaper", "orientation: $orientation")
             PreviewActivity.resize(width, height, orientation)
+            mViewModel.width = width
+            mViewModel.height = height
         }
 
         override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
@@ -78,16 +103,13 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             val g = (color.green()*255).toInt()
             val b = (color.blue()*255).toInt()
             val a = (color.alpha()*255).toInt()
-            var eq = mViewModel.getEquation()
+            val eq = mViewModel.getEquation()
 
-            val boxJSON = """{
+            val nbodyJSON = """{
                     "visualization_type": "simulation",
-                    "simulation_type": "naive",
-                    "fluid_surface": "true",
-                    "particle_count": 1000,
-                    "smooth_sphere_surface": "true",
-                    "gravity": 0.0,
-                    "reference_frame_rotates": "false",
+                    "simulation_type": "nbody",
+                    "distance": 0.5,
+                    "field_of_view": 60.0,
                     "background_is_solid_color": "false",
                     "background_texture": "ms_paint_colors",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
@@ -96,12 +118,15 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             val naiveJSON = """{
                     "visualization_type": "simulation",
                     "simulation_type": "naive",
-                    "fluid_surface": "false",
+                    "fluid_surface": "true",
                     "particle_count": 1000,
                     "smooth_sphere_surface": "true",
+                    "distance": 0.5,
+                    "field_of_view": 60.0,
                     "gravity": 0.0,
+                    "linear_acceleration": 1.0,
                     "reference_frame_rotates": "false",
-                    "background_is_solid_color": "true",
+                    "background_is_solid_color": "false",
                     "background_texture": "ms_paint_colors",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
                 }""".trimIndent()
@@ -109,7 +134,10 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             val picflipJSON = """{
                     "visualization_type": "simulation",
                     "simulation_type": "picflip",
+                    "distance": 0.5,
+                    "field_of_view": 60.0,
                     "gravity": 0.0,
+                    "linear_acceleration": 1.0,
                     "reference_frame_rotates": "true",
                     "background_is_solid_color": "false",
                     "background_texture": "ms_paint_colors",
@@ -118,6 +146,8 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
 
             val triangleJSON = """{
                     "visualization_type": "other",
+                    "distance": 0.5,
+                    "field_of_view": 60.0,
                     "background_is_solid_color": "false",
                     "background_texture": "mandelbrot",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
@@ -126,21 +156,18 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             val graphJSON = """{
                     "visualization_type": "graph",
                     "reference_frame_rotates": "false",
-                    "background_is_solid_color": "true",
+                    "distance": 0.5,
+                    "field_of_view": 60.0,
+                    "background_is_solid_color": "false",
                     "background_texture": "ms_paint_colors",
+                    "vector_points_positive": "false",
                     "background_color": {"r": $r, "g": $g, "b": $b, "a": $a},
                     "equation": "$eq"
                 }""".trimIndent()
 
-            val nbodyJSON = """{
-                    "visualization_type": "simulation",
-                    "simulation_type": "nbody",
-                    "background_is_solid_color": "false",
-                    "background_texture": "ms_paint_colors",
-                    "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
-                }""".trimIndent()
-
-            /*"settings": "1/((sqrt(x^2 + y^2) - 2 + 1.25cos(t))^2 + (z - 1.5sin(t))^2) + 1/((sqrt(x^2 + y^2) - 2 - 1.25cos(t))^2 + (z + 1.5sin(t))^2) = 1.9"
+            /*"saturn": "1/(x^2 + y^2 + z^2) + 1/((1.2*sqrt(x^2 + y^2) - 2.7)^20 + (20z)^20) = 1"
+            "pill": "4 = x^2 + y^2 + ((abs(z - 1.15) - abs(z + 1.15))/2 + z)^2"
+            "settings": "1/((sqrt(x^2 + y^2) - 2 + 1.25cos(t))^2 + (z - 1.5sin(t))^2) + 1/((sqrt(x^2 + y^2) - 2 - 1.25cos(t))^2 + (z + 1.5sin(t))^2) = 1.9"
             "settings": "1/((sqrt(x^2 + y^2) - 1.5 + sin(t))^2 + (z + cos(t))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 2π/3))^2 + (z + cos(t + 2π/3))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 4π/3))^2 + (z + cos(t + 4π/3))^2) = 5"
             "settings": "1/((sqrt(x^2 + y^2) - 1.6 + sin(t))^2 + (z + cos(t))^2) + 1/((sqrt(x^2 + y^2) - 1.6 + sin(t + π/2))^2 + (z + cos(t + π/2))^2) + 1/((sqrt(x^2 + y^2) - 1.6 + sin(t + π))^2 + (z + cos(t + π))^2) + 1/((sqrt(x^2 + y^2) - 1.6 + sin(t + 3π/2))^2 + (z + cos(t + 3π/2))^2) = 7.3"
             "settings": "sin(sqrt(x^2 + y^2 + z^2) - t) = 0"
@@ -182,10 +209,10 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             "settings": "(x + zsin(z + t))^2 + (y + zcos(z + t))^2 = 1"
             "settings": "1/(x^2 + ((y^2)sin(y)) + z^2) + 0.89/((x - 3sin(t))^2+(y - 3cos(t))^2 + z^40) = 1"*/
 
-            var selectionJSON = boxJSON
-            when (mViewModel.getSimulationType()) {
+            lateinit var selectionJSON : String
+            when (mViewModel.getVisualizationType()) {
                 0 -> {
-                    selectionJSON = boxJSON
+                    selectionJSON = nbodyJSON
                 }
                 1 -> {
                     selectionJSON = naiveJSON
@@ -199,8 +226,12 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                 4 -> {
                     selectionJSON = graphJSON
                 }
-
             }
+            val jsonObject : JSONObject = JSONObject(selectionJSON)
+            val distance: Float = jsonObject.getDouble("distance").toFloat()
+            val fieldOfView: Float = jsonObject.getDouble("field_of_view").toFloat()
+            mViewModel.mRepo.distanceFromOrigin.postValue(distance)
+            mViewModel.mRepo.fieldOfView.postValue(fieldOfView)
 
             PreviewActivity.init(selectionJSON)
         }

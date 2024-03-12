@@ -15,16 +15,22 @@ import java.util.Random
  * View Model to keep a reference to the active wallpaper data
  */
 class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewModel() {
+    var width: Int = 0
+    var height: Int = 0
+    private var mBitmap : Bitmap = Bitmap.createBitmap(500, 500, Bitmap.Config.ARGB_8888) as Bitmap
+    var liveDataBitmap : MutableLiveData<Bitmap> = MutableLiveData<Bitmap>(mBitmap)
+    var getScreenBuffer: Int = 0
+
     // reference repo from constructor value
     val mRepo: ActiveWallpaperRepo = repo
 
     fun getPreviewImg(seed: Int): Bitmap {
-        if (repo.preview != null && false)
+        if (repo.preview != null && false) // This condition is always false... hmm...
             return repo.preview!!
-        else {
-            var rng = Random()
+        else { // This branch is never executed!
+            val rng = Random()
             rng.setSeed(seed.toLong())
-            var color = Color.argb(255,
+            val color = Color.argb(255,
                 rng.nextInt(256),
                 rng.nextInt(256),
                 rng.nextInt(256))
@@ -34,16 +40,21 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
             val imgWidth = screenWidth/4
             val imgHeight = screenHeight/4
 
-            var tmp = Bitmap.createBitmap(imgWidth, imgHeight, Bitmap.Config.ARGB_8888)
+            val tmp = Bitmap.createBitmap(imgWidth, imgHeight, Bitmap.Config.ARGB_8888)
             tmp.eraseColor(color)
 
             return tmp
         }
     }
 
-    // return rotation rate value from repo
-    fun getRotationRate(): Float {
-        return repo.rotationRate
+    // return distance value from repo
+    fun getDistanceFromOrigin(): Float {
+        return repo.distanceFromOrigin.value!!
+    }
+
+    // return field of view value from repo
+    fun getFieldOfView(): Float {
+        return repo.fieldOfView.value!!
     }
 
     // return rotation data from repo
@@ -62,7 +73,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
     }
 
     // return simulation type from repo
-    fun getSimulationType(): Int {
+    fun getVisualizationType(): Int {
         return repo.simulationType
     }
 
@@ -76,13 +87,18 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         return repo.orientation
     }
 
-    // update rotation rate in repo
-    fun updateRotationRate(rate: Float) {
-        repo.rotationRate = rate
+    // update distance from origin in repo
+    fun updateDistanceFromCenter(distance: Float) {
+        repo.distanceFromOrigin.value = distance
     }
 
+
+    // update field of view in repo
+    fun updateFieldOfView(angle: Float) {
+        repo.fieldOfView.value = angle
+    }
     // update simulation type in repo, return true if value changed
-    fun updateSimulationType(type: Int): Boolean {
+    fun updateVisualizationSelection(type: Int): Boolean {
         if (type != repo.simulationType) {
             repo.simulationType = type
             return true
@@ -103,7 +119,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
     // update fps in repo (scale float to 2 decimal places)
     fun updateFPS(fps: Float) {
         // update fps in repo
-        var rounded = fps.toBigDecimal().setScale(2, RoundingMode.UP).toDouble()
+        val rounded = fps.toBigDecimal().setScale(2, RoundingMode.UP).toDouble()
         repo.fps.postValue(rounded.toFloat())
     }
 
@@ -129,7 +145,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
 
     // return config string from repo
     fun getConfig(): String {
-        var config = JSONObject()
+        val config = JSONObject()
         // store simulation type, background color, and settings (with default values for now
         config.put("name", "New Wallpaper")
         config.put("type", repo.simulationType)

@@ -1,6 +1,7 @@
 package com.example.livewallpaper05
 
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -27,13 +28,13 @@ import com.example.livewallpaper05.helpful_fragments.WallpaperFragment
 import com.example.livewallpaper05.profiledata.ProfileViewModel
 import com.example.livewallpaper05.savedWallpapers.SavedWallpaperRepo.WallpaperRef
 import com.example.livewallpaper05.savedWallpapers.SavedWallpaperViewModel
-import com.firebase.ui.auth.AuthUI
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.sql.DriverManager
 import java.sql.SQLException
@@ -50,7 +51,9 @@ class ProfileActivity : AppCompatActivity() {
 
     /* User authentication data */
     private var authUser: FirebaseUser? = null
-    private var username: String? = null
+    private var uid: Int = 0
+    private var bio: String? = null
+    private lateinit var username: String
     private var loginRegisterButton: Button? = null
     private var logoutButton: Button? = null
 
@@ -80,6 +83,7 @@ class ProfileActivity : AppCompatActivity() {
             Log.d("AUTH", "Current user: $currentUser")
             // load from AWS
         } else {
+            username = "Default User"
             Log.d("AUTH", "No user logged in")
         }
     }
@@ -115,18 +119,40 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         logoutButton!!.setOnClickListener {
-            FirebaseAuth.getInstance().signOut()
-            loginRegisterButton!!.visibility = View.VISIBLE
-            Toast.makeText(this, "signed out", Toast.LENGTH_SHORT).show()
+            val currentUser = FirebaseAuth.getInstance().currentUser
+            if (currentUser != null) {
+                // User is signed in, perform sign-out
+                FirebaseAuth.getInstance().signOut()
+                loginRegisterButton!!.visibility = View.VISIBLE
+                Toast.makeText(this, "Signed out", Toast.LENGTH_SHORT).show()
+            } else {
+                // User is not signed in, display a toast
+                logoutButton!!.visibility = View.GONE
+                Toast.makeText(this, "You are not signed in", Toast.LENGTH_SHORT).show()
+            }
         }
-
         // set profile pic click listener
         mProfilePic!!.setOnClickListener(this::changeProfilePic)
-
         // set new wallpaper button click listener
         mNewWallpaper!!.setOnClickListener(this::newWallpaper)
-
-
+        auth = FirebaseAuth.getInstance()
+        if (auth.currentUser != null) {
+            val sharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+            username = sharedPreferences.getString("USERNAME", "").toString()
+            uid = sharedPreferences.getInt("UID", 0)
+            Log.d("OKAY", "uid is $uid\n username is $username")
+            mUsername!!.text = username
+            loginRegisterButton!!.visibility = View.GONE
+            logoutButton!!.visibility = View.VISIBLE
+            lifecycleScope.launch {
+                // User is signed in, get (username, bio, profile_picture, uid, etc) from AWS
+                Log.d("OKAY", "Calling LoadUserDataFromAWS")
+                loadUserDataFromAWS(username)
+            }
+        } else {
+            // User is not signed in
+            Log.d("OH_NO", "User not signed in!")
+        }
         // link profile view elements to profile live data via callback function
         mProfileViewModel.profileData.observe(this, Observer { profileData ->
             if (profileData != null) {
@@ -134,8 +160,16 @@ class ProfileActivity : AppCompatActivity() {
                 if (profileData.username == "Dummy_user") {
                     return@Observer
                 }
-                mUsername!!.text = profileData.username
-                mBio!!.text = profileData.bio
+                mUsername!!.text = username
+                if (bio != null){
+                    mBio!!.text = bio
+                }
+                else{
+                    mBio!!.text = profileData.bio
+                }
+                if (username != "Default User"){
+                    insertBio(profileData.bio, username)
+                }
                 val imageData = profileData.profilepic
                 if (imageData.isNotEmpty()) {
                     val imageBitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.size)
@@ -197,23 +231,37 @@ class ProfileActivity : AppCompatActivity() {
         mWallpaperGrid!!.viewTreeObserver.addOnGlobalLayoutListener {
             updateFragListeners()
         }
+    }
 
-        /* Added code that connects to database and gathers values for the existing users
-        * this will need to be modified to check whether the current user already exists inside the database:
-        * if so: pull relevant user data (profile data, userID)
-        * otherwise: insert user into database to pull from later in this function. */
+    private fun insertBio(bio: String, username: String) {
+        Log.d("OKAY", "in insertBio")
+        GlobalScope.launch(Dispatchers.IO) {
+            val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
+            try {
+                Class.forName("com.mysql.jdbc.Driver").newInstance()
+                val connectionProperties = Properties()
+                connectionProperties["user"] = DatabaseConfig.dbUser
+                connectionProperties["password"] = DatabaseConfig.dbPassword
+                connectionProperties["useSSL"] = "false"
 
-        auth = FirebaseAuth.getInstance()
-        if (auth.currentUser != null) {
-            username = intent.getStringExtra("USERNAME")
-            lifecycleScope.launch {
-                // User is signed in, get (username, bio, profile_picture, uid, etc) from AWS
-                loadUserDataFromAWS(username) //TODO: implement function
+                DriverManager.getConnection(jdbcConnectionString, connectionProperties)
+                    .use { conn ->
+                        Log.d("LiveWallpaper05", "Connected to database")
+                        val useDbQuery = "USE myDatabase;"
+                        val statement = conn.prepareStatement(useDbQuery)
+                        statement.execute()
+
+                        val updateQuery = "UPDATE users SET bio = ? WHERE username = ?;"
+                        val updateStatement = conn.prepareStatement(updateQuery)
+                        updateStatement.setString(1, bio)
+                        updateStatement.setString(2, username)
+                        updateStatement.executeUpdate()
+                        conn.close()
+                    }
+            } catch (e: SQLException) {
+                Log.e("LiveWallpaper05", e.printStackTrace().toString())
             }
-        } else {
-            // User is not signed in
         }
-
     }
 
     object DatabaseConfig {
@@ -222,8 +270,56 @@ class ProfileActivity : AppCompatActivity() {
         lateinit var dbPassword: String
     }
 
-    private suspend fun loadUserDataFromAWS(username: String?) {
-
+    private suspend fun loadUserDataFromAWS(username: String) {
+        Log.d("OKAY", "in loadUserDataFromAWS")
+        val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
+        try {
+            Class.forName("com.mysql.jdbc.Driver").newInstance()
+            val connectionProperties = Properties()
+            connectionProperties["user"] = DatabaseConfig.dbUser
+            connectionProperties["password"] = DatabaseConfig.dbPassword
+            connectionProperties["useSSL"] = "false"
+            DriverManager.getConnection(jdbcConnectionString, connectionProperties)
+                .use { conn -> // this syntax ensures that connection will be closed whether normally or from exception
+                    Log.d("LiveWallpaper05", "Connected to database")
+                    Log.d("OH_YES", "Connected to database")
+                    val useDbQuery = "USE myDatabase;"
+                    val statement = conn.prepareStatement(useDbQuery)
+                    statement.execute()
+                    val updateQuery = "SELECT * FROM users WHERE username = ?;"
+                    val selectStatement = conn.prepareStatement(updateQuery)
+                    selectStatement.setString(1, username)
+                    val resultSet = selectStatement.executeQuery()
+                    while (resultSet.next()) {
+                        uid = resultSet.getInt("uid")
+                        bio = resultSet.getString("bio")
+                        val bioNullable = if (resultSet.wasNull()) null else bio
+                        val profilePicture = resultSet.getBlob("profile_picture")
+                        val profilePictureNullable =
+                            if (resultSet.wasNull()) null else profilePicture
+                        //val dateCreated = resultSet.getString("date_created")
+                        runOnUiThread {
+                            mBio!!.text = bioNullable ?: "No biography"
+                            if (profilePictureNullable != null) {
+                                val profilePictureBytes = profilePictureNullable.getBytes(
+                                    1,
+                                    profilePictureNullable.length().toInt()
+                                )
+                                val bitmap = BitmapFactory.decodeByteArray(
+                                    profilePictureBytes,
+                                    0,
+                                    profilePictureBytes.size
+                                )
+                                mProfilePic!!.setImageBitmap(bitmap)
+                            }
+                        }
+                    }
+                    conn.close()
+                }
+        } catch (e: SQLException) {
+            Log.d("OH_NO", e.message.toString())
+            Log.e("LiveWallpaper05", e.printStackTrace().toString())
+        }
     }
 
     // creates popup dialog to prompt user to chose how to update profile picture
@@ -280,9 +376,49 @@ class ProfileActivity : AppCompatActivity() {
         }
 
     // [PHASE OUT] calls view model to update local storage of profile picture
-    fun updateProfilePicture(pic: Bitmap) {
+    private fun updateProfilePicture(pic: Bitmap) {
         // update profile pic in database
         mProfileViewModel.updateProfilePic(pic)
+        insertProfilePicture(username, pic)
+    }
+
+    private fun insertProfilePicture(username: String, image: Bitmap) {
+        GlobalScope.launch(Dispatchers.IO) {
+            // write aws test code here -------------
+            val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
+            try {
+                Class.forName("com.mysql.jdbc.Driver").newInstance()
+                // connect to mysql server
+                val connectionProperties = Properties()
+                connectionProperties["user"] = DatabaseConfig.dbUser
+                connectionProperties["password"] = DatabaseConfig.dbPassword
+                connectionProperties["useSSL"] = "false"
+
+                DriverManager.getConnection(jdbcConnectionString, connectionProperties)
+                    .use { conn -> // this syntax ensures that connection will be closed whether normally or from exception
+                        Log.d("OH_YES", "Connected to database in insertProfilePicture!")
+                        val useDbQuery = "USE myDatabase;"
+                        val statement = conn.prepareStatement(useDbQuery)
+                        statement.execute()
+                        val updateQuery = "UPDATE users SET profile_picture = ? WHERE username = ?;"
+                        conn.prepareStatement(updateQuery).use { updateStatement ->
+                            val convertedImage = convertBitmapToByteArray(image)
+                            updateStatement.setBytes(1, convertedImage)
+                            updateStatement.setString(2, username)
+                            updateStatement.executeUpdate()
+                        }
+                    }
+            } catch (e: SQLException) {
+                Log.d("OH_NO", e.message.toString())
+            }
+        }
+    }
+
+    // Helper function to convert Bitmap to byte array
+    private fun convertBitmapToByteArray(bitmap: Bitmap): ByteArray {
+        val stream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+        return stream.toByteArray()
     }
 
     private fun showLoginDialog() {
@@ -302,18 +438,47 @@ class ProfileActivity : AppCompatActivity() {
         mSavedWallpaperViewModel.createWallpaperTable(-1)
     }
 
-    fun updateFragListeners() {
+    fun insertWallpaper(contents: String, uid: Int) {
+        GlobalScope.launch(Dispatchers.IO) {
+            // write aws test code here -------------
+            val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
+            try {
+                Class.forName("com.mysql.jdbc.Driver").newInstance()
+                // connect to mysql server
+                val connectionProperties = Properties()
+                connectionProperties["user"] = DatabaseConfig.dbUser
+                connectionProperties["password"] = DatabaseConfig.dbPassword
+                connectionProperties["useSSL"] = "false"
+
+                DriverManager.getConnection(jdbcConnectionString, connectionProperties)
+                    .use { conn -> // this syntax ensures that connection will be closed whether normally or from exception
+                        Log.d("LiveWallpaper05", "Connected to database")
+                        val useDbQuery = "USE myDatabase;"
+                        val statement = conn.prepareStatement(useDbQuery)
+                        statement.execute()
+                        val insertQuery =
+                            "INSERT INTO wallpapers (contents, users_id) VALUES (?, ?);"
+                        val preparedStatement = conn.prepareStatement(insertQuery)
+                        preparedStatement.setString(1, contents)
+                        preparedStatement.setInt(2, uid)
+                        preparedStatement.executeUpdate()
+                        conn.close()
+                    }
+            } catch (e: SQLException) {
+                Log.d("OH_NO", e.message.toString())
+            }
+        }
+    }
+
+    private fun updateFragListeners() {
         // for each fragment in fragment list, set delete button listener
-        var removeList = mutableListOf<WallpaperRef>()
+        val removeList = mutableListOf<WallpaperRef>()
         val wallpaperFragIds = mSavedWallpaperViewModel.getWallpaperFragIds()
         Log.d("LiveWallpaper05", "saved frag count: ${wallpaperFragIds.size}")
         for (ref in wallpaperFragIds) {
             val fragTag = ref.fragmentTag
-            val frag = supportFragmentManager.findFragmentByTag(fragTag)
+            val frag = supportFragmentManager.findFragmentByTag(fragTag) ?: continue
             // if fragment doesn't exist yet, skip
-            if (frag == null) {
-                continue
-            }
             // connect delete button to delete wallpaper function
             frag.requireView().findViewById<FloatingActionButton>(R.id.b_delete_wallpaper)
                 .setOnClickListener {
