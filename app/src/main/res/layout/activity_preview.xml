@@ -133,17 +133,10 @@
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:background="@drawable/border_background" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/preview_ui_margin"
-                android:background="@drawable/border_background"
-                android:text="Background Color:" />
-
             <ImageView
                 android:id="@+id/imageView"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
                 app:srcCompat="@drawable/ic_launcher_background" />
 
@@ -186,7 +179,7 @@
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
                 android:layout_margin="@dimen/preview_ui_margin"
-                android:text="Save"/>
+                android:text="Save" />
 
         </LinearLayout>
     </ScrollView>

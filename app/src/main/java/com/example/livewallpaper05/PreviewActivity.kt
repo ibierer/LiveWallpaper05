@@ -74,6 +74,7 @@ class PreviewActivity : AppCompatActivity() {
         val efficiencySeekBar = findViewById<SeekBar>(R.id.efficiency_seekbar)
         val visualizationSelectorSpinner = findViewById<Spinner>(R.id.visualization_type_spinner)
         val colorButton = findViewById<Button>(R.id.b_color_picker)
+        val saveButton = findViewById<Button>(R.id.save_button)
         val equationEditor = findViewById<EditText>(R.id.et_equation)
 
         // fill sim selector box with wallpaper options from native-lib.cpp
@@ -243,8 +244,10 @@ class PreviewActivity : AppCompatActivity() {
                 }
             )
             colorPickerDialog.show()
+        }
 
-            // Temporary signal to trigger screen buffer capture
+        saveButton.setOnClickListener {
+            // Screen buffer capture
             viewModel.getScreenBuffer = 1
         }
 
@@ -315,22 +318,21 @@ class PreviewActivity : AppCompatActivity() {
         mView!!.onResume()
     }
 
-    private val colorActivity =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                val data = result.data
-                //val color = data?.extras?.get("data")
-                val color = data?.getIntExtra("color", Color.WHITE)
+    private val colorActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val data = result.data
+            //val color = data?.extras?.get("data")
+            val color = data?.getIntExtra("color", Color.WHITE)
 
-                if (color == null) {
-                    return@registerForActivityResult
-                }
-                val trueColor = color.toColor()
-                viewModel.updateColor(trueColor)
-                mView!!.onPause()
-                mView!!.onResume()
+            if (color == null) {
+                return@registerForActivityResult
             }
+            val trueColor = color.toColor()
+            viewModel.updateColor(trueColor)
+            mView!!.onPause()
+            mView!!.onResume()
         }
+    }
 
     fun updatePreviewImage(): Bitmap {
         // store view as preview image
