@@ -21,8 +21,6 @@ public:
 
     bool referenceFrameRotates;
 
-    float gravity;
-
     const string VERTEX_SHADER =
             ES_VERSION +
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
@@ -65,7 +63,7 @@ public:
 
     void render() override;
 
-    PicFlipView(const bool &referenceFrameRotates, const float &gravity);
+    PicFlipView(const bool &referenceFrameRotates);
 
     ~PicFlipView();
 

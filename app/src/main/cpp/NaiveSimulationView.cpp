@@ -53,6 +53,6 @@ void NaiveSimulationView::render(){
     // Simulate
     vec3 forceVector = computeForce(gravity, referenceFrameRotates, rotation);
     for(int i = 0; i < 5; i++){
-        simulation.simulate(forceVector);
+        simulation.simulate(forceVector, efficiency);
     }
 }

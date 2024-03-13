@@ -41,7 +41,7 @@ bool NaiveSimulation::seed(const int& count, const float& radius) {
     return true;
 }
 
-void NaiveSimulation::simulate(const vec3& gravity) {
+void NaiveSimulation::simulate(const vec3& gravity, const float& efficiency) {
     for (int i = 0; i < particleCount; i++) {
         calculateForce(i, gravity, particles[i].sumForceInitial, particles[i].position, 0);
         particles[i].positionFinal = particles[i].position + deltaTime * (particles[i].sumForceInitial * 0.5f * deltaTime + particles[i].velocity);

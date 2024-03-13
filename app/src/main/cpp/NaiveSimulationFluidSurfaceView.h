@@ -45,8 +45,6 @@ public:
 
     bool referenceFrameRotates;
 
-    float gravity;
-
     const string _VERTEX_SHADER =
             ES_VERSION +
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
@@ -360,11 +358,10 @@ public:
             "}\n";
 
     NaiveSimulationFluidSurfaceView(const int &particleCount,
-                                    const bool& fluidSurface,
+                                    const bool &fluidSurface,
                                     const int &graphSize,
                                     const float &sphereRadius,
                                     const bool &referenceFrameRotates,
-                                    const float &gravity,
                                     const bool &smoothSphereSurface);
 
     ~NaiveSimulationFluidSurfaceView();

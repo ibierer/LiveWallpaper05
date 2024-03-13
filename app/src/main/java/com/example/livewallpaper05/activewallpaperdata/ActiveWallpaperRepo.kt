@@ -11,8 +11,6 @@ import kotlinx.coroutines.CoroutineScope
 
 class ActiveWallpaperRepo private constructor () : SensorEventListener {
 
-    var speed: Float = 1.0f
-
     // initialize default values
     var wid: Int = 1
     var equation: String = ""

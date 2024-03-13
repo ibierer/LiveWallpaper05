@@ -4,7 +4,7 @@
 
 #include "PicFlipView.h"
 
-PicFlipView::PicFlipView(const bool &referenceFrameRotates, const float &gravity) : View() {
+PicFlipView::PicFlipView(const bool &referenceFrameRotates) : View() {
     this->referenceFrameRotates = referenceFrameRotates;
     this->gravity = gravity;
 

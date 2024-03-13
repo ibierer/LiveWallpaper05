@@ -36,6 +36,10 @@ public:
 
     float maxViewAngle;
 
+    float gravity;
+
+    float efficiency;
+
     int orientation;
 
     EGLint initialWidth = 0;

@@ -118,15 +118,13 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
             }else if(simulation == "naive"){
                 int particleCount = visualizationJSON["particle_count"];
                 string fluidSurface = visualizationJSON["fluid_surface"];
-                float gravity = visualizationJSON["gravity"];
                 string referenceFrameRotates = visualizationJSON["reference_frame_rotates"];
                 string smoothSphereSurface = visualizationJSON["smooth_sphere_surface"];
                 //view = new NaiveSimulationView(particleCount, 15.0f, referenceFrameRotates == "true", gravity);
-                view = new NaiveSimulationFluidSurfaceView(particleCount, fluidSurface == "true", 40, 20.0f, referenceFrameRotates == "true", gravity, smoothSphereSurface == "true");
+                view = new NaiveSimulationFluidSurfaceView(particleCount, fluidSurface == "true", 40, 20.0f, referenceFrameRotates == "true", smoothSphereSurface == "true");
             }else if(simulation == "picflip"){
-                float gravity = visualizationJSON["gravity"];
                 string referenceFrameRotates = visualizationJSON["reference_frame_rotates"];
-                view = new PicFlipView(referenceFrameRotates == "true", gravity);
+                view = new PicFlipView(referenceFrameRotates == "true");
             }
         }else if(visualizationType == "other"){
             view = new SphereWithFresnelEffectView(Texture::MANDELBROT, 2048);
@@ -171,13 +169,15 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_resize(JNIEnv *e
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_livewallpaper05_PreviewActivity_00024Companion_step(JNIEnv *env, jobject thiz, jfloat acc_x, jfloat acc_y, jfloat acc_z, jfloat rot_x, jfloat rot_y, jfloat rot_z, jfloat rot_w, jfloat linear_acc_x, jfloat linear_acc_y, jfloat linear_acc_z, jfloat distance, jfloat field_of_view) {
+Java_com_example_livewallpaper05_PreviewActivity_00024Companion_step(JNIEnv *env, jobject thiz, jfloat acc_x, jfloat acc_y, jfloat acc_z, jfloat rot_x, jfloat rot_y, jfloat rot_z, jfloat rot_w, jfloat linear_acc_x, jfloat linear_acc_y, jfloat linear_acc_z, jfloat distance, jfloat field_of_view, jfloat gravity, jfloat efficiency) {
     if (view) {
         view->accelerometerVector = vec3(acc_x, acc_y, acc_z);
         view->linearAccelerationVector = vec3(linear_acc_x, linear_acc_y, linear_acc_z);
         view->rotationVector = vec4(rot_x, rot_y, rot_z, rot_w);
         view->distanceToOrigin = distance;
         view->maxViewAngle = field_of_view;
+        view->gravity = gravity;
+        view->efficiency = efficiency;
         //ALOGI("field_of_view = %s\n", to_string(field_of_view).c_str());
         view->calculatePerspectiveSetViewport(view->maxViewAngle, view->zNear, view->zFar);
         view->render();

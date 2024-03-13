@@ -7,7 +7,6 @@ import android.opengl.GLSurfaceView
 import android.os.SystemClock
 import android.util.Log
 import android.view.View
-import android.widget.SeekBar
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
@@ -46,11 +45,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             val accelData = mViewModel.getAccelerationData()
             val rotData = mViewModel.getRotationData()
             val linearAccelData = mViewModel.getLinearAccelerationData()
-            val speed = mViewModel.getSpeed()
-            // update linear acceleration data
-            linearAccelData[0] = linearAccelData[0] * speed
-            linearAccelData[1] = linearAccelData[1] * speed
-            linearAccelData[2] = linearAccelData[2] * speed
+            val multiplier = mViewModel.getLinearAcceleration()
 
             // Run C++ visualization logic and render OpenGL view
             PreviewActivity.step(
@@ -61,11 +56,13 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                 rotData[1],
                 rotData[2],
                 rotData[3],
-                linearAccelData[0],
-                linearAccelData[1],
-                linearAccelData[2],
+                linearAccelData[0] * multiplier,
+                linearAccelData[1] * multiplier,
+                linearAccelData[2] * multiplier,
                 mViewModel.getDistanceFromOrigin(),
-                mViewModel.getFieldOfView()
+                mViewModel.getFieldOfView(),
+                mViewModel.getGravity(),
+                mViewModel.getEfficiency()
             )
 
             // Get screen buffer if requested
@@ -171,6 +168,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     "field_of_view": 60.0,
                     "gravity": 0.0,
                     "linear_acceleration": 1.0,
+                    "efficiency": 1.0,
                     "reference_frame_rotates": "false",
                     "background_is_solid_color": "false",
                     "background_texture": "ms_paint_colors",
@@ -215,12 +213,26 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             when (mViewModel.getVisualizationType()) {
                 0 -> {
                     selectionJSON = nbodyJSON
+                    //val gravity: Float = jsonObject.getDouble("gravity").toFloat()
+                    //mViewModel.mRepo.gravity.postValue(gravity)
                 }
                 1 -> {
                     selectionJSON = naiveJSON
+                    val jsonObject : JSONObject = JSONObject(selectionJSON)
+                    val gravity: Float = jsonObject.getDouble("gravity").toFloat()
+                    val linearAcceleration: Float = jsonObject.getDouble("linear_acceleration").toFloat()
+                    val efficiency: Float = jsonObject.getDouble("efficiency").toFloat()
+                    mViewModel.mRepo.gravity.postValue(gravity)
+                    mViewModel.mRepo.linearAcceleration.postValue(linearAcceleration)
+                    mViewModel.mRepo.efficiency.postValue(efficiency)
                 }
                 2 -> {
                     selectionJSON = picflipJSON
+                    val jsonObject : JSONObject = JSONObject(selectionJSON)
+                    val gravity: Float = jsonObject.getDouble("gravity").toFloat()
+                    val linearAcceleration: Float = jsonObject.getDouble("linear_acceleration").toFloat()
+                    mViewModel.mRepo.gravity.postValue(gravity)
+                    mViewModel.mRepo.linearAcceleration.postValue(linearAcceleration)
                 }
                 3 -> {
                     selectionJSON = triangleJSON
@@ -234,7 +246,6 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             val fieldOfView: Float = jsonObject.getDouble("field_of_view").toFloat()
             mViewModel.mRepo.distanceFromOrigin.postValue(distance)
             mViewModel.mRepo.fieldOfView.postValue(fieldOfView)
-
             PreviewActivity.init(selectionJSON)
         }
 

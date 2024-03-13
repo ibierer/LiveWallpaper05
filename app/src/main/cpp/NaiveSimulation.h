@@ -12,7 +12,7 @@ public:
 
     bool seed(const int& count, const float& radius);
 
-    void simulate(const vec3& gravity);
+    void simulate(const vec3& gravity, const float& efficiency);
 
     struct Particle : public Simulation::Particle {
         vec3 positionFinal;
@@ -31,8 +31,6 @@ public:
     float sphereRadiusSquared;
 
     float sphereRadiusPlusPointFive;
-
-    const float efficiency = 1.0f;//0.995f;
 
     const double maxForceDistance = 2.0;
 

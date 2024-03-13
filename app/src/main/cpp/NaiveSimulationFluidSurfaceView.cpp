@@ -69,9 +69,8 @@ float fOfXYZFluidSurface(vec3 _) {
     return sum - 2.0f;
 }
 
-NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView(const int &particleCount, const bool& fluidSurface, const int &graphSize, const float &sphereRadius, const bool &referenceFrameRotates, const float &gravity, const bool &smoothSphereSurface) : View() {
+NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView(const int &particleCount, const bool &fluidSurface, const int &graphSize, const float &sphereRadius, const bool &referenceFrameRotates, const bool &smoothSphereSurface) : View() {
     this->referenceFrameRotates = referenceFrameRotates;
-    this->gravity = gravity;
     this->fluidSurface = fluidSurface;
 
     simulation.seed(particleCount, sphereRadius);
@@ -888,6 +887,6 @@ void NaiveSimulationFluidSurfaceView::render(){
     // Simulate
     vec3 forceVector = computeForce(gravity, referenceFrameRotates, rotation);
     for(int i = 0; i < 5; i++){
-        simulation.simulate(forceVector);
+        simulation.simulate(forceVector, efficiency);
     }
 }
