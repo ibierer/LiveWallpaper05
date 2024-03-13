@@ -438,38 +438,6 @@ class ProfileActivity : AppCompatActivity() {
         mSavedWallpaperViewModel.createWallpaperTable(-1)
     }
 
-    fun insertWallpaper(contents: String, uid: Int) {
-        GlobalScope.launch(Dispatchers.IO) {
-            // write aws test code here -------------
-            val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
-            try {
-                Class.forName("com.mysql.jdbc.Driver").newInstance()
-                // connect to mysql server
-                val connectionProperties = Properties()
-                connectionProperties["user"] = DatabaseConfig.dbUser
-                connectionProperties["password"] = DatabaseConfig.dbPassword
-                connectionProperties["useSSL"] = "false"
-
-                DriverManager.getConnection(jdbcConnectionString, connectionProperties)
-                    .use { conn -> // this syntax ensures that connection will be closed whether normally or from exception
-                        Log.d("LiveWallpaper05", "Connected to database")
-                        val useDbQuery = "USE myDatabase;"
-                        val statement = conn.prepareStatement(useDbQuery)
-                        statement.execute()
-                        val insertQuery =
-                            "INSERT INTO wallpapers (contents, users_id) VALUES (?, ?);"
-                        val preparedStatement = conn.prepareStatement(insertQuery)
-                        preparedStatement.setString(1, contents)
-                        preparedStatement.setInt(2, uid)
-                        preparedStatement.executeUpdate()
-                        conn.close()
-                    }
-            } catch (e: SQLException) {
-                Log.d("OH_NO", e.message.toString())
-            }
-        }
-    }
-
     private fun updateFragListeners() {
         // for each fragment in fragment list, set delete button listener
         val removeList = mutableListOf<WallpaperRef>()
