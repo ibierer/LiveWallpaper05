@@ -186,10 +186,33 @@ class ProfileActivity : AppCompatActivity() {
                 mActiveWallpaperViewModel.getWid(),
                 mActiveWallpaperViewModel.getConfig()
             )
+        } else {
+            // updated active wallpaper params with saved wallpaper data
+            val activeConfig = mActiveWallpaperViewModel.getConfig()
+            val activeWid = mActiveWallpaperViewModel.getWid()
+            mSavedWallpaperViewModel.saveSwitchWallpaper(activeWid, activeConfig)
+            // if wid is in saved wallpapers, update active wallpaper with saved wallpaper data
+            //mSavedWallpaperViewModel.saveWallpaper(activeConfig)
+            // update active wallpaper variable
+            //mSavedWallpaperViewModel.switchWallpaper(activeWid)
+
         }
 
         // link active wallpaper to active wallpaper live data via callback function
         mSavedWallpaperViewModel.activeWallpaper.observe(this, Observer { wallpaper ->
+            // if wallpaper is not the same as saved wallpaper, return
+            // if wallpaper not in wallpapers, return
+            var contained = false
+            for (w in mSavedWallpaperViewModel.savedWallpapers.value!!) {
+                if (w.wid == wallpaper.wid && w.config == wallpaper.config){
+                    contained = true
+                    break
+                }
+            }
+            if (!contained) {
+                return@Observer
+            }
+
             // set active wallpaper wid to wallpaper wid
             mActiveWallpaperViewModel.setWid(wallpaper.wid)
             // [TODO] use this to update active wallpaper with saved wallpaper data
@@ -375,7 +398,7 @@ class ProfileActivity : AppCompatActivity() {
             }
         }
 
-    // [PHASE OUT] calls view model to update local storage of profile picture
+    // [TODO] [PHASE OUT] calls view model to update local storage of profile picture
     private fun updateProfilePicture(pic: Bitmap) {
         // update profile pic in database
         mProfileViewModel.updateProfilePic(pic)
@@ -447,6 +470,7 @@ class ProfileActivity : AppCompatActivity() {
             val fragTag = ref.fragmentTag
             val frag = supportFragmentManager.findFragmentByTag(fragTag) ?: continue
             // if fragment doesn't exist yet, skip
+
             // connect delete button to delete wallpaper function
             frag.requireView().findViewById<FloatingActionButton>(R.id.b_delete_wallpaper)
                 .setOnClickListener {

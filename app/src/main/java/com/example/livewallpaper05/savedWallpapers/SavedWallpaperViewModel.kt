@@ -19,7 +19,7 @@ class SavedWallpaperViewModel(repo: SavedWallpaperRepo) : ViewModel() {
     fun saveWallpaper(config: String) : Int {
         // create new wallpaper table with given data
         var wallpaper = SavedWallpaperTable(
-            0,
+            1,
             config
         )
         try {
@@ -83,6 +83,10 @@ class SavedWallpaperViewModel(repo: SavedWallpaperRepo) : ViewModel() {
             }
             data.removeAll(toRemove)
         }
+    }
+
+    fun saveSwitchWallpaper(activeWid: Int, activeConfig: String) {
+        mRepo.saveSwitchWallpaper(activeWid, activeConfig)
     }
 
     class SavedWallpaperViewModelFactory(private val repo: SavedWallpaperRepo) : ViewModelProvider.Factory {

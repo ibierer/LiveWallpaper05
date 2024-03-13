@@ -30,19 +30,11 @@ import androidx.lifecycle.Observer
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModelFactory
-import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import yuku.ambilwarna.AmbilWarnaDialog
-import java.sql.DriverManager
-import java.sql.SQLException
-import java.util.Properties
 
 class PreviewActivity : AppCompatActivity() {
 
     var mView: GLES3JNIView? = null
-
 
     private val viewModel: ActiveWallpaperViewModel by viewModels {
         ActiveWallpaperViewModelFactory((application as ActiveWallpaperApplication).repository)
@@ -83,7 +75,6 @@ class PreviewActivity : AppCompatActivity() {
         val visualizationSelectorSpinner = findViewById<Spinner>(R.id.visualization_type_spinner)
         val colorButton = findViewById<Button>(R.id.b_color_picker)
         val saveButton = findViewById<Button>(R.id.save_button)
-        val saveAsNewButton = findViewById<Button>(R.id.save_as_new_button)
         val equationEditor = findViewById<EditText>(R.id.et_equation)
 
         // fill sim selector box with wallpaper options from native-lib.cpp
@@ -260,11 +251,6 @@ class PreviewActivity : AppCompatActivity() {
             viewModel.getScreenBuffer = 1
         }
 
-        saveAsNewButton.setOnClickListener {
-            viewModel.getScreenBuffer = 1
-            viewModel.saveAsNew = 1
-        }
-
         // setup equation editor
         viewModel.updateEquation(equationEditor.text.toString())
         equationEditor.addTextChangedListener(object : TextWatcher {
@@ -364,8 +350,6 @@ class PreviewActivity : AppCompatActivity() {
 
         return preview
     }
-
-
 
     companion object {
         // Used to load the 'livewallpaper05' library on application startup.

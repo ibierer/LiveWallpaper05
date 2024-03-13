@@ -72,16 +72,6 @@
                 android:useDefaultMargins="true"
                 />
         </LinearLayout>
-        <!--
-        <LinearLayout
-            android:id="@+id/sv_ll_wallpapers"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/tv_biography"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:orientation="vertical"/>
-            -->
 
     </ScrollView>
 
@@ -105,26 +95,29 @@
         />
 
     <LinearLayout
-        android:layout_width="295dp"
-        android:layout_height="84dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginEnd="46dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="15dp"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_biography"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/b_new_wallpaper">
+        app:layout_constraintStart_toStartOf="parent"
+        >
 
         <Button
             android:id="@+id/loginRegisterButton"
-            android:layout_width="143dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
             android:text="Login" />
 
         <Button
             android:id="@+id/logoutButton"
-            android:layout_width="59dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_marginHorizontal="10dp"
             android:text="Logout" />
     </LinearLayout>
 
