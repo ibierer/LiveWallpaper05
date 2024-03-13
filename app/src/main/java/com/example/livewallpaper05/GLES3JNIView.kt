@@ -7,6 +7,7 @@ import android.opengl.GLSurfaceView
 import android.os.SystemClock
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
@@ -30,14 +31,14 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
         // supporting OpenGL ES 2.0 or later backwards-compatible versions.
         setEGLContextClientVersion(3)
         setEGLConfigChooser(8, 8, 8, 8, 24, 8)
-        setRenderer(Renderer(vm, this))
+        setRenderer(Renderer(context, vm, this))
     }
 
-    class Renderer(vm: ActiveWallpaperViewModel, var view: View) : GLSurfaceView.Renderer {
+    class Renderer(private val context: Context, vm: ActiveWallpaperViewModel, var view: View) : GLSurfaceView.Renderer {
         private var mViewModel: ActiveWallpaperViewModel = vm
         var auth: FirebaseAuth? = null
         var username: String? = "Default User"
-        var uid: Int? = 0
+        var uid: Int? = 11 //uid for default user
 
 
         override fun onDrawFrame(gl: GL10) {
@@ -107,13 +108,18 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     /* insert wallpaper to DB (JSON contents, blob image, uid */
                     auth = FirebaseAuth.getInstance()
                     if (auth!!.currentUser != null) {
-                        //val sharedPreferences = context.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
-                        /*username = sharedPreferences.getString("USERNAME", "").toString()
-                        uid = sharedPreferences.getInt("UID", 0)*/
+                        val sharedPreferences = context.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+                        username = sharedPreferences.getString("USERNAME", "").toString()
+                        uid = sharedPreferences.getInt("UID", 0)
+                        Log.d("CAMERON", "username is $username, uid is $uid")
                         val color = mViewModel.getColor()
                         val eq = mViewModel.getEquation()
                         val selectionJSON = determineSelectionJSON(color, eq)
-                        //insertWallpaper(selectionJSON, blob, uid!!)
+                        insertWallpaper(selectionJSON, blob, uid!!)
+                        Toast.makeText(context, "Wallpaper created successfully!", Toast.LENGTH_SHORT).show()
+                    }
+                    else {
+                        Log.d("CAMERON", "NO USER")
                     }
                 }
                 else{ // SaveAsNew not selected
