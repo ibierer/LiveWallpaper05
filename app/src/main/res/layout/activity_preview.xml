@@ -125,16 +125,6 @@
                 android:background="@drawable/border_background"
                 android:text="Input Equation:" />
 
-            <EditText
-                android:id="@+id/et_equation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/preview_ui_margin"
-                android:background="@drawable/border_background"
-                android:hint="Enter equation here"
-                android:inputType="text"
-                android:text="@string/default_equation" />
-
             <TextView
                 android:id="@+id/tv_syntax_check"
                 android:layout_width="wrap_content"

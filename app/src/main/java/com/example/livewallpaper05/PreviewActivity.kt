@@ -30,6 +30,7 @@ import androidx.lifecycle.Observer
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModelFactory
+import com.example.livewallpaper05.savedWallpapers.SavedWallpaperViewModel
 import yuku.ambilwarna.AmbilWarnaDialog
 
 class PreviewActivity : AppCompatActivity() {
@@ -39,6 +40,12 @@ class PreviewActivity : AppCompatActivity() {
     private val viewModel: ActiveWallpaperViewModel by viewModels {
         ActiveWallpaperViewModelFactory((application as ActiveWallpaperApplication).repository)
     }
+
+    // saved wallpaper data
+    private val mSavedWallpaperViewModel: SavedWallpaperViewModel by viewModels {
+        SavedWallpaperViewModel.SavedWallpaperViewModelFactory((application as ActiveWallpaperApplication).savedWallpaperRepo)
+    }
+
 
     private fun updateSyntaxResult() {
         // update syntax check message
@@ -61,6 +68,14 @@ class PreviewActivity : AppCompatActivity() {
             WindowManager.LayoutParams.FLAG_FULLSCREEN
         );
         setContentView(R.layout.activity_preview)
+
+        // load saved wallpaper data
+        // get config string from saved wallpaper
+        val configTable = mSavedWallpaperViewModel.activeWallpaper.value ?: null
+        // load saved string if param is empty
+        if (configTable != null) {
+            viewModel.loadConfig(configTable)
+        }
 
         // get view window from GLES3JNIView
         mView = GLES3JNIView(application, viewModel)
@@ -242,6 +257,7 @@ class PreviewActivity : AppCompatActivity() {
         mView!!.onPause()
 
         viewModel.updatePreviewImg(updatePreviewImage())
+        viewModel.saveConfig()
     }
 
     /* this is run when the app is 'resumed'

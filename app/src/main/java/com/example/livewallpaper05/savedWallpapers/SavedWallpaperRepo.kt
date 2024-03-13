@@ -44,13 +44,12 @@ class SavedWallpaperRepo private constructor(wallpaperDao: SavedWallpaperDao) {
             mScope.launch(Dispatchers.IO) {
                 if(wallpapers.value != null) {
                     // if wallpaper not in list, add it
-                    if (!wallpapers.value!!.contains(wallpaper)) {
-                        var list = wallpapers.value!!.toMutableList()
+                    val list = wallpapers.value!!.toMutableList()
+                    if (!containsWallpaper(wallpaper)) {
                         list.add(wallpaper)
                         wallpapers.postValue(list)
                     } else {
                         // replace wallpaper in list
-                        val list = wallpapers.value!!.toMutableList()
                         for (i in 0 until list.size) {
                             if (list[i].wid == wallpaper.wid) {
                                 list[i] = wallpaper
@@ -59,13 +58,24 @@ class SavedWallpaperRepo private constructor(wallpaperDao: SavedWallpaperDao) {
                         }
                         wallpapers.postValue(list)
                     }
+                    syncWallpaperDao(wallpaper, list)
                 } else {
                     wallpapers.postValue(listOf(wallpaper))
+                    syncWallpaperDao(wallpaper, listOf(wallpaper).toMutableList())
                 }
-
-                mWallpaperDao.saveWallpaper(wallpaper)
             }
         }
+    }
+
+    private fun containsWallpaper(wallpaper: SavedWallpaperTable) : Boolean {
+        if (wallpapers.value != null) {
+            for (w in wallpapers.value!!) {
+                if (w.wid == wallpaper.wid) {
+                    return true
+                }
+            }
+        }
+        return false
     }
 
     // set active wallpaper live data to wallpaper given by id
@@ -78,6 +88,18 @@ class SavedWallpaperRepo private constructor(wallpaperDao: SavedWallpaperDao) {
                 // try again until wallpaper is found
                 var allWallpapers = mWallpaperDao.getAllWallpapers()
                 activeWallpaper.postValue(allWallpapers[0])
+            }
+        }
+    }
+
+    private fun syncWallpaperDao(newWallpaper: SavedWallpaperTable, newWallpapers: MutableList<SavedWallpaperTable>){
+        // sync wallpapers with database, removing dead values
+        var allWallpapers = mWallpaperDao.getAllWallpapers()
+        // if list is not the same size as wallpapers clear and add all wallpapers
+        if (newWallpapers != null) {
+            mWallpaperDao.deleteAll()
+            for (wallpaper in newWallpapers) {
+                mWallpaperDao.saveWallpaper(wallpaper)
             }
         }
     }
@@ -95,6 +117,40 @@ class SavedWallpaperRepo private constructor(wallpaperDao: SavedWallpaperDao) {
                 }
             }
             wallpapers.postValue(list)
+        }
+    }
+
+    fun saveSwitchWallpaper(activeWid: Int, activeConfig: String) {
+        mScope.launch(Dispatchers.IO) {
+            val wallpaper = SavedWallpaperTable(
+                activeWid,
+                activeConfig
+            )
+
+            if(wallpapers.value != null) {
+                // if wallpaper not in list, add it
+                val list = wallpapers.value!!.toMutableList()
+                if (!containsWallpaper(wallpaper)) {
+                    list.add(wallpaper)
+                    wallpapers.postValue(list)
+                } else {
+                    // replace wallpaper in list
+                    for (i in 0 until list.size) {
+                        if (list[i].wid == wallpaper.wid) {
+                            list[i] = wallpaper
+                            break
+                        }
+                    }
+                    wallpapers.postValue(list)
+                }
+                syncWallpaperDao(wallpaper, list)
+            } else {
+                wallpapers.postValue(listOf(wallpaper))
+                syncWallpaperDao(wallpaper, listOf(wallpaper).toMutableList())
+            }
+
+            // update activeWallpaper live data
+            activeWallpaper.postValue(wallpaper)
         }
     }
 

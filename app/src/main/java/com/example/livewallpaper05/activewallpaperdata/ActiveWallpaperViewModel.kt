@@ -92,7 +92,6 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         repo.distanceFromOrigin.value = distance
     }
 
-
     // update field of view in repo
     fun updateFieldOfView(angle: Float) {
         repo.fieldOfView.value = angle
@@ -149,14 +148,20 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         // store simulation type, background color, and settings (with default values for now
         config.put("name", "New Wallpaper")
         config.put("type", repo.simulationType)
-        config.put("background_color", JSONObject("{\"r\": 51, \"g\": 51, \"b\": 77, \"a\": 255}"))
-        config.put("settings", "1/((sqrt(x^2 + y^2) - 2 + 1.25cos(t))^2 + (z - 1.5sin(t))^2) + 1/((sqrt(x^2 + y^2) - 2 - 1.25cos(t))^2 + (z + 1.5sin(t))^2) = 1.9")
+        val color = repo.color
+        config.put("background_color", JSONObject("{\"r\": ${color.red()}, \"g\": ${color.green()}, \"b\": ${color.blue()}, \"a\": ${color.alpha()} }"))
+        val eq = if (repo.equation != "") repo.equation else "1/((sqrt(x^2 + y^2) - 2 + 1.25cos(t))^2 + (z - 1.5sin(t))^2) + 1/((sqrt(x^2 + y^2) - 2 - 1.25cos(t))^2 + (z + 1.5sin(t))^2) = 1.9"
+        config.put("settings", eq)
 
         return config.toString()
     }
 
     // load config table into repo
     fun loadConfig(table: SavedWallpaperTable) {
+        // prevent reloading same config
+        if (repo.wid == table.wid && repo.savedConfig == table.config) {
+            return
+        }
         try {
             repo.wid = table.wid
             val configJson = JSONObject(table.config)
@@ -168,12 +173,42 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
 
             repo.color = Color.valueOf(red, green, blue, alpha)
             repo.equation = configJson.getString("settings")
-            //repo.rotationRate = configJson.getDouble("rotationRate").toFloat()
+
+            // store config string in repo
+            repo.savedConfig = table.config
         } catch (e: Exception) {
             Log.d("LiveWallpaperLoad", "Error loading config: $e")
             Log.d("LiveWallpaperLoad", "Config: ${table.config}")
             return
         }
+    }
+
+    fun saveConfig(){
+        val config = getConfig()
+        //repo.savedConfig = config
+    }
+
+    fun loadSavedConfig(configString: String){
+        // load saved string if param is empty
+        var config = ""
+        if (configString != "") {
+            config = configString
+        } else {
+            config = repo.savedConfig
+        }
+
+        // if config is empty, return
+        if (config == "") { return }
+
+        val configJson = JSONObject(config)
+        repo.simulationType = configJson.getInt("type")
+        val red = configJson.getJSONObject("background_color").getInt("r").toFloat()
+        val green = configJson.getJSONObject("background_color").getInt("g").toFloat()
+        val blue = configJson.getJSONObject("background_color").getInt("b").toFloat()
+        val alpha = configJson.getJSONObject("background_color").getInt("a").toFloat()
+
+        repo.color = Color.valueOf(red, green, blue, alpha)
+        repo.equation = configJson.getString("settings")
     }
 
     fun getWid(): Int {

@@ -83,6 +83,8 @@ dependencies {
     // postgreSQL JDBC dependencies
     implementation("org.postgresql:postgresql:42.7.1")
     implementation("mysql:mysql-connector-java:5.1.46")
+    implementation("com.firebase:firebase-client-android:2.5.0")
+
     // view model dependencies
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.0")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.0")
