@@ -27,7 +27,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:paddingBottom="20dp"
+        android:paddingBottom="80dp"
         android:background="@drawable/border_background"
         >
 
@@ -142,16 +142,6 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
                 app:srcCompat="@drawable/ic_launcher_background" />
-        <EditText
-            android:id="@+id/et_equation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="20dp"
-            android:background="@drawable/border_background"
-            android:hint="Enter equation here"
-            android:inputType="textCapSentences|textMultiLine"
-            android:scrollHorizontally="false"
-            android:text="@string/default_equation" />
 
             <Button
                 android:id="@+id/b_color_picker"
@@ -168,6 +158,17 @@
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:background="@drawable/border_background"
                 android:text="Input Equation:" />
+
+            <EditText
+                android:id="@+id/et_equation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/border_background"
+                android:hint="Enter equation here"
+                android:inputType="textCapSentences|textMultiLine"
+                android:scrollHorizontally="false"
+                android:text="@string/default_equation" />
 
             <TextView
                 android:id="@+id/tv_syntax_check"

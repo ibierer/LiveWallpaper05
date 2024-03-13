@@ -101,6 +101,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                 val blob = outputStream.toByteArray()
 
                 mViewModel.liveDataBitmap.postValue(scaledSquareBitmap)
+
                 if (mViewModel.saveAsNew > 0){
                     mViewModel.saveAsNew = 0
                     /* insert wallpaper to DB (JSON contents, blob image, uid */
