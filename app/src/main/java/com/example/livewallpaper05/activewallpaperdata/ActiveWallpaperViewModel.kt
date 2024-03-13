@@ -239,6 +239,18 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
     fun updateSpeed(speed: Float) {
         repo.speed = speed
     }
+
+    fun updateGravity(value: Float) {
+        repo.gravity.value = value
+    }
+
+    fun updateLinearAcceleration(value: Float) {
+        repo.linearAcceleration.value = value
+    }
+
+    fun updateEfficiency(value: Float) {
+        repo.efficiency.value = value
+    }
 }
 
 /**

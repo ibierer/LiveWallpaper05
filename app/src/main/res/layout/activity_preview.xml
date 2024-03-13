@@ -71,6 +71,57 @@
                 android:min="1" />
 
             <TextView
+                android:id="@+id/gravity_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/border_background"
+                android:text="@string/gravity_label" />
+
+            <SeekBar
+                android:id="@+id/gravity_seekbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/border_background"
+                android:max="200"
+                android:min="0" />
+
+            <TextView
+                android:id="@+id/linear_acceleration_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/border_background"
+                android:text="@string/linear_acceleration_label" />
+
+            <SeekBar
+                android:id="@+id/linear_acceleration_seekbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/border_background"
+                android:max="200"
+                android:min="0" />
+
+            <TextView
+                android:id="@+id/efficiency"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/border_background"
+                android:text="@string/efficiency_label" />
+
+            <SeekBar
+                android:id="@+id/efficiency_seekbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/border_background"
+                android:max="200"
+                android:min="0" />
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
@@ -78,24 +129,17 @@
                 android:text="Visualization Type Selection:" />
 
             <Spinner
-                android:id="@+id/simulation_type_spinner"
+                android:id="@+id/visualization_type_spinner"
                 style="@style/Widget.AppCompat.Spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:background="@drawable/border_background" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/preview_ui_margin"
-                android:background="@drawable/border_background"
-                android:text="Background Color:" />
-
             <ImageView
                 android:id="@+id/imageView"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
                 app:srcCompat="@drawable/ic_launcher_background" />
         <EditText
@@ -132,6 +176,13 @@
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:background="@drawable/border_background"
                 android:text="Syntax check result" />
+
+            <Button
+                android:id="@+id/save_button"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:text="Save" />
 
         </LinearLayout>
     </ScrollView>

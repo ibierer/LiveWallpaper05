@@ -74,7 +74,20 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                         bitmap.setPixel(x, y, Color.argb(a, r, g, b))
                     }
                 }
-                mViewModel.liveDataBitmap.postValue(Bitmap.createScaledBitmap(bitmap, bitmap.width / 4, bitmap.height / 4, true))
+
+                //mViewModel.liveDataBitmap.postValue(Bitmap.createScaledBitmap(bitmap, bitmap.width / 4, bitmap.height / 4, true))
+
+                val width = bitmap.width
+                val height = bitmap.height
+                val size = minOf(width, height)
+                val startX = (width - size) / 2
+                val startY = (height - size) / 2
+
+                val squareBitmap = Bitmap.createBitmap(bitmap, startX, startY, size, size)
+
+                val scaledSquareBitmap = Bitmap.createScaledBitmap(squareBitmap, 512, 512, true)
+
+                mViewModel.liveDataBitmap.postValue(scaledSquareBitmap)
             }
 
             // get time after frame
