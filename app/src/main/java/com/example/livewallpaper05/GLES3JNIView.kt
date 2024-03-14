@@ -110,7 +110,6 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     mViewModel.saveAsNew = 0
                     /* insert wallpaper to DB (JSON contents, blob image, uid */
                     auth = FirebaseAuth.getInstance()
-                    Log.d("Immanuel", "Point a")
                     if (auth!!.currentUser != null) {
                         val sharedPreferences =
                             context.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
@@ -367,19 +366,15 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
 
         suspend fun insertWallpaper(contents: String, image: ByteArray, username: String) {
             withContext(Dispatchers.IO) {
-                Log.d("CAMERON", "IN Coroutine")
                 val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
                 try {
-                    Log.d("CAMERON", "IN Try")
                     Class.forName("com.mysql.jdbc.Driver").newInstance()
                     val connectionProperties = Properties()
                     connectionProperties["user"] = ProfileActivity.DatabaseConfig.dbUser
                     connectionProperties["password"] = ProfileActivity.DatabaseConfig.dbPassword
                     connectionProperties["useSSL"] = "false"
-
                     DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                         .use { conn ->
-                            Log.d("CAMERON", "Connected to database")
                             val useDbQuery = "USE myDatabase;"
                             conn.prepareStatement(useDbQuery).use { statement ->
                                 statement.execute()
@@ -394,9 +389,9 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                             }
                         }
                 } catch (e: SQLException) {
-                    Log.e("OH_NO", "Error inserting wallpaper: ${e.message}", e)
+                    Log.e("SQL_ERROR", "Error inserting wallpaper: ${e.message}", e)
                 } catch (e: Exception) {
-                    Log.e("OH_NO", "Unexpected error: ${e.message}", e)
+                    Log.e("SQL_ERROR", "Unexpected error: ${e.message}", e)
                 }
             }
         }
