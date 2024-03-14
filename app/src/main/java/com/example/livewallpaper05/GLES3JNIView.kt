@@ -90,8 +90,6 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     }
                 }
 
-                //mViewModel.liveDataBitmap.postValue(Bitmap.createScaledBitmap(bitmap, bitmap.width / 4, bitmap.height / 4, true))
-
                 val width = bitmap.width
                 val height = bitmap.height
                 val size = minOf(width, height)
@@ -112,6 +110,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     mViewModel.saveAsNew = 0
                     /* insert wallpaper to DB (JSON contents, blob image, uid */
                     auth = FirebaseAuth.getInstance()
+                    Log.d("Immanuel", "Point a")
                     if (auth!!.currentUser != null) {
                         val sharedPreferences =
                             context.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
@@ -120,9 +119,9 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                         val color = mViewModel.getColor()
                         val eq = mViewModel.getEquation()
                         val selectionJSON = determineSelectionJSON(color, eq)
-                        /*GlobalScope.launch {
+                        GlobalScope.launch {
                             insertWallpaper(selectionJSON, blob, username!!)
-                        }*/
+                        }
                     }
                 } else { // SaveAsNew not selected
 
@@ -364,7 +363,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     val connectionProperties = Properties()
                     connectionProperties["user"] = ProfileActivity.DatabaseConfig.dbUser
                     connectionProperties["password"] = ProfileActivity.DatabaseConfig.dbPassword
-                    connectionProperties["useSSL"] = "true"
+                    connectionProperties["useSSL"] = "false"
 
                     DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                         .use { conn ->
