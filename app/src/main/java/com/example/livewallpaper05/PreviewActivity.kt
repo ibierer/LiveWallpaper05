@@ -75,6 +75,7 @@ class PreviewActivity : AppCompatActivity() {
         val visualizationSelectorSpinner = findViewById<Spinner>(R.id.visualization_type_spinner)
         val colorButton = findViewById<Button>(R.id.b_color_picker)
         val saveButton = findViewById<Button>(R.id.save_button)
+        val saveAsButton = findViewById<Button>(R.id.save_as_new_button)
         val equationEditor = findViewById<EditText>(R.id.et_equation)
 
         // fill sim selector box with wallpaper options from native-lib.cpp
@@ -249,6 +250,12 @@ class PreviewActivity : AppCompatActivity() {
         saveButton.setOnClickListener {
             // Screen buffer capture
             viewModel.getScreenBuffer = 1
+        }
+
+        saveAsButton.setOnClickListener {
+            // Screen buffer capture
+            viewModel.getScreenBuffer = 1
+            viewModel.saveAsNew = 1
         }
 
         // setup equation editor

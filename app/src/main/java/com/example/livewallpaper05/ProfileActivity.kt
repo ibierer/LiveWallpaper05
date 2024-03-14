@@ -39,6 +39,7 @@ import java.io.InputStream
 import java.sql.DriverManager
 import java.sql.SQLException
 import java.util.Properties
+import kotlin.properties.Delegates
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -51,7 +52,7 @@ class ProfileActivity : AppCompatActivity() {
 
     /* User authentication data */
     private var authUser: FirebaseUser? = null
-    private var uid: Int = 0
+    private var uid by Delegates.notNull<Int>()
     private var bio: String? = null
     private lateinit var username: String
     private var loginRegisterButton: Button? = null
@@ -124,6 +125,7 @@ class ProfileActivity : AppCompatActivity() {
                 // User is signed in, perform sign-out
                 FirebaseAuth.getInstance().signOut()
                 loginRegisterButton!!.visibility = View.VISIBLE
+                mUsername!!.text = "Default User"
                 Toast.makeText(this, "Signed out", Toast.LENGTH_SHORT).show()
             } else {
                 // User is not signed in, display a toast
@@ -139,7 +141,7 @@ class ProfileActivity : AppCompatActivity() {
         if (auth.currentUser != null) {
             val sharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
             username = sharedPreferences.getString("USERNAME", "").toString()
-            uid = sharedPreferences.getInt("UID", 0)
+            uid = sharedPreferences.getInt("UID", 11)
             Log.d("OKAY", "uid is $uid\n username is $username")
             mUsername!!.text = username
             loginRegisterButton!!.visibility = View.GONE
@@ -269,7 +271,6 @@ class ProfileActivity : AppCompatActivity() {
 
                 DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                     .use { conn ->
-                        Log.d("LiveWallpaper05", "Connected to database")
                         val useDbQuery = "USE myDatabase;"
                         val statement = conn.prepareStatement(useDbQuery)
                         statement.execute()
@@ -294,7 +295,6 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private suspend fun loadUserDataFromAWS(username: String) {
-        Log.d("OKAY", "in loadUserDataFromAWS")
         val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance()
@@ -305,7 +305,6 @@ class ProfileActivity : AppCompatActivity() {
             DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                 .use { conn -> // this syntax ensures that connection will be closed whether normally or from exception
                     Log.d("LiveWallpaper05", "Connected to database")
-                    Log.d("OH_YES", "Connected to database")
                     val useDbQuery = "USE myDatabase;"
                     val statement = conn.prepareStatement(useDbQuery)
                     statement.execute()
@@ -341,7 +340,6 @@ class ProfileActivity : AppCompatActivity() {
                 }
         } catch (e: SQLException) {
             Log.d("OH_NO", e.message.toString())
-            Log.e("LiveWallpaper05", e.printStackTrace().toString())
         }
     }
 

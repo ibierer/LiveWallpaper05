@@ -7,12 +7,12 @@ import android.opengl.GLSurfaceView
 import android.os.SystemClock
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
@@ -34,7 +34,8 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
         setRenderer(Renderer(context, vm, this))
     }
 
-    class Renderer(private val context: Context, vm: ActiveWallpaperViewModel, var view: View) : GLSurfaceView.Renderer {
+    class Renderer(private val context: Context, vm: ActiveWallpaperViewModel, var view: View) :
+        GLSurfaceView.Renderer {
         private var mViewModel: ActiveWallpaperViewModel = vm
         var auth: FirebaseAuth? = null
         var username: String? = "Default User"
@@ -67,11 +68,15 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             )
 
             // Get screen buffer if requested
-            if(mViewModel.getScreenBuffer > 0){
+            if (mViewModel.getScreenBuffer > 0) {
                 mViewModel.getScreenBuffer = 0
                 val byteArray: ByteArray = PreviewActivity.getScreenBuffer()
                 // Construct Bitmap from ByteArray
-                val bitmap = Bitmap.createBitmap(mViewModel.width, mViewModel.height, Bitmap.Config.ARGB_8888)
+                val bitmap = Bitmap.createBitmap(
+                    mViewModel.width,
+                    mViewModel.height,
+                    Bitmap.Config.ARGB_8888
+                )
                 // Set pixel data manually by iterating over the byte array
                 val buffer = ByteBuffer.wrap(byteArray)
                 for (y in mViewModel.height - 1 downTo 0) { // Reverse order for y-axis
@@ -103,26 +108,23 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
 
                 mViewModel.liveDataBitmap.postValue(scaledSquareBitmap)
 
-                if (mViewModel.saveAsNew > 0){
+                if (mViewModel.saveAsNew > 0) {
                     mViewModel.saveAsNew = 0
                     /* insert wallpaper to DB (JSON contents, blob image, uid */
                     auth = FirebaseAuth.getInstance()
                     if (auth!!.currentUser != null) {
-                        val sharedPreferences = context.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+                        val sharedPreferences =
+                            context.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
                         username = sharedPreferences.getString("USERNAME", "").toString()
                         uid = sharedPreferences.getInt("UID", 0)
-                        Log.d("CAMERON", "username is $username, uid is $uid")
                         val color = mViewModel.getColor()
                         val eq = mViewModel.getEquation()
                         val selectionJSON = determineSelectionJSON(color, eq)
-                        insertWallpaper(selectionJSON, blob, uid!!)
-                        Toast.makeText(context, "Wallpaper created successfully!", Toast.LENGTH_SHORT).show()
+                        /*GlobalScope.launch {
+                            insertWallpaper(selectionJSON, blob, username!!)
+                        }*/
                     }
-                    else {
-                        Log.d("CAMERON", "NO USER")
-                    }
-                }
-                else{ // SaveAsNew not selected
+                } else { // SaveAsNew not selected
 
                 }
             }
@@ -140,7 +142,6 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
 
         override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {
             val orientation = mViewModel.getOrientation()
-            //Log.d("Livewallpaper", "orientation: $orientation")
             PreviewActivity.resize(width, height, orientation)
             mViewModel.width = width
             mViewModel.height = height
@@ -149,10 +150,10 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
         override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
             // get color rgba values from view model
             val color = mViewModel.getColor()
-            val r = (color.red()*255).toInt()
-            val g = (color.green()*255).toInt()
-            val b = (color.blue()*255).toInt()
-            val a = (color.alpha()*255).toInt()
+            val r = (color.red() * 255).toInt()
+            val g = (color.green() * 255).toInt()
+            val b = (color.blue() * 255).toInt()
+            val a = (color.alpha() * 255).toInt()
             val eq = mViewModel.getEquation()
 
             val nbodyJSON = """{
@@ -216,39 +217,45 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     "equation": "$eq"
                 }""".trimIndent()
 
-            lateinit var selectionJSON : String
+            lateinit var selectionJSON: String
             when (mViewModel.getVisualizationType()) {
                 0 -> {
                     selectionJSON = nbodyJSON
                     //val gravity: Float = jsonObject.getDouble("gravity").toFloat()
                     //mViewModel.mRepo.gravity.postValue(gravity)
                 }
+
                 1 -> {
                     selectionJSON = naiveJSON
-                    val jsonObject : JSONObject = JSONObject(selectionJSON)
+                    val jsonObject: JSONObject = JSONObject(selectionJSON)
                     val gravity: Float = jsonObject.getDouble("gravity").toFloat()
-                    val linearAcceleration: Float = jsonObject.getDouble("linear_acceleration").toFloat()
+                    val linearAcceleration: Float =
+                        jsonObject.getDouble("linear_acceleration").toFloat()
                     val efficiency: Float = jsonObject.getDouble("efficiency").toFloat()
                     mViewModel.mRepo.gravity.postValue(gravity)
                     mViewModel.mRepo.linearAcceleration.postValue(linearAcceleration)
                     mViewModel.mRepo.efficiency.postValue(efficiency)
                 }
+
                 2 -> {
                     selectionJSON = picflipJSON
-                    val jsonObject : JSONObject = JSONObject(selectionJSON)
+                    val jsonObject: JSONObject = JSONObject(selectionJSON)
                     val gravity: Float = jsonObject.getDouble("gravity").toFloat()
-                    val linearAcceleration: Float = jsonObject.getDouble("linear_acceleration").toFloat()
+                    val linearAcceleration: Float =
+                        jsonObject.getDouble("linear_acceleration").toFloat()
                     mViewModel.mRepo.gravity.postValue(gravity)
                     mViewModel.mRepo.linearAcceleration.postValue(linearAcceleration)
                 }
+
                 3 -> {
                     selectionJSON = triangleJSON
                 }
+
                 4 -> {
                     selectionJSON = graphJSON
                 }
             }
-            val jsonObject : JSONObject = JSONObject(selectionJSON)
+            val jsonObject: JSONObject = JSONObject(selectionJSON)
             val distance: Float = jsonObject.getDouble("distance").toFloat()
             val fieldOfView: Float = jsonObject.getDouble("field_of_view").toFloat()
             mViewModel.mRepo.distanceFromOrigin.postValue(distance)
@@ -257,10 +264,10 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
         }
 
         fun determineSelectionJSON(color: Color, eq: String): String {
-            val r = (color.red()*255).toInt()
-            val g = (color.green()*255).toInt()
-            val b = (color.blue()*255).toInt()
-            val a = (color.alpha()*255).toInt()
+            val r = (color.red() * 255).toInt()
+            val g = (color.green() * 255).toInt()
+            val b = (color.blue() * 255).toInt()
+            val a = (color.alpha() * 255).toInt()
 
             val nbodyJSON = """{
             "visualization_type": "simulation",
@@ -322,20 +329,24 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             "equation": "$eq"
         }""".trimIndent()
 
-            lateinit var selectionJSON : String
+            lateinit var selectionJSON: String
             when (mViewModel.getVisualizationType()) {
                 0 -> {
                     selectionJSON = nbodyJSON
                 }
+
                 1 -> {
                     selectionJSON = naiveJSON
                 }
+
                 2 -> {
                     selectionJSON = picflipJSON
                 }
+
                 3 -> {
                     selectionJSON = triangleJSON
                 }
+
                 4 -> {
                     selectionJSON = graphJSON
                 }
@@ -343,35 +354,38 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             return selectionJSON
         }
 
-        fun insertWallpaper(contents: String, image: ByteArray, uid: Int) {
-            GlobalScope.launch(Dispatchers.IO) {
-                // write aws test code here -------------
+        suspend fun insertWallpaper(contents: String, image: ByteArray, username: String) {
+            withContext(Dispatchers.IO) {
+                Log.d("CAMERON", "IN Coroutine")
                 val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
                 try {
+                    Log.d("CAMERON", "IN Try")
                     Class.forName("com.mysql.jdbc.Driver").newInstance()
-                    // connect to mysql server
                     val connectionProperties = Properties()
                     connectionProperties["user"] = ProfileActivity.DatabaseConfig.dbUser
                     connectionProperties["password"] = ProfileActivity.DatabaseConfig.dbPassword
-                    connectionProperties["useSSL"] = "false"
+                    connectionProperties["useSSL"] = "true"
 
                     DriverManager.getConnection(jdbcConnectionString, connectionProperties)
-                        .use { conn -> // this syntax ensures that connection will be closed whether normally or from exception
-                            Log.d("LiveWallpaper05", "Connected to database")
+                        .use { conn ->
+                            Log.d("CAMERON", "Connected to database")
                             val useDbQuery = "USE myDatabase;"
-                            val statement = conn.prepareStatement(useDbQuery)
-                            statement.execute()
-                            val insertQuery =
-                                "INSERT INTO wallpapers (contents, image, users_id) VALUES (?, ?, ?);"
-                            val preparedStatement = conn.prepareStatement(insertQuery)
-                            preparedStatement.setString(1, contents)
-                            preparedStatement.setBytes(2, image)
-                            preparedStatement.setInt(3, uid)
-                            preparedStatement.executeUpdate()
-                            conn.close()
+                            conn.prepareStatement(useDbQuery).use { statement ->
+                                statement.execute()
+                                val insertQuery =
+                                    "INSERT INTO wallpapers (contents, image, username) VALUES (?, ?, ?);"
+                                conn.prepareStatement(insertQuery).use { preparedStatement ->
+                                    preparedStatement.setString(1, contents)
+                                    preparedStatement.setBytes(2, image)
+                                    preparedStatement.setString(3, username)
+                                    preparedStatement.executeUpdate()
+                                }
+                            }
                         }
                 } catch (e: SQLException) {
-                    Log.d("OH_NO", e.message.toString())
+                    Log.e("OH_NO", "Error inserting wallpaper: ${e.message}", e)
+                } catch (e: Exception) {
+                    Log.e("OH_NO", "Unexpected error: ${e.message}", e)
                 }
             }
         }
