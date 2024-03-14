@@ -192,12 +192,8 @@ class ProfileActivity : AppCompatActivity() {
             // updated active wallpaper params with saved wallpaper data
             val activeConfig = mActiveWallpaperViewModel.getConfig()
             val activeWid = mActiveWallpaperViewModel.getWid()
-            mSavedWallpaperViewModel.saveSwitchWallpaper(activeWid, activeConfig)
             // if wid is in saved wallpapers, update active wallpaper with saved wallpaper data
-            //mSavedWallpaperViewModel.saveWallpaper(activeConfig)
-            // update active wallpaper variable
-            //mSavedWallpaperViewModel.switchWallpaper(activeWid)
-
+            mSavedWallpaperViewModel.saveSwitchWallpaper(activeWid, activeConfig)
         }
 
         // link active wallpaper to active wallpaper live data via callback function

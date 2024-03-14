@@ -16,7 +16,6 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.Spinner
@@ -221,7 +220,8 @@ class PreviewActivity : AppCompatActivity() {
         // Observe changes to liveDataBitmap in the ViewModel
         viewModel.liveDataBitmap.observe(this, Observer { bitmap ->
             // This code will be executed on the main (UI) thread whenever liveDataBitmap changes
-            findViewById<ImageView>(R.id.imageView).setImageBitmap(bitmap)
+            //findViewById<ImageView>(R.id.imageView).setImageBitmap(bitmap)
+            viewModel.updatePreviewImg(bitmap)
         })
 
         // setup color selection dialog
@@ -313,8 +313,6 @@ class PreviewActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         mView!!.onPause()
-
-        viewModel.updatePreviewImg(updatePreviewImage())
     }
 
     /* this is run when the app is 'resumed'

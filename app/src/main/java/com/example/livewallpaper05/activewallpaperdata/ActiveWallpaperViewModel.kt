@@ -184,34 +184,6 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         }
     }
 
-    fun saveConfig(){
-        val config = getConfig()
-        //repo.savedConfig = config
-    }
-
-    fun loadSavedConfig(configString: String){
-        // load saved string if param is empty
-        var config = ""
-        if (configString != "") {
-            config = configString
-        } else {
-            config = repo.savedConfig
-        }
-
-        // if config is empty, return
-        if (config == "") { return }
-
-        val configJson = JSONObject(config)
-        repo.simulationType = configJson.getInt("type")
-        val red = configJson.getJSONObject("background_color").getInt("r").toFloat()
-        val green = configJson.getJSONObject("background_color").getInt("g").toFloat()
-        val blue = configJson.getJSONObject("background_color").getInt("b").toFloat()
-        val alpha = configJson.getJSONObject("background_color").getInt("a").toFloat()
-
-        repo.color = Color.valueOf(red, green, blue, alpha)
-        repo.equation = configJson.getString("settings")
-    }
-
     fun getWid(): Int {
         return repo.wid
     }
