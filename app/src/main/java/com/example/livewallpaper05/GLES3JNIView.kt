@@ -153,113 +153,49 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
         }
 
         override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
-            // get color rgba values from view model
-            val eq = mViewModel.getEquation()
-
-            val nbodyJSON = """{
-                    "visualization_type": "simulation",
-                    "simulation_type": "nbody",
-                    "distance": 0.5,
-                    "field_of_view": 60.0,
-                    "background_is_solid_color": "false",
-                    "background_texture": "ms_paint_colors",
-                    "background_color": {"r": 0, "g": 0, "b": 0, "a": 0}
-                }""".trimIndent()
-
-            val naiveJSON = """{
-                    "visualization_type": "simulation",
-                    "simulation_type": "naive",
-                    "fluid_surface": "true",
-                    "particle_count": 1000,
-                    "smooth_sphere_surface": "true",
-                    "distance": 0.5,
-                    "field_of_view": 60.0,
-                    "gravity": 0.0,
-                    "linear_acceleration": 1.0,
-                    "efficiency": 1.0,
-                    "reference_frame_rotates": "false",
-                    "background_is_solid_color": "false",
-                    "background_texture": "ms_paint_colors",
-                    "background_color": {"r": 0, "g": 0, "b": 0, "a": 0}
-                }""".trimIndent()
-
-            val picflipJSON = """{
-                    "visualization_type": "simulation",
-                    "simulation_type": "picflip",
-                    "distance": 0.5,
-                    "field_of_view": 60.0,
-                    "gravity": 0.0,
-                    "linear_acceleration": 1.0,
-                    "reference_frame_rotates": "true",
-                    "background_is_solid_color": "false",
-                    "background_texture": "ms_paint_colors",
-                    "background_color": {"r": 0, "g": 0, "b": 0, "a": 0}
-                }""".trimIndent()
-
-            val triangleJSON = """{
-                    "visualization_type": "other",
-                    "distance": 0.5,
-                    "field_of_view": 60.0,
-                    "background_is_solid_color": "false",
-                    "background_texture": "mandelbrot",
-                    "background_color": {"r": 0, "g": 0, "b": 0, "a": 0}
-                }""".trimIndent()
-
-            val graphJSON = """{
-                    "visualization_type": "graph",
-                    "reference_frame_rotates": "false",
-                    "distance": 0.5,
-                    "field_of_view": 60.0,
-                    "background_is_solid_color": "false",
-                    "background_texture": "ms_paint_colors",
-                    "vector_points_positive": "false",
-                    "background_color": {"r": 0, "g": 0, "b": 0, "a": 0},
-                    "equation": "$eq"
-                }""".trimIndent()
-
-            lateinit var selectionJSON: String
+            var selectionJSON: String = ""
+            var jsonConfig : JSONObject = JSONObject()
             when (mViewModel.getVisualization()) {
                 0 -> {
-                    selectionJSON = nbodyJSON
-                    mViewModel.mRepo.jsonConfig = JSONObject(selectionJSON)
+                    mViewModel.visualization = ActiveWallpaperViewModel.NBodyVisualization()
+                    selectionJSON = mViewModel.visualization.toJsonObject().toString()
+                    jsonConfig = JSONObject(selectionJSON)
                     //val gravity: Float = jsonObject.getDouble("gravity").toFloat()
                     //mViewModel.mRepo.gravity.postValue(gravity)
                 }
-
                 1 -> {
-                    selectionJSON = naiveJSON
-                    mViewModel.mRepo.jsonConfig = JSONObject(selectionJSON)
-                    val gravity: Float = mViewModel.mRepo.jsonConfig.getDouble("gravity").toFloat()
-                    val linearAcceleration: Float =
-                        mViewModel.mRepo.jsonConfig.getDouble("linear_acceleration").toFloat()
-                    val efficiency: Float = mViewModel.mRepo.jsonConfig.getDouble("efficiency").toFloat()
+                    mViewModel.visualization = ActiveWallpaperViewModel.NaiveFluidVisualization()
+                    selectionJSON = mViewModel.visualization.toJsonObject().toString()
+                    jsonConfig = JSONObject(selectionJSON)
+                    val gravity: Float = jsonConfig.getDouble("gravity").toFloat()
+                    val linearAcceleration: Float = jsonConfig.getDouble("linear_acceleration").toFloat()
+                    val efficiency: Float = jsonConfig.getDouble("efficiency").toFloat()
                     mViewModel.mRepo.gravity.postValue(gravity)
                     mViewModel.mRepo.linearAcceleration.postValue(linearAcceleration)
                     mViewModel.mRepo.efficiency.postValue(efficiency)
                 }
-
                 2 -> {
-                    selectionJSON = picflipJSON
-                    mViewModel.mRepo.jsonConfig = JSONObject(selectionJSON)
-                    val gravity: Float = mViewModel.mRepo.jsonConfig.getDouble("gravity").toFloat()
-                    val linearAcceleration: Float =
-                        mViewModel.mRepo.jsonConfig.getDouble("linear_acceleration").toFloat()
+                    mViewModel.visualization = ActiveWallpaperViewModel.PicFlipVisualization()
+                    selectionJSON = mViewModel.visualization.toJsonObject().toString()
+                    jsonConfig = JSONObject(selectionJSON)
+                    val gravity: Float = jsonConfig.getDouble("gravity").toFloat()
+                    val linearAcceleration: Float = jsonConfig.getDouble("linear_acceleration").toFloat()
                     mViewModel.mRepo.gravity.postValue(gravity)
                     mViewModel.mRepo.linearAcceleration.postValue(linearAcceleration)
                 }
-
                 3 -> {
-                    selectionJSON = triangleJSON
-                    mViewModel.mRepo.jsonConfig = JSONObject(selectionJSON)
+                    mViewModel.visualization = ActiveWallpaperViewModel.TriangleVisualization()
+                    selectionJSON = mViewModel.visualization.toJsonObject().toString()
+                    jsonConfig = JSONObject(selectionJSON)
                 }
-
                 4 -> {
-                    selectionJSON = graphJSON
-                    mViewModel.mRepo.jsonConfig = JSONObject(selectionJSON)
+                    mViewModel.visualization = ActiveWallpaperViewModel.GraphVisualization()
+                    selectionJSON = mViewModel.visualization.toJsonObject().toString()
+                    jsonConfig = JSONObject(selectionJSON)
                 }
             }
-            val distance: Float = mViewModel.mRepo.jsonConfig.getDouble("distance").toFloat()
-            val fieldOfView: Float = mViewModel.mRepo.jsonConfig.getDouble("field_of_view").toFloat()
+            val distance: Float = jsonConfig.getDouble("distance").toFloat()
+            val fieldOfView: Float = jsonConfig.getDouble("field_of_view").toFloat()
             mViewModel.mRepo.distanceFromOrigin.postValue(distance)
             mViewModel.mRepo.fieldOfView.postValue(fieldOfView)
             val color = mViewModel.getColor()
@@ -267,12 +203,12 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             val g = (color.green() * 255).toInt()
             val b = (color.blue() * 255).toInt()
             val a = (color.alpha() * 255).toInt()
-            val backgroundColor = mViewModel.mRepo.jsonConfig.getJSONObject("background_color")
+            val backgroundColor = jsonConfig.getJSONObject("background_color")
             backgroundColor.put("r", r)
             backgroundColor.put("g", g)
             backgroundColor.put("b", b)
             backgroundColor.put("a", a)
-            PreviewActivity.init(mViewModel.mRepo.jsonConfig.toString())
+            PreviewActivity.init(jsonConfig.toString())
         }
 
         fun determineSelectionJSON(color: Color, eq: String): String {

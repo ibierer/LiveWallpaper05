@@ -117,14 +117,14 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
                 view = new LinearithmicNBodySimulationView();
             }else if(simulation == "naive"){
                 int particleCount = visualizationJSON["particle_count"];
-                string fluidSurface = visualizationJSON["fluid_surface"];
-                string referenceFrameRotates = visualizationJSON["reference_frame_rotates"];
-                string smoothSphereSurface = visualizationJSON["smooth_sphere_surface"];
-                //view = new NaiveSimulationView(particleCount, 15.0f, referenceFrameRotates == "true", gravity);
-                view = new NaiveSimulationFluidSurfaceView(particleCount, fluidSurface == "true", 40, 20.0f, referenceFrameRotates == "true", smoothSphereSurface == "true");
+                bool fluidSurface = visualizationJSON["fluid_surface"];
+                bool referenceFrameRotates = visualizationJSON["reference_frame_rotates"];
+                bool smoothSphereSurface = visualizationJSON["smooth_sphere_surface"];
+                //view = new NaiveSimulationView(particleCount, 15.0f, referenceFrameRotates, gravity);
+                view = new NaiveSimulationFluidSurfaceView(particleCount, fluidSurface, 40, 20.0f, referenceFrameRotates, smoothSphereSurface);
             }else if(simulation == "picflip"){
-                string referenceFrameRotates = visualizationJSON["reference_frame_rotates"];
-                view = new PicFlipView(referenceFrameRotates == "true");
+                bool referenceFrameRotates = visualizationJSON["reference_frame_rotates"];
+                view = new PicFlipView(referenceFrameRotates);
             }
         }else if(visualizationType == "other"){
             view = new SphereWithFresnelEffectView(Texture::MANDELBROT, 2048);
@@ -132,16 +132,16 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
             string equation = visualizationJSON["equation"];
             ImplicitGrapher::convertPiSymbol(equation);
             string syntaxCheck = ImplicitGrapher::checkEquationSyntax(equation);
-            string referenceFrameRotates = visualizationJSON["reference_frame_rotates"];
-            string vectorPointsPositive = visualizationJSON["vector_points_positive"];
+            bool referenceFrameRotates = visualizationJSON["reference_frame_rotates"];
+            bool vectorPointsPositive = visualizationJSON["vector_points_positive"];
             if(syntaxCheck == "") {
-                view = new Graph2View(equation, 40, referenceFrameRotates == "true", vectorPointsPositive == "true");
+                view = new Graph2View(equation, 40, referenceFrameRotates, vectorPointsPositive);
             }else{
-                view = new Graph2View("", 40, referenceFrameRotates == "true", vectorPointsPositive == "true");
+                view = new Graph2View("", 40, referenceFrameRotates, vectorPointsPositive);
             }
         }
 
-        view->backgroundIsSolidColor = visualizationJSON["background_is_solid_color"] == "true";
+        view->backgroundIsSolidColor = visualizationJSON["background_is_solid_color"];
         json rgba = visualizationJSON["background_color"];
         view->backgroundColor = vec4((float)rgba["r"], (float)rgba["g"], (float)rgba["b"], 255.0f) / 255.0f;
 

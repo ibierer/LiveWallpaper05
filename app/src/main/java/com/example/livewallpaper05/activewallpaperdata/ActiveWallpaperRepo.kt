@@ -27,10 +27,9 @@ class ActiveWallpaperRepo private constructor () : SensorEventListener {
     var rotationData: Array<Float> = arrayOf(0.0f,0.0f,0.0f,0.0f)
     var accelerationData: Array<Float> = arrayOf(0.0f,0.0f,0.0f)
     var linearAccelerationData: Array<Float> = arrayOf(0.0f,0.0f,0.0f)
-    var simulationType: Int = 0
+    var visualizationSelection: Int = 0
     var preview: Bitmap? = null
     var savedConfig: String = ""
-    var jsonConfig: JSONObject = JSONObject()
 
     private lateinit var mSensorManager: SensorManager
 
