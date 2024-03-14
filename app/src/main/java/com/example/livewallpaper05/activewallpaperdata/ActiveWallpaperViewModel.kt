@@ -15,10 +15,8 @@ import java.util.Random
  * View Model to keep a reference to the active wallpaper data
  */
 class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewModel() {
-    open class Visualization() {
-        open fun toJsonObject(): JSONObject {
-            return JSONObject()
-        }
+    abstract class Visualization {
+        abstract fun toJsonObject(): JSONObject
     }
     data class NBodyVisualization (
         val visualizationType: String = "simulation",
