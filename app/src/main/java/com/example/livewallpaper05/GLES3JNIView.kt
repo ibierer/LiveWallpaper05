@@ -115,20 +115,16 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                             context.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
                         username = sharedPreferences.getString("USERNAME", "").toString()
                         uid = sharedPreferences.getInt("UID", 0)
-                        val color = mViewModel.getColor()
-                        val eq = mViewModel.getEquation()
-                        val selectionJSON = determineSelectionJSON(color, eq)
+                        val visualizationDetails = mViewModel.visualization.toJsonObject()
                         GlobalScope.launch {
-                            insertWallpaper(selectionJSON, blob, username!!)
+                            insertWallpaper(visualizationDetails.toString(), blob, username!!)
                         }
                     } else {
                         username = "Default User"
                         uid = 11
-                        val color = mViewModel.getColor()
-                        val eq = mViewModel.getEquation()
-                        val selectionJSON = determineSelectionJSON(color, eq)
+                        val visualizationDetails = mViewModel.visualization.toJsonObject()
                         GlobalScope.launch {
-                            insertWallpaper(selectionJSON, blob, username!!)
+                            insertWallpaper(visualizationDetails.toString(), blob, username!!)
                         }
                     }
                 }
@@ -154,7 +150,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
 
         override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
             var selectionJSON: String = ""
-            var jsonConfig : JSONObject = JSONObject()
+            var jsonConfig: JSONObject = JSONObject()
             when (mViewModel.getVisualization()) {
                 0 -> {
                     mViewModel.visualization = ActiveWallpaperViewModel.NBodyVisualization()
@@ -163,31 +159,37 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     //val gravity: Float = jsonObject.getDouble("gravity").toFloat()
                     //mViewModel.mRepo.gravity.postValue(gravity)
                 }
+
                 1 -> {
                     mViewModel.visualization = ActiveWallpaperViewModel.NaiveFluidVisualization()
                     selectionJSON = mViewModel.visualization.toJsonObject().toString()
                     jsonConfig = JSONObject(selectionJSON)
                     val gravity: Float = jsonConfig.getDouble("gravity").toFloat()
-                    val linearAcceleration: Float = jsonConfig.getDouble("linear_acceleration").toFloat()
+                    val linearAcceleration: Float =
+                        jsonConfig.getDouble("linear_acceleration").toFloat()
                     val efficiency: Float = jsonConfig.getDouble("efficiency").toFloat()
                     mViewModel.mRepo.gravity.postValue(gravity)
                     mViewModel.mRepo.linearAcceleration.postValue(linearAcceleration)
                     mViewModel.mRepo.efficiency.postValue(efficiency)
                 }
+
                 2 -> {
                     mViewModel.visualization = ActiveWallpaperViewModel.PicFlipVisualization()
                     selectionJSON = mViewModel.visualization.toJsonObject().toString()
                     jsonConfig = JSONObject(selectionJSON)
                     val gravity: Float = jsonConfig.getDouble("gravity").toFloat()
-                    val linearAcceleration: Float = jsonConfig.getDouble("linear_acceleration").toFloat()
+                    val linearAcceleration: Float =
+                        jsonConfig.getDouble("linear_acceleration").toFloat()
                     mViewModel.mRepo.gravity.postValue(gravity)
                     mViewModel.mRepo.linearAcceleration.postValue(linearAcceleration)
                 }
+
                 3 -> {
                     mViewModel.visualization = ActiveWallpaperViewModel.TriangleVisualization()
                     selectionJSON = mViewModel.visualization.toJsonObject().toString()
                     jsonConfig = JSONObject(selectionJSON)
                 }
+
                 4 -> {
                     mViewModel.visualization = ActiveWallpaperViewModel.GraphVisualization()
                     selectionJSON = mViewModel.visualization.toJsonObject().toString()
@@ -211,100 +213,10 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             PreviewActivity.init(jsonConfig.toString())
         }
 
-        fun determineSelectionJSON(color: Color, eq: String): String {
-            val r = (color.red() * 255).toInt()
-            val g = (color.green() * 255).toInt()
-            val b = (color.blue() * 255).toInt()
-            val a = (color.alpha() * 255).toInt()
-
-            val nbodyJSON = """{
-            "visualization_type": "simulation",
-            "simulation_type": "nbody",
-            "distance": 0.5,
-            "field_of_view": 60.0,
-            "background_is_solid_color": "false",
-            "background_texture": "ms_paint_colors",
-            "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
-        }""".trimIndent()
-
-            val naiveJSON = """{
-            "visualization_type": "simulation",
-            "simulation_type": "naive",
-            "fluid_surface": "true",
-            "particle_count": 1000,
-            "smooth_sphere_surface": "true",
-            "distance": 0.5,
-            "field_of_view": 60.0,
-            "gravity": 0.0,
-            "linear_acceleration": 1.0,
-            "reference_frame_rotates": "false",
-            "background_is_solid_color": "false",
-            "background_texture": "ms_paint_colors",
-            "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
-        }""".trimIndent()
-
-            val picflipJSON = """{
-            "visualization_type": "simulation",
-            "simulation_type": "picflip",
-            "distance": 0.5,
-            "field_of_view": 60.0,
-            "gravity": 0.0,
-            "linear_acceleration": 1.0,
-            "reference_frame_rotates": "true",
-            "background_is_solid_color": "false",
-            "background_texture": "ms_paint_colors",
-            "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
-        }""".trimIndent()
-
-            val triangleJSON = """{
-            "visualization_type": "other",
-            "distance": 0.5,
-            "field_of_view": 60.0,
-            "background_is_solid_color": "false",
-            "background_texture": "mandelbrot",
-            "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
-        }""".trimIndent()
-
-            val graphJSON = """{
-            "visualization_type": "graph",
-            "reference_frame_rotates": "false",
-            "distance": 0.5,
-            "field_of_view": 60.0,
-            "background_is_solid_color": "false",
-            "background_texture": "ms_paint_colors",
-            "vector_points_positive": "false",
-            "background_color": {"r": $r, "g": $g, "b": $b, "a": $a},
-            "equation": "$eq"
-        }""".trimIndent()
-
-            lateinit var selectionJSON: String
-            when (mViewModel.getVisualization()) {
-                0 -> {
-                    selectionJSON = nbodyJSON
-                }
-
-                1 -> {
-                    selectionJSON = naiveJSON
-                }
-
-                2 -> {
-                    selectionJSON = picflipJSON
-                }
-
-                3 -> {
-                    selectionJSON = triangleJSON
-                }
-
-                4 -> {
-                    selectionJSON = graphJSON
-                }
-            }
-            return selectionJSON
-        }
-
         suspend fun insertWallpaper(contents: String, image: ByteArray, username: String) {
             withContext(Dispatchers.IO) {
                 val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
+                Log.d("SQL", "in Insert")
                 try {
                     Class.forName("com.mysql.jdbc.Driver").newInstance()
                     val connectionProperties = Properties()
@@ -313,17 +225,14 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     connectionProperties["useSSL"] = "false"
                     DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                         .use { conn ->
-                            val useDbQuery = "USE myDatabase;"
-                            conn.prepareStatement(useDbQuery).use { statement ->
-                                statement.execute()
-                                val insertQuery =
-                                    "INSERT INTO wallpapers (contents, image, username) VALUES (?, ?, ?);"
-                                conn.prepareStatement(insertQuery).use { preparedStatement ->
-                                    preparedStatement.setString(1, contents)
-                                    preparedStatement.setBytes(2, image)
-                                    preparedStatement.setString(3, username)
-                                    preparedStatement.executeUpdate()
-                                }
+                            Log.d("SQL", "Connection made")
+                            val insertQuery =
+                                "INSERT INTO wallpapers (contents, image, username) VALUES (?, ?, ?);"
+                            conn.prepareStatement(insertQuery).use { preparedStatement ->
+                                preparedStatement.setString(1, contents)
+                                preparedStatement.setBytes(2, image)
+                                preparedStatement.setString(3, username)
+                                preparedStatement.executeUpdate()
                             }
                         }
                 } catch (e: SQLException) {
