@@ -85,7 +85,7 @@ class PreviewActivity : AppCompatActivity() {
         )
         visualizationSelectorSpinner.adapter = simSelectorAdapter
         // set default to viewmodel simulation type
-        visualizationSelectorSpinner.setSelection(viewModel.getVisualizationType())
+        visualizationSelectorSpinner.setSelection(viewModel.getVisualization())
 
         // register senser event listeners
         viewModel.registerSensorEvents(getSystemService(Context.SENSOR_SERVICE) as SensorManager)

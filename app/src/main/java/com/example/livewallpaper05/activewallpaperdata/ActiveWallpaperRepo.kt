@@ -8,6 +8,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
+import org.json.JSONObject
 
 class ActiveWallpaperRepo private constructor () : SensorEventListener {
 
@@ -29,6 +30,7 @@ class ActiveWallpaperRepo private constructor () : SensorEventListener {
     var simulationType: Int = 0
     var preview: Bitmap? = null
     var savedConfig: String = ""
+    var jsonConfig: JSONObject = JSONObject()
 
     private lateinit var mSensorManager: SensorManager
 

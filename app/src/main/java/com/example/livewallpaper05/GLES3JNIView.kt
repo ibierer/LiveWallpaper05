@@ -154,17 +154,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
 
         override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
             // get color rgba values from view model
-            val color = mViewModel.getColor()
-            val r = (color.red() * 255).toInt()
-            val g = (color.green() * 255).toInt()
-            val b = (color.blue() * 255).toInt()
-            val a = (color.alpha() * 255).toInt()
             val eq = mViewModel.getEquation()
-            /*mViewModel.getFieldOfView()
-            mViewModel.getEfficiency()
-            mViewModel.getGravity()
-            mViewModel.getLinearAcceleration()
-            */
 
             val nbodyJSON = """{
                     "visualization_type": "simulation",
@@ -228,20 +218,21 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                 }""".trimIndent()
 
             lateinit var selectionJSON: String
-            when (mViewModel.getVisualizationType()) {
+            when (mViewModel.getVisualization()) {
                 0 -> {
                     selectionJSON = nbodyJSON
+                    mViewModel.mRepo.jsonConfig = JSONObject(selectionJSON)
                     //val gravity: Float = jsonObject.getDouble("gravity").toFloat()
                     //mViewModel.mRepo.gravity.postValue(gravity)
                 }
 
                 1 -> {
                     selectionJSON = naiveJSON
-                    val jsonObject: JSONObject = JSONObject(selectionJSON)
-                    val gravity: Float = jsonObject.getDouble("gravity").toFloat()
+                    mViewModel.mRepo.jsonConfig = JSONObject(selectionJSON)
+                    val gravity: Float = mViewModel.mRepo.jsonConfig.getDouble("gravity").toFloat()
                     val linearAcceleration: Float =
-                        jsonObject.getDouble("linear_acceleration").toFloat()
-                    val efficiency: Float = jsonObject.getDouble("efficiency").toFloat()
+                        mViewModel.mRepo.jsonConfig.getDouble("linear_acceleration").toFloat()
+                    val efficiency: Float = mViewModel.mRepo.jsonConfig.getDouble("efficiency").toFloat()
                     mViewModel.mRepo.gravity.postValue(gravity)
                     mViewModel.mRepo.linearAcceleration.postValue(linearAcceleration)
                     mViewModel.mRepo.efficiency.postValue(efficiency)
@@ -249,28 +240,39 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
 
                 2 -> {
                     selectionJSON = picflipJSON
-                    val jsonObject: JSONObject = JSONObject(selectionJSON)
-                    val gravity: Float = jsonObject.getDouble("gravity").toFloat()
+                    mViewModel.mRepo.jsonConfig = JSONObject(selectionJSON)
+                    val gravity: Float = mViewModel.mRepo.jsonConfig.getDouble("gravity").toFloat()
                     val linearAcceleration: Float =
-                        jsonObject.getDouble("linear_acceleration").toFloat()
+                        mViewModel.mRepo.jsonConfig.getDouble("linear_acceleration").toFloat()
                     mViewModel.mRepo.gravity.postValue(gravity)
                     mViewModel.mRepo.linearAcceleration.postValue(linearAcceleration)
                 }
 
                 3 -> {
                     selectionJSON = triangleJSON
+                    mViewModel.mRepo.jsonConfig = JSONObject(selectionJSON)
                 }
 
                 4 -> {
                     selectionJSON = graphJSON
+                    mViewModel.mRepo.jsonConfig = JSONObject(selectionJSON)
                 }
             }
-            val jsonObject: JSONObject = JSONObject(selectionJSON)
-            val distance: Float = jsonObject.getDouble("distance").toFloat()
-            val fieldOfView: Float = jsonObject.getDouble("field_of_view").toFloat()
+            val distance: Float = mViewModel.mRepo.jsonConfig.getDouble("distance").toFloat()
+            val fieldOfView: Float = mViewModel.mRepo.jsonConfig.getDouble("field_of_view").toFloat()
             mViewModel.mRepo.distanceFromOrigin.postValue(distance)
             mViewModel.mRepo.fieldOfView.postValue(fieldOfView)
-            PreviewActivity.init(selectionJSON)
+            val color = mViewModel.getColor()
+            val r = (color.red() * 255).toInt()
+            val g = (color.green() * 255).toInt()
+            val b = (color.blue() * 255).toInt()
+            val a = (color.alpha() * 255).toInt()
+            val backgroundColor = mViewModel.mRepo.jsonConfig.getJSONObject("background_color")
+            backgroundColor.put("r", r)
+            backgroundColor.put("g", g)
+            backgroundColor.put("b", b)
+            backgroundColor.put("a", a)
+            PreviewActivity.init(mViewModel.mRepo.jsonConfig.toString())
         }
 
         fun determineSelectionJSON(color: Color, eq: String): String {
@@ -340,7 +342,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
         }""".trimIndent()
 
             lateinit var selectionJSON: String
-            when (mViewModel.getVisualizationType()) {
+            when (mViewModel.getVisualization()) {
                 0 -> {
                     selectionJSON = nbodyJSON
                 }
