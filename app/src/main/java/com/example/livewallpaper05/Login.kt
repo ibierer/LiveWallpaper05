@@ -110,10 +110,7 @@ class Login : AppCompatActivity() {
                 connectionProperties["useSSL"] = "false"
                 DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                     .use { conn ->
-                        val useDbQuery = "USE myDatabase;"
-                        val useDbStatement = conn.prepareStatement(useDbQuery)
-                        useDbStatement.execute()
-                        val getUsernameQuery = "SELECT username FROM users WHERE name = ?;"
+                        val getUsernameQuery = "SELECT uid, username FROM users WHERE name = ?;"
                         val checkUserStatement = conn.prepareStatement(getUsernameQuery)
                         checkUserStatement.setString(1, email)
                         val resultSet = checkUserStatement.executeQuery()
@@ -121,12 +118,13 @@ class Login : AppCompatActivity() {
                             // Assign the value to the 'username' variable
                             username = resultSet.getString("username")
                             uid = resultSet.getInt("uid")
+                            Log.d("LOGIN", "username is $username, uid is $uid")
                         } else {
-                            // Handle the case where no username is found for the given email
+                            Log.d("SQL_ERROR", "No username exists for the given email: $email")
                         }
                     }
             } catch (e: SQLException) {
-                Log.d("getUsernameFromEmail", e.message.toString())
+                Log.d("SQL_ERROR", e.message.toString())
             }
             Pair(username, uid)
         }
