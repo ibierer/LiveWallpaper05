@@ -122,9 +122,16 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                         GlobalScope.launch {
                             insertWallpaper(selectionJSON, blob, username!!)
                         }
+                    } else {
+                        username = "Default User"
+                        uid = 11
+                        val color = mViewModel.getColor()
+                        val eq = mViewModel.getEquation()
+                        val selectionJSON = determineSelectionJSON(color, eq)
+                        GlobalScope.launch {
+                            insertWallpaper(selectionJSON, blob, username!!)
+                        }
                     }
-                } else { // SaveAsNew not selected
-
                 }
             }
 
@@ -154,6 +161,11 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             val b = (color.blue() * 255).toInt()
             val a = (color.alpha() * 255).toInt()
             val eq = mViewModel.getEquation()
+            /*mViewModel.getFieldOfView()
+            mViewModel.getEfficiency()
+            mViewModel.getGravity()
+            mViewModel.getLinearAcceleration()
+            */
 
             val nbodyJSON = """{
                     "visualization_type": "simulation",
@@ -162,7 +174,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     "field_of_view": 60.0,
                     "background_is_solid_color": "false",
                     "background_texture": "ms_paint_colors",
-                    "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
+                    "background_color": {"r": 0, "g": 0, "b": 0, "a": 0}
                 }""".trimIndent()
 
             val naiveJSON = """{
@@ -179,7 +191,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     "reference_frame_rotates": "false",
                     "background_is_solid_color": "false",
                     "background_texture": "ms_paint_colors",
-                    "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
+                    "background_color": {"r": 0, "g": 0, "b": 0, "a": 0}
                 }""".trimIndent()
 
             val picflipJSON = """{
@@ -192,7 +204,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     "reference_frame_rotates": "true",
                     "background_is_solid_color": "false",
                     "background_texture": "ms_paint_colors",
-                    "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
+                    "background_color": {"r": 0, "g": 0, "b": 0, "a": 0}
                 }""".trimIndent()
 
             val triangleJSON = """{
@@ -201,7 +213,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     "field_of_view": 60.0,
                     "background_is_solid_color": "false",
                     "background_texture": "mandelbrot",
-                    "background_color": {"r": $r, "g": $g, "b": $b, "a": $a}
+                    "background_color": {"r": 0, "g": 0, "b": 0, "a": 0}
                 }""".trimIndent()
 
             val graphJSON = """{
@@ -212,7 +224,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     "background_is_solid_color": "false",
                     "background_texture": "ms_paint_colors",
                     "vector_points_positive": "false",
-                    "background_color": {"r": $r, "g": $g, "b": $b, "a": $a},
+                    "background_color": {"r": 0, "g": 0, "b": 0, "a": 0},
                     "equation": "$eq"
                 }""".trimIndent()
 

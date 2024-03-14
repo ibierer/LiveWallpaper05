@@ -21,7 +21,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
     var liveDataBitmap : MutableLiveData<Bitmap> = MutableLiveData<Bitmap>(mBitmap)
     var getScreenBuffer: Int = 0
     var saveAsNew: Int = 0
-
+    var jsonConfig: JSONObject? = null
     // reference repo from constructor value
     val mRepo: ActiveWallpaperRepo = repo
 
