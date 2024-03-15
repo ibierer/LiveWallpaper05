@@ -192,7 +192,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     jsonConfig = JSONObject(selectionJSON)
                 }
             }
-            Log.d("VISUALIZATION = ", jsonConfig.toString())
+            //Log.d("VISUALIZATION = ", jsonConfig.toString())
             val distance: Float = jsonConfig.getDouble("distance").toFloat()
             val fieldOfView: Float = jsonConfig.getDouble("field_of_view").toFloat()
             mViewModel.mRepo.distanceFromOrigin.postValue(distance)

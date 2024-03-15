@@ -210,7 +210,6 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
     // reference repo from constructor value
     val mRepo: ActiveWallpaperRepo = repo
 
-
     fun getPreviewImg(seed: Int): Bitmap {
         if (repo.preview != null && false) // This condition is always false... hmm...
             return repo.preview!!
@@ -341,6 +340,8 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         config.put("settings", eq)
 
         return config.toString()
+
+        //return visualization.toJsonObject().toString()
     }
 
     // load config table into repo
@@ -413,28 +414,6 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
 
     fun getEfficiency(): Float {
         return repo.efficiency.value!!
-    }
-
-    fun constructJSONObjectFromViewModel() : JSONObject {
-        var jsonConfig : JSONObject = JSONObject()
-        when(getVisualization()){
-            0 -> {
-                jsonConfig = (visualization as NBodyVisualization).toJsonObject()
-            }
-            1 -> {
-                jsonConfig = (visualization as NaiveFluidVisualization).toJsonObject()
-            }
-            2 -> {
-                jsonConfig = (visualization as PicFlipVisualization).toJsonObject()
-            }
-            3 -> {
-                jsonConfig = (visualization as TriangleVisualization).toJsonObject()
-            }
-            4 -> {
-                jsonConfig = (visualization as GraphVisualization).toJsonObject()
-            }
-        }
-        return jsonConfig
     }
 }
 
