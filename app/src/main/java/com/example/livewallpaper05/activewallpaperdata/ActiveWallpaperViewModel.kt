@@ -41,6 +41,13 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
                 val af = a.toFloat() / 255
                 return Color.valueOf(rf, gf, bf, af)
             }
+            fun jsonObjectToColor(colorJSONObject: JSONObject): Color {
+                val r = colorJSONObject.getInt("r").toFloat()
+                val g = colorJSONObject.getInt("g").toFloat()
+                val b = colorJSONObject.getInt("b").toFloat()
+                val a = colorJSONObject.getInt("a").toFloat()
+                return Color.valueOf(a, r, g, b)
+            }
         }
     }
     data class NBodyVisualization (
@@ -52,6 +59,17 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         var backgroundIsSolidColor: Boolean = true,
         var backgroundTexture: String = "ms_paint_colors"
     ) : Visualization() {
+
+        constructor(jsonObject: JSONObject) : this(
+            visualizationType = jsonObject.optString("visualization_type", "simulation"),
+            simulationType = jsonObject.optString("simulation_type", "nbody"),
+            distance = jsonObject.optDouble("distance", 0.5).toFloat(),
+            fieldOfView = jsonObject.optDouble("field_of_view", 60.0).toFloat(),
+            backgroundColor = jsonObject.optJSONObject("background_color")?.let { Visualization.jsonObjectToColor(it) }?: createColorFromInts(0, 0, 0, 0),
+            backgroundIsSolidColor = jsonObject.optBoolean("background_is_solid_color", true),
+            backgroundTexture = jsonObject.optString("background_texture", "ms_paint_colors")
+        )
+
         val relevantIds : List<Int> = listOf(
             R.id.distance_seekbar,
             R.id.distance_label,
@@ -86,6 +104,24 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         var backgroundIsSolidColor: Boolean = false,
         var backgroundTexture: String = "ms_paint_colors"
     ) : Visualization() {
+
+        constructor(jsonObject: JSONObject) : this(
+            visualizationType = jsonObject.optString("visualization_type", "simulation"),
+            simulationType = jsonObject.optString("simulation_type", "naive"),
+            distance = jsonObject.optDouble("distance", 0.5).toFloat(),
+            fieldOfView = jsonObject.optDouble("field_of_view", 60.0).toFloat(),
+            backgroundColor = jsonObject.optJSONObject("background_color")?.let { Visualization.jsonObjectToColor(it) }?: createColorFromInts(0, 0, 0, 0),
+            fluidSurface = jsonObject.optBoolean("fluid_surface", true),
+            particleCount = jsonObject.optInt("particle_count", 1000),
+            smoothSphereSurface = jsonObject.optBoolean("smooth_sphere_surface", true),
+            gravity = jsonObject.optDouble("gravity", 0.0).toFloat(),
+            linearAcceleration = jsonObject.optDouble("linear_acceleration", 1.0).toFloat(),
+            efficiency = jsonObject.optDouble("efficiency", 1.0).toFloat(),
+            referenceFrameRotates = jsonObject.optBoolean("reference_frame_rotates", false),
+            backgroundIsSolidColor = jsonObject.optBoolean("background_is_solid_color", false),
+            backgroundTexture = jsonObject.optString("background_texture", "ms_paint_colors")
+        )
+
         val relevantIds : List<Int> = listOf(
             R.id.distance_seekbar,
             R.id.distance_label,
@@ -123,6 +159,18 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         var backgroundIsSolidColor: Boolean = false,
         var backgroundTexture: String = "ms_paint_colors"
     ) : Visualization() {
+        constructor(jsonObject: JSONObject) : this(
+            visualizationType = jsonObject.optString("visualization_type", "simulation"),
+            simulationType = jsonObject.optString("simulation_type", "picflip"),
+            distance = jsonObject.optDouble("distance", 0.5).toFloat(),
+            fieldOfView = jsonObject.optDouble("field_of_view", 60.0).toFloat(),
+            gravity = jsonObject.optDouble("gravity", 0.0).toFloat(),
+            linearAcceleration = jsonObject.optDouble("linear_acceleration", 1.0).toFloat(),
+            backgroundColor = jsonObject.optJSONObject("background_color")?.let { Visualization.jsonObjectToColor(it) }?: createColorFromInts(0, 0, 0, 0),
+            referenceFrameRotates = jsonObject.optBoolean("reference_frame_rotates", true),
+            backgroundIsSolidColor = jsonObject.optBoolean("background_is_solid_color", false),
+            backgroundTexture = jsonObject.optString("background_texture", "ms_paint_colors")
+        )
         val relevantIds : List<Int> = listOf(
             R.id.distance_seekbar,
             R.id.distance_label,
@@ -152,6 +200,16 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         var backgroundIsSolidColor: Boolean = false,
         var backgroundTexture: String = "mandelbrot"
     ) : Visualization() {
+
+        constructor(jsonObject: JSONObject) : this(
+            visualizationType = jsonObject.optString("visualization_type", "other"),
+            distance = jsonObject.optDouble("distance", 0.5).toFloat(),
+            fieldOfView = jsonObject.optDouble("field_of_view", 60.0).toFloat(),
+            backgroundColor = jsonObject.optJSONObject("background_color")?.let { Visualization.jsonObjectToColor(it) }?: createColorFromInts(0, 0, 0, 0),
+            backgroundIsSolidColor = jsonObject.optBoolean("background_is_solid_color", false),
+            backgroundTexture = jsonObject.optString("background_texture", "mandelbrot")
+        )
+
         val relevantIds : List<Int> = listOf(
             R.id.distance_seekbar,
             R.id.distance_label,
@@ -180,6 +238,19 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         var vectorPointsPositive: Boolean = false,
         var equation: String = "1/((sqrt(x^2 + y^2) - 1.5 + sin(t))^2 + (z + cos(t))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 2π/3))^2 + (z + cos(t + 2π/3))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 4π/3))^2 + (z + cos(t + 4π/3))^2) = 5"
     ) : Visualization() {
+
+        constructor(jsonObject: JSONObject) : this(
+            visualizationType = jsonObject.optString("visualization_type", "graph"),
+            distance = jsonObject.optDouble("distance", 0.5).toFloat(),
+            fieldOfView = jsonObject.optDouble("field_of_view", 60.0).toFloat(),
+            backgroundColor = jsonObject.optJSONObject("background_color")?.let { Visualization.jsonObjectToColor(it) }?: createColorFromInts(0, 0, 0, 0),
+            referenceFrameRotates = jsonObject.optBoolean("reference_frame_rotates", false),
+            backgroundIsSolidColor = jsonObject.optBoolean("background_is_solid_color", false),
+            backgroundTexture = jsonObject.optString("background_texture", "ms_paint_colors"),
+            vectorPointsPositive = jsonObject.optBoolean("vector_points_positive", false),
+            equation = jsonObject.optString("equation", "1/((sqrt(x^2 + y^2) - 1.5 + sin(t))^2 + (z + cos(t))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 2π/3))^2 + (z + cos(t + 2π/3))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 4π/3))^2 + (z + cos(t + 4π/3))^2) = 5")
+        )
+
         val relevantIds : List<Int> = listOf(
             R.id.distance_seekbar,
             R.id.distance_label,
@@ -200,7 +271,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
             return jsonObject
         }
     }
-    lateinit var visualization : Visualization
+    var visualization : Visualization? = null
     var width: Int = 0
     var height: Int = 0
     private var mBitmap : Bitmap = Bitmap.createBitmap(500, 500, Bitmap.Config.ARGB_8888) as Bitmap

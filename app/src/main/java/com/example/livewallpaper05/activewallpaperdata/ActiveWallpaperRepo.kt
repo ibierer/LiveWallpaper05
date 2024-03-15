@@ -12,6 +12,12 @@ import org.json.JSONObject
 
 class ActiveWallpaperRepo private constructor () : SensorEventListener {
 
+    var nbodyVisualizationString: String = ""
+    var naiveVisualizationString: String = ""
+    var picflipVisualizationString: String = ""
+    var triangleVisualizationString: String = ""
+    var graphVisualizationString: String = ""
+
     // initialize default values
     var wid: Int = 1
     var equation: String = ""
