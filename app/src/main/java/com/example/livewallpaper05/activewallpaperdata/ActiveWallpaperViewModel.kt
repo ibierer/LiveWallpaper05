@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.hardware.SensorManager
 import android.util.Log
 import androidx.lifecycle.*
+import com.example.livewallpaper05.R
 import com.example.livewallpaper05.savedWallpapers.SavedWallpaperTable
 import org.json.JSONObject
 import java.math.RoundingMode
@@ -51,6 +52,12 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         var backgroundIsSolidColor: Boolean = true,
         var backgroundTexture: String = "ms_paint_colors"
     ) : Visualization() {
+        val relevantIds : List<Int> = listOf(
+            R.id.distance_seekbar,
+            R.id.distance_label,
+            R.id.field_of_view_seekbar,
+            R.id.field_of_view_label
+        )
         override fun toJsonObject() : JSONObject {
             val jsonObject = JSONObject()
             jsonObject.put("visualization_type", visualizationType)
@@ -79,6 +86,12 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         var backgroundIsSolidColor: Boolean = false,
         var backgroundTexture: String = "ms_paint_colors"
     ) : Visualization() {
+        val relevantIds : List<Int> = listOf(
+            R.id.distance_seekbar,
+            R.id.distance_label,
+            R.id.field_of_view_seekbar,
+            R.id.field_of_view_label
+        )
         override fun toJsonObject() : JSONObject {
             val jsonObject = JSONObject()
             jsonObject.put("visualization_type", visualizationType)
@@ -110,6 +123,12 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         var backgroundIsSolidColor: Boolean = false,
         var backgroundTexture: String = "ms_paint_colors"
     ) : Visualization() {
+        val relevantIds : List<Int> = listOf(
+            R.id.distance_seekbar,
+            R.id.distance_label,
+            R.id.field_of_view_seekbar,
+            R.id.field_of_view_label
+        )
         override fun toJsonObject() : JSONObject {
             val jsonObject = JSONObject()
             jsonObject.put("visualization_type", visualizationType)
@@ -133,6 +152,12 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         var backgroundIsSolidColor: Boolean = false,
         var backgroundTexture: String = "mandelbrot"
     ) : Visualization() {
+        val relevantIds : List<Int> = listOf(
+            R.id.distance_seekbar,
+            R.id.distance_label,
+            R.id.field_of_view_seekbar,
+            R.id.field_of_view_label
+        )
         override fun toJsonObject() : JSONObject {
             val jsonObject = JSONObject()
             jsonObject.put("visualization_type", visualizationType)
@@ -155,6 +180,12 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         var vectorPointsPositive: Boolean = false,
         var equation: String = "1/((sqrt(x^2 + y^2) - 1.5 + sin(t))^2 + (z + cos(t))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 2π/3))^2 + (z + cos(t + 2π/3))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 4π/3))^2 + (z + cos(t + 4π/3))^2) = 5"
     ) : Visualization() {
+        val relevantIds : List<Int> = listOf(
+            R.id.distance_seekbar,
+            R.id.distance_label,
+            R.id.field_of_view_seekbar,
+            R.id.field_of_view_label
+        )
         override fun toJsonObject() : JSONObject {
             val jsonObject = JSONObject()
             jsonObject.put("visualization_type", visualizationType)
