@@ -17,15 +17,39 @@ import java.util.Random
 class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewModel() {
     abstract class Visualization {
         abstract fun toJsonObject(): JSONObject
+        fun colorToJSONObject(color: Color): JSONObject {
+            val colorJSONObject = JSONObject()
+            colorJSONObject.put("r", (color.red() * 255).toInt())
+            colorJSONObject.put("g", (color.green() * 255).toInt())
+            colorJSONObject.put("b", (color.blue() * 255).toInt())
+            colorJSONObject.put("a", (color.alpha() * 255).toInt())
+            return colorJSONObject
+        }
+        fun jsonObjectToColor(colorJSONObject: JSONObject): Color {
+            val r = colorJSONObject.getInt("r").toFloat()
+            val g = colorJSONObject.getInt("g").toFloat()
+            val b = colorJSONObject.getInt("b").toFloat()
+            val a = colorJSONObject.getInt("a").toFloat()
+            return Color.valueOf(a, r, g, b)
+        }
+        companion object {
+            fun createColorFromInts(r: Int, g: Int, b: Int, a: Int): Color {
+                val rf = r.toFloat() / 255
+                val gf = g.toFloat() / 255
+                val bf = b.toFloat() / 255
+                val af = a.toFloat() / 255
+                return Color.valueOf(rf, gf, bf, af)
+            }
+        }
     }
     data class NBodyVisualization (
         val visualizationType: String = "simulation",
         val simulationType: String = "nbody",
         var distance: Float = 0.5f,
         var fieldOfView: Float = 60.0f,
+        var backgroundColor: Color = createColorFromInts(0, 0, 0, 0),
         var backgroundIsSolidColor: Boolean = true,
-        var backgroundTexture: String = "ms_paint_colors",
-        var backgroundColor: Color = Color.valueOf(0.0f, 0.0f, 0.0f, 0.0f)
+        var backgroundTexture: String = "ms_paint_colors"
     ) : Visualization() {
         override fun toJsonObject() : JSONObject {
             val jsonObject = JSONObject()
@@ -33,35 +57,27 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
             jsonObject.put("simulation_type", simulationType)
             jsonObject.put("distance", distance)
             jsonObject.put("field_of_view", fieldOfView)
+            jsonObject.put("background_color", colorToJSONObject(backgroundColor))
             jsonObject.put("background_is_solid_color", backgroundIsSolidColor)
             jsonObject.put("background_texture", backgroundTexture)
-
-            val backgroundColorObject = JSONObject()
-            backgroundColorObject.put("r", backgroundColor.red())
-            backgroundColorObject.put("g", backgroundColor.green())
-            backgroundColorObject.put("b", backgroundColor.blue())
-            backgroundColorObject.put("a", backgroundColor.alpha())
-
-            jsonObject.put("background_color", backgroundColorObject)
-
             return jsonObject
         }
     }
     data class NaiveFluidVisualization (
         val visualizationType: String = "simulation",
         val simulationType: String = "naive",
+        var distance: Float = 0.5f,
+        var fieldOfView: Float = 60.0f,
+        var backgroundColor: Color = createColorFromInts(0, 0, 0, 0),
         var fluidSurface: Boolean = true,
         var particleCount: Int = 1000,
         var smoothSphereSurface: Boolean = true,
-        var distance: Float = 0.5f,
-        var fieldOfView: Float = 60.0f,
         var gravity: Float = 0.0f,
         var linearAcceleration: Float = 1.0f,
         var efficiency: Float = 1.0f,
         var referenceFrameRotates: Boolean = false,
         var backgroundIsSolidColor: Boolean = false,
-        var backgroundTexture: String = "ms_paint_colors",
-        var backgroundColor: Color = Color.valueOf(0.0f, 0.0f, 0.0f, 0.0f)
+        var backgroundTexture: String = "ms_paint_colors"
     ) : Visualization() {
         override fun toJsonObject() : JSONObject {
             val jsonObject = JSONObject()
@@ -74,21 +90,11 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
             jsonObject.put("field_of_view", fieldOfView)
             jsonObject.put("gravity", gravity)
             jsonObject.put("linear_acceleration", linearAcceleration)
+            jsonObject.put("background_color", colorToJSONObject(backgroundColor))
             jsonObject.put("efficiency", efficiency)
             jsonObject.put("reference_frame_rotates", referenceFrameRotates)
             jsonObject.put("background_is_solid_color", backgroundIsSolidColor)
             jsonObject.put("background_texture", backgroundTexture)
-
-            val backgroundColorObject = JSONObject()
-            backgroundColorObject.put("r", backgroundColor.red())
-            backgroundColorObject.put("g", backgroundColor.green())
-            backgroundColorObject.put("b", backgroundColor.blue())
-            backgroundColorObject.put("a", backgroundColor.alpha())
-
-            jsonObject.put("background_color", backgroundColorObject)
-
-            Log.d("VISUALIZATION = ", jsonObject.toString())
-
             return jsonObject
         }
     }
@@ -97,12 +103,12 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         val simulationType: String = "picflip",
         var distance: Float = 0.5f,
         var fieldOfView: Float = 60.0f,
+        var backgroundColor: Color = createColorFromInts(0, 0, 0, 0),
         var gravity: Float = 0.0f,
         var linearAcceleration: Float = 1.0f,
         var referenceFrameRotates: Boolean = true,
         var backgroundIsSolidColor: Boolean = false,
-        var backgroundTexture: String = "ms_paint_colors",
-        var backgroundColor: Color = Color.valueOf(0.0f, 0.0f, 0.0f, 0.0f)
+        var backgroundTexture: String = "ms_paint_colors"
     ) : Visualization() {
         override fun toJsonObject() : JSONObject {
             val jsonObject = JSONObject()
@@ -112,18 +118,10 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
             jsonObject.put("field_of_view", fieldOfView)
             jsonObject.put("gravity", gravity)
             jsonObject.put("linear_acceleration", linearAcceleration)
+            jsonObject.put("background_color", colorToJSONObject(backgroundColor))
             jsonObject.put("reference_frame_rotates", referenceFrameRotates)
             jsonObject.put("background_is_solid_color", backgroundIsSolidColor)
             jsonObject.put("background_texture", backgroundTexture)
-
-            val backgroundColorObject = JSONObject()
-            backgroundColorObject.put("r", backgroundColor.red())
-            backgroundColorObject.put("g", backgroundColor.green())
-            backgroundColorObject.put("b", backgroundColor.blue())
-            backgroundColorObject.put("a", backgroundColor.alpha())
-
-            jsonObject.put("background_color", backgroundColorObject)
-
             return jsonObject
         }
     }
@@ -131,26 +129,18 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         val visualizationType: String = "other",
         var distance: Float = 0.5f,
         var fieldOfView: Float = 60.0f,
+        var backgroundColor: Color = createColorFromInts(0, 0, 0, 0),
         var backgroundIsSolidColor: Boolean = false,
-        var backgroundTexture: String = "mandelbrot",
-        var backgroundColor: Color = Color.valueOf(0.0f, 0.0f, 0.0f, 0.0f)
+        var backgroundTexture: String = "mandelbrot"
     ) : Visualization() {
         override fun toJsonObject() : JSONObject {
             val jsonObject = JSONObject()
             jsonObject.put("visualization_type", visualizationType)
             jsonObject.put("distance", distance)
             jsonObject.put("field_of_view", fieldOfView)
+            jsonObject.put("background_color", colorToJSONObject(backgroundColor))
             jsonObject.put("background_is_solid_color", backgroundIsSolidColor)
             jsonObject.put("background_texture", backgroundTexture)
-
-            val backgroundColorObject = JSONObject()
-            backgroundColorObject.put("r", backgroundColor.red())
-            backgroundColorObject.put("g", backgroundColor.green())
-            backgroundColorObject.put("b", backgroundColor.blue())
-            backgroundColorObject.put("a", backgroundColor.alpha())
-
-            jsonObject.put("background_color", backgroundColorObject)
-
             return jsonObject
         }
     }
@@ -158,11 +148,11 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         val visualizationType: String = "graph",
         var distance: Float = 0.5f,
         var fieldOfView: Float = 60.0f,
+        var backgroundColor: Color = createColorFromInts(0, 0, 0, 0),
         var referenceFrameRotates: Boolean = false,
         var backgroundIsSolidColor: Boolean = false,
         var backgroundTexture: String = "ms_paint_colors",
         var vectorPointsPositive: Boolean = false,
-        var backgroundColor: Color = Color.valueOf(0.0f, 0.0f, 0.0f, 0.0f),
         var equation: String = "1/((sqrt(x^2 + y^2) - 1.5 + sin(t))^2 + (z + cos(t))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 2π/3))^2 + (z + cos(t + 2π/3))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 4π/3))^2 + (z + cos(t + 4π/3))^2) = 5"
     ) : Visualization() {
         override fun toJsonObject() : JSONObject {
@@ -170,20 +160,12 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
             jsonObject.put("visualization_type", visualizationType)
             jsonObject.put("distance", distance)
             jsonObject.put("field_of_view", fieldOfView)
+            jsonObject.put("background_color", colorToJSONObject(backgroundColor))
             jsonObject.put("reference_frame_rotates", referenceFrameRotates)
             jsonObject.put("background_is_solid_color", backgroundIsSolidColor)
             jsonObject.put("background_texture", backgroundTexture)
             jsonObject.put("vector_points_positive", vectorPointsPositive)
             jsonObject.put("equation", equation)
-
-            val backgroundColorObject = JSONObject()
-            backgroundColorObject.put("r", backgroundColor.red())
-            backgroundColorObject.put("g", backgroundColor.green())
-            backgroundColorObject.put("b", backgroundColor.blue())
-            backgroundColorObject.put("a", backgroundColor.alpha())
-
-            jsonObject.put("background_color", backgroundColorObject)
-
             return jsonObject
         }
     }
@@ -281,12 +263,12 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
 
     // update color in repo
     fun updateColor(color: Color) {
-        repo.color = color
+        repo.color.value = color
     }
 
     // return color from repo
     fun getColor(): Color {
-        return repo.color
+        return repo.color.value!!
     }
 
     // update fps in repo (scale float to 2 decimal places)

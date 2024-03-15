@@ -159,7 +159,6 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     //val gravity: Float = jsonObject.getDouble("gravity").toFloat()
                     //mViewModel.mRepo.gravity.postValue(gravity)
                 }
-
                 1 -> {
                     mViewModel.visualization = ActiveWallpaperViewModel.NaiveFluidVisualization()
                     selectionJSON = mViewModel.visualization.toJsonObject().toString()
@@ -172,7 +171,6 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     mViewModel.mRepo.linearAcceleration.postValue(linearAcceleration)
                     mViewModel.mRepo.efficiency.postValue(efficiency)
                 }
-
                 2 -> {
                     mViewModel.visualization = ActiveWallpaperViewModel.PicFlipVisualization()
                     selectionJSON = mViewModel.visualization.toJsonObject().toString()
@@ -183,33 +181,25 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     mViewModel.mRepo.gravity.postValue(gravity)
                     mViewModel.mRepo.linearAcceleration.postValue(linearAcceleration)
                 }
-
                 3 -> {
                     mViewModel.visualization = ActiveWallpaperViewModel.TriangleVisualization()
                     selectionJSON = mViewModel.visualization.toJsonObject().toString()
                     jsonConfig = JSONObject(selectionJSON)
                 }
-
                 4 -> {
                     mViewModel.visualization = ActiveWallpaperViewModel.GraphVisualization()
                     selectionJSON = mViewModel.visualization.toJsonObject().toString()
                     jsonConfig = JSONObject(selectionJSON)
                 }
             }
+            Log.d("VISUALIZATION = ", jsonConfig.toString())
             val distance: Float = jsonConfig.getDouble("distance").toFloat()
             val fieldOfView: Float = jsonConfig.getDouble("field_of_view").toFloat()
             mViewModel.mRepo.distanceFromOrigin.postValue(distance)
             mViewModel.mRepo.fieldOfView.postValue(fieldOfView)
-            val color = mViewModel.getColor()
-            val r = (color.red() * 255).toInt()
-            val g = (color.green() * 255).toInt()
-            val b = (color.blue() * 255).toInt()
-            val a = (color.alpha() * 255).toInt()
-            val backgroundColor = jsonConfig.getJSONObject("background_color")
-            backgroundColor.put("r", r)
-            backgroundColor.put("g", g)
-            backgroundColor.put("b", b)
-            backgroundColor.put("a", a)
+            val backgroundColorJSONObject: JSONObject = jsonConfig.getJSONObject("background_color")
+            val backgroundColor: Color = mViewModel.visualization.jsonObjectToColor(backgroundColorJSONObject)
+            mViewModel.mRepo.color.postValue(backgroundColor)
             PreviewActivity.init(jsonConfig.toString())
         }
 
