@@ -207,7 +207,7 @@ class PreviewActivity : AppCompatActivity() {
             efficiencySeekBar.progress = (float * 10000.0f).toInt()
         }
 
-        // register spinner actions to update simulation type in repo
+        // register spinner actions to update visualization type in repo
         visualizationSelectorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
                 val changed = viewModel.updateVisualizationSelection(pos)
