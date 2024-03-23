@@ -314,7 +314,7 @@ class PreviewActivity : AppCompatActivity() {
 
         val animationListener = object : Animation.AnimationListener {
             override fun onAnimationStart(animation: Animation?) {
-                // Not needed, but required to override
+                // Enable the UI elements before restoring the layout
                 if(!isCollapsed){
                     distanceSeekBar.visibility = View.VISIBLE
                     fieldOfViewSeekBar.visibility = View.VISIBLE
@@ -342,8 +342,7 @@ class PreviewActivity : AppCompatActivity() {
             }
 
             override fun onAnimationEnd(animation: Animation?) {
-
-                // Disable the UI elements when collapsing the layout
+                // Disable the UI elements after collapsing the layout
                 if (isCollapsed) {
                     distanceSeekBar.visibility = View.INVISIBLE
                     fieldOfViewSeekBar.visibility = View.INVISIBLE
