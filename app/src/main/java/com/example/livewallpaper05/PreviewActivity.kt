@@ -11,6 +11,9 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
+import android.view.animation.TranslateAnimation
 import android.view.inputmethod.EditorInfo
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -76,6 +79,9 @@ class PreviewActivity : AppCompatActivity() {
         val saveButton = findViewById<Button>(R.id.save_button)
         val saveAsButton = findViewById<Button>(R.id.save_as_new_button)
         val equationEditor = findViewById<EditText>(R.id.et_equation)
+        val linearLayout = findViewById<LinearLayout>(R.id.settings_linearlayout)
+
+        var isCollapsed = false
 
         // fill sim selector box with wallpaper options from native-lib.cpp
         val simSelectorAdapter = ArrayAdapter.createFromResource(
@@ -305,6 +311,82 @@ class PreviewActivity : AppCompatActivity() {
         }
 
         updateSyntaxResult()
+
+        val animationListener = object : Animation.AnimationListener {
+            override fun onAnimationStart(animation: Animation?) {
+                // Not needed, but required to override
+                if(!isCollapsed){
+                    distanceSeekBar.visibility = View.VISIBLE
+                    fieldOfViewSeekBar.visibility = View.VISIBLE
+                    gravitySeekBar.visibility = View.VISIBLE
+                    linearAccelerationSeekBar.visibility = View.VISIBLE
+                    efficiencySeekBar.visibility = View.VISIBLE
+                    visualizationSelectorSpinner.visibility = View.VISIBLE
+                    colorButton.visibility = View.VISIBLE
+                    saveButton.visibility = View.VISIBLE
+                    saveAsButton.visibility = View.VISIBLE
+                    equationEditor.visibility = View.VISIBLE
+                    linearLayout.isEnabled = true
+                    distanceSeekBar.isEnabled = true
+                    fieldOfViewSeekBar.isEnabled = true
+                    gravitySeekBar.isEnabled = true
+                    linearAccelerationSeekBar.isEnabled = true
+                    efficiencySeekBar.isEnabled = true
+                    visualizationSelectorSpinner.isEnabled = true
+                    colorButton.isEnabled = true
+                    saveButton.isEnabled = true
+                    saveAsButton.isEnabled = true
+                    equationEditor.isEnabled = true
+                    linearLayout.isEnabled = true
+                }
+            }
+
+            override fun onAnimationEnd(animation: Animation?) {
+
+                // Disable the UI elements when collapsing the layout
+                if (isCollapsed) {
+                    distanceSeekBar.visibility = View.INVISIBLE
+                    fieldOfViewSeekBar.visibility = View.INVISIBLE
+                    gravitySeekBar.visibility = View.INVISIBLE
+                    linearAccelerationSeekBar.visibility = View.INVISIBLE
+                    efficiencySeekBar.visibility = View.INVISIBLE
+                    visualizationSelectorSpinner.visibility = View.INVISIBLE
+                    colorButton.visibility = View.INVISIBLE
+                    saveButton.visibility = View.INVISIBLE
+                    saveAsButton.visibility = View.INVISIBLE
+                    equationEditor.visibility = View.INVISIBLE
+                    distanceSeekBar.isEnabled = false
+                    fieldOfViewSeekBar.isEnabled = false
+                    gravitySeekBar.isEnabled = false
+                    linearAccelerationSeekBar.isEnabled = false
+                    efficiencySeekBar.isEnabled = false
+                    visualizationSelectorSpinner.isEnabled = false
+                    colorButton.isEnabled = false
+                    saveButton.isEnabled = false
+                    saveAsButton.isEnabled = false
+                    equationEditor.isEnabled = false
+                }
+            }
+
+            override fun onAnimationRepeat(animation: Animation?) {
+                // Not needed, but required to override
+            }
+        }
+
+        linearLayout.setOnClickListener {
+            val animation: Animation = if (isCollapsed) {
+                TranslateAnimation(linearLayout.width.toFloat(), 0f, 0f, 0f)
+            } else {
+                TranslateAnimation(0f, linearLayout.width.toFloat(), 0f, 0f)
+            }
+
+            animation.duration = 500
+            animation.fillAfter = true
+            animation.setAnimationListener(animationListener)
+            linearLayout.startAnimation(animation)
+
+            isCollapsed = !isCollapsed
+        }
     }
 
     /* this is run when the app is 'paused'
