@@ -76,8 +76,8 @@ class PreviewActivity : AppCompatActivity() {
         val visualizationSelectorSpinner = findViewById<Spinner>(R.id.visualization_type_spinner)
         val colorButton = findViewById<Button>(R.id.b_color_picker)
         val hideUIButton = findViewById<Button>(R.id.hide_ui_button)
-        val saveButton = findViewById<Button>(R.id.save_button)
-        val saveAsButton = findViewById<Button>(R.id.save_as_new_button)
+        //val saveButton = findViewById<Button>(R.id.save_button)
+        //val saveAsButton = findViewById<Button>(R.id.save_as_new_button)
         val equationEditor = findViewById<EditText>(R.id.et_equation)
         val linearLayout = findViewById<LinearLayout>(R.id.settings_linearlayout)
 
@@ -251,7 +251,7 @@ class PreviewActivity : AppCompatActivity() {
             colorPickerDialog.show()
         }
 
-        saveButton.setOnClickListener {
+        /*saveButton.setOnClickListener {
             // Screen buffer capture
             viewModel.getScreenBuffer = 1
         }
@@ -260,7 +260,7 @@ class PreviewActivity : AppCompatActivity() {
             // Screen buffer capture
             viewModel.getScreenBuffer = 1
             viewModel.saveAsNew = 1
-        }
+        }*/
 
         // setup equation editor
         viewModel.updateEquation(equationEditor.text.toString())
@@ -318,8 +318,8 @@ class PreviewActivity : AppCompatActivity() {
             linearAccelerationSeekBar.visibility = View.VISIBLE
             efficiencySeekBar.visibility = View.VISIBLE
             colorButton.visibility = View.VISIBLE
-            saveButton.visibility = View.VISIBLE
-            saveAsButton.visibility = View.VISIBLE
+            //saveButton.visibility = View.VISIBLE
+            //saveAsButton.visibility = View.VISIBLE
             equationEditor.visibility = View.VISIBLE
             linearLayout.isEnabled = true
             distanceSeekBar.isEnabled = true
@@ -328,8 +328,8 @@ class PreviewActivity : AppCompatActivity() {
             linearAccelerationSeekBar.isEnabled = true
             efficiencySeekBar.isEnabled = true
             colorButton.isEnabled = true
-            saveButton.isEnabled = true
-            saveAsButton.isEnabled = true
+            //saveButton.isEnabled = true
+            //saveAsButton.isEnabled = true
             equationEditor.isEnabled = true
             linearLayout.isEnabled = true
             findViewById<TextView>(R.id.distance_label).visibility = View.VISIBLE
@@ -349,8 +349,8 @@ class PreviewActivity : AppCompatActivity() {
             linearAccelerationSeekBar.visibility = View.INVISIBLE
             efficiencySeekBar.visibility = View.INVISIBLE
             colorButton.visibility = View.INVISIBLE
-            saveButton.visibility = View.INVISIBLE
-            saveAsButton.visibility = View.INVISIBLE
+            //saveButton.visibility = View.INVISIBLE
+            //saveAsButton.visibility = View.INVISIBLE
             equationEditor.visibility = View.INVISIBLE
             distanceSeekBar.isEnabled = false
             fieldOfViewSeekBar.isEnabled = false
@@ -358,8 +358,8 @@ class PreviewActivity : AppCompatActivity() {
             linearAccelerationSeekBar.isEnabled = false
             efficiencySeekBar.isEnabled = false
             colorButton.isEnabled = false
-            saveButton.isEnabled = false
-            saveAsButton.isEnabled = false
+            //saveButton.isEnabled = false
+            //saveAsButton.isEnabled = false
             equationEditor.isEnabled = false
             findViewById<TextView>(R.id.distance_label).visibility = View.INVISIBLE
             findViewById<TextView>(R.id.field_of_view_label).visibility = View.INVISIBLE
