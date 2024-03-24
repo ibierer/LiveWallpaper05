@@ -1,6 +1,8 @@
 package com.example.livewallpaper05
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
 import android.hardware.SensorManager
 import android.os.Build
@@ -20,9 +22,11 @@ import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.Spinner
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.toColor
 import androidx.lifecycle.Observer
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
@@ -307,9 +311,6 @@ class PreviewActivity : AppCompatActivity() {
         updateSyntaxResult()
 
         fun showUIComponents(){
-            //findViewById<TextView>(R.id.visualization_type_selection_label).visibility = View.VISIBLE
-            //visualizationSelectorSpinner.visibility = View.VISIBLE
-            //findViewById<Button>(R.id.hide_ui_button).visibility = View.VISIBLE
             findViewById<Button>(R.id.hide_ui_button).text = "Hide UI"
             distanceSeekBar.visibility = View.VISIBLE
             fieldOfViewSeekBar.visibility = View.VISIBLE
@@ -326,7 +327,6 @@ class PreviewActivity : AppCompatActivity() {
             gravitySeekBar.isEnabled = true
             linearAccelerationSeekBar.isEnabled = true
             efficiencySeekBar.isEnabled = true
-            //visualizationSelectorSpinner.isEnabled = true
             colorButton.isEnabled = true
             saveButton.isEnabled = true
             saveAsButton.isEnabled = true
@@ -342,9 +342,6 @@ class PreviewActivity : AppCompatActivity() {
         }
 
         fun hideUIComponents(){
-            //findViewById<TextView>(R.id.visualization_type_selection_label).visibility = View.INVISIBLE
-            //visualizationSelectorSpinner.visibility = View.INVISIBLE
-            //findViewById<Button>(R.id.hide_ui_button).visibility = View.INVISIBLE
             findViewById<Button>(R.id.hide_ui_button).text = "Show UI"
             distanceSeekBar.visibility = View.INVISIBLE
             fieldOfViewSeekBar.visibility = View.INVISIBLE
@@ -360,7 +357,6 @@ class PreviewActivity : AppCompatActivity() {
             gravitySeekBar.isEnabled = false
             linearAccelerationSeekBar.isEnabled = false
             efficiencySeekBar.isEnabled = false
-            //visualizationSelectorSpinner.isEnabled = false
             colorButton.isEnabled = false
             saveButton.isEnabled = false
             saveAsButton.isEnabled = false
@@ -394,33 +390,27 @@ class PreviewActivity : AppCompatActivity() {
             }
         }
 
+        fun setDefaultAnimationParametersAndAnimate(animation: Animation){
+            animation.duration = 500
+            animation.fillAfter = true
+            animation.setAnimationListener(animationListener)
+            linearLayout.startAnimation(animation)
+            viewModel.isCollapsed = !viewModel.isCollapsed
+        }
+
         hideUIButton.setOnClickListener {
-            if(!viewModel.isCollapsed){
-                val animation: Animation = TranslateAnimation(0f, linearLayout.width.toFloat(), 0f, 0f)
-                animation.duration = 500
-                animation.fillAfter = true
-                animation.setAnimationListener(animationListener)
-                linearLayout.startAnimation(animation)
-                viewModel.isCollapsed = true
+            val animation: Animation = if(!viewModel.isCollapsed){
+                TranslateAnimation(0f, linearLayout.width.toFloat(), 0f, 0f)
             } else {
-                val animation: Animation =
-                    TranslateAnimation(linearLayout.width.toFloat(), 0f, 0f, 0f)
-                animation.duration = 500
-                animation.fillAfter = true
-                animation.setAnimationListener(animationListener)
-                linearLayout.startAnimation(animation)
-                viewModel.isCollapsed = false
+                TranslateAnimation(linearLayout.width.toFloat(), 0f, 0f, 0f)
             }
+            setDefaultAnimationParametersAndAnimate(animation)
         }
 
         linearLayout.setOnClickListener {
             if(viewModel.isCollapsed){
                 val animation: Animation = TranslateAnimation(linearLayout.width.toFloat(), 0f, 0f, 0f)
-                animation.duration = 500
-                animation.fillAfter = true
-                animation.setAnimationListener(animationListener)
-                linearLayout.startAnimation(animation)
-                viewModel.isCollapsed = false
+                setDefaultAnimationParametersAndAnimate(animation)
             }
         }
 
@@ -447,38 +437,38 @@ class PreviewActivity : AppCompatActivity() {
         mView!!.onResume()
     }
 
-    //private val colorActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-    //    if (result.resultCode == RESULT_OK) {
-    //        val data = result.data
-    //        //val color = data?.extras?.get("data")
-    //        val color = data?.getIntExtra("color", Color.WHITE)
-//
-    //        if (color == null) {
-    //            return@registerForActivityResult
-    //        }
-    //        val trueColor = color.toColor()
-    //        viewModel.updateColor(trueColor)
-    //        mView!!.onPause()
-    //        mView!!.onResume()
-    //    }
-    //}
-//
-    //fun updatePreviewImage(): Bitmap {
-    //    // store view as preview image
-    //    /**
-    //    var preview = Bitmap.createBitmap(mView!!.width, mView!!.height, Bitmap.Config.ARGB_8888)
-    //    var canvas = Canvas(preview)
-    //    mView!!.draw(canvas)*/
-    //    val preview = Bitmap.createBitmap(mView!!.width, mView!!.height, Bitmap.Config.ARGB_8888)
-    //    val canvas = Canvas(preview)
-    //    val background = mView!!.background
-    //    if (background != null) {
-    //        background.draw(canvas)
-    //    }
-    //    mView!!.draw(canvas)
-//
-    //    return preview
-    //}
+    /*private val colorActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val data = result.data
+            //val color = data?.extras?.get("data")
+            val color = data?.getIntExtra("color", Color.WHITE)
+
+            if (color == null) {
+                return@registerForActivityResult
+            }
+            val trueColor = color.toColor()
+            viewModel.updateColor(trueColor)
+            mView!!.onPause()
+            mView!!.onResume()
+        }
+    }
+
+    fun updatePreviewImage(): Bitmap {
+        // store view as preview image
+        *//**
+        var preview = Bitmap.createBitmap(mView!!.width, mView!!.height, Bitmap.Config.ARGB_8888)
+        var canvas = Canvas(preview)
+        mView!!.draw(canvas)*//*
+        val preview = Bitmap.createBitmap(mView!!.width, mView!!.height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(preview)
+        val background = mView!!.background
+        if (background != null) {
+            background.draw(canvas)
+        }
+        mView!!.draw(canvas)
+
+        return preview
+    }*/
 
     companion object {
         // Used to load the 'livewallpaper05' library on application startup.
