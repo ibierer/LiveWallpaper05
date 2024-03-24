@@ -281,6 +281,8 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
     // reference repo from constructor value
     val mRepo: ActiveWallpaperRepo = repo
 
+    var isCollapsed = false
+
     fun getPreviewImg(seed: Int): Bitmap {
         if (repo.preview != null && false) // This condition is always false... hmm...
             return repo.preview!!

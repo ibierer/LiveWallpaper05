@@ -18,18 +18,58 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <LinearLayout
+        android:id="@+id/settings_header_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tv_fps_meter"
+            android:layout_width="75dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/preview_ui_margin"
+            android:background="@drawable/slightly_opaque_border_background" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/preview_ui_margin"
+            android:background="@drawable/slightly_opaque_border_background"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/visualization_type_selection_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Visualization Type Selection:"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/visualization_type_spinner"
+                style="@style/Widget.AppCompat.Spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/hide_ui_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/preview_ui_margin"
+            android:layout_weight="1"
+            android:text="Hide UI" />
+    </LinearLayout>
+
     <ScrollView
         android:id="@+id/settings_scrollview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/border_background"
+        android:layout_height="wrap_content"
         android:fadeScrollbars="false"
         android:fillViewport="true"
-        android:paddingBottom="80dp"
-        app:layout_constraintBottom_toTopOf="@id/tv_fps_meter"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/settings_header_layout">
 
         <LinearLayout
             android:id="@+id/settings_linearlayout"
@@ -42,7 +82,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
-                android:background="@drawable/border_background"
+                android:background="@drawable/slightly_opaque_border_background"
                 android:text="@string/distance_label" />
 
             <SeekBar
@@ -50,7 +90,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
-                android:background="@drawable/border_background"
+                android:background="@drawable/slightly_opaque_border_background"
                 android:max="100"
                 android:min="0" />
 
@@ -59,7 +99,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
-                android:background="@drawable/border_background"
+                android:background="@drawable/slightly_opaque_border_background"
                 android:text="@string/field_of_view_label" />
 
             <SeekBar
@@ -67,7 +107,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
-                android:background="@drawable/border_background"
+                android:background="@drawable/slightly_opaque_border_background"
                 android:max="17999"
                 android:min="1" />
 
@@ -76,7 +116,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
-                android:background="@drawable/border_background"
+                android:background="@drawable/slightly_opaque_border_background"
                 android:text="@string/gravity_label" />
 
             <SeekBar
@@ -84,7 +124,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
-                android:background="@drawable/border_background"
+                android:background="@drawable/slightly_opaque_border_background"
                 android:max="200"
                 android:min="0" />
 
@@ -93,7 +133,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
-                android:background="@drawable/border_background"
+                android:background="@drawable/slightly_opaque_border_background"
                 android:text="@string/linear_acceleration_label" />
 
             <SeekBar
@@ -101,16 +141,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
-                android:background="@drawable/border_background"
+                android:background="@drawable/slightly_opaque_border_background"
                 android:max="200"
                 android:min="0" />
 
             <TextView
-                android:id="@+id/efficiency"
+                android:id="@+id/efficiency_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
-                android:background="@drawable/border_background"
+                android:background="@drawable/slightly_opaque_border_background"
                 android:text="@string/efficiency_label" />
 
             <SeekBar
@@ -118,49 +158,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
-                android:background="@drawable/border_background"
+                android:background="@drawable/slightly_opaque_border_background"
                 android:max="10100"
                 android:min="9900" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/preview_ui_margin"
-                android:background="@drawable/border_background"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Visualization Type Selection:"
-                    android:textStyle="bold" />
-
-                <Spinner
-                    android:id="@+id/visualization_type_spinner"
-                    style="@style/Widget.AppCompat.Spinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-            </LinearLayout>
-
-            <EditText
-                android:id="@+id/et_equation"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/preview_ui_margin"
-                android:background="@drawable/border_background"
-                android:hint="Enter equation here"
-                android:inputType="textCapSentences|textMultiLine"
-                android:paddingBottom="20dp"
-                android:scrollHorizontally="false"
-                android:text="@string/default_equation" />
 
             <Button
                 android:id="@+id/b_color_picker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
-                android:background="@drawable/border_background"
+                android:background="@drawable/slightly_opaque_border_background"
                 android:text="Background Color" />
 
             <TextView
@@ -168,21 +175,34 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
-                android:background="@drawable/border_background"
+                android:background="@drawable/slightly_opaque_border_background"
                 android:text="Input Equation:" />
+
+            <EditText
+                android:id="@+id/et_equation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/slightly_opaque_border_background"
+                android:hint="Enter equation here"
+                android:inputType="textCapSentences|textMultiLine"
+                android:paddingBottom="20dp"
+                android:scrollHorizontally="false"
+                android:text="@string/default_equation" />
 
             <TextView
                 android:id="@+id/tv_syntax_check"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
-                android:background="@drawable/border_background"
+                android:background="@drawable/slightly_opaque_border_background"
                 android:text="Syntax check result" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:paddingRight="70dp">
 
                 <Button
                     android:id="@+id/save_button"
@@ -201,8 +221,6 @@
                     android:text="Save As New" />
 
             </LinearLayout>
-
-
         </LinearLayout>
     </ScrollView>
 
@@ -213,15 +231,6 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/tv_fps_meter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/preview_ui_margin"
-        android:background="@drawable/border_background"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
