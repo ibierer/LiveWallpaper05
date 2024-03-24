@@ -17,6 +17,9 @@ import java.util.Random
  */
 class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewModel() {
     abstract class Visualization {
+        abstract val relevantTextViewIds: List<Int>
+        abstract val relevantSeekBarIds: List<Int>
+        abstract val relevantEditTextIds: List<Int>
         abstract fun toJsonObject(): JSONObject
         fun colorToJSONObject(color: Color): JSONObject {
             val colorJSONObject = JSONObject()
@@ -70,12 +73,18 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
             backgroundTexture = jsonObject.optString("background_texture", "ms_paint_colors")
         )
 
-        val relevantIds : List<Int> = listOf(
-            R.id.distance_seekbar,
+        override val relevantTextViewIds : List<Int> = listOf(
             R.id.distance_label,
-            R.id.field_of_view_seekbar,
             R.id.field_of_view_label
         )
+        override val relevantSeekBarIds : List<Int> = listOf(
+            R.id.distance_seekbar,
+            R.id.field_of_view_seekbar
+        )
+        override val relevantEditTextIds: List<Int> = listOf(
+
+        )
+
         override fun toJsonObject() : JSONObject {
             val jsonObject = JSONObject()
             jsonObject.put("visualization_type", visualizationType)
@@ -122,12 +131,24 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
             backgroundTexture = jsonObject.optString("background_texture", "ms_paint_colors")
         )
 
-        val relevantIds : List<Int> = listOf(
-            R.id.distance_seekbar,
+        override val relevantTextViewIds : List<Int> = listOf(
             R.id.distance_label,
-            R.id.field_of_view_seekbar,
-            R.id.field_of_view_label
+            R.id.field_of_view_label,
+            R.id.gravity_label,
+            R.id.linear_acceleration_label,
+            R.id.efficiency_label
         )
+        override val relevantSeekBarIds : List<Int> = listOf(
+            R.id.distance_seekbar,
+            R.id.field_of_view_seekbar,
+            R.id.gravity_seekbar,
+            R.id.linear_acceleration_seekbar,
+            R.id.efficiency_seekbar
+        )
+        override val relevantEditTextIds: List<Int> = listOf(
+
+        )
+
         override fun toJsonObject() : JSONObject {
             val jsonObject = JSONObject()
             jsonObject.put("visualization_type", visualizationType)
@@ -171,12 +192,23 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
             backgroundIsSolidColor = jsonObject.optBoolean("background_is_solid_color", false),
             backgroundTexture = jsonObject.optString("background_texture", "ms_paint_colors")
         )
-        val relevantIds : List<Int> = listOf(
-            R.id.distance_seekbar,
+
+        override val relevantTextViewIds : List<Int> = listOf(
             R.id.distance_label,
-            R.id.field_of_view_seekbar,
-            R.id.field_of_view_label
+            R.id.field_of_view_label,
+            R.id.gravity_label,
+            R.id.linear_acceleration_label
         )
+        override val relevantSeekBarIds : List<Int> = listOf(
+            R.id.distance_seekbar,
+            R.id.field_of_view_seekbar,
+            R.id.gravity_seekbar,
+            R.id.linear_acceleration_seekbar
+        )
+        override val relevantEditTextIds: List<Int> = listOf(
+
+        )
+
         override fun toJsonObject() : JSONObject {
             val jsonObject = JSONObject()
             jsonObject.put("visualization_type", visualizationType)
@@ -210,12 +242,18 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
             backgroundTexture = jsonObject.optString("background_texture", "mandelbrot")
         )
 
-        val relevantIds : List<Int> = listOf(
-            R.id.distance_seekbar,
+        override val relevantTextViewIds : List<Int> = listOf(
             R.id.distance_label,
-            R.id.field_of_view_seekbar,
             R.id.field_of_view_label
         )
+        override val relevantSeekBarIds : List<Int> = listOf(
+            R.id.distance_seekbar,
+            R.id.field_of_view_seekbar
+        )
+        override val relevantEditTextIds: List<Int> = listOf(
+
+        )
+
         override fun toJsonObject() : JSONObject {
             val jsonObject = JSONObject()
             jsonObject.put("visualization_type", visualizationType)
@@ -251,12 +289,20 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
             equation = jsonObject.optString("equation", "1/((sqrt(x^2 + y^2) - 1.5 + sin(t))^2 + (z + cos(t))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 2π/3))^2 + (z + cos(t + 2π/3))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 4π/3))^2 + (z + cos(t + 4π/3))^2) = 5")
         )
 
-        val relevantIds : List<Int> = listOf(
-            R.id.distance_seekbar,
+        override val relevantTextViewIds : List<Int> = listOf(
             R.id.distance_label,
-            R.id.field_of_view_seekbar,
-            R.id.field_of_view_label
+            R.id.field_of_view_label,
+            R.id.tv_equation,
+            R.id.tv_syntax_check
         )
+        override val relevantSeekBarIds : List<Int> = listOf(
+            R.id.distance_seekbar,
+            R.id.field_of_view_seekbar
+        )
+        override val relevantEditTextIds: List<Int> = listOf(
+            R.id.et_equation
+        )
+
         override fun toJsonObject() : JSONObject {
             val jsonObject = JSONObject()
             jsonObject.put("visualization_type", visualizationType)
@@ -280,7 +326,6 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
     var saveAsNew: Int = 0
     // reference repo from constructor value
     val mRepo: ActiveWallpaperRepo = repo
-
     var isCollapsed = false
 
     fun getPreviewImg(seed: Int): Bitmap {
@@ -333,7 +378,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
 
     // return simulation type from repo
     fun getVisualization(): Int {
-        return repo.visualizationSelection
+        return repo.visualizationSelection.value!!
     }
 
     // update orientation in repo
@@ -357,8 +402,8 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
     }
     // update simulation type in repo, return true if value changed
     fun updateVisualizationSelection(selection: Int): Boolean {
-        if (selection != repo.visualizationSelection) {
-            repo.visualizationSelection = selection
+        if (selection != repo.visualizationSelection.value) {
+            repo.visualizationSelection.value = selection
             return true
         }
         return false
@@ -426,7 +471,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         try {
             repo.wid = table.wid
             val configJson = JSONObject(table.config)
-            repo.visualizationSelection = configJson.getInt("type")
+            repo.visualizationSelection.value = configJson.getInt("type")
             val red = configJson.getJSONObject("background_color").getInt("r").toFloat()
             val green = configJson.getJSONObject("background_color").getInt("g").toFloat()
             val blue = configJson.getJSONObject("background_color").getInt("b").toFloat()

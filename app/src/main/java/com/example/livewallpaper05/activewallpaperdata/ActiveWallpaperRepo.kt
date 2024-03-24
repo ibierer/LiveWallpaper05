@@ -12,12 +12,6 @@ import org.json.JSONObject
 
 class ActiveWallpaperRepo private constructor () : SensorEventListener {
 
-    var nbodyVisualizationString: String = ""
-    var naiveVisualizationString: String = ""
-    var picflipVisualizationString: String = ""
-    var triangleVisualizationString: String = ""
-    var graphVisualizationString: String = ""
-
     // initialize default values
     var wid: Int = 1
     var equation: String = ""
@@ -33,7 +27,7 @@ class ActiveWallpaperRepo private constructor () : SensorEventListener {
     var rotationData: Array<Float> = arrayOf(0.0f,0.0f,0.0f,0.0f)
     var accelerationData: Array<Float> = arrayOf(0.0f,0.0f,0.0f)
     var linearAccelerationData: Array<Float> = arrayOf(0.0f,0.0f,0.0f)
-    var visualizationSelection: Int = 0
+    var visualizationSelection: MutableLiveData<Int> = MutableLiveData<Int>(0)
     var preview: Bitmap? = null
     var savedConfig: String = ""
 

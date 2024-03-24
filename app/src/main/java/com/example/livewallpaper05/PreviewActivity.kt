@@ -1,8 +1,6 @@
 package com.example.livewallpaper05
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.graphics.Color
 import android.hardware.SensorManager
 import android.os.Build
@@ -23,15 +21,17 @@ import android.widget.ScrollView
 import android.widget.SeekBar
 import android.widget.Spinner
 import android.widget.TextView
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.graphics.toColor
 import androidx.lifecycle.Observer
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModelFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import yuku.ambilwarna.AmbilWarnaDialog
 
 class PreviewActivity : AppCompatActivity() {
@@ -82,14 +82,14 @@ class PreviewActivity : AppCompatActivity() {
         val equationEditor = findViewById<EditText>(R.id.et_equation)
         val linearLayout = findViewById<LinearLayout>(R.id.settings_linearlayout)
 
-        // fill sim selector box with wallpaper options from native-lib.cpp
-        val simSelectorAdapter = ArrayAdapter.createFromResource(
+        // fill visualization selector box with wallpaper options from native-lib.cpp
+        val visualizationSelectorAdapter = ArrayAdapter.createFromResource(
             this,
-            R.array.simulation_types,
+            R.array.visualization_types,
             android.R.layout.simple_spinner_item
         )
-        visualizationSelectorSpinner.adapter = simSelectorAdapter
-        // set default to viewmodel simulation type
+        visualizationSelectorSpinner.adapter = visualizationSelectorAdapter
+        // set default to viewmodel visualization type
         visualizationSelectorSpinner.setSelection(viewModel.getVisualization())
 
         // register senser event listeners
@@ -97,9 +97,59 @@ class PreviewActivity : AppCompatActivity() {
         // add gl engine view to viewport
         layout.addView(mView)
 
+        suspend fun loadOrUnloadUIElements(){
+            val textViewIds : List<Int> = listOf(
+                R.id.distance_label,
+                R.id.field_of_view_label,
+                R.id.gravity_label,
+                R.id.linear_acceleration_label,
+                R.id.efficiency_label,
+                R.id.tv_equation,
+                R.id.tv_syntax_check
+            )
+            val seekBarIds : List<Int> = listOf(
+                R.id.distance_seekbar,
+                R.id.field_of_view_seekbar,
+                R.id.gravity_seekbar,
+                R.id.linear_acceleration_seekbar,
+                R.id.efficiency_seekbar
+            )
+            val editTextIds : List<Int> = listOf(
+                R.id.et_equation
+            )
+            for(id in textViewIds){
+                if(viewModel.visualization!!.relevantTextViewIds.contains(id) && !viewModel.isCollapsed){
+                    findViewById<TextView>(id).visibility = View.VISIBLE
+                } else {
+                    findViewById<TextView>(id).visibility = View.GONE
+                }
+            }
+            for(id in seekBarIds){
+                if(viewModel.visualization!!.relevantSeekBarIds.contains(id) && !viewModel.isCollapsed){
+                    findViewById<SeekBar>(id).visibility = View.VISIBLE
+                    findViewById<SeekBar>(id).isEnabled = true
+                } else {
+                    findViewById<SeekBar>(id).visibility = View.GONE
+                    findViewById<SeekBar>(id).isEnabled = false
+                }
+            }
+            for(id in editTextIds){
+                if(viewModel.visualization!!.relevantEditTextIds.contains(id) && !viewModel.isCollapsed){
+                    findViewById<EditText>(id).visibility = View.VISIBLE
+                    findViewById<EditText>(id).isEnabled = true
+                } else {
+                    findViewById<EditText>(id).visibility = View.GONE
+                    findViewById<EditText>(id).isEnabled = false
+                }
+            }
+        }
+
         // update orientation in repo
         try {
             viewModel.updateOrientation(this.display!!.rotation)
+            CoroutineScope(Dispatchers.Main).launch {
+                loadOrUnloadUIElements()
+            }
         } catch (e: Exception) {
             Log.d("Livewallpaper", "api level too low!")
         }
@@ -215,6 +265,16 @@ class PreviewActivity : AppCompatActivity() {
                     mView!!.onPause()
                     mView!!.onResume()
                 }
+
+                // Dynamically load or remove UI components
+                CoroutineScope(Dispatchers.Main).launch {
+                    // Wait until viewModel.visualization is not null
+                    while (viewModel.visualization == null) {
+                        // Suspend the coroutine for a short duration to avoid blocking the main thread
+                        delay(10)
+                    }
+                    loadOrUnloadUIElements()
+                }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {
@@ -313,62 +373,22 @@ class PreviewActivity : AppCompatActivity() {
 
         fun showUIComponents(){
             findViewById<Button>(R.id.hide_ui_button).text = "Hide UI"
-            distanceSeekBar.visibility = View.VISIBLE
-            fieldOfViewSeekBar.visibility = View.VISIBLE
-            gravitySeekBar.visibility = View.VISIBLE
-            linearAccelerationSeekBar.visibility = View.VISIBLE
-            efficiencySeekBar.visibility = View.VISIBLE
             colorButton.visibility = View.VISIBLE
-            //saveButton.visibility = View.VISIBLE
-            //saveAsButton.visibility = View.VISIBLE
-            equationEditor.visibility = View.VISIBLE
             linearLayout.isEnabled = true
-            distanceSeekBar.isEnabled = true
-            fieldOfViewSeekBar.isEnabled = true
-            gravitySeekBar.isEnabled = true
-            linearAccelerationSeekBar.isEnabled = true
-            efficiencySeekBar.isEnabled = true
             colorButton.isEnabled = true
-            //saveButton.isEnabled = true
-            //saveAsButton.isEnabled = true
-            equationEditor.isEnabled = true
-            linearLayout.isEnabled = true
-            findViewById<TextView>(R.id.distance_label).visibility = View.VISIBLE
-            findViewById<TextView>(R.id.field_of_view_label).visibility = View.VISIBLE
-            findViewById<TextView>(R.id.gravity_label).visibility = View.VISIBLE
-            findViewById<TextView>(R.id.linear_acceleration_label).visibility = View.VISIBLE
-            findViewById<TextView>(R.id.efficiency_label).visibility = View.VISIBLE
-            findViewById<TextView>(R.id.tv_equation).visibility = View.VISIBLE
-            findViewById<TextView>(R.id.tv_syntax_check).visibility = View.VISIBLE
+            CoroutineScope(Dispatchers.Main).launch {
+                loadOrUnloadUIElements()
+            }
         }
 
         fun hideUIComponents(){
             findViewById<Button>(R.id.hide_ui_button).text = "Show UI"
-            distanceSeekBar.visibility = View.INVISIBLE
-            fieldOfViewSeekBar.visibility = View.INVISIBLE
-            gravitySeekBar.visibility = View.INVISIBLE
-            linearAccelerationSeekBar.visibility = View.INVISIBLE
-            efficiencySeekBar.visibility = View.INVISIBLE
             colorButton.visibility = View.INVISIBLE
-            //saveButton.visibility = View.INVISIBLE
-            //saveAsButton.visibility = View.INVISIBLE
-            equationEditor.visibility = View.INVISIBLE
-            distanceSeekBar.isEnabled = false
-            fieldOfViewSeekBar.isEnabled = false
-            gravitySeekBar.isEnabled = false
-            linearAccelerationSeekBar.isEnabled = false
-            efficiencySeekBar.isEnabled = false
+            linearLayout.isEnabled = false
             colorButton.isEnabled = false
-            //saveButton.isEnabled = false
-            //saveAsButton.isEnabled = false
-            equationEditor.isEnabled = false
-            findViewById<TextView>(R.id.distance_label).visibility = View.INVISIBLE
-            findViewById<TextView>(R.id.field_of_view_label).visibility = View.INVISIBLE
-            findViewById<TextView>(R.id.gravity_label).visibility = View.INVISIBLE
-            findViewById<TextView>(R.id.linear_acceleration_label).visibility = View.INVISIBLE
-            findViewById<TextView>(R.id.efficiency_label).visibility = View.INVISIBLE
-            findViewById<TextView>(R.id.tv_equation).visibility = View.INVISIBLE
-            findViewById<TextView>(R.id.tv_syntax_check).visibility = View.INVISIBLE
+            CoroutineScope(Dispatchers.Main).launch {
+                loadOrUnloadUIElements()
+            }
         }
 
         val animationListener = object : Animation.AnimationListener {
@@ -408,12 +428,12 @@ class PreviewActivity : AppCompatActivity() {
             setDefaultAnimationParametersAndAnimate(animation)
         }
 
-        linearLayout.setOnClickListener {
+        /*linearLayout.setOnClickListener {
             if(viewModel.isCollapsed){
                 val animation: Animation = TranslateAnimation(linearLayout.width.toFloat(), 0f, 0f, 0f)
                 setDefaultAnimationParametersAndAnimate(animation)
             }
-        }
+        }*/
 
         // Scroll the ScrollView to the bottom when the layout changes (e.g., keyboard shown/hidden)
         findViewById<ScrollView>(R.id.settings_scrollview).viewTreeObserver.addOnGlobalLayoutListener {

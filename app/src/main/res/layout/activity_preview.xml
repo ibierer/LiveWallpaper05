@@ -60,6 +60,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/preview_ui_margin"
             android:layout_weight="1"
+            android:background="@drawable/slightly_opaque_border_background"
             android:text="Hide UI" />
     </LinearLayout>
 

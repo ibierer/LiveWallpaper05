@@ -7,6 +7,8 @@ import android.opengl.GLSurfaceView
 import android.os.SystemClock
 import android.util.Log
 import android.view.View
+import android.widget.SeekBar
+import android.widget.TextView
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
@@ -34,8 +36,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
         setRenderer(Renderer(context, vm, this))
     }
 
-    class Renderer(private val context: Context, vm: ActiveWallpaperViewModel, var view: View) :
-        GLSurfaceView.Renderer {
+    class Renderer(private val context: Context, vm: ActiveWallpaperViewModel, var view: View) : GLSurfaceView.Renderer {
         private var mViewModel: ActiveWallpaperViewModel = vm
         var auth: FirebaseAuth? = null
         var username: String? = "Default User"
