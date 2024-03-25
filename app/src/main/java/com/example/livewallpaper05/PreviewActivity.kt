@@ -87,7 +87,7 @@ class PreviewActivity : AppCompatActivity() {
         // fill visualization selector box with wallpaper options from native-lib.cpp
         val visualizationSelectorAdapter = ArrayAdapter.createFromResource(
             this,
-            R.array.visualization_types,
+            R.array.simulation_types,
             android.R.layout.simple_spinner_item
         )
         visualizationSelectorSpinner.adapter = visualizationSelectorAdapter

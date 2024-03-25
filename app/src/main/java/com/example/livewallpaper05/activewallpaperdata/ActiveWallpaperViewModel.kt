@@ -461,7 +461,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
 
     // return simulation type from repo
     fun getVisualization(): Int {
-        return repo.visualizationSelection.value!!
+        return repo.visualizationSelection
     }
 
     // update orientation in repo
@@ -485,8 +485,8 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
     }
     // update simulation type in repo, return true if value changed
     fun updateVisualizationSelection(selection: Int): Boolean {
-        if (selection != repo.visualizationSelection.value) {
-            repo.visualizationSelection.value = selection
+        if (selection != repo.visualizationSelection) {
+            repo.visualizationSelection = selection
             return true
         }
         return false
@@ -554,7 +554,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         try {
             repo.wid = table.wid
             val configJson = JSONObject(table.config)
-            repo.visualizationSelection.value = configJson.getInt("type")
+            repo.visualizationSelection = configJson.getInt("type")
             val red = configJson.getJSONObject("background_color").getInt("r").toFloat()
             val green = configJson.getJSONObject("background_color").getInt("g").toFloat()
             val blue = configJson.getJSONObject("background_color").getInt("b").toFloat()
