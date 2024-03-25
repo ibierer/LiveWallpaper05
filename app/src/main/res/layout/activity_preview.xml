@@ -200,6 +200,12 @@
                 android:background="@drawable/slightly_opaque_border_background"
                 android:text="Syntax check result" />
 
+            <CheckBox
+                android:id="@+id/flip_normals_checkbox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Flip Normals" />
+
             <!--<LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

@@ -169,7 +169,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_resize(JNIEnv *e
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_livewallpaper05_PreviewActivity_00024Companion_step(JNIEnv *env, jobject thiz, jfloat acc_x, jfloat acc_y, jfloat acc_z, jfloat rot_x, jfloat rot_y, jfloat rot_z, jfloat rot_w, jfloat linear_acc_x, jfloat linear_acc_y, jfloat linear_acc_z, jfloat distance, jfloat field_of_view, jfloat gravity, jfloat efficiency) {
+Java_com_example_livewallpaper05_PreviewActivity_00024Companion_step(JNIEnv *env, jobject thiz, jfloat acc_x, jfloat acc_y, jfloat acc_z, jfloat rot_x, jfloat rot_y, jfloat rot_z, jfloat rot_w, jfloat linear_acc_x, jfloat linear_acc_y, jfloat linear_acc_z, jfloat distance, jfloat field_of_view, jfloat gravity, jfloat efficiency, jboolean flip_normals) {
     if (view) {
         view->accelerometerVector = vec3(acc_x, acc_y, acc_z);
         view->linearAccelerationVector = vec3(linear_acc_x, linear_acc_y, linear_acc_z);
@@ -178,6 +178,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_step(JNIEnv *env
         view->maxViewAngle = field_of_view;
         view->gravity = gravity;
         view->efficiency = efficiency;
+        ImplicitGrapher::vectorPointsPositive = flip_normals;
         //ALOGI("field_of_view = %s\n", to_string(field_of_view).c_str());
         view->calculatePerspectiveSetViewport(view->maxViewAngle, view->zNear, view->zFar);
         view->render();

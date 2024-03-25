@@ -20,6 +20,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         abstract val relevantTextViewIds: List<Int>
         abstract val relevantSeekBarIds: List<Int>
         abstract val relevantEditTextIds: List<Int>
+        abstract val relevantCheckBoxIds: List<Int>
         abstract fun toJsonObject(): JSONObject
         fun colorToJSONObject(color: Color): JSONObject {
             val colorJSONObject = JSONObject()
@@ -82,6 +83,9 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
             R.id.field_of_view_seekbar
         )
         override val relevantEditTextIds: List<Int> = listOf(
+
+        )
+        override val relevantCheckBoxIds: List<Int> = listOf(
 
         )
 
@@ -148,6 +152,9 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         override val relevantEditTextIds: List<Int> = listOf(
 
         )
+        override val relevantCheckBoxIds: List<Int> = listOf(
+
+        )
 
         override fun toJsonObject() : JSONObject {
             val jsonObject = JSONObject()
@@ -208,6 +215,9 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         override val relevantEditTextIds: List<Int> = listOf(
 
         )
+        override val relevantCheckBoxIds: List<Int> = listOf(
+
+        )
 
         override fun toJsonObject() : JSONObject {
             val jsonObject = JSONObject()
@@ -251,6 +261,9 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
             R.id.field_of_view_seekbar
         )
         override val relevantEditTextIds: List<Int> = listOf(
+
+        )
+        override val relevantCheckBoxIds: List<Int> = listOf(
 
         )
 
@@ -301,6 +314,9 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         )
         override val relevantEditTextIds: List<Int> = listOf(
             R.id.et_equation
+        )
+        override val relevantCheckBoxIds: List<Int> = listOf(
+            R.id.flip_normals_checkbox
         )
 
         override fun toJsonObject() : JSONObject {
@@ -532,6 +548,10 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
 
     fun getEfficiency(): Float {
         return repo.efficiency.value!!
+    }
+
+    fun getVectorDirection(): Boolean {
+        return repo.flipNormals.value!!
     }
 }
 

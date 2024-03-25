@@ -15,6 +15,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ScrollView
@@ -80,6 +81,7 @@ class PreviewActivity : AppCompatActivity() {
         //val saveButton = findViewById<Button>(R.id.save_button)
         //val saveAsButton = findViewById<Button>(R.id.save_as_new_button)
         val equationEditor = findViewById<EditText>(R.id.et_equation)
+        val flipsNormalsCheckBox = findViewById<CheckBox>(R.id.flip_normals_checkbox)
         val linearLayout = findViewById<LinearLayout>(R.id.settings_linearlayout)
 
         // fill visualization selector box with wallpaper options from native-lib.cpp
@@ -117,6 +119,9 @@ class PreviewActivity : AppCompatActivity() {
             val editTextIds : List<Int> = listOf(
                 R.id.et_equation
             )
+            val checkBoxIds: List<Int> = listOf(
+                R.id.flip_normals_checkbox
+            )
             for(id in textViewIds){
                 if(viewModel.visualization!!.relevantTextViewIds.contains(id) && !viewModel.isCollapsed){
                     findViewById<TextView>(id).visibility = View.VISIBLE
@@ -140,6 +145,15 @@ class PreviewActivity : AppCompatActivity() {
                 } else {
                     findViewById<EditText>(id).visibility = View.GONE
                     findViewById<EditText>(id).isEnabled = false
+                }
+            }
+            for(id in checkBoxIds){
+                if(viewModel.visualization!!.relevantCheckBoxIds.contains(id) && !viewModel.isCollapsed){
+                    findViewById<CheckBox>(id).visibility = View.VISIBLE
+                    findViewById<CheckBox>(id).isEnabled = true
+                } else {
+                    findViewById<CheckBox>(id).visibility = View.GONE
+                    findViewById<CheckBox>(id).isEnabled = false
                 }
             }
         }
@@ -372,20 +386,20 @@ class PreviewActivity : AppCompatActivity() {
         updateSyntaxResult()
 
         fun showUIComponents(){
-            findViewById<Button>(R.id.hide_ui_button).text = "Hide UI"
+            hideUIButton.text = "Hide UI"
             colorButton.visibility = View.VISIBLE
-            linearLayout.isEnabled = true
             colorButton.isEnabled = true
+            linearLayout.isEnabled = true
             CoroutineScope(Dispatchers.Main).launch {
                 loadOrUnloadUIElements()
             }
         }
 
         fun hideUIComponents(){
-            findViewById<Button>(R.id.hide_ui_button).text = "Show UI"
-            colorButton.visibility = View.INVISIBLE
-            linearLayout.isEnabled = false
+            hideUIButton.text = "Show UI"
+            colorButton.visibility = View.GONE
             colorButton.isEnabled = false
+            linearLayout.isEnabled = false
             CoroutineScope(Dispatchers.Main).launch {
                 loadOrUnloadUIElements()
             }
@@ -449,6 +463,10 @@ class PreviewActivity : AppCompatActivity() {
                     findViewById<ScrollView>(R.id.settings_scrollview).fullScroll(View.FOCUS_DOWN)
                 }
             }
+        }
+
+        flipsNormalsCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
+            viewModel.mRepo.flipNormals.value = isChecked
         }
 
         if(viewModel.isCollapsed){
@@ -530,7 +548,8 @@ class PreviewActivity : AppCompatActivity() {
             distance: Float,
             field_of_view: Float,
             gravity: Float,
-            efficiency: Float
+            efficiency: Float,
+            flip_normals: Boolean
         )
 
         external fun getScreenBuffer(): ByteArray

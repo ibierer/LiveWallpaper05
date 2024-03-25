@@ -7,8 +7,6 @@ import android.opengl.GLSurfaceView
 import android.os.SystemClock
 import android.util.Log
 import android.view.View
-import android.widget.SeekBar
-import android.widget.TextView
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
@@ -65,7 +63,8 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                 mViewModel.getDistanceFromOrigin(),
                 mViewModel.getFieldOfView(),
                 mViewModel.getGravity(),
-                mViewModel.getEfficiency()
+                mViewModel.getEfficiency(),
+                mViewModel.getVectorDirection()
             )
 
             // Get screen buffer if requested
@@ -181,6 +180,8 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                 4 -> {
                     mViewModel.visualization = ActiveWallpaperViewModel.GraphVisualization()
                     jsonConfig = mViewModel.visualization!!.toJsonObject()
+                    val vectorPointsPositive: Boolean = jsonConfig.getBoolean("vector_points_positive")
+                    mViewModel.mRepo.flipNormals.postValue(vectorPointsPositive)
                 }
             }
             //Log.d("VISUALIZATION = ", jsonConfig.toString())

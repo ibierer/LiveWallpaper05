@@ -24,6 +24,7 @@ class ActiveWallpaperRepo private constructor () : SensorEventListener {
     var gravity: MutableLiveData<Float> = MutableLiveData<Float>(0.0f)
     var linearAcceleration: MutableLiveData<Float> = MutableLiveData<Float>(0.0f)
     var efficiency: MutableLiveData<Float> = MutableLiveData<Float>(0.0f)
+    val flipNormals: MutableLiveData<Boolean> = MutableLiveData<Boolean>(false)
     var rotationData: Array<Float> = arrayOf(0.0f,0.0f,0.0f,0.0f)
     var accelerationData: Array<Float> = arrayOf(0.0f,0.0f,0.0f)
     var linearAccelerationData: Array<Float> = arrayOf(0.0f,0.0f,0.0f)
