@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_activity"
@@ -164,13 +165,65 @@
                 android:max="10100"
                 android:min="9900" />
 
-            <Button
-                android:id="@+id/b_color_picker"
+            <TextView
+                android:id="@+id/background_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:background="@drawable/slightly_opaque_border_background"
-                android:text="Background Color" />
+                android:text="@string/background_label" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <RadioGroup
+                    android:id="@+id/background_radio_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/b_color_picker"
+                    app:layout_constraintHorizontal_chainStyle="packed">
+
+                    <RadioButton
+                        android:id="@+id/solid_color_radio_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Solid Color"
+                        android:checked="true" />
+
+                    <RadioButton
+                        android:id="@+id/image_radio_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Image" />
+                </RadioGroup>
+
+                <Button
+                    android:id="@+id/b_color_picker"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Select Color"
+                    android:layout_margin="@dimen/preview_ui_margin"
+                    android:background="@drawable/slightly_opaque_border_background"
+                    app:layout_constraintTop_toTopOf="@+id/background_radio_group"
+                    app:layout_constraintStart_toEndOf="@+id/background_radio_group"
+                    app:layout_constraintBottom_toBottomOf="@+id/background_radio_group" />
+
+                <Spinner
+                    android:id="@+id/image_selection_spinner"
+                    style="@style/Widget.AppCompat.Spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="@+id/background_radio_group"
+                    app:layout_constraintStart_toEndOf="@+id/b_color_picker"
+                    app:layout_constraintBottom_toBottomOf="@+id/background_radio_group" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
                 android:id="@+id/tv_equation"

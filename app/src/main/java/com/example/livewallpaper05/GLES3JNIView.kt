@@ -202,6 +202,12 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             val backgroundColor: Color =
                 mViewModel.visualization!!.jsonObjectToColor(backgroundColorJSONObject)
             mViewModel.mRepo.color.postValue(backgroundColor)
+            /*val environmentMap: String = jsonConfig.getString("background_texture")
+            when(environmentMap) {
+                "ms_paint_colors" -> mViewModel.mRepo.environmentMapSelection.postValue(0)
+                "mandelbrot" -> mViewModel.mRepo.environmentMapSelection.postValue(1)
+                else -> mViewModel.mRepo.environmentMapSelection.postValue(0)
+            }*/
             PreviewActivity.init(jsonConfig.toString())
         }
 

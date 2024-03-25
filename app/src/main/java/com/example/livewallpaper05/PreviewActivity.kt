@@ -76,6 +76,7 @@ class PreviewActivity : AppCompatActivity() {
         val linearAccelerationSeekBar = findViewById<SeekBar>(R.id.linear_acceleration_seekbar)
         val efficiencySeekBar = findViewById<SeekBar>(R.id.efficiency_seekbar)
         val visualizationSelectorSpinner = findViewById<Spinner>(R.id.visualization_type_spinner)
+        val environmentMapSelectorSpinner = findViewById<Spinner>(R.id.image_selection_spinner)
         val colorButton = findViewById<Button>(R.id.b_color_picker)
         val hideUIButton = findViewById<Button>(R.id.hide_ui_button)
         //val saveButton = findViewById<Button>(R.id.save_button)
@@ -93,6 +94,16 @@ class PreviewActivity : AppCompatActivity() {
         visualizationSelectorSpinner.adapter = visualizationSelectorAdapter
         // set default to viewmodel visualization type
         visualizationSelectorSpinner.setSelection(viewModel.getVisualization())
+
+        // fill image selector box with image options from native-lib.cpp
+        val environmentMapSelectorAdapter = ArrayAdapter.createFromResource(
+            this,
+            R.array.environment_map_options,
+            android.R.layout.simple_spinner_item
+        )
+        environmentMapSelectorSpinner.adapter = environmentMapSelectorAdapter
+        // set default to viewmodel visualization type
+        environmentMapSelectorSpinner.setSelection(viewModel.getEnvironmentMap())
 
         // register senser event listeners
         viewModel.registerSensorEvents(getSystemService(Context.SENSOR_SERVICE) as SensorManager)
@@ -298,6 +309,32 @@ class PreviewActivity : AppCompatActivity() {
                 // Do nothing
             }
         }
+
+        // register spinner actions to update image selection in repo
+        /*environmentMapSelectorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
+                val changed = viewModel.updateEnvironmentMapSelection(pos)
+                if (changed) {
+                    // tell view it needs to be reloaded
+                    mView!!.onPause()
+                    mView!!.onResume()
+                }
+
+                // Dynamically load or remove UI components
+                CoroutineScope(Dispatchers.Main).launch {
+                    // Wait until viewModel.visualization is not null
+                    while (viewModel.visualization == null) {
+                        // Suspend the coroutine for a short duration to avoid blocking the main thread
+                        delay(10)
+                    }
+                    loadOrUnloadUIElements()
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                // Do nothing
+            }
+        }*/
 
         // Observe changes to liveDataBitmap in the ViewModel
         viewModel.liveDataBitmap.observe(this, Observer { bitmap ->

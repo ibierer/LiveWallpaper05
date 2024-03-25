@@ -7,4 +7,8 @@
         <item name="sphere">sphere</item>
         <item name="graph">graph</item>
     </string-array>
+    <string-array name="environment_map_options">
+        <item>Spectrum</item>
+        <item>Mandelbrot</item>
+    </string-array>
 </resources>
