@@ -36,6 +36,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
 
     class Renderer(private val context: Context, vm: ActiveWallpaperViewModel, var view: View) : GLSurfaceView.Renderer {
         private var mViewModel: ActiveWallpaperViewModel = vm
+
         var auth: FirebaseAuth? = null
         var username: String? = "Default User"
         var uid: Int? = 11 //uid for default user
@@ -47,6 +48,9 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             val rotData = mViewModel.getRotationData()
             val linearAccelData = mViewModel.getLinearAccelerationData()
             val multiplier = mViewModel.getLinearAcceleration()
+
+            // update visualization values
+            mViewModel.visualization.updateValues()
 
             // Run C++ visualization logic and render OpenGL view
             PreviewActivity.step(
@@ -150,10 +154,19 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
 
         override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
             var jsonConfig: JSONObject = JSONObject()
+
             when (mViewModel.getVisualization()) {
                 0 -> {
                     mViewModel.visualization = ActiveWallpaperViewModel.NBodyVisualization()
-                    jsonConfig = mViewModel.visualization!!.toJsonObject()
+                    mViewModel.visualization.viewModel = mViewModel
+                    selectionJSON = mViewModel.visualization.toJsonObject().toString()
+                    jsonConfig = JSONObject(selectionJSON)
+
+                    // update visualization values for first time
+                    //mViewModel.visualization.updateValues()
+
+                    //val gravity: Float = jsonObject.getDouble("gravity").toFloat()
+                    //mViewModel.mRepo.gravity.postValue(gravity)
                 }
                 1 -> {
                     mViewModel.visualization = ActiveWallpaperViewModel.NaiveFluidVisualization()
@@ -164,6 +177,9 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     mViewModel.mRepo.gravity.postValue(gravity)
                     mViewModel.mRepo.linearAcceleration.postValue(linearAcceleration)
                     mViewModel.mRepo.efficiency.postValue(efficiency)
+
+                    // update visualization values for first time
+                    //mViewModel.visualization.updateValues()
                 }
                 2 -> {
                     mViewModel.visualization = ActiveWallpaperViewModel.PicFlipVisualization()
@@ -172,16 +188,25 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     val linearAcceleration: Float = jsonConfig.getDouble("linear_acceleration").toFloat()
                     mViewModel.mRepo.gravity.postValue(gravity)
                     mViewModel.mRepo.linearAcceleration.postValue(linearAcceleration)
+
+                    // update visualization values for first time
+                    //mViewModel.visualization.updateValues()
                 }
                 3 -> {
                     mViewModel.visualization = ActiveWallpaperViewModel.TriangleVisualization()
-                    jsonConfig = mViewModel.visualization!!.toJsonObject()
+                    selectionJSON = mViewModel.visualization.toJsonObject().toString()
+                    jsonConfig = JSONObject(selectionJSON)
+
+                    // update visualization values for first time
+                    //mViewModel.visualization.updateValues()
                 }
                 4 -> {
                     mViewModel.visualization = ActiveWallpaperViewModel.GraphVisualization()
-                    jsonConfig = mViewModel.visualization!!.toJsonObject()
-                    val vectorPointsPositive: Boolean = jsonConfig.getBoolean("vector_points_positive")
-                    mViewModel.mRepo.flipNormals.postValue(vectorPointsPositive)
+                    selectionJSON = mViewModel.visualization.toJsonObject().toString()
+                    jsonConfig = JSONObject(selectionJSON)
+
+                    // update visualization values for first time
+                    //mViewModel.visualization.updateValues()
                 }
             }
             //Log.d("VISUALIZATION = ", jsonConfig.toString())

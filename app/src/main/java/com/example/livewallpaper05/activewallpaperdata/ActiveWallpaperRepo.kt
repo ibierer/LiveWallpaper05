@@ -8,7 +8,6 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
-import org.json.JSONObject
 
 class ActiveWallpaperRepo private constructor () : SensorEventListener {
 
@@ -28,7 +27,8 @@ class ActiveWallpaperRepo private constructor () : SensorEventListener {
     var rotationData: Array<Float> = arrayOf(0.0f,0.0f,0.0f,0.0f)
     var accelerationData: Array<Float> = arrayOf(0.0f,0.0f,0.0f)
     var linearAccelerationData: Array<Float> = arrayOf(0.0f,0.0f,0.0f)
-    var visualizationSelection: MutableLiveData<Int> = MutableLiveData<Int>(0)
+    var visualizationSelection: Int = 0
+    var visualizationName = MutableLiveData<String>("")
     var preview: Bitmap? = null
     var savedConfig: String = ""
 

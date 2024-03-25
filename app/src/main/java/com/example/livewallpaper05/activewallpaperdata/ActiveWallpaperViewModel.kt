@@ -8,6 +8,7 @@ import android.util.Log
 import androidx.lifecycle.*
 import com.example.livewallpaper05.R
 import com.example.livewallpaper05.savedWallpapers.SavedWallpaperTable
+import kotlinx.coroutines.Job
 import org.json.JSONObject
 import java.math.RoundingMode
 import java.util.Random
@@ -17,6 +18,8 @@ import java.util.Random
  */
 class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewModel() {
     abstract class Visualization {
+        lateinit var viewModel: ActiveWallpaperViewModel
+
         abstract val relevantTextViewIds: List<Int>
         abstract val relevantSeekBarIds: List<Int>
         abstract val relevantEditTextIds: List<Int>
@@ -37,6 +40,10 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
             val a = colorJSONObject.getInt("a").toFloat()
             return Color.valueOf(a, r, g, b)
         }
+
+        // set unique values for each visualization type
+        abstract fun updateValues()
+
         companion object {
             fun createColorFromInts(r: Int, g: Int, b: Int, a: Int): Color {
                 val rf = r.toFloat() / 255
@@ -55,6 +62,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         }
     }
     data class NBodyVisualization (
+        private var job: Job? = null,
         val visualizationType: String = "simulation",
         val simulationType: String = "nbody",
         var distance: Float = 0.5f,
@@ -78,6 +86,15 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
             R.id.distance_label,
             R.id.field_of_view_label
         )
+
+        override fun updateValues() {
+            // change this to observe the live data from the repo
+            distance = viewModel.getDistanceFromOrigin()
+            fieldOfView = viewModel.getFieldOfView()
+            backgroundColor = viewModel.getColor()
+
+        }
+
         override val relevantSeekBarIds : List<Int> = listOf(
             R.id.distance_seekbar,
             R.id.field_of_view_seekbar
@@ -101,6 +118,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
             return jsonObject
         }
     }
+
     data class NaiveFluidVisualization (
         val visualizationType: String = "simulation",
         val simulationType: String = "naive",
@@ -174,6 +192,16 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
             jsonObject.put("background_texture", backgroundTexture)
             return jsonObject
         }
+
+        override fun updateValues() {
+            // get values from repo
+            distance = viewModel.getDistanceFromOrigin()
+            fieldOfView = viewModel.getFieldOfView()
+            backgroundColor = viewModel.getColor()
+            gravity = viewModel.getGravity()
+            linearAcceleration = viewModel.getLinearAcceleration()
+            efficiency = viewModel.getEfficiency()
+        }
     }
     data class PicFlipVisualization (
         val visualizationType: String = "simulation",
@@ -233,6 +261,17 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
             jsonObject.put("background_texture", backgroundTexture)
             return jsonObject
         }
+
+        override fun updateValues() {
+            // get values from repo
+            distance = viewModel.getDistanceFromOrigin()
+            fieldOfView = viewModel.getFieldOfView()
+            backgroundColor = viewModel.getColor()
+            gravity = viewModel.getGravity()
+            linearAcceleration = viewModel.getLinearAcceleration()
+
+        }
+
     }
     data class TriangleVisualization (
         val visualizationType: String = "other",
@@ -277,6 +316,14 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
             jsonObject.put("background_texture", backgroundTexture)
             return jsonObject
         }
+
+        override fun updateValues() {
+            // get values from repo
+            distance = viewModel.getDistanceFromOrigin()
+            fieldOfView = viewModel.getFieldOfView()
+            backgroundColor = viewModel.getColor()
+        }
+
     }
     data class GraphVisualization (
         val visualizationType: String = "graph",
@@ -332,8 +379,18 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
             jsonObject.put("equation", equation)
             return jsonObject
         }
+
+        override fun updateValues() {
+            // get values from repo
+            distance = viewModel.getDistanceFromOrigin()
+            fieldOfView = viewModel.getFieldOfView()
+            backgroundColor = viewModel.getColor()
+            equation = viewModel.getEquation()
+        }
+
     }
-    var visualization : Visualization? = null
+
+    lateinit var visualization : Visualization
     var width: Int = 0
     var height: Int = 0
     private var mBitmap : Bitmap = Bitmap.createBitmap(500, 500, Bitmap.Config.ARGB_8888) as Bitmap
@@ -370,6 +427,16 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
     // return distance value from repo
     fun getDistanceFromOrigin(): Float {
         return repo.distanceFromOrigin.value!!
+    }
+
+    // get visualization type from repo
+    fun getSimulationType(): String {
+        return repo.visualizationName.value!!
+    }
+
+    // update visualization type in repo
+    fun updateSimulationType(type: String) {
+        repo.visualizationName.postValue(type)
     }
 
     // return field of view value from repo

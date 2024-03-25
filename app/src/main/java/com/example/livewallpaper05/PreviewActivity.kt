@@ -275,6 +275,9 @@ class PreviewActivity : AppCompatActivity() {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
                 val changed = viewModel.updateVisualizationSelection(pos)
                 if (changed) {
+                    // update visualization in repo
+                    viewModel.updateSimulationType(parent.getItemAtPosition(pos).toString())
+
                     // tell view it needs to be reloaded
                     mView!!.onPause()
                     mView!!.onResume()
@@ -329,6 +332,7 @@ class PreviewActivity : AppCompatActivity() {
         /*saveButton.setOnClickListener {
             // Screen buffer capture
             viewModel.getScreenBuffer = 1
+
         }
 
         saveAsButton.setOnClickListener {
