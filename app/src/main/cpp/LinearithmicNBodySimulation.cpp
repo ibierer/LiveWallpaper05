@@ -15,33 +15,14 @@ void LinearithmicNBodySimulation::initialize(const ComputationOptions &computati
     glGenBuffers(1, &computeShader.gVBO);
 }
 
-void LinearithmicNBodySimulation::computeForcesOnCPUQuadratic() {
-    float gravitationalConstant = 10000000000.0f * 6.674e-11f;
-    if (t <= 0.0f) {
-        return;
-    }
-    // Sum forces
-    for (uint i = 0u; i < COUNT; i++) {
-        data->stars[i].force = vec3(0.0f);
-        for (uint j = 0u; j < COUNT; j++) {
-            if (i == j) {
-                continue;
-            }
-            vec3 delta = data->stars[j].position - data->stars[i].position;
-            float distSquared = dot(delta, delta);
-            float dist = sqrt(distSquared);
-            data->stars[i].force += delta / (dist * distSquared) * data->stars[j].mass;
-        }
-        data->stars[i].force *= gravitationalConstant * data->stars[i].mass;
-    }
-}
-
 void LinearithmicNBodySimulation::integrate() {
+    // new strat: update existing force with new force
     float deltaTime = 0.1f;
     for (uint i = 0u; i < COUNT; i++) {
         vec3 acceleration = data->stars[i].force / data->stars[i].mass;
         //update positions
-        data->stars[i].position += (data->stars[i].velocity + 0.5f * acceleration * deltaTime) * deltaTime;
+        data->stars[i].position +=
+                (data->stars[i].velocity + 0.5f * acceleration * deltaTime) * deltaTime;
         //update velocity
         data->stars[i].velocity += acceleration * deltaTime;
     }
@@ -51,7 +32,8 @@ vec4 LinearithmicNBodySimulation::conquerVolume(const vector<int> &ids, Node *no
     // Base case
     if (ids.size() == 1) {
         int id = ids.at(0);
-        return vec4(data->stars[id].position.x, data->stars[id].position.y, data->stars[id].position.z, data->stars[id].mass);
+        return vec4(data->stars[id].position.x, data->stars[id].position.y,
+                    data->stars[id].position.z, data->stars[id].mass);
     }
 
     float mass = 0.0f;
@@ -73,20 +55,24 @@ vec4 LinearithmicNBodySimulation::conquerVolume(const vector<int> &ids, Node *no
         if (childIDs[i].size() > 0) {
             std::tuple<bool, bool, bool> inverseCombo = getInverseCombo(i);
             node->children[i] = new Node{
-                childIDs[i].size() == 1,
-                node,
-                {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr},
-                vec4(0.0f),
-                vec3(
-                    node->center.x + (std::get<0>(inverseCombo) ? quarterSize : -quarterSize),
-                    node->center.y + (std::get<1>(inverseCombo) ? quarterSize : -quarterSize),
-                    node->center.z + (std::get<2>(inverseCombo) ? quarterSize : -quarterSize)
-                ),
-                halfSize
+                    childIDs[i].size() == 1,
+                    node,
+                    {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr},
+                    vec4(0.0f),
+                    vec3(
+                            node->center.x +
+                            (std::get<0>(inverseCombo) ? quarterSize : -quarterSize),
+                            node->center.y +
+                            (std::get<1>(inverseCombo) ? quarterSize : -quarterSize),
+                            node->center.z +
+                            (std::get<2>(inverseCombo) ? quarterSize : -quarterSize)
+                    ),
+                    halfSize
             };
             node->children[i]->centerOfGravity = conquerVolume(childIDs[i], node->children[i]);
             mass += node->children[i]->centerOfGravity.w;
-            numerator += node->children[i]->centerOfGravity.w * node->children[i]->centerOfGravity.xyz;
+            numerator +=
+                    node->children[i]->centerOfGravity.w * node->children[i]->centerOfGravity.xyz;
             denominator += node->children[i]->centerOfGravity.w;
             if (childIDs[i].size() == 1) {
                 data->stars[childIDs[i].at(0)].leaf = node->children[i];
@@ -100,8 +86,9 @@ vec4 LinearithmicNBodySimulation::conquerVolume(const vector<int> &ids, Node *no
 vec3 LinearithmicNBodySimulation::addForces(Node *node, int index) {
     float theta = 0.7f;
     // BASE CASE
-    if (node->isLeaf || node->size / distance(data->stars[index].position, node->centerOfGravity.xyz) < theta) {
-        if(node == data->stars[index].leaf){
+    if (node->isLeaf ||
+        node->size / distance(data->stars[index].position, node->centerOfGravity.xyz) < theta) {
+        if (node == data->stars[index].leaf) {
             return vec3(0.0f);
         }
         vec3 delta = node->centerOfGravity.xyz - data->stars[index].position;
@@ -121,7 +108,7 @@ vec3 LinearithmicNBodySimulation::addForces(Node *node, int index) {
 
 void LinearithmicNBodySimulation::computeForcesOnCPULinearithmic() {
     // Delete the octree if it already exists
-    if(root != nullptr){
+    if (root != nullptr) {
         delete root;
     }
     // Compute size of root node
@@ -155,12 +142,12 @@ void LinearithmicNBodySimulation::computeForcesOnCPULinearithmic() {
     }
 }
 
-void LinearithmicNBodySimulation::simulate(const int &iterations, bool pushDataToGPU, bool retrieveDataFromGPU) {
+void LinearithmicNBodySimulation::simulate(const int &iterations, bool pushDataToGPU,
+                                           bool retrieveDataFromGPU) {
     switch (computationOption) {
         case CPU:
             for (int i = 0; i < iterations; i++) {
                 computeForcesOnCPULinearithmic();
-                //computeForcesOnCPUQuadratic();
                 integrate();
             }
             break;

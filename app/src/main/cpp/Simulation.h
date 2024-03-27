@@ -27,7 +27,6 @@ public:
             for (int i = 0; i < 8; ++i) {
                 if (children[i] != nullptr) {
                     delete children[i]; // Recursively delete child nodes
-                    children[i] = nullptr; // Set the child pointer to nullptr after deletion
                 }
             }
         }

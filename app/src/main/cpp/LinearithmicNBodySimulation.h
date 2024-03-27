@@ -47,9 +47,11 @@ public:
             "};\n",
             "struct cacheChunk {\n",
             "    Particle stars[" + to_string(PARTICLES_PER_CHUNK) + "];\n",
-            "    float padding[" + to_string((int) sizeof(cacheChunk::padding) / sizeof(float)) + "];\n",
+            "    float padding[" + to_string((int) sizeof(cacheChunk::padding) / sizeof(float)) +
+            "];\n",
             "};\n",
-            "layout(packed, binding = " + to_string(DEFAULT_INDEX_BUFFER_BINDING) + ") buffer destBuffer {\n",
+            "layout(packed, binding = " + to_string(DEFAULT_INDEX_BUFFER_BINDING) +
+            ") buffer destBuffer {\n",
             "	  cacheChunk chunks[" + to_string(NUM_CACHE_CHUNKS) + "];\n",
             "} outBuffer;\n",
             "uniform float t;\n",
@@ -105,8 +107,6 @@ public:
 private:
 
     float dt;
-
-    void computeForcesOnCPUQuadratic();
 
     void simulateOnGPU(const int &iterations, bool pushDataToGPU,
                        bool retrieveDataFromGPU);
