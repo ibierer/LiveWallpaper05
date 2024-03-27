@@ -7,6 +7,7 @@ import android.hardware.SensorManager
 import android.util.Log
 import androidx.lifecycle.*
 import com.example.livewallpaper05.R
+import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo.WallpaperRef
 import com.example.livewallpaper05.savedWallpapers.SavedWallpaperTable
 import kotlinx.coroutines.Job
 import org.json.JSONObject
@@ -121,7 +122,6 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
             return jsonObject
         }
     }
-
     data class NaiveFluidVisualization (
         val visualizationType: String = "simulation",
         val simulationType: String = "naive",
@@ -405,6 +405,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
 
     }
 
+    // initialize local variables for active wallpaper
     lateinit var visualization : Visualization
     var width: Int = 0
     var height: Int = 0
@@ -416,6 +417,13 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
     val mRepo: ActiveWallpaperRepo = repo
     var isCollapsed = false
 
+    // initialize local variables for saved wallpapers
+    val activeWallpaper: LiveData<SavedWallpaperTable> = repo.activeWallpaper
+    val savedWallpapers: LiveData<List<SavedWallpaperTable>> = repo.wallpapers
+
+    // GETTERS - here are all the methods for getting data from the repo -------------------
+
+    // grab bitmap from repo
     fun getPreviewImg(seed: Int): Bitmap {
         if (repo.preview != null && false) // This condition is always false... hmm...
             return repo.preview!!
@@ -444,16 +452,6 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         return repo.distanceFromOrigin.value!!
     }
 
-    // get visualization type from repo
-    fun getSimulationType(): String {
-        return repo.visualizationName.value!!
-    }
-
-    // update visualization type in repo
-    fun updateSimulationType(type: String) {
-        repo.visualizationName.postValue(type)
-    }
-
     // return field of view value from repo
     fun getFieldOfView(): Float {
         return repo.fieldOfView.value!!
@@ -479,14 +477,130 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         return repo.visualizationSelection
     }
 
-    // update orientation in repo
-    fun updateOrientation(orient: Int) {
-        repo.updateOrientation(orient)
-    }
-
     // return orientation from repo
     fun getOrientation(): Int {
         return repo.orientation
+    }
+
+    // return color from repo
+    fun getColor(): Color {
+        return repo.color.value!!
+    }
+
+    // return fps from repo
+    fun getFPS(): MutableLiveData<Float> {
+        return repo.fps
+    }
+
+    // return last frame time value from repo
+    fun getLastFrame(): Long {
+        return repo.lastFrame
+    }
+
+    // return config string from repo
+    fun getConfig(): String {
+        val config = JSONObject()
+        // store simulation type, background color, and settings (with default values for now
+        config.put("name", "New Wallpaper")
+        config.put("type", repo.visualizationSelection)
+        val color = getColor()
+        config.put("background_color", JSONObject("{\"r\": ${color.red()}, \"g\": ${color.green()}, \"b\": ${color.blue()}, \"a\": ${color.alpha()} }"))
+        val eq = if (repo.equation != "") repo.equation else "1/((sqrt(x^2 + y^2) - 2 + 1.25cos(t))^2 + (z - 1.5sin(t))^2) + 1/((sqrt(x^2 + y^2) - 2 - 1.25cos(t))^2 + (z + 1.5sin(t))^2) = 1.9"
+        config.put("settings", eq)
+
+        // [TODO] temp solution
+        when (repo.visualizationSelection){
+            0 -> {
+                //var sim = NBodyVisualization()
+                config.put("distance", getDistanceFromOrigin())
+                config.put("field_of_view", getFieldOfView())
+            }
+            1 -> {
+                var sim = NaiveFluidVisualization()
+                config.put("distance", getDistanceFromOrigin())
+                config.put("field_of_view", getFieldOfView())
+                config.put("background_is_solid_color", sim.backgroundIsSolidColor)
+                config.put("background_texture", sim.backgroundTexture)
+                config.put("gravity", getGravity())
+                config.put("linear_acceleration", getLinearAcceleration())
+                config.put("efficiency", getEfficiency())
+                config.put("particle_count", sim.particleCount)
+            }
+            2 -> {
+                var sim = PicFlipVisualization()
+                config.put("distance", sim.distance)
+                config.put("field_of_view", sim.fieldOfView)
+                config.put("background_is_solid_color", sim.backgroundIsSolidColor)
+                config.put("background_texture", sim.backgroundTexture)
+                config.put("gravity", sim.gravity)
+                config.put("linear_acceleration", sim.linearAcceleration)
+            }
+            3 -> {
+                var sim = TriangleVisualization()
+                config.put("distance", sim.distance)
+                config.put("field_of_view", sim.fieldOfView)
+                config.put("background_is_solid_color", sim.backgroundIsSolidColor)
+                config.put("background_texture", sim.backgroundTexture)
+            }
+            4 -> {
+                var sim = GraphVisualization()
+                config.put("distance", sim.distance)
+                config.put("field_of_view", sim.fieldOfView)
+                config.put("background_is_solid_color", sim.backgroundIsSolidColor)
+                config.put("background_texture", sim.backgroundTexture)
+                config.put("equation", sim.equation)
+            }
+        }
+
+        return config.toString()
+
+        //return visualization.toJsonObject().toString()
+    }
+
+    fun getWid(): Int {
+        return repo.wid
+    }
+
+    // get equation string from repo
+    fun getEquation(): String {
+        return repo.equation
+    }
+
+    // get efficiency value from repo
+    fun getEfficiency(): Float {
+        return repo.efficiency.value!!
+    }
+
+    // get vector direction from repo
+    fun getVectorDirection(): Boolean {
+        return repo.flipNormals.value!!
+    }
+
+    // get linear acceleration value from repo
+    fun getLinearAcceleration(): Float {
+        return repo.linearAcceleration.value!!
+    }
+
+    // get gravity value from repo
+    fun getGravity(): Float {
+        return repo.gravity.value!!
+    }
+
+    // get the wallpaper id list for the wallpaper preview fragment(s)
+    fun getWallpaperFragIds() : MutableList<WallpaperRef> {
+        return mRepo.wallpaperFragIds
+    }
+
+    // SETTERS - here are all the methods for updating data in the repo --------------------
+
+    // update visualization type in repo
+    fun updateSimulationType(type: String) {
+        repo.visualizationName.postValue(type)
+    }
+
+    // update orientation in repo
+    fun updateOrientation(orient: Int) {
+        repo.updateOrientation(orient)
     }
 
     // update distance from origin in repo
@@ -498,6 +612,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
     fun updateFieldOfView(angle: Float) {
         repo.fieldOfView.value = angle
     }
+
     // update simulation type in repo, return true if value changed
     fun updateVisualizationSelection(selection: Int): Boolean {
         if (selection != repo.visualizationSelection) {
@@ -512,11 +627,6 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         repo.color.value = color
     }
 
-    // return color from repo
-    fun getColor(): Color {
-        return repo.color.value!!
-    }
-
     // update fps in repo (scale float to 2 decimal places)
     fun updateFPS(fps: Float) {
         // update fps in repo
@@ -524,40 +634,72 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         repo.fps.postValue(rounded.toFloat())
     }
 
-    // return fps from repo
-    fun getFPS(): MutableLiveData<Float> {
-        return repo.fps
-    }
-
     // update last frame time value in repo
     fun updateLastFrame(new: Long){
         repo.lastFrame = new
     }
 
-    // return last frame time value from repo
-    fun getLastFrame(): Long {
-        return repo.lastFrame
+    // update wallpaper id in repo
+    fun setWid(wid: Int) {
+        repo.wid = wid
     }
+
+    // update preview image in repo
+    fun updatePreviewImg(preview: Bitmap?) {
+        if (preview != null)
+            repo.preview = preview
+    }
+
+    // update equation string in repo
+    fun updateEquation(toString: String) {
+        repo.equation = toString
+    }
+
+    // update gravity value in repo
+    fun updateGravity(value: Float) {
+        repo.gravity.value = value
+    }
+
+    // update efficiency value in repo
+    fun updateEfficiency(value: Float) {
+        repo.efficiency.value = value
+    }
+
+    // update particle count value in repo
+    fun updateParticleCount(value: Int) {
+        repo.particleCount.value = value
+    }
+
+    // update linear acceleration value in repo
+    fun updateLinearAcceleration(value: Float) {
+        repo.linearAcceleration.value = value
+    }
+
+    // update wallpaper preview fragments list in repo
+    fun updateWallpaperFragIds(wallpaperRef: WallpaperRef) {
+        // if wallpaperRef is already in list ignore
+        var data = mRepo.wallpaperFragIds
+        if (data != null) {
+            for (r in data){
+                if (r.wallpaperId == wallpaperRef.wallpaperId) {
+                    return
+                }
+            }
+            // add new wallpaperRef to list
+            data.add(wallpaperRef)
+        }
+    }
+
+    // update viz name in repo
+    private fun updateVizualizationName(s: String) {
+        repo.visualizationName.postValue(s)
+    }
+
+    // OTHER - other helper methods --------------------------------------------------------
 
     // register sensor events to repo sensor manager
     fun registerSensorEvents(manager: SensorManager) {
         repo.registerSensors(manager)
-    }
-
-    // return config string from repo
-    fun getConfig(): String {
-        val config = JSONObject()
-        // store simulation type, background color, and settings (with default values for now
-        config.put("name", "New Wallpaper")
-        config.put("type", repo.visualizationSelection)
-        val color = getColor()
-        config.put("background_color", JSONObject("{\"r\": ${color.red()}, \"g\": ${color.green()}, \"b\": ${color.blue()}, \"a\": ${color.alpha()} }"))
-        val eq = if (repo.equation != "") repo.equation else "1/((sqrt(x^2 + y^2) - 2 + 1.25cos(t))^2 + (z - 1.5sin(t))^2) + 1/((sqrt(x^2 + y^2) - 2 - 1.25cos(t))^2 + (z + 1.5sin(t))^2) = 1.9"
-        config.put("settings", eq)
-
-        return config.toString()
-
-        //return visualization.toJsonObject().toString()
     }
 
     // load config table into repo
@@ -569,17 +711,59 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         try {
             repo.wid = table.wid
             val configJson = JSONObject(table.config)
-            repo.visualizationSelection = configJson.getInt("type")
-            val red = configJson.getJSONObject("background_color").getInt("r").toFloat()
-            val green = configJson.getJSONObject("background_color").getInt("g").toFloat()
-            val blue = configJson.getJSONObject("background_color").getInt("b").toFloat()
-            val alpha = configJson.getJSONObject("background_color").getInt("a").toFloat()
 
-            updateColor(Color.valueOf(red, green, blue, alpha))
-            repo.equation = configJson.getString("settings")
+            repo.visualizationSelection = configJson.getInt("type")
+
+            // update visualization specific parameters
+            // [TODO] - add all viz parameters here and in repo (requires getter and setter functions as well)
+            when (repo.visualizationSelection) {
+                0 -> {
+                    var sim = NBodyVisualization(configJson)
+                    updateDistanceFromCenter(sim.distance)
+                    updateFieldOfView(sim.fieldOfView)
+                    updateColor(sim.backgroundColor)
+                    updateVizualizationName("N-Body Simulation")
+                }
+                1 -> {
+                    var sim = NaiveFluidVisualization(configJson)
+                    updateDistanceFromCenter(sim.distance)
+                    updateFieldOfView(sim.fieldOfView)
+                    updateColor(sim.backgroundColor)
+                    updateGravity(sim.gravity)
+                    updateLinearAcceleration(sim.linearAcceleration)
+                    updateEfficiency(sim.efficiency)
+                    updateParticleCount(sim.particleCount)
+                    updateVizualizationName("Naive Fluid Simulation")
+                }
+                2 -> {
+                    var sim = PicFlipVisualization(configJson)
+                    updateDistanceFromCenter(sim.distance)
+                    updateFieldOfView(sim.fieldOfView)
+                    updateColor(sim.backgroundColor)
+                    updateGravity(sim.gravity)
+                    updateLinearAcceleration(sim.linearAcceleration)
+                    updateVizualizationName("PicFlip Simulation")
+                }
+                3 -> {
+                    var sim = TriangleVisualization(configJson)
+                    updateDistanceFromCenter(sim.distance)
+                    updateFieldOfView(sim.fieldOfView)
+                    updateColor(sim.backgroundColor)
+                    updateVizualizationName("Triangle Visualization")
+                }
+                4 -> {
+                    var sim = GraphVisualization(configJson)
+                    updateDistanceFromCenter(sim.distance)
+                    updateFieldOfView(sim.fieldOfView)
+                    updateColor(sim.backgroundColor)
+                    updateEquation(sim.equation)
+                    updateVizualizationName("Graph Visualization")
+                }
+            }
 
             // store config string in repo
             repo.savedConfig = table.config
+
         } catch (e: Exception) {
             Log.d("LiveWallpaperLoad", "Error loading config: $e")
             Log.d("LiveWallpaperLoad", "Config: ${table.config}")
@@ -587,54 +771,71 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         }
     }
 
-    fun getWid(): Int {
-        return repo.wid
+    // switch active wallpaper
+    fun switchWallpaper(wid: Int) {
+        mRepo.setLiveWallpaperData(wid)
     }
 
-    fun setWid(wid: Int) {
-        repo.wid = wid
+    // save wallpaper from config string
+    fun saveWallpaper(config: String) : Int {
+        // create new wallpaper table with given data
+        var wallpaper = SavedWallpaperTable(
+            1,
+            config
+        )
+        try {
+            wallpaper = SavedWallpaperTable(
+                activeWallpaper.value!!.wid,
+                config
+            )
+        } catch (e: Exception) {}
+        // update profile table
+        mRepo.setWallpaper(wallpaper)
+
+        return wallpaper.wid
     }
 
-    fun updatePreviewImg(preview: Bitmap?) {
-        if (preview != null)
-            repo.preview = preview
+    // delete wallpaper
+    fun deleteWallpaper(wid: Int) {
+        mRepo.deleteWallpaper(wid)
     }
 
-    fun updateEquation(toString: String) {
-        repo.equation = toString
+    // create new wallpaper table
+    fun createWallpaperTable(id: Int) {
+        var new_wallpaper = mRepo.createWallpaperTable(id)
+        mRepo.setWallpaper(new_wallpaper)
     }
 
-    fun getEquation(): String {
-        return repo.equation
+    // create wallpaper save with default values
+    fun createDefaultWallpaperTable(wid: Int, config: String) {
+        val wallpaper = SavedWallpaperTable(
+            wid,
+            config
+        )
+        mRepo.setWallpaper(wallpaper)
     }
 
-    fun updateGravity(value: Float) {
-        repo.gravity.value = value
+    // remove specified wallpapers from fragment list via wallpaper reference
+    fun removeWallpaperFragId(wallpaperRef: WallpaperRef) {
+        // remove wallpaperRef from list
+        var data = mRepo.wallpaperFragIds
+        var toRemove = listOf<WallpaperRef>()
+        if (data != null) {
+            for (r in data){
+                if (r.wallpaperId == wallpaperRef.wallpaperId) {
+                    toRemove = toRemove.plus(r)
+                }
+            }
+            data.removeAll(toRemove)
+        }
     }
 
-    fun getGravity(): Float {
-        return repo.gravity.value!!
+    // save active wallpaper and switch to new wallpaper. This allows us to save
+    // the wallpaper before changing it, ensuring no changes are forgotten
+    fun saveSwitchWallpaper(activeWid: Int, activeConfig: String) {
+        mRepo.saveSwitchWallpaper(activeWid, activeConfig)
     }
 
-    fun updateLinearAcceleration(value: Float) {
-        repo.linearAcceleration.value = value
-    }
-
-    fun getLinearAcceleration(): Float {
-        return repo.linearAcceleration.value!!
-    }
-
-    fun updateEfficiency(value: Float) {
-        repo.efficiency.value = value
-    }
-
-    fun getEfficiency(): Float {
-        return repo.efficiency.value!!
-    }
-
-    fun getVectorDirection(): Boolean {
-        return repo.flipNormals.value!!
-    }
 }
 
 /**

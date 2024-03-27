@@ -5,8 +5,6 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.example.livewallpaper05.savedWallpapers.SavedWallpaperDao
-import com.example.livewallpaper05.savedWallpapers.SavedWallpaperTable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -14,10 +12,24 @@ import kotlinx.coroutines.launch
 // create wallpaper database
 @Database(entities = [SavedWallpaperTable::class], version = 1, exportSchema = false)
 abstract class SavedWallpaperRoomDatabase : RoomDatabase() {
+
     abstract fun wallpaperDao(): SavedWallpaperDao
 
     // make db singleton
     companion object {
+
+        private var instance: SavedWallpaperRoomDatabase? = null
+
+        fun getInstance(context: Context): SavedWallpaperRoomDatabase {
+            if (instance == null) {
+                instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    SavedWallpaperRoomDatabase::class.java,
+                    "wallpaper.db"
+                ).build()
+            }
+            return instance!!
+        }
 
         @Volatile
         private var mInstance: SavedWallpaperRoomDatabase? = null

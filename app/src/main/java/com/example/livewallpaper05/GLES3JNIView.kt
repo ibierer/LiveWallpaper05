@@ -156,21 +156,18 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             var jsonConfig: JSONObject = JSONObject()
             var selectionJSON: String = ""
 
+            val loadedConfig = JSONObject(mViewModel.getConfig())
+
             when (mViewModel.getVisualization()) {
                 0 -> {
-                    mViewModel.visualization = ActiveWallpaperViewModel.NBodyVisualization()
+                    mViewModel.visualization = ActiveWallpaperViewModel.NBodyVisualization(loadedConfig)
                     mViewModel.visualization.viewModel = mViewModel
                     selectionJSON = mViewModel.visualization.toJsonObject().toString()
                     jsonConfig = JSONObject(selectionJSON)
 
-                    // update visualization values for first time
-                    //mViewModel.visualization.updateValues()
-
-                    //val gravity: Float = jsonObject.getDouble("gravity").toFloat()
-                    //mViewModel.mRepo.gravity.postValue(gravity)
                 }
                 1 -> {
-                    mViewModel.visualization = ActiveWallpaperViewModel.NaiveFluidVisualization()
+                    mViewModel.visualization = ActiveWallpaperViewModel.NaiveFluidVisualization(loadedConfig)
                     jsonConfig = mViewModel.visualization!!.toJsonObject()
                     val gravity: Float = jsonConfig.getDouble("gravity").toFloat()
                     val linearAcceleration: Float = jsonConfig.getDouble("linear_acceleration").toFloat()
@@ -179,35 +176,27 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     mViewModel.mRepo.linearAcceleration.postValue(linearAcceleration)
                     mViewModel.mRepo.efficiency.postValue(efficiency)
 
-                    // update visualization values for first time
-                    //mViewModel.visualization.updateValues()
                 }
                 2 -> {
-                    mViewModel.visualization = ActiveWallpaperViewModel.PicFlipVisualization()
+                    mViewModel.visualization = ActiveWallpaperViewModel.PicFlipVisualization(loadedConfig)
                     jsonConfig = mViewModel.visualization!!.toJsonObject()
                     val gravity: Float = jsonConfig.getDouble("gravity").toFloat()
                     val linearAcceleration: Float = jsonConfig.getDouble("linear_acceleration").toFloat()
                     mViewModel.mRepo.gravity.postValue(gravity)
                     mViewModel.mRepo.linearAcceleration.postValue(linearAcceleration)
 
-                    // update visualization values for first time
-                    //mViewModel.visualization.updateValues()
                 }
                 3 -> {
-                    mViewModel.visualization = ActiveWallpaperViewModel.TriangleVisualization()
+                    mViewModel.visualization = ActiveWallpaperViewModel.TriangleVisualization(loadedConfig)
                     selectionJSON = mViewModel.visualization.toJsonObject().toString()
                     jsonConfig = JSONObject(selectionJSON)
 
-                    // update visualization values for first time
-                    //mViewModel.visualization.updateValues()
                 }
                 4 -> {
-                    mViewModel.visualization = ActiveWallpaperViewModel.GraphVisualization()
+                    mViewModel.visualization = ActiveWallpaperViewModel.GraphVisualization(loadedConfig)
                     selectionJSON = mViewModel.visualization.toJsonObject().toString()
                     jsonConfig = JSONObject(selectionJSON)
 
-                    // update visualization values for first time
-                    //mViewModel.visualization.updateValues()
                 }
             }
             //Log.d("VISUALIZATION = ", jsonConfig.toString())
