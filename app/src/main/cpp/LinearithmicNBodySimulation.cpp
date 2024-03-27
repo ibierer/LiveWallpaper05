@@ -163,9 +163,6 @@ void LinearithmicNBodySimulation::simulate(const int &iterations, bool pushDataT
 
                 static int countConquerVolume = 0;
                 ALOGD("ConquerVolume count = %d\n", countConquerVolume);
-                for(int j = 0; j < COUNT; j++){
-                    ALOGD("Particle %d location before = %s\n", j, data->stars[j].position.str().c_str());
-                }
 
                 root->centerOfGravity = conquerVolume(ids, root);
 
@@ -181,9 +178,6 @@ void LinearithmicNBodySimulation::simulate(const int &iterations, bool pushDataT
                 }
                 //computeForcesOnCPUQuadratic();
                 integrate();
-                for(int j = 0; j < COUNT; j++){
-                    ALOGD("Particle %d location after = %s\n", j, data->stars[j].position.str().c_str());
-                }
             }
             break;
         case GPU:
