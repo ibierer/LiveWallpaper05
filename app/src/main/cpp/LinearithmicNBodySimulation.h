@@ -85,15 +85,13 @@ public:
 
     LinearithmicNBodySimulationData *data;
 
+    vector<int> ids;
+
     double t;
 
-    LinearithmicNBodySimulation() {
+    LinearithmicNBodySimulation() {}
 
-    }
-
-    ~LinearithmicNBodySimulation() {
-
-    }
+    ~LinearithmicNBodySimulation() {}
 
     void initialize(const ComputationOptions &computationOption);
 

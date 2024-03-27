@@ -204,11 +204,14 @@ void LinearithmicNBodySimulation::computeForcesOnCPULinearithmic() {
             vec3(0.0f),
             2.0f * radius
     };
-    // Pack ids into a vector TODO this list packing could happen only once (doing it twice)
-    vector<int> ids;
+    if (!ids.empty()){
+        ids.clear();
+    }
+    // Pack ids into a vector
     for (int j = 0; j < COUNT; j++) {
         ids.push_back(j);
     }
+
     // Use conquerVolume to recursively define octree
     root->centerOfGravity = conquerVolume(ids, root);
     // Sum the forces for each particle
@@ -240,11 +243,7 @@ void LinearithmicNBodySimulation::computeForcesOnCPULinearithmicFinal() {
             vec3(0.0f),
             2.0f * radius
     };
-    // Pack ids into a vector
-    vector<int> ids;
-    for (int j = 0; j < COUNT; j++) {
-        ids.push_back(j);
-    }
+
     // Use conquerVolume to recursively define octree
     root->centerOfGravity = conquerOnceMore(ids, root);
     // Sum the forces for each particle
