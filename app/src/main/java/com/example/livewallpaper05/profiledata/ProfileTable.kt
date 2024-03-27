@@ -23,7 +23,7 @@ data class ProfileTable (
     @field:ColumnInfo(name = "profilepic", typeAffinity = ColumnInfo.BLOB)
     var profilepic: ByteArray
 ) {
-    // force override funcs for profile because of byte array
+    // initialForce override funcs for profile because of byte array
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

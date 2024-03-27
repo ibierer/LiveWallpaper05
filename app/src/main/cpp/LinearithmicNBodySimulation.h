@@ -11,7 +11,7 @@ using std::to_string;
 class LinearithmicNBodySimulation : public Simulation {
 public:
 
-    static const int NUM_CACHE_CHUNKS = 100;
+    static const int NUM_CACHE_CHUNKS = 50;
 
     static const int PARTICLES_PER_CHUNK = 16;
 
@@ -129,6 +129,13 @@ private:
 
     std::tuple<bool, bool, bool> getInverseCombo(int combo);
 
+    void finalIntegrate();
+
+    vec4 conquerOnceMore(const vector<int> &ids, Node *node);
+
+    vec3 addForcesFinal(Node *node, int index);
+
+    void computeForcesOnCPULinearithmicFinal();
 };
 
 

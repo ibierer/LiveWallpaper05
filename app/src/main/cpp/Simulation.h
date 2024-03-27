@@ -5,7 +5,6 @@
 #ifndef LIVEWALLPAPER05_SIMULATION_H
 #define LIVEWALLPAPER05_SIMULATION_H
 
-
 class Simulation : public Computation {
 
 public:
@@ -34,7 +33,9 @@ public:
 
     struct Star : Particle {
         float mass;
-        vec3 force;
+        vec3 initialForce;
+        vec3 finalForce;
+        vec3 projectedPosition;
         Node* leaf;
     };
 
@@ -47,6 +48,5 @@ public:
 private:
 
 };
-
 
 #endif //LIVEWALLPAPER05_SIMULATION_H
