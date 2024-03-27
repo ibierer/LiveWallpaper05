@@ -20,6 +20,7 @@ public:
         Node *parent;
         Node *children[8];
         vec4 centerOfGravity;
+        vec3 center;
         float size;
     };
 

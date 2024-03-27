@@ -1,5 +1,6 @@
 package com.example.livewallpaper05
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -22,6 +23,7 @@ import java.util.Properties
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
+@SuppressLint("ViewConstructor")
 class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceView(context) {
     private val TAG = "GLES3JNI"
     private val DEBUG = true
@@ -34,13 +36,12 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
         setRenderer(Renderer(context, vm, this))
     }
 
-    class Renderer(private val context: Context, vm: ActiveWallpaperViewModel, var view: View) : GLSurfaceView.Renderer {
+    class Renderer(private val context: Context, vm: ActiveWallpaperViewModel, var view: View) :
+        GLSurfaceView.Renderer {
         private var mViewModel: ActiveWallpaperViewModel = vm
-
         var auth: FirebaseAuth? = null
         var username: String? = "Default User"
         var uid: Int? = 11 //uid for default user
-
 
         override fun onDrawFrame(gl: GL10) {
             // default values in ActiveWallpaperViewModel
@@ -48,9 +49,6 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             val rotData = mViewModel.getRotationData()
             val linearAccelData = mViewModel.getLinearAccelerationData()
             val multiplier = mViewModel.getLinearAcceleration()
-
-            // update visualization values
-            mViewModel.visualization.updateValues()
 
             // Run C++ visualization logic and render OpenGL view
             PreviewActivity.step(
@@ -154,60 +152,45 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
 
         override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
             var jsonConfig: JSONObject = JSONObject()
-            var selectionJSON: String = ""
-
             when (mViewModel.getVisualization()) {
                 0 -> {
                     mViewModel.visualization = ActiveWallpaperViewModel.NBodyVisualization()
-                    mViewModel.visualization.viewModel = mViewModel
-                    selectionJSON = mViewModel.visualization.toJsonObject().toString()
-                    jsonConfig = JSONObject(selectionJSON)
-
-                    // update visualization values for first time
-                    //mViewModel.visualization.updateValues()
-
-                    //val gravity: Float = jsonObject.getDouble("gravity").toFloat()
-                    //mViewModel.mRepo.gravity.postValue(gravity)
+                    jsonConfig = mViewModel.visualization!!.toJsonObject()
                 }
+
                 1 -> {
                     mViewModel.visualization = ActiveWallpaperViewModel.NaiveFluidVisualization()
                     jsonConfig = mViewModel.visualization!!.toJsonObject()
                     val gravity: Float = jsonConfig.getDouble("gravity").toFloat()
-                    val linearAcceleration: Float = jsonConfig.getDouble("linear_acceleration").toFloat()
+                    val linearAcceleration: Float =
+                        jsonConfig.getDouble("linear_acceleration").toFloat()
                     val efficiency: Float = jsonConfig.getDouble("efficiency").toFloat()
                     mViewModel.mRepo.gravity.postValue(gravity)
                     mViewModel.mRepo.linearAcceleration.postValue(linearAcceleration)
                     mViewModel.mRepo.efficiency.postValue(efficiency)
-
-                    // update visualization values for first time
-                    //mViewModel.visualization.updateValues()
                 }
+
                 2 -> {
                     mViewModel.visualization = ActiveWallpaperViewModel.PicFlipVisualization()
                     jsonConfig = mViewModel.visualization!!.toJsonObject()
                     val gravity: Float = jsonConfig.getDouble("gravity").toFloat()
-                    val linearAcceleration: Float = jsonConfig.getDouble("linear_acceleration").toFloat()
+                    val linearAcceleration: Float =
+                        jsonConfig.getDouble("linear_acceleration").toFloat()
                     mViewModel.mRepo.gravity.postValue(gravity)
                     mViewModel.mRepo.linearAcceleration.postValue(linearAcceleration)
-
-                    // update visualization values for first time
-                    //mViewModel.visualization.updateValues()
                 }
+
                 3 -> {
                     mViewModel.visualization = ActiveWallpaperViewModel.TriangleVisualization()
-                    selectionJSON = mViewModel.visualization.toJsonObject().toString()
-                    jsonConfig = JSONObject(selectionJSON)
-
-                    // update visualization values for first time
-                    //mViewModel.visualization.updateValues()
+                    jsonConfig = mViewModel.visualization!!.toJsonObject()
                 }
+
                 4 -> {
                     mViewModel.visualization = ActiveWallpaperViewModel.GraphVisualization()
-                    selectionJSON = mViewModel.visualization.toJsonObject().toString()
-                    jsonConfig = JSONObject(selectionJSON)
-
-                    // update visualization values for first time
-                    //mViewModel.visualization.updateValues()
+                    jsonConfig = mViewModel.visualization!!.toJsonObject()
+                    val vectorPointsPositive: Boolean =
+                        jsonConfig.getBoolean("vector_points_positive")
+                    mViewModel.mRepo.flipNormals.postValue(vectorPointsPositive)
                 }
             }
             //Log.d("VISUALIZATION = ", jsonConfig.toString())
@@ -216,7 +199,8 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             mViewModel.mRepo.distanceFromOrigin.postValue(distance)
             mViewModel.mRepo.fieldOfView.postValue(fieldOfView)
             val backgroundColorJSONObject: JSONObject = jsonConfig.getJSONObject("background_color")
-            val backgroundColor: Color = mViewModel.visualization!!.jsonObjectToColor(backgroundColorJSONObject)
+            val backgroundColor: Color =
+                mViewModel.visualization!!.jsonObjectToColor(backgroundColorJSONObject)
             mViewModel.mRepo.color.postValue(backgroundColor)
             PreviewActivity.init(jsonConfig.toString())
         }

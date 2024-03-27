@@ -49,41 +49,55 @@ void LinearithmicNBodySimulation::integrate() {
 }
 
 vec4 LinearithmicNBodySimulation::conquerVolume(const vector<int> &ids, Node *node) {
+    if (ids.empty()) {
+        return vec4(0.0f);
+    }
     // 1. Accumulate all masses to each node
     vector<int> childIDs[8];
     float mass = 0.0f;
     for (int i = 0; i < ids.size(); i++) {
         vec3 p = data->stars[ids.at(i)].position;
-        int combo = (p.x > node->centerOfGravity.x) * 1 + (p.y > node->centerOfGravity.y) * 2 +
-                    (p.z > node->centerOfGravity.z) * 4;
+        int combo = getCombo(p.x > node->center.x, p.y > node->center.y,
+                             p.z > node->center.z);
         childIDs[combo].push_back(ids[i]);
     }
-
     vec3 numerator = vec3(0.0f);
     float denominator = 0.0f;
     float halfSize = node->size / 2;
     // iterate over 'octant'
     for (int i = 0; i < 8; i++) {
         if (childIDs[i].size() > 0) {
-            if (!node->children[i]) {
-                node->children[i] = new Node(); // Allocate child node if not already created
-                node->children[i]->parent = node;
-                node->children[i]->size = halfSize;
-                for (int j = 0; j < 8; j++) {
-                    node->children[i]->children[j] = nullptr;
-                }
+            if (node->children[i] == nullptr) {
+                ALOGD("CONQV %s\n", "ptE");
+                vec3 center = vec3(0.0f);
+                std::tuple<bool, bool, bool> tresBool = reverseCombo(i);
+                float quarterSize = halfSize / 2;
+                center.x = node->center.x + (!std::get<0>(tresBool) ? quarterSize : -quarterSize);
+                center.y = node->center.y + (!std::get<1>(tresBool) ? quarterSize : -quarterSize);
+                center.z = node->center.z + (!std::get<2>(tresBool) ? quarterSize : -quarterSize);
+                node->children[i] = new Node{
+                        childIDs[i].size() == 1,
+                        node,
+                        {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr},
+                        vec4(0.0f),
+                        center,
+                        halfSize
+                };
+                node->children[i]->centerOfGravity = conquerVolume(childIDs[i], node->children[i]);
+                ALOGD("CONQV %s\n", "ptE.B");
             }
-            vec4 centerOfGravity = conquerVolume(childIDs[i], node->children[i]);
-            node->children[i]->centerOfGravity = centerOfGravity;
-            mass += centerOfGravity.w;
-            numerator += centerOfGravity.w * centerOfGravity.xyz;
-            denominator += centerOfGravity.w;
+            ALOGD("CONQV %s\n", "ptF");
+            mass += node->children[i]->centerOfGravity.w;
+            numerator += node->children[i]->centerOfGravity.w * node->children[i]->centerOfGravity.xyz;
+            denominator += node->children[i]->centerOfGravity.w;
+            ALOGD("CONQV %s\n", "ptG");
             if (childIDs[i].size() == 1) {
-                node->children[i]->isLeaf = true;
+                ALOGD("CONQV %s\n", "ptH");
                 data->stars[childIDs[i].at(0)].leaf = node->children[i];
             }
         }
     }
+    ALOGD("CONQV %s\n", "ptJ");
     vec3 quotient = numerator / denominator;
     return vec4(quotient.x, quotient.y, quotient.z, mass);
 }
@@ -131,12 +145,13 @@ void LinearithmicNBodySimulation::simulate(const int &iterations, bool pushDataT
                 }
                 root = new Node();
                 root->size = size;
+                root->center = vec3(0.0f);
                 vector<int> ids;
                 for (int j = 0; j < COUNT; j++) {
                     ids.push_back(j);
-                }
-                conquerVolume(ids, root);
-                computeForcesOnCPULinearithmic();*/
+                }*/
+                //conquerVolume(ids, root);
+                //computeForcesOnCPULinearithmic();
                 computeForcesOnCPUQuadratic();
                 integrate();
             }
@@ -229,3 +244,13 @@ Computation::ComputationOptions LinearithmicNBodySimulation::getComputationOptio
     return computationOption;
 }
 
+int LinearithmicNBodySimulation::getCombo(bool xIsPos, bool yIsPos, bool zIsPos) {
+    return xIsPos * 1 + yIsPos * 2 + zIsPos * 4;
+}
+
+std::tuple<bool, bool, bool> LinearithmicNBodySimulation::reverseCombo(int combo) {
+    bool x = combo & 1;
+    bool y = combo & 2;
+    bool z = combo & 4;
+    return std::make_tuple(x, y, z);
+}

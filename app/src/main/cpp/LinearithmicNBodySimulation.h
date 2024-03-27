@@ -126,6 +126,9 @@ private:
     vec3 addForces(Node *node, int index);
 
     void integrate();
+
+    int getCombo(bool xIsPos, bool yIsPos, bool zIsPos);
+    std::tuple<bool, bool, bool> reverseCombo(int combo);
 };
 
 
