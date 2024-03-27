@@ -22,6 +22,15 @@ public:
         vec4 centerOfGravity;
         vec3 center;
         float size;
+        // Destructor to delete children recursively
+        ~Node() {
+            for (int i = 0; i < 8; ++i) {
+                if (children[i] != nullptr) {
+                    delete children[i];
+                    children[i] = nullptr;
+                }
+            }
+        }
     };
 
     struct Star : Particle {

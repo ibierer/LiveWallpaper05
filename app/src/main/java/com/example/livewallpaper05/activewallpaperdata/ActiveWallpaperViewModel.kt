@@ -507,13 +507,13 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         return false
     }
 
-    fun updateEnvironmentMapSelection(selection: Int): Boolean {
+    /*fun updateEnvironmentMapSelection(selection: Int): Boolean {
         if (selection != repo.environmentMapSelection.value) {
             repo.environmentMapSelection.value = selection
             return true
         }
         return false
-    }
+    }*/
 
     // update color in repo
     fun updateColor(color: Color) {
@@ -644,9 +644,9 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         return repo.flipNormals.value!!
     }
 
-    fun getEnvironmentMap(): Int {
+    /*fun getEnvironmentMap(): Int {
         return repo.environmentMapSelection.value!!
-    }
+    }*/
 }
 
 /**

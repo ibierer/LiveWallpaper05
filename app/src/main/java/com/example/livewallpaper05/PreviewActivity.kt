@@ -96,14 +96,14 @@ class PreviewActivity : AppCompatActivity() {
         visualizationSelectorSpinner.setSelection(viewModel.getVisualization())
 
         // fill image selector box with image options from native-lib.cpp
-        val environmentMapSelectorAdapter = ArrayAdapter.createFromResource(
+        /*val environmentMapSelectorAdapter = ArrayAdapter.createFromResource(
             this,
             R.array.environment_map_options,
             android.R.layout.simple_spinner_item
         )
         environmentMapSelectorSpinner.adapter = environmentMapSelectorAdapter
         // set default to viewmodel visualization type
-        environmentMapSelectorSpinner.setSelection(viewModel.getEnvironmentMap())
+        environmentMapSelectorSpinner.setSelection(viewModel.getEnvironmentMap())*/
 
         // register senser event listeners
         viewModel.registerSensorEvents(getSystemService(Context.SENSOR_SERVICE) as SensorManager)

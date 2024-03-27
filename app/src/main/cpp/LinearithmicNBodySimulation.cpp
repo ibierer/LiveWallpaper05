@@ -72,9 +72,9 @@ vec4 LinearithmicNBodySimulation::conquerVolume(const vector<int> &ids, Node *no
                 vec3 center = vec3(0.0f);
                 std::tuple<bool, bool, bool> tresBool = reverseCombo(i);
                 float quarterSize = halfSize / 2;
-                center.x = node->center.x + (!std::get<0>(tresBool) ? quarterSize : -quarterSize);
-                center.y = node->center.y + (!std::get<1>(tresBool) ? quarterSize : -quarterSize);
-                center.z = node->center.z + (!std::get<2>(tresBool) ? quarterSize : -quarterSize);
+                center.x = node->center.x + (std::get<0>(tresBool) ? quarterSize : -quarterSize);
+                center.y = node->center.y + (std::get<1>(tresBool) ? quarterSize : -quarterSize);
+                center.z = node->center.z + (std::get<2>(tresBool) ? quarterSize : -quarterSize);
                 node->children[i] = new Node{
                         childIDs[i].size() == 1,
                         node,
@@ -134,22 +134,26 @@ void LinearithmicNBodySimulation::simulate(const int &iterations, bool pushDataT
     switch (computationOption) {
         case CPU:
             for (int i = 0; i < iterations; i++) {
-                // compute size of root node
-                /*float size = 1.0f;
-                for (int j = 0; j < COUNT; j++) {
-                    while (abs(data->stars[j].position.x) < size / 2 &&
-                           abs(data->stars[j].position.y) < size / 2 &&
-                           abs(data->stars[j].position.z) < size / 2) {
-                        size *= 2;
-                    }
+                if(root != nullptr){
+                    delete root;
                 }
-                root = new Node();
-                root->size = size;
-                root->center = vec3(0.0f);
-                vector<int> ids;
-                for (int j = 0; j < COUNT; j++) {
-                    ids.push_back(j);
-                }*/
+                // compute size of root node
+                //float size = 1.0f;
+                //for (int j = 0; j < COUNT; j++) {
+                //    while (abs(data->stars[j].position.x) < 0.5f * size ||
+                //           abs(data->stars[j].position.y) < 0.5f * size ||
+                //           abs(data->stars[j].position.z) < 0.5f * size) {
+                //        size *= 2.0f;
+                //    }
+                //}
+                //ALOGD("SanityTest %s\n", "point A");
+                //root = new Node();
+                //root->size = size;
+                //root->center = vec3(0.0f);
+                //vector<int> ids;
+                //for (int j = 0; j < COUNT; j++) {
+                //    ids.push_back(j);
+                //}
                 //conquerVolume(ids, root);
                 //computeForcesOnCPULinearithmic();
                 computeForcesOnCPUQuadratic();
