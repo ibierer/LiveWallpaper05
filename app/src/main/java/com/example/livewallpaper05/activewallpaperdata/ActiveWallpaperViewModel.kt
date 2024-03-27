@@ -18,7 +18,7 @@ import java.util.Random
  */
 class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewModel() {
     abstract class Visualization {
-        lateinit var viewModel: ActiveWallpaperViewModel
+        var viewModel: ActiveWallpaperViewModel? = null
 
         abstract val relevantTextViewIds: List<Int>
         abstract val relevantSeekBarIds: List<Int>
@@ -88,10 +88,13 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         )
 
         override fun updateValues() {
+            if (viewModel == null) {
+                return
+            }
             // change this to observe the live data from the repo
-            distance = viewModel.getDistanceFromOrigin()
-            fieldOfView = viewModel.getFieldOfView()
-            backgroundColor = viewModel.getColor()
+            distance = viewModel!!.getDistanceFromOrigin()
+            fieldOfView = viewModel!!.getFieldOfView()
+            backgroundColor = viewModel!!.getColor()
 
         }
 
@@ -194,13 +197,16 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         }
 
         override fun updateValues() {
+            if (viewModel == null) {
+                return
+            }
             // get values from repo
-            distance = viewModel.getDistanceFromOrigin()
-            fieldOfView = viewModel.getFieldOfView()
-            backgroundColor = viewModel.getColor()
-            gravity = viewModel.getGravity()
-            linearAcceleration = viewModel.getLinearAcceleration()
-            efficiency = viewModel.getEfficiency()
+            distance = viewModel!!.getDistanceFromOrigin()
+            fieldOfView = viewModel!!.getFieldOfView()
+            backgroundColor = viewModel!!.getColor()
+            gravity = viewModel!!.getGravity()
+            linearAcceleration = viewModel!!.getLinearAcceleration()
+            efficiency = viewModel!!.getEfficiency()
         }
     }
     data class PicFlipVisualization (
@@ -263,12 +269,15 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         }
 
         override fun updateValues() {
+            if (viewModel == null) {
+                return
+            }
             // get values from repo
-            distance = viewModel.getDistanceFromOrigin()
-            fieldOfView = viewModel.getFieldOfView()
-            backgroundColor = viewModel.getColor()
-            gravity = viewModel.getGravity()
-            linearAcceleration = viewModel.getLinearAcceleration()
+            distance = viewModel!!.getDistanceFromOrigin()
+            fieldOfView = viewModel!!.getFieldOfView()
+            backgroundColor = viewModel!!.getColor()
+            gravity = viewModel!!.getGravity()
+            linearAcceleration = viewModel!!.getLinearAcceleration()
 
         }
 
@@ -318,10 +327,13 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         }
 
         override fun updateValues() {
+            if (viewModel == null) {
+                return
+            }
             // get values from repo
-            distance = viewModel.getDistanceFromOrigin()
-            fieldOfView = viewModel.getFieldOfView()
-            backgroundColor = viewModel.getColor()
+            distance = viewModel!!.getDistanceFromOrigin()
+            fieldOfView = viewModel!!.getFieldOfView()
+            backgroundColor = viewModel!!.getColor()
         }
 
     }
@@ -381,11 +393,14 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         }
 
         override fun updateValues() {
+            if (viewModel == null) {
+                return
+            }
             // get values from repo
-            distance = viewModel.getDistanceFromOrigin()
-            fieldOfView = viewModel.getFieldOfView()
-            backgroundColor = viewModel.getColor()
-            equation = viewModel.getEquation()
+            distance = viewModel!!.getDistanceFromOrigin()
+            fieldOfView = viewModel!!.getFieldOfView()
+            backgroundColor = viewModel!!.getColor()
+            equation = viewModel!!.getEquation()
         }
 
     }
