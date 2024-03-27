@@ -173,7 +173,7 @@ void LinearithmicNBodySimulation::simulate(const int &iterations, bool pushDataT
                 ALOGD("ConquerVolume count = %d\n", countConquerVolume);
 
                 for(int j = 0; j < COUNT; j++){
-                    ALOGD("Force %d calculation after = %s\n", j, data->stars[j].force.str().c_str());
+                    ALOGD("Force %d calculation before = %s\n", j, data->stars[j].force.str().c_str());
                 }
                 computeForcesOnCPULinearithmic();
                 for(int j = 0; j < COUNT; j++){
