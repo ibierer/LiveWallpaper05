@@ -49,26 +49,34 @@ void LinearithmicNBodySimulation::integrate() {
 }
 
 vec4 LinearithmicNBodySimulation::conquerVolume(const vector<int> &ids, Node *node) {
+    ALOGD("conquerVolume %s\n", "point A");
     if (ids.empty()) {
+        ALOGD("conquerVolume %s\n", "point B");
         return vec4(0.0f);
     }
     // 1. Accumulate all masses to each node
     vector<int> childIDs[8];
     float mass = 0.0f;
+    ALOGD("conquerVolume %s\n", "point C");
     for (int i = 0; i < ids.size(); i++) {
+        ALOGD("conquerVolume %s\n", "point D");
         vec3 p = data->stars[ids.at(i)].position;
         int combo = getCombo(p.x > node->center.x, p.y > node->center.y,
                              p.z > node->center.z);
         childIDs[combo].push_back(ids[i]);
     }
+    ALOGD("conquerVolume %s\n", "point E");
     vec3 numerator = vec3(0.0f);
     float denominator = 0.0f;
     float halfSize = node->size / 2;
     // iterate over 'octant'
+    ALOGD("conquerVolume %s\n", "point F");
     for (int i = 0; i < 8; i++) {
+        ALOGD("conquerVolume %s\n", "point G");
         if (childIDs[i].size() > 0) {
+            ALOGD("conquerVolume %s\n", "point H");
             if (node->children[i] == nullptr) {
-                ALOGD("CONQV %s\n", "ptE");
+                ALOGD("conquerVolume %s\n", "point I");
                 vec3 center = vec3(0.0f);
                 std::tuple<bool, bool, bool> tresBool = reverseCombo(i);
                 float quarterSize = halfSize / 2;
@@ -83,21 +91,24 @@ vec4 LinearithmicNBodySimulation::conquerVolume(const vector<int> &ids, Node *no
                         center,
                         halfSize
                 };
+                ALOGD("conquerVolume %s\n", "point G");
                 node->children[i]->centerOfGravity = conquerVolume(childIDs[i], node->children[i]);
-                ALOGD("CONQV %s\n", "ptE.B");
+                ALOGD("conquerVolume %s\n", "point H");
             }
-            ALOGD("CONQV %s\n", "ptF");
+            ALOGD("conquerVolume %s\n", "point I");
             mass += node->children[i]->centerOfGravity.w;
             numerator += node->children[i]->centerOfGravity.w * node->children[i]->centerOfGravity.xyz;
             denominator += node->children[i]->centerOfGravity.w;
-            ALOGD("CONQV %s\n", "ptG");
+            ALOGD("conquerVolume %s\n", "point J");
             if (childIDs[i].size() == 1) {
-                ALOGD("CONQV %s\n", "ptH");
+                ALOGD("conquerVolume %s\n", "point K");
                 data->stars[childIDs[i].at(0)].leaf = node->children[i];
             }
+            ALOGD("conquerVolume %s\n", "point L");
         }
+        ALOGD("conquerVolume %s\n", "point M");
     }
-    ALOGD("CONQV %s\n", "ptJ");
+    ALOGD("conquerVolume %s\n", "point N");
     vec3 quotient = numerator / denominator;
     return vec4(quotient.x, quotient.y, quotient.z, mass);
 }
@@ -140,13 +151,12 @@ void LinearithmicNBodySimulation::simulate(const int &iterations, bool pushDataT
                 // compute size of root node
                 //float size = 1.0f;
                 //for (int j = 0; j < COUNT; j++) {
-                //    while (abs(data->stars[j].position.x) < 0.5f * size ||
-                //           abs(data->stars[j].position.y) < 0.5f * size ||
-                //           abs(data->stars[j].position.z) < 0.5f * size) {
+                //    while (abs(data->stars[j].position.x) > 0.5f * size ||
+                //           abs(data->stars[j].position.y) > 0.5f * size ||
+                //           abs(data->stars[j].position.z) > 0.5f * size) {
                 //        size *= 2.0f;
                 //    }
                 //}
-                //ALOGD("SanityTest %s\n", "point A");
                 //root = new Node();
                 //root->size = size;
                 //root->center = vec3(0.0f);
