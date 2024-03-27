@@ -101,6 +101,9 @@ vec3 LinearithmicNBodySimulation::addForces(Node *node, int index) {
     float theta = 0.7f;
     // BASE CASE
     if (node->isLeaf || node->size / distance(data->stars[index].position, node->centerOfGravity.xyz) < theta) {
+        if(node == data->stars[index].leaf){
+            return vec3(0.0f);
+        }
         vec3 delta = node->centerOfGravity.xyz - data->stars[index].position;
         float distSquared = dot(delta, delta);
         float dist = sqrt(distSquared);
@@ -108,7 +111,7 @@ vec3 LinearithmicNBodySimulation::addForces(Node *node, int index) {
     } else {
         vec3 sumForces = vec3(0.0f);
         for (int i = 0; i < 8; i++) {
-            if (node->children[i]) {
+            if (node->children[i] != nullptr) {
                 sumForces += addForces(node->children[i], index);
             }
         }
@@ -136,9 +139,11 @@ void LinearithmicNBodySimulation::simulate(const int &iterations, bool pushDataT
     switch (computationOption) {
         case CPU:
             for (int i = 0; i < iterations; i++) {
+                ALOGD("Point A");
                 if(root != nullptr){
                     deleteTree(root);
                 }
+                ALOGD("Point B");
                 // compute size of root node
                 float radius = 0.5f;
                 for (int j = 0; j < COUNT; j++) {
@@ -148,6 +153,7 @@ void LinearithmicNBodySimulation::simulate(const int &iterations, bool pushDataT
                         radius *= 2.0f;
                     }
                 }
+                ALOGD("Point C");
                 root = new Node{
                     false,
                     nullptr,
@@ -156,28 +162,34 @@ void LinearithmicNBodySimulation::simulate(const int &iterations, bool pushDataT
                     vec3(0.0f),
                     2.0f * radius
                 };
+                ALOGD("Point D");
                 vector<int> ids;
                 for (int j = 0; j < COUNT; j++) {
                     ids.push_back(j);
                 }
+                ALOGD("Point E");
 
                 static int countConquerVolume = 0;
                 ALOGD("ConquerVolume count = %d\n", countConquerVolume);
 
                 root->centerOfGravity = conquerVolume(ids, root);
 
+                ALOGD("Point F");
                 countConquerVolume++;
                 ALOGD("ConquerVolume count = %d\n", countConquerVolume);
 
                 for(int j = 0; j < COUNT; j++){
-                    ALOGD("Force %d calculation before = %s\n", j, data->stars[j].force.str().c_str());
+                    ALOGD("Force calculation %d before = %s\n", j, data->stars[j].force.str().c_str());
                 }
+                ALOGD("Point G");
                 computeForcesOnCPULinearithmic();
                 for(int j = 0; j < COUNT; j++){
-                    ALOGD("Force %d calculation after = %s\n", j, data->stars[j].force.str().c_str());
+                    ALOGD("Force calculation %d after = %s\n", j, data->stars[j].force.str().c_str());
                 }
+                ALOGD("Point H");
                 //computeForcesOnCPUQuadratic();
                 integrate();
+                ALOGD("Point I");
             }
             break;
         case GPU:
