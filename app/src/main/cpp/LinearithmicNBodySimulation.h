@@ -11,7 +11,7 @@ using std::to_string;
 class LinearithmicNBodySimulation : public Simulation {
 public:
 
-    static const int NUM_CACHE_CHUNKS = 16;
+    static const int NUM_CACHE_CHUNKS = 100;
 
     static const int PARTICLES_PER_CHUNK = 16;
 
@@ -47,11 +47,9 @@ public:
             "};\n",
             "struct cacheChunk {\n",
             "    Particle stars[" + to_string(PARTICLES_PER_CHUNK) + "];\n",
-            "    float padding[" + to_string((int) sizeof(cacheChunk::padding) / sizeof(float)) +
-            "];\n",
+            "    float padding[" + to_string((int) sizeof(cacheChunk::padding) / sizeof(float)) + "];\n",
             "};\n",
-            "layout(packed, binding = " + to_string(DEFAULT_INDEX_BUFFER_BINDING) +
-            ") buffer destBuffer {\n",
+            "layout(packed, binding = " + to_string(DEFAULT_INDEX_BUFFER_BINDING) + ") buffer destBuffer {\n",
             "	  cacheChunk chunks[" + to_string(NUM_CACHE_CHUNKS) + "];\n",
             "} outBuffer;\n",
             "uniform float t;\n",
@@ -128,9 +126,9 @@ private:
     void integrate();
 
     int getCombo(bool xIsPos, bool yIsPos, bool zIsPos);
+
     std::tuple<bool, bool, bool> getInverseCombo(int combo);
 
-    void deleteTree(Node *node);
 };
 
 

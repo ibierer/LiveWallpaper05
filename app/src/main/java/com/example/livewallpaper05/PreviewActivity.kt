@@ -427,7 +427,7 @@ class PreviewActivity : AppCompatActivity() {
         updateSyntaxResult()
 
         fun showUIComponents(){
-            hideUIButton.text = "Hide UI"
+            hideUIButton.text = resources.getString(R.string.hideUIButtonText)
             colorButton.visibility = View.VISIBLE
             colorButton.isEnabled = true
             linearLayout.isEnabled = true
@@ -437,7 +437,7 @@ class PreviewActivity : AppCompatActivity() {
         }
 
         fun hideUIComponents(){
-            hideUIButton.text = "Show UI"
+            hideUIButton.text = resources.getString(R.string.showUIButtonText)
             colorButton.visibility = View.GONE
             colorButton.isEnabled = false
             linearLayout.isEnabled = false

@@ -28,7 +28,7 @@
 
         <TextView
             android:id="@+id/tv_fps_meter"
-            android:layout_width="75dp"
+            android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/preview_ui_margin"
             android:background="@drawable/slightly_opaque_border_background" />
@@ -62,7 +62,7 @@
             android:layout_margin="@dimen/preview_ui_margin"
             android:layout_weight="1"
             android:background="@drawable/slightly_opaque_border_background"
-            android:text="Hide UI" />
+            android:text="@+id/showUIButtonText" />
     </LinearLayout>
 
     <ScrollView

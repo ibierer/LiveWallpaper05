@@ -120,76 +120,48 @@ vec3 LinearithmicNBodySimulation::addForces(Node *node, int index) {
 }
 
 void LinearithmicNBodySimulation::computeForcesOnCPULinearithmic() {
+    // Delete the octree if it already exists
+    if(root != nullptr){
+        delete root;
+    }
+    // Compute size of root node
+    float radius = 0.5f;
+    for (int j = 0; j < COUNT; j++) {
+        while (abs(data->stars[j].position.x) >= radius ||
+               abs(data->stars[j].position.y) >= radius ||
+               abs(data->stars[j].position.z) >= radius) {
+            radius *= 2.0f;
+        }
+    }
+    // Initialize root
+    root = new Node{
+            false,
+            nullptr,
+            {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr},
+            vec4(0.0f),
+            vec3(0.0f),
+            2.0f * radius
+    };
+    // Pack ids into a vector
+    vector<int> ids;
+    for (int j = 0; j < COUNT; j++) {
+        ids.push_back(j);
+    }
+    // Use conquerVolume to recursively define octree
+    root->centerOfGravity = conquerVolume(ids, root);
+    // Sum the forces for each particle
     for (int i = 0; i < COUNT; i++) {
         data->stars[i].force = addForces(root, i);
     }
-}
-
-void LinearithmicNBodySimulation::deleteTree(Node* node) {
-    if (node == nullptr) return;
-
-    for (int i = 0; i < 8; ++i) {
-        deleteTree(node->children[i]);
-    }
-
-    delete node;
 }
 
 void LinearithmicNBodySimulation::simulate(const int &iterations, bool pushDataToGPU, bool retrieveDataFromGPU) {
     switch (computationOption) {
         case CPU:
             for (int i = 0; i < iterations; i++) {
-                ALOGD("Point A");
-                if(root != nullptr){
-                    deleteTree(root);
-                }
-                ALOGD("Point B");
-                // compute size of root node
-                float radius = 0.5f;
-                for (int j = 0; j < COUNT; j++) {
-                    while (abs(data->stars[j].position.x) >= radius ||
-                           abs(data->stars[j].position.y) >= radius ||
-                           abs(data->stars[j].position.z) >= radius) {
-                        radius *= 2.0f;
-                    }
-                }
-                ALOGD("Point C");
-                root = new Node{
-                    false,
-                    nullptr,
-                    {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr},
-                    vec4(0.0f),
-                    vec3(0.0f),
-                    2.0f * radius
-                };
-                ALOGD("Point D");
-                vector<int> ids;
-                for (int j = 0; j < COUNT; j++) {
-                    ids.push_back(j);
-                }
-                ALOGD("Point E");
-
-                static int countConquerVolume = 0;
-                ALOGD("ConquerVolume count = %d\n", countConquerVolume);
-
-                root->centerOfGravity = conquerVolume(ids, root);
-
-                ALOGD("Point F");
-                countConquerVolume++;
-                ALOGD("ConquerVolume count = %d\n", countConquerVolume);
-
-                for(int j = 0; j < COUNT; j++){
-                    ALOGD("Force calculation %d before = %s\n", j, data->stars[j].force.str().c_str());
-                }
-                ALOGD("Point G");
                 computeForcesOnCPULinearithmic();
-                for(int j = 0; j < COUNT; j++){
-                    ALOGD("Force calculation %d after = %s\n", j, data->stars[j].force.str().c_str());
-                }
-                ALOGD("Point H");
                 //computeForcesOnCPUQuadratic();
                 integrate();
-                ALOGD("Point I");
             }
             break;
         case GPU:
