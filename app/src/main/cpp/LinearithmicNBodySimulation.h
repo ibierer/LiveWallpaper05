@@ -128,7 +128,9 @@ private:
     void integrate();
 
     int getCombo(bool xIsPos, bool yIsPos, bool zIsPos);
-    std::tuple<bool, bool, bool> reverseCombo(int combo);
+    std::tuple<bool, bool, bool> getInverseCombo(int combo);
+
+    void deleteTree(Node *node);
 };
 
 

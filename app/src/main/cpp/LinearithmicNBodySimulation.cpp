@@ -41,47 +41,46 @@ void LinearithmicNBodySimulation::integrate() {
     for (uint i = 0u; i < COUNT; i++) {
         vec3 acceleration = data->stars[i].force / data->stars[i].mass;
         //update positions
-        data->stars[i].position +=
-                (data->stars[i].velocity + 0.5f * acceleration * deltaTime) * deltaTime;
+        data->stars[i].position += (data->stars[i].velocity + 0.5f * acceleration * deltaTime) * deltaTime;
         //update velocity
         data->stars[i].velocity += acceleration * deltaTime;
     }
 }
 
 vec4 LinearithmicNBodySimulation::conquerVolume(const vector<int> &ids, Node *node) {
+    // Base case
     if (ids.size() == 1) {
-        return vec4(
-            data->stars[ids.at(0)].position.x,
-            data->stars[ids.at(0)].position.y,
-            data->stars[ids.at(0)].position.z,
-            data->stars[ids.at(0)].mass
-        );
+        int id = ids.at(0);
+        return vec4(data->stars[id].position.x, data->stars[id].position.y, data->stars[id].position.z, data->stars[id].mass);
     }
-    // 1. Accumulate all masses to each node
-    vector<int> childIDs[8];
+
     float mass = 0.0f;
+    vec3 numerator = vec3(0.0f);
+    float denominator = 0.0f;
+    float halfSize = 0.5f * node->size;
+    float quarterSize = 0.25f * node->size;
+    vector<int> childIDs[8];
+
+    // Populate 8 octants
     for (int i = 0; i < ids.size(); i++) {
         vec3 p = data->stars[ids.at(i)].position;
         int combo = getCombo(p.x > node->center.x, p.y > node->center.y, p.z > node->center.z);
         childIDs[combo].push_back(ids[i]);
     }
-    vec3 numerator = vec3(0.0f);
-    float denominator = 0.0f;
-    float halfSize = 0.5f * node->size;
-    float quarterSize = 0.25f * node->size;
-    // iterate over 'octant'
+
+    // Iterate over 8 octants
     for (int i = 0; i < 8; i++) {
         if (childIDs[i].size() > 0) {
-            std::tuple<bool, bool, bool> tresBool = reverseCombo(i);
+            std::tuple<bool, bool, bool> inverseCombo = getInverseCombo(i);
             node->children[i] = new Node{
                 childIDs[i].size() == 1,
                 node,
                 {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr},
                 vec4(0.0f),
                 vec3(
-                        node->center.x + (std::get<0>(tresBool) ? quarterSize : -quarterSize),
-                        node->center.y + (std::get<1>(tresBool) ? quarterSize : -quarterSize),
-                        node->center.z + (std::get<2>(tresBool) ? quarterSize : -quarterSize)
+                    node->center.x + (std::get<0>(inverseCombo) ? quarterSize : -quarterSize),
+                    node->center.y + (std::get<1>(inverseCombo) ? quarterSize : -quarterSize),
+                    node->center.z + (std::get<2>(inverseCombo) ? quarterSize : -quarterSize)
                 ),
                 halfSize
             };
@@ -100,10 +99,8 @@ vec4 LinearithmicNBodySimulation::conquerVolume(const vector<int> &ids, Node *no
 
 vec3 LinearithmicNBodySimulation::addForces(Node *node, int index) {
     float theta = 0.7f;
-    vec3 forces = 0.0f;
     // BASE CASE
-    if (node->isLeaf ||
-        node->size / distance(data->stars[index].position, node->centerOfGravity.xyz) < theta) {
+    if (node->isLeaf || node->size / distance(data->stars[index].position, node->centerOfGravity.xyz) < theta) {
         vec3 delta = node->centerOfGravity.xyz - data->stars[index].position;
         float distSquared = dot(delta, delta);
         float dist = sqrt(distSquared);
@@ -125,20 +122,30 @@ void LinearithmicNBodySimulation::computeForcesOnCPULinearithmic() {
     }
 }
 
+void LinearithmicNBodySimulation::deleteTree(Node* node) {
+    if (node == nullptr) return;
+
+    for (int i = 0; i < 8; ++i) {
+        deleteTree(node->children[i]);
+    }
+
+    delete node;
+}
+
 void LinearithmicNBodySimulation::simulate(const int &iterations, bool pushDataToGPU, bool retrieveDataFromGPU) {
     switch (computationOption) {
         case CPU:
             for (int i = 0; i < iterations; i++) {
                 if(root != nullptr){
-                    delete root;
+                    deleteTree(root);
                 }
                 // compute size of root node
-                float size = 1.0f;
+                float radius = 0.5f;
                 for (int j = 0; j < COUNT; j++) {
-                    while (abs(data->stars[j].position.x) > 0.5f * size ||
-                           abs(data->stars[j].position.y) > 0.5f * size ||
-                           abs(data->stars[j].position.z) > 0.5f * size) {
-                        size *= 2.0f;
+                    while (abs(data->stars[j].position.x) >= radius ||
+                           abs(data->stars[j].position.y) >= radius ||
+                           abs(data->stars[j].position.z) >= radius) {
+                        radius *= 2.0f;
                     }
                 }
                 root = new Node{
@@ -147,16 +154,30 @@ void LinearithmicNBodySimulation::simulate(const int &iterations, bool pushDataT
                     {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr},
                     vec4(0.0f),
                     vec3(0.0f),
-                    size
+                    2.0f * radius
                 };
                 vector<int> ids;
                 for (int j = 0; j < COUNT; j++) {
                     ids.push_back(j);
                 }
+
+                static int countConquerVolume = 0;
+                ALOGD("ConquerVolume count = %d\n", countConquerVolume);
+                for(int j = 0; j < COUNT; j++){
+                    ALOGD("Particle %d location before = %s\n", j, data->stars[j].position.str().c_str());
+                }
+
                 root->centerOfGravity = conquerVolume(ids, root);
-                //computeForcesOnCPULinearithmic();
+
+                countConquerVolume++;
+                ALOGD("ConquerVolume count = %d\n", countConquerVolume);
+
+                computeForcesOnCPULinearithmic();
                 //computeForcesOnCPUQuadratic();
-                //integrate();
+                integrate();
+                for(int j = 0; j < COUNT; j++){
+                    ALOGD("Particle %d location after = %s\n", j, data->stars[j].position.str().c_str());
+                }
             }
             break;
         case GPU:
@@ -251,7 +272,7 @@ int LinearithmicNBodySimulation::getCombo(bool xIsPos, bool yIsPos, bool zIsPos)
     return xIsPos * 1 + yIsPos * 2 + zIsPos * 4;
 }
 
-std::tuple<bool, bool, bool> LinearithmicNBodySimulation::reverseCombo(int combo) {
+std::tuple<bool, bool, bool> LinearithmicNBodySimulation::getInverseCombo(int combo) {
     //return std::make_tuple(combo & 1, combo & 2, combo & 4);
     return std::make_tuple((combo & 1) != 0, (combo & 2) != 0, (combo & 4) != 0);
 }
