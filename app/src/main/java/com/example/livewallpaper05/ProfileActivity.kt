@@ -67,7 +67,7 @@ class ProfileActivity : AppCompatActivity() {
 
     // active wallpaper view model
     private val viewModel: ActiveWallpaperViewModel by viewModels {
-        ActiveWallpaperViewModelFactory((application as ActiveWallpaperApplication).repository)
+        ActiveWallpaperViewModelFactory((application as ActiveWallpaperApplication).wallpaperRepo)
     }
 
     public override fun onStart() {
