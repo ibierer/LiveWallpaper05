@@ -9,7 +9,6 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
-import androidx.room.Database
 import com.example.livewallpaper05.databinding.ActivityRegisterBinding
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
@@ -133,7 +132,6 @@ class Register : AppCompatActivity() {
                 DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                     .use { conn ->
                         // this syntax ensures that the connection will be closed whether normally or from an exception
-
                         val useDbQuery = "USE myDatabase;"
                         val useDbStatement = conn.prepareStatement(useDbQuery)
                         useDbStatement.execute()
@@ -153,7 +151,7 @@ class Register : AppCompatActivity() {
         }
     }
 
-    fun insertIntoUsers(username: String, name: String) {
+    fun insertIntoUsers(username: String, email: String) {
         GlobalScope.launch(Dispatchers.IO) {
             // write aws test code here -------------
             val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
@@ -167,15 +165,14 @@ class Register : AppCompatActivity() {
 
                 DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                     .use { conn -> // this syntax ensures that connection will be closed whether normally or from exception
-                        Log.d("LiveWallpaper05", "Connected to database")
                         val useDbQuery = "USE myDatabase;"
                         val statement = conn.prepareStatement(useDbQuery)
                         statement.execute()
                         Log.d("LiveWallpaper05", "Pt A REACHED")
-                        val insertQuery = "INSERT INTO users (username, name) VALUES (?, ?);"
+                        val insertQuery = "INSERT INTO users (username, email) VALUES (?, ?);"
                         val preparedStatement = conn.prepareStatement(insertQuery)
                         preparedStatement.setString(1, username)
-                        preparedStatement.setString(2, name)
+                        preparedStatement.setString(2, email)
                         preparedStatement.executeUpdate()
                         conn.close()
                     }

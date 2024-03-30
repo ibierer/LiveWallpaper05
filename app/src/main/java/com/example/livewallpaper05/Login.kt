@@ -110,7 +110,7 @@ class Login : AppCompatActivity() {
                 connectionProperties["useSSL"] = "false"
                 DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                     .use { conn ->
-                        val getUsernameQuery = "SELECT uid, username FROM users WHERE name = ?;"
+                        val getUsernameQuery = "SELECT uid, username FROM users WHERE email = ?;"
                         val checkUserStatement = conn.prepareStatement(getUsernameQuery)
                         checkUserStatement.setString(1, email)
                         val resultSet = checkUserStatement.executeQuery()
