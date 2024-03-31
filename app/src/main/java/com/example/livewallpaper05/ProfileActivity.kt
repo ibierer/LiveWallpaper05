@@ -97,6 +97,7 @@ class ProfileActivity : AppCompatActivity() {
         loginRegisterButton = findViewById(R.id.loginRegisterButton)
         logoutButton = findViewById(R.id.logoutButton)
 
+        viewModel.loadWidsFromMem(this)
 
         /* Used to securely access db credentials and keep out of source code */
         val inputStream: InputStream = resources.openRawResource(R.raw.database_config)
@@ -215,6 +216,8 @@ class ProfileActivity : AppCompatActivity() {
         // link saved wallpaper view elements to saved wallpaper live data via callback function
         viewModel.savedWallpapers.observe(this, Observer { wallpapers ->
             if (wallpapers != null) {
+                // update saved wallpaper ids
+                viewModel.saveWids(this)
                 // clear wallpaper layout
                 mWallpaperGrid!!.removeAllViews()
 
@@ -447,6 +450,7 @@ class ProfileActivity : AppCompatActivity() {
         viewModel.saveWallpaper(activeConfig)
         // create new empty wallpaper config
         viewModel.createWallpaperTable(-1)
+        viewModel.saveWids(this)
     }
 
     private fun updateFragListeners() {

@@ -84,6 +84,8 @@ class PreviewActivity : AppCompatActivity() {
         val flipsNormalsCheckBox = findViewById<CheckBox>(R.id.flip_normals_checkbox)
         val linearLayout = findViewById<LinearLayout>(R.id.settings_linearlayout)
 
+        viewModel.loadWidsFromMem(this)
+
         // fill visualization selector box with wallpaper options from native-lib.cpp
         val visualizationSelectorAdapter = ArrayAdapter.createFromResource(
             this,
@@ -484,6 +486,7 @@ class PreviewActivity : AppCompatActivity() {
      * this includes leaving the app, rotating the screen, etc.
      */
     override fun onPause() {
+        viewModel.saveWids(this)
         super.onPause()
         mView!!.onPause()
     }
@@ -492,6 +495,7 @@ class PreviewActivity : AppCompatActivity() {
      * this includes returning to the app, rotating the screen, etc.
      */
     override fun onResume() {
+        viewModel.loadWidsFromMem(this)
         super.onResume()
         mView!!.onResume()
     }

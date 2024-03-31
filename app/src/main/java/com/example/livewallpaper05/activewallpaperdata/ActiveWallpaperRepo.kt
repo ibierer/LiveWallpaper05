@@ -36,6 +36,7 @@ class ActiveWallpaperRepo private constructor (wallpaperDao: SavedWallpaperDao) 
     var visualizationName = MutableLiveData<String>("")
     var preview: Bitmap? = null
     var savedConfig: String = ""
+    var savedWids: List<Int> = listOf(1)
 
     // initialize values for saved wallpaper info
     val activeWallpaper: MutableLiveData<SavedWallpaperTable> = MutableLiveData()
@@ -48,6 +49,22 @@ class ActiveWallpaperRepo private constructor (wallpaperDao: SavedWallpaperDao) 
     private lateinit var mSensorManager: SensorManager
 
     // helper methods
+
+    fun getSavedWids(): String{
+        var widString = ""
+        var used = listOf<Int>()
+
+        for (w in savedWids){
+            if (used.contains(w)){
+                continue
+            }
+            widString += w.toString() + ","
+            used = used.plus(w)
+        }
+        // strip last comma
+        widString = widString.substring(0, widString.length - 1)
+        return widString
+    }
 
     // create new wallpaper table
     fun createWallpaperTable(id: Int) : SavedWallpaperTable {
@@ -69,6 +86,8 @@ class ActiveWallpaperRepo private constructor (wallpaperDao: SavedWallpaperDao) 
                     "\"settings\": \"x^2+y^2+z^2=1\"\n" +
                     "}"
         )
+
+        savedWids = savedWids.plus(wid)
 
         return wallpaper
     }
@@ -132,12 +151,33 @@ class ActiveWallpaperRepo private constructor (wallpaperDao: SavedWallpaperDao) 
     private fun syncWallpaperDao(newWallpaper: SavedWallpaperTable, newWallpapers: MutableList<SavedWallpaperTable>){
         // sync wallpapers with database, removing dead values
         var allWallpapers = mWallpaperDao.getAllWallpapers()
+        var validWids = listOf<Int>()
         // if list is not the same size as wallpapers clear and add all wallpapers
         if (newWallpapers != null) {
-            mWallpaperDao.deleteAll()
+            // for wallpapers in all wallpapers, if wid is not in saved wids, delete it
+            for (wallpaper in allWallpapers) {
+                if (!newWallpapers.contains(wallpaper) && !savedWids.contains(wallpaper.wid)){
+                    mWallpaperDao.deleteWallpaper(wallpaper.wid)
+                } else {
+                    validWids = validWids.plus(wallpaper.wid)
+                }
+            }
+
+            // save all wallpapers in new wallpapers to database
             for (wallpaper in newWallpapers) {
                 mWallpaperDao.saveWallpaper(wallpaper)
             }
+
+            // for valid wid add that wallpaper from all wallpapers to new wallpapers
+            for (wallpaper in allWallpapers) {
+                if (validWids.contains(wallpaper.wid) && !newWallpapers.contains(wallpaper)){
+                    newWallpapers.add(wallpaper)
+                }
+            }
+
+            // sync new wallpapers with local wallpapers list
+            wallpapers.postValue(newWallpapers)
+
         }
     }
 
@@ -150,6 +190,8 @@ class ActiveWallpaperRepo private constructor (wallpaperDao: SavedWallpaperDao) 
             for (i in 0 until list.size) {
                 if (list[i].wid == wid) {
                     list.removeAt(i)
+                    // remove wid from saved wids
+                    savedWids = savedWids.filter { it != wid }
                     break
                 }
             }
@@ -241,6 +283,15 @@ class ActiveWallpaperRepo private constructor (wallpaperDao: SavedWallpaperDao) 
     // update orientation value
     fun updateOrientation(orient: Int) {
         this.orientation = orient
+    }
+
+    // update saved wids after they're extracted from memory
+    fun setSavedWids(wids: String) {
+        savedWids = wids.split(",").map { it.toInt() }
+    }
+
+    fun removeWid(wid: Int) {
+        savedWids = savedWids.filter { it != wid }
     }
 
     // helper structures

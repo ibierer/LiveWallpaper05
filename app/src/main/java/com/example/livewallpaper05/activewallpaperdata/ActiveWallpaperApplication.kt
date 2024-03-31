@@ -24,4 +24,5 @@ class ActiveWallpaperApplication : Application() {
     // saved wallpaper data
     val savedWallpaperDatabase by lazy { SavedWallpaperRoomDatabase.getDatabase(this, applicationScope)}
     //val savedWallpaperRepo by lazy { SavedWallpaperRepo.getInstance(savedWallpaperDatabase.wallpaperDao(), applicationScope)}
+
 }

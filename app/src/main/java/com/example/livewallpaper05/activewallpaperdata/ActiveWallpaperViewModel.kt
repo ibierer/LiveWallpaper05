@@ -1,5 +1,6 @@
 package com.example.livewallpaper05.activewallpaperdata
 
+import android.app.Activity
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -413,6 +414,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
     var liveDataBitmap : MutableLiveData<Bitmap> = MutableLiveData<Bitmap>(mBitmap)
     var getScreenBuffer: Int = 0
     var saveAsNew: Int = 0
+
     // reference repo from constructor value
     val mRepo: ActiveWallpaperRepo = repo
     var isCollapsed = false
@@ -554,7 +556,6 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
 
         return config.toString()
 
-        //return visualization.toJsonObject().toString()
     }
 
     fun getWid(): Int {
@@ -776,6 +777,33 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         mRepo.setLiveWallpaperData(wid)
     }
 
+    fun saveWids(activity: Activity){
+        // get wids from repo
+        val wids = mRepo.getSavedWids()
+        // save wids to shared prefs
+        activity.getSharedPreferences("livewallpaper05", 0).edit()
+            .putString("savedWids", wids).apply()
+    }
+
+    fun removeWid(wid: Int){
+        mRepo.removeWid(wid)
+    }
+
+    fun loadWidsFromMem(activity: Activity){
+        try {
+            // load wids from shared prefs
+            val wids =
+                activity.getSharedPreferences("livewallpaper05", 0).getString("savedWids", "")
+            if (wids == null || wids == "") {
+                return
+            }
+            // set wids in repo
+            mRepo.setSavedWids(wids!!)
+        } catch (e: Exception) {
+            Log.d("LiveWallpaper05", "Error loading wids: $e")
+        }
+    }
+
     // save wallpaper from config string
     fun saveWallpaper(config: String) : Int {
         // create new wallpaper table with given data
@@ -848,7 +876,9 @@ class ActiveWallpaperViewModelFactory(private val repo: ActiveWallpaperRepo) : V
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ActiveWallpaperViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return ActiveWallpaperViewModel(repo) as T
+            val vm = ActiveWallpaperViewModel(repo) as T
+            return vm
+            //return ActiveWallpaperViewModel(repo) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
