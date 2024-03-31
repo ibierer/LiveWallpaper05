@@ -77,7 +77,7 @@ class ProfileActivity : AppCompatActivity() {
         if (currentUser != null) {
             Log.d("AUTH", "Current user: $currentUser")
             // load from AWS
-        } else {
+        } else { // Not registered/logged in
             username = "Default User"
             Log.d("AUTH", "No user logged in")
         }
@@ -136,6 +136,7 @@ class ProfileActivity : AppCompatActivity() {
             val sharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
             username = sharedPreferences.getString("USERNAME", "").toString()
             uid = sharedPreferences.getInt("UID", 11)
+            // put uid in local profile table
             Log.d("OKAY", "uid is $uid\n username is $username")
             mUsername!!.text = username
             loginRegisterButton!!.visibility = View.GONE
@@ -258,13 +259,8 @@ class ProfileActivity : AppCompatActivity() {
                 connectionProperties["user"] = DatabaseConfig.dbUser
                 connectionProperties["password"] = DatabaseConfig.dbPassword
                 connectionProperties["useSSL"] = "false"
-
                 DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                     .use { conn ->
-                        val useDbQuery = "USE myDatabase;"
-                        val statement = conn.prepareStatement(useDbQuery)
-                        statement.execute()
-
                         val updateQuery = "UPDATE users SET bio = ? WHERE username = ?;"
                         val updateStatement = conn.prepareStatement(updateQuery)
                         updateStatement.setString(1, bio)
@@ -295,9 +291,6 @@ class ProfileActivity : AppCompatActivity() {
             DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                 .use { conn -> // this syntax ensures that connection will be closed whether normally or from exception
                     Log.d("LiveWallpaper05", "Connected to database")
-                    val useDbQuery = "USE myDatabase;"
-                    val statement = conn.prepareStatement(useDbQuery)
-                    statement.execute()
                     val updateQuery = "SELECT * FROM users WHERE username = ?;"
                     val selectStatement = conn.prepareStatement(updateQuery)
                     selectStatement.setString(1, username)
@@ -404,13 +397,9 @@ class ProfileActivity : AppCompatActivity() {
                 connectionProperties["user"] = DatabaseConfig.dbUser
                 connectionProperties["password"] = DatabaseConfig.dbPassword
                 connectionProperties["useSSL"] = "false"
-
                 DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                     .use { conn -> // this syntax ensures that connection will be closed whether normally or from exception
                         Log.d("OH_YES", "Connected to database in insertProfilePicture!")
-                        val useDbQuery = "USE myDatabase;"
-                        val statement = conn.prepareStatement(useDbQuery)
-                        statement.execute()
                         val updateQuery = "UPDATE users SET profile_picture = ? WHERE username = ?;"
                         conn.prepareStatement(updateQuery).use { updateStatement ->
                             val convertedImage = convertBitmapToByteArray(image)
