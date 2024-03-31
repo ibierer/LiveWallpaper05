@@ -16,7 +16,8 @@ import kotlinx.coroutines.launch
 class ActiveWallpaperRepo private constructor (wallpaperDao: SavedWallpaperDao) : SensorEventListener {
 
     // initialize default values for active wallpaper
-    var wid: Int = 1
+    var wid: Int = 0
+    var uid: Int = 11
     var equation: String = ""
     var color: MutableLiveData<Color> = MutableLiveData<Color>(Color.valueOf(0.0f,0.0f,0.0f,0.0f))
     var orientation: Int = 0
@@ -78,6 +79,7 @@ class ActiveWallpaperRepo private constructor (wallpaperDao: SavedWallpaperDao) 
 
         // create new wallpaper table with default config
         val wallpaper = SavedWallpaperRow(
+            uid,
             wid,
             "{\n" +
                     "\"name\": \"New Wallpaper\",\n" +
@@ -211,9 +213,10 @@ class ActiveWallpaperRepo private constructor (wallpaperDao: SavedWallpaperDao) 
     }
 
     // switch which wallpaper is currently active
-    fun saveSwitchWallpaper(activeWid: Int, activeConfig: String) {
+    fun saveSwitchWallpaper(activeUid: Int, activeWid: Int, activeConfig: String) {
         mScope.launch(Dispatchers.IO) {
             val wallpaper = SavedWallpaperRow(
+                activeUid,
                 activeWid,
                 activeConfig
             )

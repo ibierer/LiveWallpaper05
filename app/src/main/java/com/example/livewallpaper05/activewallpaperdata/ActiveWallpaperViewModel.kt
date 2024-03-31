@@ -562,6 +562,10 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         return repo.wid
     }
 
+    fun getUid(): Int {
+        return repo.uid
+    }
+
     // get equation string from repo
     fun getEquation(): String {
         return repo.equation
@@ -809,14 +813,16 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         // create new wallpaper table with given data
         var wallpaper = SavedWallpaperRow(
             1,
+            1,
             config
         )
         try {
             wallpaper = SavedWallpaperRow(
+                activeWallpaper.value!!.uid,
                 activeWallpaper.value!!.wid,
                 config
             )
-        } catch (e: Exception) {}
+        } catch (_: Exception) {}
         // update profile table
         mRepo.setWallpaper(wallpaper)
 
@@ -835,8 +841,9 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
     }
 
     // create wallpaper save with default values
-    fun createDefaultWallpaperTable(wid: Int, config: String) {
+    fun createDefaultWallpaperTable(uid: Int, wid: Int, config: String) {
         val wallpaper = SavedWallpaperRow(
+            uid,
             wid,
             config
         )
@@ -861,7 +868,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
     // save active wallpaper and switch to new wallpaper. This allows us to save
     // the wallpaper before changing it, ensuring no changes are forgotten
     fun saveSwitchWallpaper(activeWid: Int, activeConfig: String) {
-        mRepo.saveSwitchWallpaper(activeWid, activeConfig)
+        mRepo.saveSwitchWallpaper(0, activeWid, activeConfig)
     }
 
 }

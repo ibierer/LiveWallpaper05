@@ -188,6 +188,7 @@ class ProfileActivity : AppCompatActivity() {
         // if no wallpapers exist, create default wallpaper
         if (viewModel.savedWallpapers.value == null) {
             viewModel.createDefaultWallpaperTable(
+                0,
                 viewModel.getWid(),
                 viewModel.getConfig()
             )
@@ -263,7 +264,6 @@ class ProfileActivity : AppCompatActivity() {
             (application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("iv_profile_pic setOnClickListener")
         }
         (application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("ProfileActivity.onCrea8#2()")
-
          */
     }
 
