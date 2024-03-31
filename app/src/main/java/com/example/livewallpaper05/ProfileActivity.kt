@@ -19,6 +19,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
@@ -26,13 +27,16 @@ import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo.Wallp
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModelFactory
 import com.example.livewallpaper05.helpful_fragments.WallpaperFragment
+import com.example.livewallpaper05.profiledata.ProfileTable
 import com.example.livewallpaper05.profiledata.ProfileViewModel
+import com.example.livewallpaper05.savedWallpapers.SavedWallpaperTable
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.sql.DriverManager
@@ -247,6 +251,20 @@ class ProfileActivity : AppCompatActivity() {
         mWallpaperGrid!!.viewTreeObserver.addOnGlobalLayoutListener {
             updateFragListeners()
         }
+
+        findViewById<ImageView>(R.id.iv_profile_pic).setOnClickListener {
+            lifecycleScope.launch {
+                val wallpapers : List<SavedWallpaperTable> = withContext(Dispatchers.IO) {
+                    viewModel.mRepo.mWallpaperDao.getAllWallpapers()
+                }
+                for (i in 0 until wallpapers.size){
+                    Log.d("WALLPAPERS", wallpapers[i].toString())
+                }
+                val profileD : ProfileTable? = mProfileViewModel.profileData.value
+                Log.d("WALLPAPERS", "profile data: $profileD")
+            }
+
+        }
     }
 
     private fun insertBio(bio: String, username: String) {
@@ -430,7 +448,7 @@ class ProfileActivity : AppCompatActivity() {
         //check username, query database if valid->update the viewModel
     }
 
-    fun newWallpaper(view: View) {
+    private fun newWallpaper(view: View) {
         // save current wallpaper
         val activeConfig = viewModel.getConfig()
         viewModel.saveWallpaper(activeConfig)
@@ -484,8 +502,7 @@ class ProfileActivity : AppCompatActivity() {
                         }
                     }
                     // disable active button for this wallpaper
-                    frag.requireView().findViewById<Button>(R.id.b_active_wallpaper).isEnabled =
-                        false
+                    frag.requireView().findViewById<Button>(R.id.b_active_wallpaper).isEnabled = false
                     // set frag active variable to true
                     val wallFrag = frag as WallpaperFragment
                     wallFrag.active = true

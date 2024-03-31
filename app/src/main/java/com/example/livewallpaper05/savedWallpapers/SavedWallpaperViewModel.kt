@@ -1,6 +1,9 @@
 package com.example.livewallpaper05.savedWallpapers
 
-/*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+
 class SavedWallpaperViewModel(repo: SavedWallpaperRepo) : ViewModel() {
 
     val activeWallpaper: LiveData<SavedWallpaperTable> = repo.activeWallpaper
@@ -22,4 +25,3 @@ class SavedWallpaperViewModel(repo: SavedWallpaperRepo) : ViewModel() {
     }
 
 }
-//*/

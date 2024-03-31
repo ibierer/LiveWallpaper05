@@ -42,7 +42,7 @@ class ActiveWallpaperRepo private constructor (wallpaperDao: SavedWallpaperDao) 
     val wallpapers = MutableLiveData<List<SavedWallpaperTable>>()
     val wallpaperFragIds: MutableList<WallpaperRef> = mutableListOf()
 
-    private var mWallpaperDao: SavedWallpaperDao = wallpaperDao
+    val mWallpaperDao: SavedWallpaperDao = wallpaperDao
     private var lastId: Int = 1
 
     private lateinit var mSensorManager: SensorManager
@@ -69,7 +69,6 @@ class ActiveWallpaperRepo private constructor (wallpaperDao: SavedWallpaperDao) 
                     "\"settings\": \"x^2+y^2+z^2=1\"\n" +
                     "}"
         )
-
         return wallpaper
     }
 
