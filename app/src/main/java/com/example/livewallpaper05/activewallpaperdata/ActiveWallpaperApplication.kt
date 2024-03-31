@@ -2,14 +2,11 @@ package com.example.livewallpaper05.activewallpaperdata
 
 import android.app.Application
 import android.util.Log
-import androidx.lifecycle.lifecycleScope
-import com.example.livewallpaper05.ProfileActivity
 import com.example.livewallpaper05.profiledata.ProfileRepo
 import com.example.livewallpaper05.profiledata.ProfileRoomDatabase
 import com.example.livewallpaper05.profiledata.ProfileTable
-import com.example.livewallpaper05.savedWallpapers.SavedWallpaperRepo
+import com.example.livewallpaper05.savedWallpapers.SavedWallpaperRow
 import com.example.livewallpaper05.savedWallpapers.SavedWallpaperRoomDatabase
-import com.example.livewallpaper05.savedWallpapers.SavedWallpaperTable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -37,14 +34,15 @@ class ActiveWallpaperApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        printProfilesAndWallpapersToLogcat("ActiveWallpaperApplication.onCreate()")
+        //printProfilesAndWallpapersToLogcat("ActiveWallpaperApplication.onCreate()")
     }
 
+    // warning, using this can cause crash due to coroutine data access
     fun printProfilesAndWallpapersToLogcat(message : String){
         CoroutineScope(Dispatchers.Main).launch {
             val profileD : ProfileTable? = profileRepo.data.value
             Log.d("WALLPAPERS", "$message\nprofile data: $profileD")
-            val wallpapers : List<SavedWallpaperTable> = withContext(Dispatchers.IO) {
+            val wallpapers : List<SavedWallpaperRow> = withContext(Dispatchers.IO) {
                 savedWallpaperDatabase.wallpaperDao().getAllWallpapers()
             }
             for (element in wallpapers){

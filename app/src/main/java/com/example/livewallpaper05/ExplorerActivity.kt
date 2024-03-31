@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.WindowManager
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
 import com.google.firebase.FirebaseApp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -71,11 +70,11 @@ class ExplorerActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        (application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("ExplorerActivity.onStart()")
+        //(application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("ExplorerActivity.onStart()")
     }
 
     override fun onResume() {
         super.onResume()
-        (application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("ExplorerActivity.onResume()")
+        //(application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("ExplorerActivity.onResume()")
     }
 }

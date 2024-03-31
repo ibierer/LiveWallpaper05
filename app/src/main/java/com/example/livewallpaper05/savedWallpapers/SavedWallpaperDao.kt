@@ -10,15 +10,15 @@ interface SavedWallpaperDao {
 
     // get saved wallpaper given id
     @Query("SELECT * FROM wallpaper_table WHERE wid = :wid")
-    fun getWallpaperData(wid: Int): SavedWallpaperTable
+    fun getWallpaperData(wid: Int): SavedWallpaperRow
 
     // get all saved wallpapers
     @Query("SELECT * FROM wallpaper_table")
-    fun getAllWallpapers(): List<SavedWallpaperTable>
+    fun getAllWallpapers(): List<SavedWallpaperRow>
 
     // save wallpaper
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun saveWallpaper(wallpaper: SavedWallpaperTable)
+    fun saveWallpaper(wallpaper: SavedWallpaperRow)
 
     // delete wallpaper
     @Query("DELETE FROM wallpaper_table WHERE wid = :wid")

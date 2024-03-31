@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModelProvider
 
 class SavedWallpaperViewModel(repo: SavedWallpaperRepo) : ViewModel() {
 
-    val activeWallpaper: LiveData<SavedWallpaperTable> = repo.activeWallpaper
-    val savedWallpapers: LiveData<List<SavedWallpaperTable>> = repo.wallpapers
+    val activeWallpaper: LiveData<SavedWallpaperRow> = repo.activeWallpaper
+    val savedWallpapers: LiveData<List<SavedWallpaperRow>> = repo.wallpapers
     private var mRepo = repo
 
 

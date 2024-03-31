@@ -8,15 +8,15 @@ import kotlinx.coroutines.launch
 
 class SavedWallpaperRepo private constructor(wallpaperDao: SavedWallpaperDao) {
 
-    val activeWallpaper: MutableLiveData<SavedWallpaperTable> = MutableLiveData()
-    val wallpapers = MutableLiveData<List<SavedWallpaperTable>>()
+    val activeWallpaper: MutableLiveData<SavedWallpaperRow> = MutableLiveData()
+    val wallpapers = MutableLiveData<List<SavedWallpaperRow>>()
     val wallpaperFragIds: MutableList<WallpaperRef> = mutableListOf()
 
     private var mWallpaperDao: SavedWallpaperDao = wallpaperDao
     private var lastId: Int = 1
 
     // create new wallpaper table
-    fun createWallpaperTable(id: Int) : SavedWallpaperTable {
+    fun createWallpaperTable(id: Int) : SavedWallpaperRow {
         // create unique id
         if (id > 0){
             lastId = id
@@ -26,7 +26,7 @@ class SavedWallpaperRepo private constructor(wallpaperDao: SavedWallpaperDao) {
         var wid = lastId
 
         // create new wallpaper table with default config
-        val wallpaper = SavedWallpaperTable(
+        val wallpaper = SavedWallpaperRow(
             wid,
             "{\n" +
                     "\"name\": \"New Wallpaper\",\n" +
@@ -40,7 +40,7 @@ class SavedWallpaperRepo private constructor(wallpaperDao: SavedWallpaperDao) {
     }
 
     // save wallpaper
-    fun setWallpaper(wallpaper: SavedWallpaperTable) {
+    fun setWallpaper(wallpaper: SavedWallpaperRow) {
         if (wallpaper.config != "") {
             mScope.launch(Dispatchers.IO) {
                 if(wallpapers.value != null) {
@@ -68,7 +68,7 @@ class SavedWallpaperRepo private constructor(wallpaperDao: SavedWallpaperDao) {
         }
     }
 
-    private fun containsWallpaper(wallpaper: SavedWallpaperTable) : Boolean {
+    private fun containsWallpaper(wallpaper: SavedWallpaperRow) : Boolean {
         if (wallpapers.value != null) {
             for (w in wallpapers.value!!) {
                 if (w.wid == wallpaper.wid) {
@@ -93,7 +93,7 @@ class SavedWallpaperRepo private constructor(wallpaperDao: SavedWallpaperDao) {
         }
     }
 
-    private fun syncWallpaperDao(newWallpaper: SavedWallpaperTable, newWallpapers: MutableList<SavedWallpaperTable>){
+    private fun syncWallpaperDao(newWallpaper: SavedWallpaperRow, newWallpapers: MutableList<SavedWallpaperRow>){
         // sync wallpapers with database, removing dead values
         var allWallpapers = mWallpaperDao.getAllWallpapers()
         // if list is not the same size as wallpapers clear and add all wallpapers
@@ -123,7 +123,7 @@ class SavedWallpaperRepo private constructor(wallpaperDao: SavedWallpaperDao) {
 
     fun saveSwitchWallpaper(activeWid: Int, activeConfig: String) {
         mScope.launch(Dispatchers.IO) {
-            val wallpaper = SavedWallpaperTable(
+            val wallpaper = SavedWallpaperRow(
                 activeWid,
                 activeConfig
             )

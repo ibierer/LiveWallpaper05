@@ -10,7 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 // create wallpaper database
-@Database(entities = [SavedWallpaperTable::class], version = 1, exportSchema = false)
+@Database(entities = [SavedWallpaperRow::class], version = 1, exportSchema = false)
 abstract class SavedWallpaperRoomDatabase : RoomDatabase() {
 
     abstract fun wallpaperDao(): SavedWallpaperDao
@@ -48,7 +48,7 @@ abstract class SavedWallpaperRoomDatabase : RoomDatabase() {
 
             // seed database
             suspend fun populateDbTask(wallpaperDao: SavedWallpaperDao) {
-                wallpaperDao.saveWallpaper(SavedWallpaperTable(0, ""))
+                wallpaperDao.saveWallpaper(SavedWallpaperRow(0, ""))
             }
         }
     }

@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "wallpaper_table")
-data class SavedWallpaperTable (
+data class SavedWallpaperRow (
     @field:PrimaryKey(autoGenerate = true)
     @field:ColumnInfo(name = "wid")
     var wid: Int = 0,

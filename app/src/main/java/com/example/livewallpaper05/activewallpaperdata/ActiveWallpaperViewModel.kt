@@ -9,7 +9,7 @@ import android.util.Log
 import androidx.lifecycle.*
 import com.example.livewallpaper05.R
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo.WallpaperRef
-import com.example.livewallpaper05.savedWallpapers.SavedWallpaperTable
+import com.example.livewallpaper05.savedWallpapers.SavedWallpaperRow
 import kotlinx.coroutines.Job
 import org.json.JSONObject
 import java.math.RoundingMode
@@ -420,8 +420,8 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
     var isCollapsed = false
 
     // initialize local variables for saved wallpapers
-    val activeWallpaper: LiveData<SavedWallpaperTable> = repo.activeWallpaper
-    val savedWallpapers: LiveData<List<SavedWallpaperTable>> = repo.wallpapers
+    val activeWallpaper: LiveData<SavedWallpaperRow> = repo.activeWallpaper
+    val savedWallpapers: LiveData<List<SavedWallpaperRow>> = repo.wallpapers
 
     // GETTERS - here are all the methods for getting data from the repo -------------------
 
@@ -704,7 +704,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
     }
 
     // load config table into repo
-    fun loadConfig(table: SavedWallpaperTable) {
+    fun loadConfig(table: SavedWallpaperRow) {
         // prevent reloading same config
         if (repo.wid == table.wid && repo.savedConfig == table.config) {
             return
@@ -807,12 +807,12 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
     // save wallpaper from config string
     fun saveWallpaper(config: String) : Int {
         // create new wallpaper table with given data
-        var wallpaper = SavedWallpaperTable(
+        var wallpaper = SavedWallpaperRow(
             1,
             config
         )
         try {
-            wallpaper = SavedWallpaperTable(
+            wallpaper = SavedWallpaperRow(
                 activeWallpaper.value!!.wid,
                 config
             )
@@ -836,7 +836,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
 
     // create wallpaper save with default values
     fun createDefaultWallpaperTable(wid: Int, config: String) {
-        val wallpaper = SavedWallpaperTable(
+        val wallpaper = SavedWallpaperRow(
             wid,
             config
         )

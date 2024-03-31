@@ -19,7 +19,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
@@ -27,16 +26,13 @@ import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo.Wallp
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModelFactory
 import com.example.livewallpaper05.helpful_fragments.WallpaperFragment
-import com.example.livewallpaper05.profiledata.ProfileTable
 import com.example.livewallpaper05.profiledata.ProfileViewModel
-import com.example.livewallpaper05.savedWallpapers.SavedWallpaperTable
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.sql.DriverManager
@@ -76,7 +72,7 @@ class ProfileActivity : AppCompatActivity() {
 
     public override fun onStart() {
         super.onStart()
-        (application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("ProfileActivity.onStart()")
+        //(application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("ProfileActivity.onStart()")
         // Check if user is signed in (non-null) and update UI accordingly.
         val currentUser = auth.currentUser
         if (currentUser != null) {
@@ -90,13 +86,13 @@ class ProfileActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        (application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("ProfileActivity.onResume()")
+        //(application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("ProfileActivity.onResume()")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // From Jo to Cam: connect to aws MySQL server here and query basic profile info into class instance declared below
         super.onCreate(savedInstanceState)
-        (application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("ProfileActivity.onCrea8()")
+        //(application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("ProfileActivity.onCrea8()")
         setContentView(R.layout.activity_profile)
 
         mProfilePic = findViewById(R.id.iv_profile_pic)
@@ -262,10 +258,13 @@ class ProfileActivity : AppCompatActivity() {
             updateFragListeners()
         }
 
+        /*
         findViewById<ImageView>(R.id.iv_profile_pic).setOnClickListener {
             (application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("iv_profile_pic setOnClickListener")
         }
         (application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("ProfileActivity.onCrea8#2()")
+
+         */
     }
 
 
