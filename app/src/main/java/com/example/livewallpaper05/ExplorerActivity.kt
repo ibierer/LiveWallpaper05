@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.WindowManager
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
 import com.google.firebase.FirebaseApp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -21,7 +22,7 @@ class ExplorerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         // Initialize firebase
         FirebaseApp.initializeApp(this)
-        getWindow().setFlags(
+        window.setFlags(
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
             WindowManager.LayoutParams.FLAG_FULLSCREEN
         );
@@ -33,32 +34,31 @@ class ExplorerActivity : AppCompatActivity() {
             // launch async task to connect to postgre mock server
             GlobalScope.launch(Dispatchers.IO) {
                 // write aws test code here -------------
-                val jdbcConnectionString = 
-                    "jdbc:mysql://database-1.cxo8mkcogo8p.us-east-1.rds.amazonaws.com:3306/?user=admin"
-                //val host = "database-1.cxo8mkcogo8p.us-east-1.rds.amazonaws.com"
+                val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
                 try {
                     Class.forName("com.mysql.jdbc.Driver").newInstance()
                     // connect to mysql server
-                    val conn = DriverManager.getConnection(
-                        jdbcConnectionString, "admin", "UtahUtesLiveWallz!"
-                    )
-
-                    Log.d("LiveWallpaper05", "Connected to database")
-                    val query = "USE myDatabase; SELECT * FROM users;"
-                    val statement = conn.createStatement()
-                    val result = statement.executeQuery(query)
-                    while (result.next()) {
-                        val username = result.getString("username")
-                        val name = result.getString("name")
-                        val bio = result.getString("bio")
-                        var resultStr = "User Returned: Username: $username, Name:  $name"
-                        if (bio != null){
-                            resultStr += ", bio: $bio"
+                    val connectionProperties = Properties()
+                    connectionProperties["user"] = ProfileActivity.DatabaseConfig.dbUser
+                    connectionProperties["password"] = ProfileActivity.DatabaseConfig.dbPassword
+                    connectionProperties["useSSL"] = "false"
+                    DriverManager.getConnection(jdbcConnectionString, connectionProperties)
+                        .use { conn ->
+                            Log.d("LiveWallpaper05", "Connected to database (Explorer Activity)")
+                            val query = "SELECT * FROM users;"
+                            val statement = conn.createStatement()
+                            val result = statement.executeQuery(query)
+                            while (result.next()) {
+                                val username = result.getString("username")
+                                val name = result.getString("name")
+                                val bio = result.getString("bio")
+                                var resultStr = "User Returned: Username: $username, Name:  $name"
+                                if (bio != null) {
+                                    resultStr += ", bio: $bio"
+                                }
+                                Log.d("LiveWallpaper05", resultStr)
+                            }
                         }
-                        Log.d("LiveWallpaper05", resultStr)
-                        /*can use similar idea from login dialog to check whether user with username 'value'
-                        already exists and if so, pull information from db.*/
-                    }
 
                 } catch (e: Exception) {
                     Log.d("LiveWallpaper05", e.printStackTrace().toString())
@@ -68,4 +68,13 @@ class ExplorerActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        (application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("ExplorerActivity.onStart()")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        (application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("ExplorerActivity.onResume()")
+    }
 }

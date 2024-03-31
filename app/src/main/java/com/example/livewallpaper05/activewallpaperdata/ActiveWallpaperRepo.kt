@@ -43,7 +43,7 @@ class ActiveWallpaperRepo private constructor (wallpaperDao: SavedWallpaperDao) 
     val wallpapers = MutableLiveData<List<SavedWallpaperTable>>()
     val wallpaperFragIds: MutableList<WallpaperRef> = mutableListOf()
 
-    private var mWallpaperDao: SavedWallpaperDao = wallpaperDao
+    val mWallpaperDao: SavedWallpaperDao = wallpaperDao
     private var lastId: Int = 1
 
     private lateinit var mSensorManager: SensorManager

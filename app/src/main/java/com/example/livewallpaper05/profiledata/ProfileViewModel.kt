@@ -37,7 +37,6 @@ class ProfileViewModel(repo: ProfileRepo) : ViewModel() {
         } catch (e: Exception) {}
         // update profile table
         mRepo.setProfile(profile)
-
     }
 
     class ProfileViewModelFactory(private val repo: ProfileRepo) : ViewModelProvider.Factory {

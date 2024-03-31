@@ -19,6 +19,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
@@ -26,13 +27,16 @@ import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo.Wallp
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModelFactory
 import com.example.livewallpaper05.helpful_fragments.WallpaperFragment
+import com.example.livewallpaper05.profiledata.ProfileTable
 import com.example.livewallpaper05.profiledata.ProfileViewModel
+import com.example.livewallpaper05.savedWallpapers.SavedWallpaperTable
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.sql.DriverManager
@@ -67,25 +71,32 @@ class ProfileActivity : AppCompatActivity() {
 
     // active wallpaper view model
     private val viewModel: ActiveWallpaperViewModel by viewModels {
-        ActiveWallpaperViewModelFactory((application as ActiveWallpaperApplication).repository)
+        ActiveWallpaperViewModelFactory((application as ActiveWallpaperApplication).wallpaperRepo)
     }
 
     public override fun onStart() {
         super.onStart()
+        (application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("ProfileActivity.onStart()")
         // Check if user is signed in (non-null) and update UI accordingly.
         val currentUser = auth.currentUser
         if (currentUser != null) {
             Log.d("AUTH", "Current user: $currentUser")
             // load from AWS
-        } else {
+        } else { // Not registered/logged in
             username = "Default User"
             Log.d("AUTH", "No user logged in")
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        (application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("ProfileActivity.onResume()")
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         // From Jo to Cam: connect to aws MySQL server here and query basic profile info into class instance declared below
         super.onCreate(savedInstanceState)
+        (application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("ProfileActivity.onCrea8()")
         setContentView(R.layout.activity_profile)
 
         mProfilePic = findViewById(R.id.iv_profile_pic)
@@ -137,6 +148,7 @@ class ProfileActivity : AppCompatActivity() {
             val sharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
             username = sharedPreferences.getString("USERNAME", "").toString()
             uid = sharedPreferences.getInt("UID", 11)
+            // put uid in local profile table
             Log.d("OKAY", "uid is $uid\n username is $username")
             mUsername!!.text = username
             loginRegisterButton!!.visibility = View.GONE
@@ -249,10 +261,15 @@ class ProfileActivity : AppCompatActivity() {
         mWallpaperGrid!!.viewTreeObserver.addOnGlobalLayoutListener {
             updateFragListeners()
         }
+
+        findViewById<ImageView>(R.id.iv_profile_pic).setOnClickListener {
+            (application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("iv_profile_pic setOnClickListener")
+        }
+        (application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("ProfileActivity.onCrea8#2()")
     }
 
+
     private fun insertBio(bio: String, username: String) {
-        Log.d("OKAY", "in insertBio")
         GlobalScope.launch(Dispatchers.IO) {
             val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
             try {
@@ -261,13 +278,8 @@ class ProfileActivity : AppCompatActivity() {
                 connectionProperties["user"] = DatabaseConfig.dbUser
                 connectionProperties["password"] = DatabaseConfig.dbPassword
                 connectionProperties["useSSL"] = "false"
-
                 DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                     .use { conn ->
-                        val useDbQuery = "USE myDatabase;"
-                        val statement = conn.prepareStatement(useDbQuery)
-                        statement.execute()
-
                         val updateQuery = "UPDATE users SET bio = ? WHERE username = ?;"
                         val updateStatement = conn.prepareStatement(updateQuery)
                         updateStatement.setString(1, bio)
@@ -298,9 +310,6 @@ class ProfileActivity : AppCompatActivity() {
             DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                 .use { conn -> // this syntax ensures that connection will be closed whether normally or from exception
                     Log.d("LiveWallpaper05", "Connected to database")
-                    val useDbQuery = "USE myDatabase;"
-                    val statement = conn.prepareStatement(useDbQuery)
-                    statement.execute()
                     val updateQuery = "SELECT * FROM users WHERE username = ?;"
                     val selectStatement = conn.prepareStatement(updateQuery)
                     selectStatement.setString(1, username)
@@ -407,13 +416,9 @@ class ProfileActivity : AppCompatActivity() {
                 connectionProperties["user"] = DatabaseConfig.dbUser
                 connectionProperties["password"] = DatabaseConfig.dbPassword
                 connectionProperties["useSSL"] = "false"
-
                 DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                     .use { conn -> // this syntax ensures that connection will be closed whether normally or from exception
                         Log.d("OH_YES", "Connected to database in insertProfilePicture!")
-                        val useDbQuery = "USE myDatabase;"
-                        val statement = conn.prepareStatement(useDbQuery)
-                        statement.execute()
                         val updateQuery = "UPDATE users SET profile_picture = ? WHERE username = ?;"
                         conn.prepareStatement(updateQuery).use { updateStatement ->
                             val convertedImage = convertBitmapToByteArray(image)
@@ -444,7 +449,7 @@ class ProfileActivity : AppCompatActivity() {
         //check username, query database if valid->update the viewModel
     }
 
-    fun newWallpaper(view: View) {
+    private fun newWallpaper(view: View) {
         // save current wallpaper
         val activeConfig = viewModel.getConfig()
         viewModel.saveWallpaper(activeConfig)
@@ -499,8 +504,7 @@ class ProfileActivity : AppCompatActivity() {
                         }
                     }
                     // disable active button for this wallpaper
-                    frag.requireView().findViewById<Button>(R.id.b_active_wallpaper).isEnabled =
-                        false
+                    frag.requireView().findViewById<Button>(R.id.b_active_wallpaper).isEnabled = false
                     // set frag active variable to true
                     val wallFrag = frag as WallpaperFragment
                     wallFrag.active = true

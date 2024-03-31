@@ -40,7 +40,7 @@ class PreviewActivity : AppCompatActivity() {
     var mView: GLES3JNIView? = null
 
     private val viewModel: ActiveWallpaperViewModel by viewModels {
-        ActiveWallpaperViewModelFactory((application as ActiveWallpaperApplication).repository)
+        ActiveWallpaperViewModelFactory((application as ActiveWallpaperApplication).wallpaperRepo)
     }
 
     private fun updateSyntaxResult() {
@@ -96,7 +96,7 @@ class PreviewActivity : AppCompatActivity() {
         // set default to viewmodel visualization type
         visualizationSelectorSpinner.setSelection(viewModel.getVisualization())
 
-        // register senser event listeners
+        // register sensor event listeners
         viewModel.registerSensorEvents(getSystemService(Context.SENSOR_SERVICE) as SensorManager)
         // add gl engine view to viewport
         layout.addView(mView)
@@ -125,14 +125,14 @@ class PreviewActivity : AppCompatActivity() {
                 R.id.flip_normals_checkbox
             )
             for(id in textViewIds){
-                if(viewModel.visualization!!.relevantTextViewIds.contains(id) && !viewModel.isCollapsed){
+                if(viewModel.visualization.relevantTextViewIds.contains(id) && !viewModel.isCollapsed){
                     findViewById<TextView>(id).visibility = View.VISIBLE
                 } else {
                     findViewById<TextView>(id).visibility = View.GONE
                 }
             }
             for(id in seekBarIds){
-                if(viewModel.visualization!!.relevantSeekBarIds.contains(id) && !viewModel.isCollapsed){
+                if(viewModel.visualization.relevantSeekBarIds.contains(id) && !viewModel.isCollapsed){
                     findViewById<SeekBar>(id).visibility = View.VISIBLE
                     findViewById<SeekBar>(id).isEnabled = true
                 } else {
@@ -141,7 +141,7 @@ class PreviewActivity : AppCompatActivity() {
                 }
             }
             for(id in editTextIds){
-                if(viewModel.visualization!!.relevantEditTextIds.contains(id) && !viewModel.isCollapsed){
+                if(viewModel.visualization.relevantEditTextIds.contains(id) && !viewModel.isCollapsed){
                     findViewById<EditText>(id).visibility = View.VISIBLE
                     findViewById<EditText>(id).isEnabled = true
                 } else {
@@ -150,7 +150,7 @@ class PreviewActivity : AppCompatActivity() {
                 }
             }
             for(id in checkBoxIds){
-                if(viewModel.visualization!!.relevantCheckBoxIds.contains(id) && !viewModel.isCollapsed){
+                if(viewModel.visualization.relevantCheckBoxIds.contains(id) && !viewModel.isCollapsed){
                     findViewById<CheckBox>(id).visibility = View.VISIBLE
                     findViewById<CheckBox>(id).isEnabled = true
                 } else {
