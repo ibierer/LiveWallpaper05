@@ -168,6 +168,17 @@ class ActiveWallpaperRepo private constructor (wallpaperDao: SavedWallpaperDao) 
                 mWallpaperDao.saveWallpaper(wallpaper)
             }
 
+            // if savedWids is > 1, replace default wallpaper with saved wallpaper
+            if (savedWids.size > 1) {
+                // find default wallpaper (wid = 1) and replace it with saved wallpaper
+                var default = newWallpapers.find { it.wid == 1 }
+                var saved = allWallpapers.find { it.wid == savedWids[1] }
+                if (default != null && saved != null) {
+                    newWallpapers.remove(default)
+                    newWallpapers.add(saved)
+                }
+            }
+
             // for valid wid add that wallpaper from all wallpapers to new wallpapers
             for (wallpaper in allWallpapers) {
                 if (validWids.contains(wallpaper.wid) && !newWallpapers.contains(wallpaper)){
