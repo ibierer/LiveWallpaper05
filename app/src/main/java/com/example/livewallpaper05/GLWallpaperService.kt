@@ -16,7 +16,7 @@ import com.example.livewallpaper05.savedWallpapers.SavedWallpaperRoomDatabase
 
 class GLWallpaperService() : WallpaperService() {
 
-    private val savedWallpaperDatabase by lazy { SavedWallpaperRoomDatabase.getInstance(this)}
+    private val savedWallpaperDatabase by lazy { SavedWallpaperRoomDatabase.getDatabase(this)}
     val viewModel: ActiveWallpaperViewModel by lazy {
         ActiveWallpaperViewModel(ActiveWallpaperRepo.getInstance(savedWallpaperDatabase.wallpaperDao(), (application as ActiveWallpaperApplication).applicationScope))
     }

@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.sql.DriverManager
+import java.util.Properties
 
 class ExplorerActivity : AppCompatActivity() {
 

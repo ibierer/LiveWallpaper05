@@ -18,31 +18,17 @@ abstract class SavedWallpaperRoomDatabase : RoomDatabase() {
     // make db singleton
     companion object {
 
-        private var instance: SavedWallpaperRoomDatabase? = null
-
-        fun getInstance(context: Context): SavedWallpaperRoomDatabase {
-            if (instance == null) {
-                instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    SavedWallpaperRoomDatabase::class.java,
-                    "wallpaper.db"
-                ).build()
-            }
-            return instance!!
-        }
-
         @Volatile
         private var mInstance: SavedWallpaperRoomDatabase? = null
         fun getDatabase(
-            context: Context,
-            scope: CoroutineScope
+            context: Context
         ): SavedWallpaperRoomDatabase {
             return mInstance?: synchronized(this){
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     SavedWallpaperRoomDatabase::class.java, "wallpaper.db"
                 )
-                    .addCallback(RoomDatabaseCallback(scope))
+                    .addCallback(RoomDatabaseCallback())
                     .fallbackToDestructiveMigration()
                     .build()
                 mInstance = instance
@@ -50,13 +36,11 @@ abstract class SavedWallpaperRoomDatabase : RoomDatabase() {
             }
         }
 
-        private class RoomDatabaseCallback(
-            private val scope: CoroutineScope
-        ): RoomDatabase.Callback() {
+        private class RoomDatabaseCallback: Callback() {
             override fun onCreate(db: SupportSQLiteDatabase) {
                 super.onCreate(db)
                 mInstance?.let {database ->
-                    scope.launch(Dispatchers.IO) {
+                    CoroutineScope(Dispatchers.Main).launch(Dispatchers.IO) {
                         populateDbTask(database.wallpaperDao())
                     }
                 }

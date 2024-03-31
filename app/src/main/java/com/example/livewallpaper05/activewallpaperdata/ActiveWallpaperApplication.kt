@@ -25,7 +25,7 @@ class ActiveWallpaperApplication : Application() {
     val applicationScope : CoroutineScope = CoroutineScope(SupervisorJob())
     // init repo
     //val repository by lazy { ActiveWallpaperRepo.getInstance(applicationScope)}
-    private val savedWallpaperDatabase : SavedWallpaperRoomDatabase by lazy { SavedWallpaperRoomDatabase.getDatabase(this, applicationScope)}
+    private val savedWallpaperDatabase : SavedWallpaperRoomDatabase by lazy { SavedWallpaperRoomDatabase.getDatabase(this)}
     val wallpaperRepo : ActiveWallpaperRepo by lazy { ActiveWallpaperRepo.getInstance(savedWallpaperDatabase.wallpaperDao(), applicationScope)}
 
     // profile data
