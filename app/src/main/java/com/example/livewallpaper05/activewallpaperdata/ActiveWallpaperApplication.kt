@@ -43,12 +43,12 @@ class ActiveWallpaperApplication : Application() {
     fun printProfilesAndWallpapersToLogcat(message : String){
         CoroutineScope(Dispatchers.Main).launch {
             val profileD : ProfileTable? = profileRepo.data.value
-            Log.d("WALLPAPERS", "profile data: $profileD")
+            Log.d("WALLPAPERS", "$message\nprofile data: $profileD")
             val wallpapers : List<SavedWallpaperTable> = withContext(Dispatchers.IO) {
                 savedWallpaperDatabase.wallpaperDao().getAllWallpapers()
             }
             for (element in wallpapers){
-                Log.d("WALLPAPERS", "$message $element")
+                Log.d("WALLPAPERS", "$message\n$element")
             }
         }
     }
