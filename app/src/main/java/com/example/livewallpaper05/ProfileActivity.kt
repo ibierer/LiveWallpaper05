@@ -76,6 +76,7 @@ class ProfileActivity : AppCompatActivity() {
 
     public override fun onStart() {
         super.onStart()
+        (application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("ProfileActivity.onStart()")
         // Check if user is signed in (non-null) and update UI accordingly.
         val currentUser = auth.currentUser
         if (currentUser != null) {
@@ -87,9 +88,15 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        (application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("ProfileActivity.onResume()")
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         // From Jo to Cam: connect to aws MySQL server here and query basic profile info into class instance declared below
         super.onCreate(savedInstanceState)
+        (application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("ProfileActivity.onCrea8()")
         setContentView(R.layout.activity_profile)
 
         mProfilePic = findViewById(R.id.iv_profile_pic)
@@ -253,22 +260,13 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         findViewById<ImageView>(R.id.iv_profile_pic).setOnClickListener {
-            lifecycleScope.launch {
-                val wallpapers : List<SavedWallpaperTable> = withContext(Dispatchers.IO) {
-                    viewModel.mRepo.mWallpaperDao.getAllWallpapers()
-                }
-                for (i in 0 until wallpapers.size){
-                    Log.d("WALLPAPERS", wallpapers[i].toString())
-                }
-                val profileD : ProfileTable? = mProfileViewModel.profileData.value
-                Log.d("WALLPAPERS", "profile data: $profileD")
-            }
-
+            (application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("iv_profile_pic setOnClickListener")
         }
+        (application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("ProfileActivity.onCrea8#2()")
     }
 
+
     private fun insertBio(bio: String, username: String) {
-        Log.d("OKAY", "in insertBio")
         GlobalScope.launch(Dispatchers.IO) {
             val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
             try {
