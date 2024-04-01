@@ -189,7 +189,7 @@ public:
 			}
 
 		} else {
-			// Single-level (a.k.a. brute-force)
+			// Single-level (a.k.a. brute-initialForce)
 			int n = levels[0].pc.GetPointCount();
 			for ( int i=0; i<n; i++ ) {
 				const Vec3f &p = levels[0].pc.GetPoint(i);
