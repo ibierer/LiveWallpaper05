@@ -468,25 +468,24 @@ class ProfileActivity : AppCompatActivity() {
             // if fragment doesn't exist yet, skip
 
             // connect delete button to delete wallpaper function
-            frag.requireView().findViewById<FloatingActionButton>(R.id.b_delete_wallpaper)
-                .setOnClickListener {
-                    // if wallpaper is active, make pop up telling user to switch wallpaper before removing
-                    val activeId = viewModel.getWid()
-                    if (ref.wallpaperId == activeId) {
-                        val dialog = AlertDialog.Builder(this)
-                        dialog.setTitle("Active Wallpaper")
-                        dialog.setMessage("Please switch wallpapers before removing this wallpaper.")
-                        dialog.setPositiveButton("Ok") { _, _ -> }
-                        dialog.show()
-                        return@setOnClickListener
-                    }
-                    // delete wallpaper from database
-                    viewModel.deleteWallpaper(ref.wallpaperId)
-                    // remove fragment from grid
-                    supportFragmentManager.beginTransaction().remove(frag).commit()
-                    removeList.add(ref)
-                    viewModel.removeWallpaperFragId(ref)
+            frag.requireView().findViewById<FloatingActionButton>(R.id.b_delete_wallpaper).setOnClickListener {
+                // if wallpaper is active, make pop up telling user to switch wallpaper before removing
+                val activeId = viewModel.getWid()
+                if (ref.wallpaperId == activeId) {
+                    val dialog = AlertDialog.Builder(this)
+                    dialog.setTitle("Active Wallpaper")
+                    dialog.setMessage("Please switch wallpapers before removing this wallpaper.")
+                    dialog.setPositiveButton("Ok") { _, _ -> }
+                    dialog.show()
+                    return@setOnClickListener
                 }
+                // delete wallpaper from database
+                viewModel.deleteWallpaper(ref.wallpaperId)
+                // remove fragment from grid
+                supportFragmentManager.beginTransaction().remove(frag).commit()
+                removeList.add(ref)
+                viewModel.removeWallpaperFragId(ref)
+            }
 
             // connect set active button to set active wallpaper function
             frag.requireView().findViewById<Button>(R.id.b_active_wallpaper)

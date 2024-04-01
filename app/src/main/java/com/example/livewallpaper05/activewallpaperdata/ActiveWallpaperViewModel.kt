@@ -713,24 +713,28 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
             val configJson = JSONObject(table.config)
 
             repo.visualizationSelection = configJson.getInt("type")
-            val red = configJson.getJSONObject("background_color").getInt("r").toFloat()
-            val green = configJson.getJSONObject("background_color").getInt("g").toFloat()
-            val blue = configJson.getJSONObject("background_color").getInt("b").toFloat()
-            val alpha = configJson.getJSONObject("background_color").getInt("a").toFloat()
+            //val red = configJson.getJSONObject("background_color").getInt("r").toFloat()
+            //val green = configJson.getJSONObject("background_color").getInt("g").toFloat()
+            //val blue = configJson.getJSONObject("background_color").getInt("b").toFloat()
+            //val alpha = configJson.getJSONObject("background_color").getInt("a").toFloat()
 
             // update visualization specific parameters
             // [TODO] - add all viz parameters here and in repo (requires getter and setter functions as well)
             when (repo.visualizationSelection) {
                 0 -> {
-                    var sim = NBodyVisualization(configJson)
+                    val sim = NBodyVisualization(configJson)
                     updateDistanceFromCenter(sim.distance)
                     updateFieldOfView(sim.fieldOfView)
+                    updateColor(sim.backgroundColor)
+                    //updateColor(Color.valueOf(red, green, blue, alpha))
                     updateVizualizationName("N-Body Simulation")
                 }
                 1 -> {
-                    var sim = NaiveFluidVisualization(configJson)
+                    val sim = NaiveFluidVisualization(configJson)
                     updateDistanceFromCenter(sim.distance)
                     updateFieldOfView(sim.fieldOfView)
+                    updateColor(sim.backgroundColor)
+                    //updateColor(Color.valueOf(red, green, blue, alpha))
                     updateGravity(sim.gravity)
                     updateLinearAcceleration(sim.linearAcceleration)
                     updateEfficiency(sim.efficiency)
@@ -738,28 +742,33 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
                     updateVizualizationName("Naive Fluid Simulation")
                 }
                 2 -> {
-                    var sim = PicFlipVisualization(configJson)
+                    val sim = PicFlipVisualization(configJson)
                     updateDistanceFromCenter(sim.distance)
                     updateFieldOfView(sim.fieldOfView)
+                    updateColor(sim.backgroundColor)
+                    //updateColor(Color.valueOf(red, green, blue, alpha))
                     updateGravity(sim.gravity)
                     updateLinearAcceleration(sim.linearAcceleration)
                     updateVizualizationName("PicFlip Simulation")
                 }
                 3 -> {
-                    var sim = TriangleVisualization(configJson)
+                    val sim = TriangleVisualization(configJson)
                     updateDistanceFromCenter(sim.distance)
                     updateFieldOfView(sim.fieldOfView)
+                    updateColor(sim.backgroundColor)
+                    //updateColor(Color.valueOf(red, green, blue, alpha))
                     updateVizualizationName("Triangle Visualization")
                 }
                 4 -> {
-                    var sim = GraphVisualization(configJson)
+                    val sim = GraphVisualization(configJson)
                     updateDistanceFromCenter(sim.distance)
                     updateFieldOfView(sim.fieldOfView)
+                    updateColor(sim.backgroundColor)
+                    //updateColor(Color.valueOf(red, green, blue, alpha))
                     updateEquation(sim.equation)
                     updateVizualizationName("Graph Visualization")
                 }
             }
-            updateColor(Color.valueOf(red, green, blue, alpha))
 
             // store config string in repo
             repo.savedConfig = table.config
