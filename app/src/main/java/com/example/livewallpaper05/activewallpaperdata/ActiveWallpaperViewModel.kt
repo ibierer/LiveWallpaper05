@@ -587,6 +587,11 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         return repo.gravity.value!!
     }
 
+    // get the wallpaper id list for the wallpaper preview fragment(s)
+    fun getWallpaperFragIds() : MutableList<WallpaperRef> {
+        return mRepo.wallpaperFragIds
+    }
+
     // SETTERS - here are all the methods for updating data in the repo --------------------
 
     // update visualization type in repo
@@ -654,6 +659,16 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
     // update gravity value in repo
     fun updateGravity(value: Float) {
         repo.gravity.value = value
+    }
+
+    // update efficiency value in repo
+    fun updateEfficiency(value: Float) {
+        repo.efficiency.value = value
+    }
+
+    // update particle count value in repo
+    fun updateParticleCount(value: Int) {
+        repo.particleCount.value = value
     }
 
     // update linear acceleration value in repo
