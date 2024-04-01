@@ -15,7 +15,7 @@ import java.sql.DriverManager
 import java.time.LocalDateTime
 import kotlin.jvm.Volatile
 
-@Database(entities = [ProfileTable::class], version = 1, exportSchema = false)
+@Database(entities = [ProfileTable::class], version = 2, exportSchema = false)
 abstract class ProfileRoomDatabase : RoomDatabase() {
     abstract fun profileDao(): ProfileDao
 
@@ -56,7 +56,7 @@ abstract class ProfileRoomDatabase : RoomDatabase() {
             // seed database
             suspend fun populateDbTask(profileDao: ProfileDao) {
                 val tmpImg = ByteArray(0)
-                profileDao.updateProfileData(ProfileTable(0, "Dummy_User", "Hello World!", tmpImg))
+                profileDao.updateProfileData(ProfileTable(0, 0,"Dummy_User", "Hello World!", tmpImg))
             }
         }
     }

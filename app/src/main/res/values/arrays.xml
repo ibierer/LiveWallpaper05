@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="simulation_types">
+    <string-array name="visualization_types">
         <item name="celestial_mechanics">Celestial Mechanics</item>
         <item name="naive_fluid">Naive Fluid</item>
         <item name="eulerian_fluid">Eulerian Fluid</item>

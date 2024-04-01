@@ -40,7 +40,7 @@ class PreviewActivity : AppCompatActivity() {
     var mView: GLES3JNIView? = null
 
     private val viewModel: ActiveWallpaperViewModel by viewModels {
-        ActiveWallpaperViewModelFactory((application as ActiveWallpaperApplication).repository)
+        ActiveWallpaperViewModelFactory((application as ActiveWallpaperApplication).wallpaperRepo)
     }
 
     private fun updateSyntaxResult() {
@@ -88,7 +88,7 @@ class PreviewActivity : AppCompatActivity() {
         // fill visualization selector box with wallpaper options from native-lib.cpp
         val visualizationSelectorAdapter = ArrayAdapter.createFromResource(
             this,
-            R.array.simulation_types,
+            R.array.visualization_types,
             android.R.layout.simple_spinner_item
         )
         visualizationSelectorSpinner.adapter = visualizationSelectorAdapter
@@ -552,9 +552,9 @@ class PreviewActivity : AppCompatActivity() {
     fun updatePreviewImage(): Bitmap {
         // store view as preview image
         *//**
-        var preview = Bitmap.createBitmap(mView!!.width, mView!!.height, Bitmap.Config.ARGB_8888)
-        var canvas = Canvas(preview)
-        mView!!.draw(canvas)*//*
+    var preview = Bitmap.createBitmap(mView!!.width, mView!!.height, Bitmap.Config.ARGB_8888)
+    var canvas = Canvas(preview)
+    mView!!.draw(canvas)*//*
         val preview = Bitmap.createBitmap(mView!!.width, mView!!.height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(preview)
         val background = mView!!.background

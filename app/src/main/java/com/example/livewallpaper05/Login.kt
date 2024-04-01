@@ -29,7 +29,6 @@ class Login : AppCompatActivity() {
     private lateinit var loginButton: Button
     private lateinit var regPageButton: Button
     private lateinit var mAuth: FirebaseAuth
-    private lateinit var username: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,7 +98,7 @@ class Login : AppCompatActivity() {
     private suspend fun getUsernameAndUidFromEmail(email: String): Pair<String, Int> {
         return withContext(Dispatchers.IO) {
             val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
-            var username = "" // Initialize with an empty string or any default value
+            var username = ""
             var uid = 0
 
             try {
@@ -110,7 +109,7 @@ class Login : AppCompatActivity() {
                 connectionProperties["useSSL"] = "false"
                 DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                     .use { conn ->
-                        val getUsernameQuery = "SELECT uid, username FROM users WHERE name = ?;"
+                        val getUsernameQuery = "SELECT uid, username FROM users WHERE email = ?;"
                         val checkUserStatement = conn.prepareStatement(getUsernameQuery)
                         checkUserStatement.setString(1, email)
                         val resultSet = checkUserStatement.executeQuery()

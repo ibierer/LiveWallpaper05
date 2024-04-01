@@ -5,7 +5,6 @@
 #ifndef LIVEWALLPAPER05_SIMULATION_H
 #define LIVEWALLPAPER05_SIMULATION_H
 
-
 class Simulation : public Computation {
 
 public:
@@ -27,7 +26,6 @@ public:
             for (int i = 0; i < 8; ++i) {
                 if (children[i] != nullptr) {
                     delete children[i]; // Recursively delete child nodes
-                    children[i] = nullptr; // Set the child pointer to nullptr after deletion
                 }
             }
         }
@@ -35,7 +33,9 @@ public:
 
     struct Star : Particle {
         float mass;
-        vec3 force;
+        vec3 initialForce;
+        vec3 finalForce;
+        vec3 projectedPosition;
         Node* leaf;
     };
 
@@ -48,6 +48,5 @@ public:
 private:
 
 };
-
 
 #endif //LIVEWALLPAPER05_SIMULATION_H

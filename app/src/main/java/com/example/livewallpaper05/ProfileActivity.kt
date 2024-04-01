@@ -22,12 +22,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
+import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo.WallpaperRef
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModelFactory
 import com.example.livewallpaper05.helpful_fragments.WallpaperFragment
 import com.example.livewallpaper05.profiledata.ProfileViewModel
-import com.example.livewallpaper05.savedWallpapers.SavedWallpaperRepo.WallpaperRef
-import com.example.livewallpaper05.savedWallpapers.SavedWallpaperViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -66,32 +65,34 @@ class ProfileActivity : AppCompatActivity() {
         ProfileViewModel.ProfileViewModelFactory((application as ActiveWallpaperApplication).profileRepo)
     }
 
-    // saved wallpaper data
-    private val mSavedWallpaperViewModel: SavedWallpaperViewModel by viewModels {
-        SavedWallpaperViewModel.SavedWallpaperViewModelFactory((application as ActiveWallpaperApplication).savedWallpaperRepo)
-    }
-
     // active wallpaper view model
-    private val mActiveWallpaperViewModel: ActiveWallpaperViewModel by viewModels {
-        ActiveWallpaperViewModelFactory((application as ActiveWallpaperApplication).repository)
+    private val viewModel: ActiveWallpaperViewModel by viewModels {
+        ActiveWallpaperViewModelFactory((application as ActiveWallpaperApplication).wallpaperRepo)
     }
 
     public override fun onStart() {
         super.onStart()
+        //(application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("ProfileActivity.onStart()")
         // Check if user is signed in (non-null) and update UI accordingly.
         val currentUser = auth.currentUser
         if (currentUser != null) {
             Log.d("AUTH", "Current user: $currentUser")
             // load from AWS
-        } else {
+        } else { // Not registered/logged in
             username = "Default User"
             Log.d("AUTH", "No user logged in")
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        //(application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("ProfileActivity.onResume()")
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         // From Jo to Cam: connect to aws MySQL server here and query basic profile info into class instance declared below
         super.onCreate(savedInstanceState)
+        //(application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("ProfileActivity.onCrea8()")
         setContentView(R.layout.activity_profile)
 
         mProfilePic = findViewById(R.id.iv_profile_pic)
@@ -103,6 +104,7 @@ class ProfileActivity : AppCompatActivity() {
         loginRegisterButton = findViewById(R.id.loginRegisterButton)
         logoutButton = findViewById(R.id.logoutButton)
 
+        viewModel.loadWidsFromMem(this)
 
         /* Used to securely access db credentials and keep out of source code */
         val inputStream: InputStream = resources.openRawResource(R.raw.database_config)
@@ -142,6 +144,7 @@ class ProfileActivity : AppCompatActivity() {
             val sharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
             username = sharedPreferences.getString("USERNAME", "").toString()
             uid = sharedPreferences.getInt("UID", 11)
+            // put uid in local profile table
             Log.d("OKAY", "uid is $uid\n username is $username")
             mUsername!!.text = username
             loginRegisterButton!!.visibility = View.GONE
@@ -183,25 +186,26 @@ class ProfileActivity : AppCompatActivity() {
         })
 
         // if no wallpapers exist, create default wallpaper
-        if (mSavedWallpaperViewModel.savedWallpapers.value == null) {
-            mSavedWallpaperViewModel.createDefaultWallpaperTable(
-                mActiveWallpaperViewModel.getWid(),
-                mActiveWallpaperViewModel.getConfig()
+        if (viewModel.savedWallpapers.value == null) {
+            viewModel.createDefaultWallpaperTable(
+                0,
+                viewModel.getWid(),
+                viewModel.getConfig()
             )
         } else {
             // updated active wallpaper params with saved wallpaper data
-            val activeConfig = mActiveWallpaperViewModel.getConfig()
-            val activeWid = mActiveWallpaperViewModel.getWid()
+            val activeConfig = viewModel.getConfig()
+            val activeWid = viewModel.getWid()
             // if wid is in saved wallpapers, update active wallpaper with saved wallpaper data
-            mSavedWallpaperViewModel.saveSwitchWallpaper(activeWid, activeConfig)
+            viewModel.saveSwitchWallpaper(activeWid, activeConfig)
         }
 
         // link active wallpaper to active wallpaper live data via callback function
-        mSavedWallpaperViewModel.activeWallpaper.observe(this, Observer { wallpaper ->
+        viewModel.activeWallpaper.observe(this, Observer { wallpaper ->
             // if wallpaper is not the same as saved wallpaper, return
             // if wallpaper not in wallpapers, return
             var contained = false
-            for (w in mSavedWallpaperViewModel.savedWallpapers.value!!) {
+            for (w in viewModel.savedWallpapers.value!!) {
                 if (w.wid == wallpaper.wid && w.config == wallpaper.config){
                     contained = true
                     break
@@ -212,24 +216,26 @@ class ProfileActivity : AppCompatActivity() {
             }
 
             // set active wallpaper wid to wallpaper wid
-            mActiveWallpaperViewModel.setWid(wallpaper.wid)
+            viewModel.setWid(wallpaper.wid)
             // [TODO] use this to update active wallpaper with saved wallpaper data
             // load new active wallpaper config
-            mActiveWallpaperViewModel.loadConfig(wallpaper)
+            viewModel.loadConfig(wallpaper)
         })
 
         // link saved wallpaper view elements to saved wallpaper live data via callback function
-        mSavedWallpaperViewModel.savedWallpapers.observe(this, Observer { wallpapers ->
+        viewModel.savedWallpapers.observe(this, Observer { wallpapers ->
             if (wallpapers != null) {
+                // update saved wallpaper ids
+                viewModel.saveWids(this)
                 // clear wallpaper layout
                 mWallpaperGrid!!.removeAllViews()
 
                 // add each wallpaper to layout
                 for (wallpaper in wallpapers) {
                     // find if wallpaper is active
-                    val is_active = wallpaper.wid == mActiveWallpaperViewModel.getWid()
+                    val is_active = wallpaper.wid == viewModel.getWid()
                     // create random color bitmap preview based on wid
-                    val preview = mActiveWallpaperViewModel.getPreviewImg(wallpaper.wid)
+                    val preview = viewModel.getPreviewImg(wallpaper.wid)
                     // create fragment
                     val fragment = WallpaperFragment.newInstance(is_active, preview, wallpaper.wid)
                     val tag = "wallpaper_" + wallpaper.wid.toString()
@@ -243,7 +249,7 @@ class ProfileActivity : AppCompatActivity() {
                     ref.wallpaperId = wallpaper.wid
                     ref.fragmentId = fragment.id
                     ref.fragmentTag = tag
-                    mSavedWallpaperViewModel.updateWallpaperFragIds(ref)
+                    viewModel.updateWallpaperFragIds(ref)
                 }
             }
         })
@@ -252,10 +258,17 @@ class ProfileActivity : AppCompatActivity() {
         mWallpaperGrid!!.viewTreeObserver.addOnGlobalLayoutListener {
             updateFragListeners()
         }
+
+        /*
+        findViewById<ImageView>(R.id.iv_profile_pic).setOnClickListener {
+            (application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("iv_profile_pic setOnClickListener")
+        }
+        (application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("ProfileActivity.onCrea8#2()")
+         */
     }
 
+
     private fun insertBio(bio: String, username: String) {
-        Log.d("OKAY", "in insertBio")
         GlobalScope.launch(Dispatchers.IO) {
             val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
             try {
@@ -264,13 +277,8 @@ class ProfileActivity : AppCompatActivity() {
                 connectionProperties["user"] = DatabaseConfig.dbUser
                 connectionProperties["password"] = DatabaseConfig.dbPassword
                 connectionProperties["useSSL"] = "false"
-
                 DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                     .use { conn ->
-                        val useDbQuery = "USE myDatabase;"
-                        val statement = conn.prepareStatement(useDbQuery)
-                        statement.execute()
-
                         val updateQuery = "UPDATE users SET bio = ? WHERE username = ?;"
                         val updateStatement = conn.prepareStatement(updateQuery)
                         updateStatement.setString(1, bio)
@@ -301,9 +309,6 @@ class ProfileActivity : AppCompatActivity() {
             DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                 .use { conn -> // this syntax ensures that connection will be closed whether normally or from exception
                     Log.d("LiveWallpaper05", "Connected to database")
-                    val useDbQuery = "USE myDatabase;"
-                    val statement = conn.prepareStatement(useDbQuery)
-                    statement.execute()
                     val updateQuery = "SELECT * FROM users WHERE username = ?;"
                     val selectStatement = conn.prepareStatement(updateQuery)
                     selectStatement.setString(1, username)
@@ -410,13 +415,9 @@ class ProfileActivity : AppCompatActivity() {
                 connectionProperties["user"] = DatabaseConfig.dbUser
                 connectionProperties["password"] = DatabaseConfig.dbPassword
                 connectionProperties["useSSL"] = "false"
-
                 DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                     .use { conn -> // this syntax ensures that connection will be closed whether normally or from exception
                         Log.d("OH_YES", "Connected to database in insertProfilePicture!")
-                        val useDbQuery = "USE myDatabase;"
-                        val statement = conn.prepareStatement(useDbQuery)
-                        statement.execute()
                         val updateQuery = "UPDATE users SET profile_picture = ? WHERE username = ?;"
                         conn.prepareStatement(updateQuery).use { updateStatement ->
                             val convertedImage = convertBitmapToByteArray(image)
@@ -447,18 +448,19 @@ class ProfileActivity : AppCompatActivity() {
         //check username, query database if valid->update the viewModel
     }
 
-    fun newWallpaper(view: View) {
+    private fun newWallpaper(view: View) {
         // save current wallpaper
-        val activeConfig = mActiveWallpaperViewModel.getConfig()
-        mSavedWallpaperViewModel.saveWallpaper(activeConfig)
+        val activeConfig = viewModel.getConfig()
+        viewModel.saveWallpaper(activeConfig)
         // create new empty wallpaper config
-        mSavedWallpaperViewModel.createWallpaperTable(-1)
+        viewModel.createWallpaperTable(-1)
+        viewModel.saveWids(this)
     }
 
     private fun updateFragListeners() {
         // for each fragment in fragment list, set delete button listener
         val removeList = mutableListOf<WallpaperRef>()
-        val wallpaperFragIds = mSavedWallpaperViewModel.getWallpaperFragIds()
+        val wallpaperFragIds = viewModel.getWallpaperFragIds()
         Log.d("LiveWallpaper05", "saved frag count: ${wallpaperFragIds.size}")
         for (ref in wallpaperFragIds) {
             val fragTag = ref.fragmentTag
@@ -469,7 +471,7 @@ class ProfileActivity : AppCompatActivity() {
             frag.requireView().findViewById<FloatingActionButton>(R.id.b_delete_wallpaper)
                 .setOnClickListener {
                     // if wallpaper is active, make pop up telling user to switch wallpaper before removing
-                    val activeId = mActiveWallpaperViewModel.getWid()
+                    val activeId = viewModel.getWid()
                     if (ref.wallpaperId == activeId) {
                         val dialog = AlertDialog.Builder(this)
                         dialog.setTitle("Active Wallpaper")
@@ -479,11 +481,11 @@ class ProfileActivity : AppCompatActivity() {
                         return@setOnClickListener
                     }
                     // delete wallpaper from database
-                    mSavedWallpaperViewModel.deleteWallpaper(ref.wallpaperId)
+                    viewModel.deleteWallpaper(ref.wallpaperId)
                     // remove fragment from grid
                     supportFragmentManager.beginTransaction().remove(frag).commit()
                     removeList.add(ref)
-                    mSavedWallpaperViewModel.removeWallpaperFragId(ref)
+                    viewModel.removeWallpaperFragId(ref)
                 }
 
             // connect set active button to set active wallpaper function
@@ -501,14 +503,13 @@ class ProfileActivity : AppCompatActivity() {
                         }
                     }
                     // disable active button for this wallpaper
-                    frag.requireView().findViewById<Button>(R.id.b_active_wallpaper).isEnabled =
-                        false
+                    frag.requireView().findViewById<Button>(R.id.b_active_wallpaper).isEnabled = false
                     // set frag active variable to true
                     val wallFrag = frag as WallpaperFragment
                     wallFrag.active = true
 
                     // switch active wallpaper in repo (this data is linked to active wallpaper via live data observer in onCreate)
-                    mSavedWallpaperViewModel.switchWallpaper(ref.wallpaperId)
+                    viewModel.switchWallpaper(ref.wallpaperId)
                 }
         }
     }

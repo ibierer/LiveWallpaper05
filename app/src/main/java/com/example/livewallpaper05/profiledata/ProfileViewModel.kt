@@ -22,6 +22,7 @@ class ProfileViewModel(repo: ProfileRepo) : ViewModel() {
         // create new profile table with updated profile pic
         var profile = ProfileTable(
             0,
+            0,
             "username",
             "bio",
             byteArray
@@ -29,6 +30,7 @@ class ProfileViewModel(repo: ProfileRepo) : ViewModel() {
         try {
             profile = ProfileTable(
                 profileData.value!!.uid,
+                0,
                 profileData.value!!.username,
                 profileData.value!!.bio,
                 byteArray
@@ -37,7 +39,6 @@ class ProfileViewModel(repo: ProfileRepo) : ViewModel() {
         } catch (e: Exception) {}
         // update profile table
         mRepo.setProfile(profile)
-
     }
 
     class ProfileViewModelFactory(private val repo: ProfileRepo) : ViewModelProvider.Factory {

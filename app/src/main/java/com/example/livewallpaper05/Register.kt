@@ -9,7 +9,6 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
-import androidx.room.Database
 import com.example.livewallpaper05.databinding.ActivityRegisterBinding
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
@@ -75,11 +74,14 @@ class Register : AppCompatActivity() {
 
 
             lifecycleScope.launch {
-                val userExists = isUserInDB(username)
-
-                if (userExists) {
-                    // User already exists, display a message or handle accordingly
-                    Toast.makeText(applicationContext, "User already exists.", Toast.LENGTH_SHORT)
+                val (usernameExists, emailExists) = isUsernameOrEmailInDB(username, email)
+                if (usernameExists || emailExists) {
+                    // Username/email already exists, display a message
+                    Toast.makeText(
+                        applicationContext,
+                        "User with the provided username or email already exists.",
+                        Toast.LENGTH_SHORT
+                    )
                         .show()
                 } else {
                     // User doesn't exist, proceed with user creation
@@ -87,9 +89,7 @@ class Register : AppCompatActivity() {
                     insertIntoUsers(username, email)
                 }
             }
-
         }
-
     }
 
     private fun createUserWithEmailAndPassword(email: String, password: String) {
@@ -117,10 +117,11 @@ class Register : AppCompatActivity() {
             }
     }
 
-    suspend fun isUserInDB(username: String): Boolean {
+    suspend fun isUsernameOrEmailInDB(username: String, email: String): Pair<Boolean, Boolean> {
         return withContext(Dispatchers.IO) {
             val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
             var userExists = false
+            var emailExists = false
 
             try {
                 Class.forName("com.mysql.jdbc.Driver").newInstance()
@@ -133,27 +134,35 @@ class Register : AppCompatActivity() {
                 DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                     .use { conn ->
                         // this syntax ensures that the connection will be closed whether normally or from an exception
-
                         val useDbQuery = "USE myDatabase;"
                         val useDbStatement = conn.prepareStatement(useDbQuery)
                         useDbStatement.execute()
+
+                        // Check if username exists
                         val checkUserQuery = "SELECT COUNT(*) FROM users WHERE username = ?;"
                         val checkUserStatement = conn.prepareStatement(checkUserQuery)
                         checkUserStatement.setString(1, username)
                         val resultSet = checkUserStatement.executeQuery()
-
                         resultSet.next()
-                        val userCount = resultSet.getInt(1)
-                        userExists = userCount > 0
+                        userExists = resultSet.getInt(1) > 0
+
+                        // Check if email exists
+                        val checkEmailQuery = "SELECT COUNT(*) FROM users WHERE email = ?;"
+                        val checkEmailStatement = conn.prepareStatement(checkEmailQuery)
+                        checkEmailStatement.setString(1, email)
+                        val emailResultSet = checkEmailStatement.executeQuery()
+                        emailResultSet.next()
+                        emailExists = emailResultSet.getInt(1) > 0
                     }
             } catch (e: SQLException) {
                 Log.d("CHECKDBUSER", e.message.toString())
             }
-            userExists
+
+            Pair(userExists, emailExists)
         }
     }
 
-    fun insertIntoUsers(username: String, name: String) {
+    fun insertIntoUsers(username: String, email: String) {
         GlobalScope.launch(Dispatchers.IO) {
             // write aws test code here -------------
             val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
@@ -167,15 +176,14 @@ class Register : AppCompatActivity() {
 
                 DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                     .use { conn -> // this syntax ensures that connection will be closed whether normally or from exception
-                        Log.d("LiveWallpaper05", "Connected to database")
                         val useDbQuery = "USE myDatabase;"
                         val statement = conn.prepareStatement(useDbQuery)
                         statement.execute()
                         Log.d("LiveWallpaper05", "Pt A REACHED")
-                        val insertQuery = "INSERT INTO users (username, name) VALUES (?, ?);"
+                        val insertQuery = "INSERT INTO users (username, email) VALUES (?, ?);"
                         val preparedStatement = conn.prepareStatement(insertQuery)
                         preparedStatement.setString(1, username)
-                        preparedStatement.setString(2, name)
+                        preparedStatement.setString(2, email)
                         preparedStatement.executeUpdate()
                         conn.close()
                     }

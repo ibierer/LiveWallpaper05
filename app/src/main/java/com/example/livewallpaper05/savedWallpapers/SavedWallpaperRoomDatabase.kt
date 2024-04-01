@@ -5,15 +5,14 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.example.livewallpaper05.savedWallpapers.SavedWallpaperDao
-import com.example.livewallpaper05.savedWallpapers.SavedWallpaperTable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 // create wallpaper database
-@Database(entities = [SavedWallpaperTable::class], version = 1, exportSchema = false)
+@Database(entities = [SavedWallpaperRow::class], version = 2, exportSchema = false)
 abstract class SavedWallpaperRoomDatabase : RoomDatabase() {
+
     abstract fun wallpaperDao(): SavedWallpaperDao
 
     // make db singleton
@@ -22,15 +21,14 @@ abstract class SavedWallpaperRoomDatabase : RoomDatabase() {
         @Volatile
         private var mInstance: SavedWallpaperRoomDatabase? = null
         fun getDatabase(
-            context: Context,
-            scope: CoroutineScope
+            context: Context
         ): SavedWallpaperRoomDatabase {
             return mInstance?: synchronized(this){
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     SavedWallpaperRoomDatabase::class.java, "wallpaper.db"
                 )
-                    .addCallback(RoomDatabaseCallback(scope))
+                    .addCallback(RoomDatabaseCallback())
                     .fallbackToDestructiveMigration()
                     .build()
                 mInstance = instance
@@ -38,13 +36,11 @@ abstract class SavedWallpaperRoomDatabase : RoomDatabase() {
             }
         }
 
-        private class RoomDatabaseCallback(
-            private val scope: CoroutineScope
-        ): RoomDatabase.Callback() {
+        private class RoomDatabaseCallback: Callback() {
             override fun onCreate(db: SupportSQLiteDatabase) {
                 super.onCreate(db)
                 mInstance?.let {database ->
-                    scope.launch(Dispatchers.IO) {
+                    CoroutineScope(Dispatchers.Main).launch(Dispatchers.IO) {
                         populateDbTask(database.wallpaperDao())
                     }
                 }
@@ -52,7 +48,7 @@ abstract class SavedWallpaperRoomDatabase : RoomDatabase() {
 
             // seed database
             suspend fun populateDbTask(wallpaperDao: SavedWallpaperDao) {
-                wallpaperDao.saveWallpaper(SavedWallpaperTable(0, ""))
+                wallpaperDao.saveWallpaper(SavedWallpaperRow( 0,0, ""))
             }
         }
     }

@@ -14,12 +14,12 @@ data class ProfileTable (
     @field:PrimaryKey(autoGenerate = true)
     @field:ColumnInfo(name = "uid")
     var uid: Int = 0,
+    @field:ColumnInfo(name = "last_wid")
+    var lastWid: Int = 0,
     @field:ColumnInfo(name = "username")
     var username: String,
     @field:ColumnInfo(name = "bio")
     var bio: String,
-//    @field:ColumnInfo(name = "DateCreated")
-//    var DateCreated : String,
     @field:ColumnInfo(name = "profilepic", typeAffinity = ColumnInfo.BLOB)
     var profilepic: ByteArray
 ) {

@@ -12,8 +12,14 @@ import android.widget.Toast
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
+import com.example.livewallpaper05.savedWallpapers.SavedWallpaperRoomDatabase
 
 class GLWallpaperService() : WallpaperService() {
+
+    private val savedWallpaperDatabase by lazy { SavedWallpaperRoomDatabase.getDatabase(this)}
+    val viewModel: ActiveWallpaperViewModel by lazy {
+        ActiveWallpaperViewModel(ActiveWallpaperRepo.getInstance(savedWallpaperDatabase.wallpaperDao(), (application as ActiveWallpaperApplication).applicationScope))
+    }
 
     override fun onCreateEngine(): Engine {
         return GLEngine()
@@ -23,10 +29,8 @@ class GLWallpaperService() : WallpaperService() {
         super.onConfigurationChanged(newConfig)
         val display = (getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay
         Log.d("GLWallpaperService", "Rotation changed to ${display.rotation}")
+
         // update view model with new orientation
-        val viewModel: ActiveWallpaperViewModel by lazy {
-            ActiveWallpaperViewModel(ActiveWallpaperRepo.getInstance((application as ActiveWallpaperApplication).applicationScope))
-        }
         viewModel.mRepo.updateOrientation(display.rotation)
     }
 
@@ -34,9 +38,10 @@ class GLWallpaperService() : WallpaperService() {
         private var glSurfaceView: WallpaperGLSurfaceView? = null
         private var rendererSet = false
 
+        /*
         private val viewModel: ActiveWallpaperViewModel by lazy {
             ActiveWallpaperViewModel(ActiveWallpaperRepo.getInstance((application as ActiveWallpaperApplication).applicationScope))
-        }
+        }*/
 
         override fun onCreate(surfaceHolder: SurfaceHolder) {
             super.onCreate(surfaceHolder)
