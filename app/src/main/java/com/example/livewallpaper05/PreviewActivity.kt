@@ -76,6 +76,7 @@ class PreviewActivity : AppCompatActivity() {
         val linearAccelerationSeekBar = findViewById<SeekBar>(R.id.linear_acceleration_seekbar)
         val efficiencySeekBar = findViewById<SeekBar>(R.id.efficiency_seekbar)
         val visualizationSelectorSpinner = findViewById<Spinner>(R.id.visualization_type_spinner)
+        val environmentMapSelectorSpinner = findViewById<Spinner>(R.id.image_selection_spinner)
         val colorButton = findViewById<Button>(R.id.b_color_picker)
         val hideUIButton = findViewById<Button>(R.id.hide_ui_button)
         //val saveButton = findViewById<Button>(R.id.save_button)
@@ -84,19 +85,27 @@ class PreviewActivity : AppCompatActivity() {
         val flipsNormalsCheckBox = findViewById<CheckBox>(R.id.flip_normals_checkbox)
         val linearLayout = findViewById<LinearLayout>(R.id.settings_linearlayout)
 
-        viewModel.loadWidsFromMem(this)
-
         // fill visualization selector box with wallpaper options from native-lib.cpp
         val visualizationSelectorAdapter = ArrayAdapter.createFromResource(
             this,
-            R.array.simulation_types,
+            R.array.visualization_types,
             android.R.layout.simple_spinner_item
         )
         visualizationSelectorSpinner.adapter = visualizationSelectorAdapter
         // set default to viewmodel visualization type
         visualizationSelectorSpinner.setSelection(viewModel.getVisualization())
 
-        // register sensor event listeners
+        // fill image selector box with image options from native-lib.cpp
+        /*val environmentMapSelectorAdapter = ArrayAdapter.createFromResource(
+            this,
+            R.array.environment_map_options,
+            android.R.layout.simple_spinner_item
+        )
+        environmentMapSelectorSpinner.adapter = environmentMapSelectorAdapter
+        // set default to viewmodel visualization type
+        environmentMapSelectorSpinner.setSelection(viewModel.getEnvironmentMap())*/
+
+        // register senser event listeners
         viewModel.registerSensorEvents(getSystemService(Context.SENSOR_SERVICE) as SensorManager)
         // add gl engine view to viewport
         layout.addView(mView)
@@ -125,14 +134,14 @@ class PreviewActivity : AppCompatActivity() {
                 R.id.flip_normals_checkbox
             )
             for(id in textViewIds){
-                if(viewModel.visualization.relevantTextViewIds.contains(id) && !viewModel.isCollapsed){
+                if(viewModel.visualization!!.relevantTextViewIds.contains(id) && !viewModel.isCollapsed){
                     findViewById<TextView>(id).visibility = View.VISIBLE
                 } else {
                     findViewById<TextView>(id).visibility = View.GONE
                 }
             }
             for(id in seekBarIds){
-                if(viewModel.visualization.relevantSeekBarIds.contains(id) && !viewModel.isCollapsed){
+                if(viewModel.visualization!!.relevantSeekBarIds.contains(id) && !viewModel.isCollapsed){
                     findViewById<SeekBar>(id).visibility = View.VISIBLE
                     findViewById<SeekBar>(id).isEnabled = true
                 } else {
@@ -141,7 +150,7 @@ class PreviewActivity : AppCompatActivity() {
                 }
             }
             for(id in editTextIds){
-                if(viewModel.visualization.relevantEditTextIds.contains(id) && !viewModel.isCollapsed){
+                if(viewModel.visualization!!.relevantEditTextIds.contains(id) && !viewModel.isCollapsed){
                     findViewById<EditText>(id).visibility = View.VISIBLE
                     findViewById<EditText>(id).isEnabled = true
                 } else {
@@ -150,7 +159,7 @@ class PreviewActivity : AppCompatActivity() {
                 }
             }
             for(id in checkBoxIds){
-                if(viewModel.visualization.relevantCheckBoxIds.contains(id) && !viewModel.isCollapsed){
+                if(viewModel.visualization!!.relevantCheckBoxIds.contains(id) && !viewModel.isCollapsed){
                     findViewById<CheckBox>(id).visibility = View.VISIBLE
                     findViewById<CheckBox>(id).isEnabled = true
                 } else {
@@ -301,6 +310,32 @@ class PreviewActivity : AppCompatActivity() {
             }
         }
 
+        // register spinner actions to update image selection in repo
+        /*environmentMapSelectorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
+                val changed = viewModel.updateEnvironmentMapSelection(pos)
+                if (changed) {
+                    // tell view it needs to be reloaded
+                    mView!!.onPause()
+                    mView!!.onResume()
+                }
+
+                // Dynamically load or remove UI components
+                CoroutineScope(Dispatchers.Main).launch {
+                    // Wait until viewModel.visualization is not null
+                    while (viewModel.visualization == null) {
+                        // Suspend the coroutine for a short duration to avoid blocking the main thread
+                        delay(10)
+                    }
+                    loadOrUnloadUIElements()
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                // Do nothing
+            }
+        }*/
+
         // Observe changes to liveDataBitmap in the ViewModel
         viewModel.liveDataBitmap.observe(this, Observer { bitmap ->
             // This code will be executed on the main (UI) thread whenever liveDataBitmap changes
@@ -392,7 +427,7 @@ class PreviewActivity : AppCompatActivity() {
         updateSyntaxResult()
 
         fun showUIComponents(){
-            hideUIButton.text = "Hide UI"
+            hideUIButton.text = resources.getString(R.string.hideUIButtonText)
             colorButton.visibility = View.VISIBLE
             colorButton.isEnabled = true
             linearLayout.isEnabled = true
@@ -402,7 +437,7 @@ class PreviewActivity : AppCompatActivity() {
         }
 
         fun hideUIComponents(){
-            hideUIButton.text = "Show UI"
+            hideUIButton.text = resources.getString(R.string.showUIButtonText)
             colorButton.visibility = View.GONE
             colorButton.isEnabled = false
             linearLayout.isEnabled = false
@@ -486,7 +521,6 @@ class PreviewActivity : AppCompatActivity() {
      * this includes leaving the app, rotating the screen, etc.
      */
     override fun onPause() {
-        viewModel.saveWids(this)
         super.onPause()
         mView!!.onPause()
     }
@@ -495,7 +529,6 @@ class PreviewActivity : AppCompatActivity() {
      * this includes returning to the app, rotating the screen, etc.
      */
     override fun onResume() {
-        viewModel.loadWidsFromMem(this)
         super.onResume()
         mView!!.onResume()
     }
@@ -519,9 +552,9 @@ class PreviewActivity : AppCompatActivity() {
     fun updatePreviewImage(): Bitmap {
         // store view as preview image
         *//**
-        var preview = Bitmap.createBitmap(mView!!.width, mView!!.height, Bitmap.Config.ARGB_8888)
-        var canvas = Canvas(preview)
-        mView!!.draw(canvas)*//*
+    var preview = Bitmap.createBitmap(mView!!.width, mView!!.height, Bitmap.Config.ARGB_8888)
+    var canvas = Canvas(preview)
+    mView!!.draw(canvas)*//*
         val preview = Bitmap.createBitmap(mView!!.width, mView!!.height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(preview)
         val background = mView!!.background

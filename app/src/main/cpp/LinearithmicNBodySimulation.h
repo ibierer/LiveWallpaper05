@@ -11,7 +11,7 @@ using std::to_string;
 class LinearithmicNBodySimulation : public Simulation {
 public:
 
-    static const int NUM_CACHE_CHUNKS = 16;
+    static const int NUM_CACHE_CHUNKS = 50;
 
     static const int PARTICLES_PER_CHUNK = 16;
 
@@ -85,15 +85,13 @@ public:
 
     LinearithmicNBodySimulationData *data;
 
+    vector<int> ids;
+
     double t;
 
-    LinearithmicNBodySimulation() {
+    LinearithmicNBodySimulation() {}
 
-    }
-
-    ~LinearithmicNBodySimulation() {
-
-    }
+    ~LinearithmicNBodySimulation() {}
 
     void initialize(const ComputationOptions &computationOption);
 
@@ -107,8 +105,6 @@ public:
 private:
 
     float dt;
-
-    void computeForcesOnCPUQuadratic();
 
     void simulateOnGPU(const int &iterations, bool pushDataToGPU,
                        bool retrieveDataFromGPU);
@@ -126,6 +122,18 @@ private:
     vec3 addForces(Node *node, int index);
 
     void integrate();
+
+    int getCombo(bool xIsPos, bool yIsPos, bool zIsPos);
+
+    std::tuple<bool, bool, bool> getInverseCombo(int combo);
+
+    void finalIntegrate();
+
+    vec4 conquerOnceMore(const vector<int> &ids, Node *node);
+
+    vec3 addForcesFinal(Node *node, int index);
+
+    void computeForcesOnCPULinearithmicFinal();
 };
 
 
