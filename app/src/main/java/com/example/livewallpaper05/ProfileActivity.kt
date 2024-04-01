@@ -84,11 +84,6 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        //(application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("ProfileActivity.onResume()")
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         // From Jo to Cam: connect to aws MySQL server here and query basic profile info into class instance declared below
         super.onCreate(savedInstanceState)
@@ -259,12 +254,10 @@ class ProfileActivity : AppCompatActivity() {
             updateFragListeners()
         }
 
-        /*
-        findViewById<ImageView>(R.id.iv_profile_pic).setOnClickListener {
-            (application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("iv_profile_pic setOnClickListener")
-        }
-        (application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("ProfileActivity.onCrea8#2()")
-         */
+        //findViewById<ImageView>(R.id.iv_profile_pic).setOnClickListener {
+        //    (application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("iv_profile_pic setOnClickListener")
+        //}
+        //(application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("ProfileActivity.onCrea8#2()")
     }
 
 
@@ -488,28 +481,26 @@ class ProfileActivity : AppCompatActivity() {
             }
 
             // connect set active button to set active wallpaper function
-            frag.requireView().findViewById<Button>(R.id.b_active_wallpaper)
-                .setOnClickListener {
-                    // enable all active buttons
-                    for (r in wallpaperFragIds) {
-                        val fragTag = r.fragmentTag
-                        val innerFrag = supportFragmentManager.findFragmentByTag(fragTag)
-                        if (innerFrag != null) {
-                            innerFrag.requireView()
-                                .findViewById<Button>(R.id.b_active_wallpaper).isEnabled = true
-                            val wallFrag = innerFrag as WallpaperFragment
-                            wallFrag.active = false
-                        }
+            frag.requireView().findViewById<Button>(R.id.b_active_wallpaper).setOnClickListener {
+                // enable all active buttons
+                for (r in wallpaperFragIds) {
+                    val fragTag = r.fragmentTag
+                    val innerFrag = supportFragmentManager.findFragmentByTag(fragTag)
+                    if (innerFrag != null) {
+                        innerFrag.requireView()
+                            .findViewById<Button>(R.id.b_active_wallpaper).isEnabled = true
+                        val wallFrag = innerFrag as WallpaperFragment
+                        wallFrag.active = false
                     }
-                    // disable active button for this wallpaper
-                    frag.requireView().findViewById<Button>(R.id.b_active_wallpaper).isEnabled = false
-                    // set frag active variable to true
-                    val wallFrag = frag as WallpaperFragment
-                    wallFrag.active = true
-
-                    // switch active wallpaper in repo (this data is linked to active wallpaper via live data observer in onCreate)
-                    viewModel.switchWallpaper(ref.wallpaperId)
                 }
+                // disable active button for this wallpaper
+                frag.requireView().findViewById<Button>(R.id.b_active_wallpaper).isEnabled = false
+                // set frag active variable to true
+                val wallFrag = frag as WallpaperFragment
+                wallFrag.active = true
+                // switch active wallpaper in repo (this data is linked to active wallpaper via live data observer in onCreate)
+                viewModel.switchWallpaper(ref.wallpaperId)
+            }
         }
     }
 }

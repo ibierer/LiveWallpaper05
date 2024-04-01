@@ -20,24 +20,17 @@ class ActiveWallpaperApplication : Application() {
 
     // set lifecycle scope for coroutines
     val applicationScope : CoroutineScope = CoroutineScope(SupervisorJob())
-    // init repo
-    //val repository by lazy { ActiveWallpaperRepo.getInstance(applicationScope)}
+
+    // wallpaper database
     private val savedWallpaperDatabase : SavedWallpaperRoomDatabase by lazy { SavedWallpaperRoomDatabase.getDatabase(this)}
+    // wallpaper repo
     val wallpaperRepo : ActiveWallpaperRepo by lazy { ActiveWallpaperRepo.getInstance(savedWallpaperDatabase.wallpaperDao(), applicationScope)}
 
-    // profile data
+    // profile database
     private val profileDatabase : ProfileRoomDatabase by lazy { ProfileRoomDatabase.getDatabase(this, applicationScope)}
+    // profile repo
     val profileRepo : ProfileRepo by lazy { ProfileRepo.getInstance(profileDatabase.profileDao(), applicationScope)}
 
-    // saved wallpaper data
-    //val savedWallpaperRepo by lazy { SavedWallpaperRepo.getInstance(savedWallpaperDatabase.wallpaperDao(), applicationScope)}
-
-    override fun onCreate() {
-        super.onCreate()
-        //printProfilesAndWallpapersToLogcat("ActiveWallpaperApplication.onCreate()")
-    }
-
-    // warning, using this can cause crash due to coroutine data access
     fun printProfilesAndWallpapersToLogcat(message : String){
         CoroutineScope(Dispatchers.Main).launch {
             val profileD : ProfileTable? = profileRepo.data.value

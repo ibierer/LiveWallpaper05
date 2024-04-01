@@ -17,7 +17,6 @@ class ExplorerActivity : AppCompatActivity() {
     private var mPreviewButton: Button? = null
     private var mTestButton: Button? = null
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Initialize firebase
@@ -66,15 +65,5 @@ class ExplorerActivity : AppCompatActivity() {
             }
 
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        //(application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("ExplorerActivity.onStart()")
-    }
-
-    override fun onResume() {
-        super.onResume()
-        //(application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("ExplorerActivity.onResume()")
     }
 }
