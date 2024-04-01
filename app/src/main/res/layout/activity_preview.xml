@@ -162,8 +162,8 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:background="@drawable/slightly_opaque_border_background"
-                android:max="10100"
-                android:min="9900" />
+                android:max="4040"
+                android:min="3960" />
 
             <TextView
                 android:id="@+id/background_label"

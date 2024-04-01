@@ -266,7 +266,7 @@ class PreviewActivity : AppCompatActivity() {
         efficiencySeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 // Do nothing until changes are stopped for smooth ui updates
-                viewModel.updateEfficiency(seekBar.progress.toFloat() / 10000.0f)
+                viewModel.updateEfficiency(seekBar.progress.toFloat() / 4000.0f)
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {
@@ -274,12 +274,12 @@ class PreviewActivity : AppCompatActivity() {
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar) {
-                viewModel.updateEfficiency(seekBar.progress.toFloat() / 10000.0f)
+                viewModel.updateEfficiency(seekBar.progress.toFloat() / 4000.0f)
             }
         })
 
         viewModel.mRepo.efficiency.observe(this) { float ->
-            efficiencySeekBar.progress = (float * 10000.0f).toInt()
+            efficiencySeekBar.progress = (float * 4000.0f).toInt()
         }
 
         // register spinner actions to update visualization type in repo
