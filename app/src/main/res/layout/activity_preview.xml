@@ -279,7 +279,7 @@
                     android:layout_margin="@dimen/preview_ui_margin"
                     android:layout_weight="1"
                     android:background="@drawable/slightly_opaque_border_background"
-                    android:text="@string/capture_preview_button_text" />
+                    android:text="@string/update_preview_button_text" />
 
                 <!--<Button
                     android:id="@+id/save_as_new_button"

@@ -43,7 +43,7 @@
     <string name="background_label">Background:</string>
     <string name="showUIButtonText">Show Controls</string>
     <string name="hideUIButtonText">Hide Controls</string>
-    <string name="capture_preview_button_text">Capture Preview</string>
+    <string name="update_preview_button_text">Update Preview Thumbnail</string>
 
 
 </resources>
