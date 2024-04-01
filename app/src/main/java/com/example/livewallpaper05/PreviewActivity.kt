@@ -17,6 +17,7 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.SeekBar
@@ -79,7 +80,7 @@ class PreviewActivity : AppCompatActivity() {
         val environmentMapSelectorSpinner = findViewById<Spinner>(R.id.image_selection_spinner)
         val colorButton = findViewById<Button>(R.id.b_color_picker)
         val hideUIButton = findViewById<Button>(R.id.hide_ui_button)
-        //val saveButton = findViewById<Button>(R.id.save_button)
+        val saveButton = findViewById<Button>(R.id.save_button)
         //val saveAsButton = findViewById<Button>(R.id.save_as_new_button)
         val equationEditor = findViewById<EditText>(R.id.et_equation)
         val flipsNormalsCheckBox = findViewById<CheckBox>(R.id.flip_normals_checkbox)
@@ -96,14 +97,14 @@ class PreviewActivity : AppCompatActivity() {
         visualizationSelectorSpinner.setSelection(viewModel.getVisualization())
 
         // fill image selector box with image options from native-lib.cpp
-        /*val environmentMapSelectorAdapter = ArrayAdapter.createFromResource(
+        val environmentMapSelectorAdapter = ArrayAdapter.createFromResource(
             this,
             R.array.environment_map_options,
             android.R.layout.simple_spinner_item
         )
         environmentMapSelectorSpinner.adapter = environmentMapSelectorAdapter
         // set default to viewmodel visualization type
-        environmentMapSelectorSpinner.setSelection(viewModel.getEnvironmentMap())*/
+        //environmentMapSelectorSpinner.setSelection(viewModel.getEnvironmentMap())
 
         // register senser event listeners
         viewModel.registerSensorEvents(getSystemService(Context.SENSOR_SERVICE) as SensorManager)
@@ -339,7 +340,7 @@ class PreviewActivity : AppCompatActivity() {
         // Observe changes to liveDataBitmap in the ViewModel
         viewModel.liveDataBitmap.observe(this, Observer { bitmap ->
             // This code will be executed on the main (UI) thread whenever liveDataBitmap changes
-            //findViewById<ImageView>(R.id.imageView).setImageBitmap(bitmap)
+            findViewById<ImageView>(R.id.imageView).setImageBitmap(bitmap)
             viewModel.updatePreviewImg(bitmap)
         })
 
@@ -366,13 +367,12 @@ class PreviewActivity : AppCompatActivity() {
             colorPickerDialog.show()
         }
 
-        /*saveButton.setOnClickListener {
+        saveButton.setOnClickListener {
             // Screen buffer capture
             viewModel.getScreenBuffer = 1
-
         }
 
-        saveAsButton.setOnClickListener {
+        /*saveAsButton.setOnClickListener {
             // Screen buffer capture
             viewModel.getScreenBuffer = 1
             viewModel.saveAsNew = 1

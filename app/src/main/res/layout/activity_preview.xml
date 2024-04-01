@@ -266,7 +266,7 @@
                 android:background="#3C3868AF"
                 android:text="SYNC" />
 
-            <!--<LinearLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
@@ -274,21 +274,30 @@
 
                 <Button
                     android:id="@+id/save_button"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/preview_ui_margin"
                     android:layout_weight="1"
-                    android:text="Save" />
+                    android:background="@drawable/slightly_opaque_border_background"
+                    android:text="@string/capture_preview_button_text" />
 
-                <Button
+                <!--<Button
                     android:id="@+id/save_as_new_button"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/preview_ui_margin"
                     android:layout_weight="1"
-                    android:text="Save As New" />
+                    android:background="@drawable/slightly_opaque_border_background"
+                    android:text="Save As New" />-->
 
-            </LinearLayout>-->
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_launcher_background" />
+
         </LinearLayout>
     </ScrollView>
 
