@@ -592,7 +592,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         return mRepo.wallpaperFragIds
     }
 
-    // SETTERS - here are all the methods for updating data in the repo --------------------
+    // SETTERS - here are all the methods for updating data in the repo -------------------------
 
     // update visualization type in repo
     fun updateSimulationType(type: String) {
@@ -696,7 +696,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         repo.visualizationName.postValue(s)
     }
 
-    // OTHER - other helper methods --------------------------------------------------------
+    // OTHER - other helper methods ----------------------------------------------------------
     // register sensor events to repo sensor manager
     fun registerSensorEvents(manager: SensorManager) {
         repo.registerSensors(manager)
@@ -785,6 +785,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         mRepo.setLiveWallpaperData(wid)
     }
 
+    // save current list of wids to memory
     fun saveWids(activity: Activity){
         // get wids from repo
         val wids = mRepo.getSavedWids()
@@ -793,10 +794,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
             .putString("savedWids", wids).apply()
     }
 
-    fun removeWid(wid: Int){
-        mRepo.removeWid(wid)
-    }
-
+    // load saved wids from memory
     fun loadWidsFromMem(activity: Activity) {
         try {
             // load wids from shared prefs

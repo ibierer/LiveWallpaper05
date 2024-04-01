@@ -23,8 +23,8 @@ class ActiveWallpaperRepo private constructor (wallpaperDao: SavedWallpaperDao) 
     var orientation: Int = 0
     var fps: MutableLiveData<Float> = MutableLiveData<Float>(0.0f)
     var lastFrame: Long = 0
-    var distanceFromOrigin: MutableLiveData<Float> = MutableLiveData<Float>(0.0f)
-    var fieldOfView: MutableLiveData<Float> = MutableLiveData<Float>(0.0f)
+    var distanceFromOrigin: MutableLiveData<Float> = MutableLiveData<Float>(0.5f)
+    var fieldOfView: MutableLiveData<Float> = MutableLiveData<Float>(60.0f)
     var gravity: MutableLiveData<Float> = MutableLiveData<Float>(0.0f)
     var linearAcceleration: MutableLiveData<Float> = MutableLiveData<Float>(0.0f)
     var efficiency: MutableLiveData<Float> = MutableLiveData<Float>(0.0f)
