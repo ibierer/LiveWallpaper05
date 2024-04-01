@@ -521,8 +521,30 @@ class PreviewActivity : AppCompatActivity() {
      * this includes leaving the app, rotating the screen, etc.
      */
     override fun onPause() {
+        // save current wallpaper
+        val activeConfig = viewModel.getConfig()
+        viewModel.saveWallpaper(activeConfig)
+        // pause activity
         super.onPause()
         mView!!.onPause()
+    }
+
+    // this is run when the activity is 'stopped', like when the app is closed or restarted
+    override fun onStop() {
+        // save current wallpaper
+        val activeConfig = viewModel.getConfig()
+        viewModel.saveWallpaper(activeConfig)
+
+        super.onStop()
+    }
+
+    // this is run when the activity is 'destroyed', like when the app is shut down or device is restarted
+    override fun onDestroy() {
+        // save current wallpaper
+        val activeConfig = viewModel.getConfig()
+        viewModel.saveWallpaper(activeConfig)
+
+        super.onDestroy()
     }
 
     /* this is run when the app is 'resumed'
