@@ -816,13 +816,15 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         var wallpaper = SavedWallpaperRow(
             1,
             1,
-            config
+            config,
+            ByteArray(0)
         )
         try {
             wallpaper = SavedWallpaperRow(
                 activeWallpaper.value!!.uid,
                 activeWallpaper.value!!.wid,
-                config
+                config,
+                ByteArray(0)
             )
         } catch (_: Exception) {
 
@@ -848,7 +850,8 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         val wallpaper = SavedWallpaperRow(
             uid,
             wid,
-            config
+            config,
+            ByteArray(0)
         )
         mRepo.setWallpaper(wallpaper)
     }

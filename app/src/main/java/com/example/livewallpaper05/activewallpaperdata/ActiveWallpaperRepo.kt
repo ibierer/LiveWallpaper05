@@ -86,7 +86,8 @@ class ActiveWallpaperRepo private constructor (wallpaperDao: SavedWallpaperDao) 
                     "\"type\": \"0\",\n" +
                     "\"background_color\": {\"r\": 51, \"g\": 51, \"b\": 77, \"a\": 255},\n" +
                     "\"settings\": \"x^2+y^2+z^2=1\"\n" +
-                    "}"
+                    "}",
+            ByteArray(0)
         )
 
         savedWids = savedWids.plus(wid)
@@ -218,7 +219,8 @@ class ActiveWallpaperRepo private constructor (wallpaperDao: SavedWallpaperDao) 
             val wallpaper = SavedWallpaperRow(
                 activeUid,
                 activeWid,
-                activeConfig
+                activeConfig,
+                ByteArray(0)
             )
 
             if(wallpapers.value != null) {
