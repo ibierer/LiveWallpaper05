@@ -1,17 +1,14 @@
 package com.example.livewallpaper05.profiledata
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 
 class ProfileViewModel(repo: ProfileRepo) : ViewModel() {
 
-    val profileData: LiveData<ProfileTable> = repo.data
+    val currentUserProfile: LiveData<ProfileTable> = repo.currentUserProfile
     private var mRepo = repo
 
     fun updateProfilePic(pic: Bitmap) {
@@ -21,6 +18,7 @@ class ProfileViewModel(repo: ProfileRepo) : ViewModel() {
         val byteArray = stream.toByteArray()
         // create new profile table with updated profile pic
         var profile = ProfileTable(
+            // TODO: it should be possible to avoid the try catch below here
             0,
             0,
             "username",
@@ -29,10 +27,10 @@ class ProfileViewModel(repo: ProfileRepo) : ViewModel() {
         )
         try {
             profile = ProfileTable(
-                profileData.value!!.uid,
+                currentUserProfile.value!!.uid,
                 0,
-                profileData.value!!.username,
-                profileData.value!!.bio,
+                currentUserProfile.value!!.username,
+                currentUserProfile.value!!.bio,
                 byteArray
                 //profileData.value!!.savedWallpapers
             )

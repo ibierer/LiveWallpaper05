@@ -1,21 +1,27 @@
 package com.example.livewallpaper05.profiledata
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.os.Environment
+import android.content.Context
 import androidx.annotation.WorkerThread
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.MutableLiveData
-import androidx.room.TypeConverter
-import com.google.gson.Gson
+import androidx.room.ColumnInfo
+import androidx.room.PrimaryKey
+import com.example.livewallpaper05.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import java.io.File
-import java.io.FileOutputStream
 import kotlinx.coroutines.launch
 
-class ProfileRepo private constructor(profileDao: ProfileDao) {
+class ProfileRepo private constructor(context: Context, profileDao: ProfileDao) {
 
-    val data = MutableLiveData<ProfileTable>()
+    val currentUserProfile = MutableLiveData<ProfileTable>(
+        ProfileTable(
+            context.resources.getInteger(R.integer.default_profile_id),
+            0,
+            "Default User",
+            context.resources.getString(R.string.biography),
+            ByteArray(0)
+        )
+    )
 
     private var mProfileDao: ProfileDao = profileDao
 
@@ -24,7 +30,7 @@ class ProfileRepo private constructor(profileDao: ProfileDao) {
             //val profileInfo = mProfileDao.getProfileData()
             val profileInfo = profileTable
             if(profileInfo != null){
-                data.postValue(profileInfo)
+                currentUserProfile.postValue(profileInfo)
                 mProfileDao.updateProfileData(profileTable)
             }
         }
@@ -32,8 +38,8 @@ class ProfileRepo private constructor(profileDao: ProfileDao) {
 
     @WorkerThread
     suspend fun insert() {
-        if(data.value != null)
-            mProfileDao.updateProfileData(data.value!!)
+        if(currentUserProfile.value != null)
+            mProfileDao.updateProfileData(currentUserProfile.value!!)
     }
 
     companion object {
@@ -43,10 +49,11 @@ class ProfileRepo private constructor(profileDao: ProfileDao) {
 
         @Synchronized
         fun getInstance(
+            context: Context,
             profileDao: ProfileDao,
             scope: CoroutineScope
         ): ProfileRepo {
-            return instance ?: ProfileRepo(profileDao).also {
+            return instance ?: ProfileRepo(context, profileDao).also {
                 instance = it
                 mScope = scope
             }

@@ -1,5 +1,6 @@
 package com.example.livewallpaper05.activewallpaperdata
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.hardware.Sensor
@@ -7,17 +8,18 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import androidx.lifecycle.MutableLiveData
+import com.example.livewallpaper05.R
 import com.example.livewallpaper05.savedWallpapers.SavedWallpaperDao
 import com.example.livewallpaper05.savedWallpapers.SavedWallpaperRow
+import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class ActiveWallpaperRepo private constructor (wallpaperDao: SavedWallpaperDao) : SensorEventListener {
+class ActiveWallpaperRepo private constructor (val context: Context, wallpaperDao: SavedWallpaperDao) : SensorEventListener {
 
     // initialize default values for active wallpaper
     var wid: Int = 0
-    var uid: Int = 11
     var equation: String = ""
     var color: MutableLiveData<Color> = MutableLiveData<Color>(Color.valueOf(0.0f,0.0f,0.0f,0.0f))
     var orientation: Int = 0
@@ -79,14 +81,15 @@ class ActiveWallpaperRepo private constructor (wallpaperDao: SavedWallpaperDao) 
 
         // create new wallpaper table with default config
         val wallpaper = SavedWallpaperRow(
-            uid,
+            context.resources.getInteger(R.integer.default_profile_id),
             wid,
-            "{\n" +
-                    "\"name\": \"New Wallpaper\",\n" +
-                    "\"type\": \"0\",\n" +
-                    "\"background_color\": {\"r\": 51, \"g\": 51, \"b\": 77, \"a\": 255},\n" +
-                    "\"settings\": \"x^2+y^2+z^2=1\"\n" +
-                    "}",
+            //"{\n" +
+            //        "\"name\": \"New Wallpaper\",\n" +
+            //        "\"type\": \"0\",\n" +
+            //        "\"background_color\": {\"r\": 51, \"g\": 51, \"b\": 77, \"a\": 255},\n" +
+            //        "\"settings\": \"x^2+y^2+z^2=1\"\n" +
+            //        "}",
+            ActiveWallpaperViewModel.NBodyVisualization().toString(),
             ByteArray(0)
         )
 
@@ -258,10 +261,11 @@ class ActiveWallpaperRepo private constructor (wallpaperDao: SavedWallpaperDao) 
 
         @Synchronized
         fun getInstance(
+            context: Context,
             savedWallpaperDao: SavedWallpaperDao,
             scope: CoroutineScope
         ): ActiveWallpaperRepo {
-            return instance ?: ActiveWallpaperRepo(savedWallpaperDao).also {
+            return instance ?: ActiveWallpaperRepo(context, savedWallpaperDao).also {
                 instance = it
                 mScope = scope
             }

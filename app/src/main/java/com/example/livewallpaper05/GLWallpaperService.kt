@@ -18,7 +18,7 @@ class GLWallpaperService() : WallpaperService() {
 
     private val savedWallpaperDatabase by lazy { SavedWallpaperRoomDatabase.getDatabase(this)}
     val viewModel: ActiveWallpaperViewModel by lazy {
-        ActiveWallpaperViewModel(ActiveWallpaperRepo.getInstance(savedWallpaperDatabase.wallpaperDao(), (application as ActiveWallpaperApplication).applicationScope))
+        ActiveWallpaperViewModel(ActiveWallpaperRepo.getInstance(application, savedWallpaperDatabase.wallpaperDao(), (application as ActiveWallpaperApplication).applicationScope))
     }
 
     override fun onCreateEngine(): Engine {
