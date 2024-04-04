@@ -181,7 +181,7 @@ class ProfileActivity : AppCompatActivity() {
         })
 
         // if no wallpapers exist, create default wallpaper
-        if (viewModel.savedWallpapers.value == null) {
+        if (viewModel.repo.wallpapers.value == null) {
             viewModel.createDefaultWallpaperTable(
                 mProfileViewModel.currentUserProfile.value!!.uid,
                 viewModel.getWid(),
@@ -196,11 +196,11 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         // link active wallpaper to active wallpaper live data via callback function
-        viewModel.activeWallpaper.observe(this, Observer { wallpaper ->
+        viewModel.repo.activeWallpaper.observe(this, Observer { wallpaper ->
             // if wallpaper is not the same as saved wallpaper, return
             // if wallpaper not in wallpapers, return
             var contained = false
-            for (w in viewModel.savedWallpapers.value!!) {
+            for (w in viewModel.repo.wallpapers.value!!) {
                 if (w.wid == wallpaper.wid && w.config == wallpaper.config){
                     contained = true
                     break
@@ -218,7 +218,7 @@ class ProfileActivity : AppCompatActivity() {
         })
 
         // link saved wallpaper view elements to saved wallpaper live data via callback function
-        viewModel.savedWallpapers.observe(this, Observer { wallpapers ->
+        viewModel.repo.wallpapers.observe(this, Observer { wallpapers ->
             if (wallpapers != null) {
                 // update saved wallpaper ids
                 viewModel.saveWids(this)

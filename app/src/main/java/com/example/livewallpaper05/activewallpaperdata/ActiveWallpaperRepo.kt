@@ -8,6 +8,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import androidx.annotation.WorkerThread
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.livewallpaper05.R
 import com.example.livewallpaper05.savedWallpapers.SavedWallpaperDao
@@ -52,6 +53,18 @@ class ActiveWallpaperRepo private constructor (val context: Context, private val
     private var lastId: Int = 1
 
     private lateinit var mSensorManager: SensorManager
+
+    // ViewModel state
+    lateinit var visualization : Visualization
+    var width: Int = 0
+    var height: Int = 0
+    private var mBitmap : Bitmap = Bitmap.createBitmap(500, 500, Bitmap.Config.ARGB_8888) as Bitmap
+    var liveDataBitmap : MutableLiveData<Bitmap> = MutableLiveData<Bitmap>(mBitmap)
+    var getScreenBuffer: Int = 0
+    var saveAsNew: Int = 0
+    var isCollapsed = false
+    // initialize local variables for saved wallpapers
+    //val savedWallpapers: LiveData<List<SavedWallpaperRow>> = repo.wallpapers
 
     // helper methods
 

@@ -33,7 +33,7 @@ class GLWallpaperService() : WallpaperService() {
         Log.d("GLWallpaperService", "Rotation changed to ${display.rotation}")
 
         // update view model with new orientation
-        viewModel.mRepo.updateOrientation(display.rotation)
+        viewModel.repo.updateOrientation(display.rotation)
     }
 
     inner class GLEngine : Engine() {

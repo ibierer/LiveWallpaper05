@@ -16,10 +16,10 @@ import java.util.Random
 /**
  * View Model to keep a reference to the active wallpaper data
  */
-class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewModel() {
+class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
 
     // initialize local variables for active wallpaper
-    lateinit var visualization : Visualization
+    /*lateinit var visualization : Visualization
     var width: Int = 0
     var height: Int = 0
     private var mBitmap : Bitmap = Bitmap.createBitmap(500, 500, Bitmap.Config.ARGB_8888) as Bitmap
@@ -32,7 +32,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
 
     // initialize local variables for saved wallpapers
     val activeWallpaper: LiveData<SavedWallpaperRow> = repo.activeWallpaper
-    val savedWallpapers: LiveData<List<SavedWallpaperRow>> = repo.wallpapers
+    val savedWallpapers: LiveData<List<SavedWallpaperRow>> = repo.wallpapers*/
 
     // GETTERS - here are all the methods for getting data from the repo -------------------
 
@@ -196,7 +196,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
 
     // get the wallpaper id list for the wallpaper preview fragment(s)
     fun getWallpaperFragIds() : MutableList<WallpaperRef> {
-        return mRepo.wallpaperFragIds
+        return repo.wallpaperFragIds
     }
 
     // SETTERS - here are all the methods for updating data in the repo -------------------------
@@ -286,16 +286,14 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
     // update wallpaper preview fragments list in repo
     fun updateWallpaperFragIds(wallpaperRef: WallpaperRef) {
         // if wallpaperRef is already in list ignore
-        var data = mRepo.wallpaperFragIds
-        if (data != null) {
-            for (r in data){
-                if (r.wallpaperId == wallpaperRef.wallpaperId) {
-                    return
-                }
+        val data = repo.wallpaperFragIds
+        for (r in data){
+            if (r.wallpaperId == wallpaperRef.wallpaperId) {
+                return
             }
-            // add new wallpaperRef to list
-            data.add(wallpaperRef)
         }
+        // add new wallpaperRef to list
+        data.add(wallpaperRef)
     }
 
     // update viz name in repo
@@ -389,13 +387,13 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
 
     // switch active wallpaper
     fun switchWallpaper(wid: Int) {
-        mRepo.setLiveWallpaperData(wid)
+        repo.setLiveWallpaperData(wid)
     }
 
     // save current list of wids to memory
     fun saveWids(activity: Activity){
         // get wids from repo
-        val wids = mRepo.getSavedWids()
+        val wids = repo.getSavedWids()
         // save wids to shared prefs
         activity.getSharedPreferences("livewallpaper05", 0).edit()
             .putString("savedWids", wids).apply()
@@ -411,7 +409,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
                 return
             }
             // set wids in repo
-            mRepo.setSavedWids(wids!!)
+            repo.setSavedWids(wids)
         } catch (e: Exception) {
             Log.d("LiveWallpaper05", "Error loading wids: $e")
         }
@@ -428,8 +426,8 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         )
         try {
             wallpaper = SavedWallpaperRow(
-                activeWallpaper.value!!.uid,
-                activeWallpaper.value!!.wid,
+                repo.activeWallpaper.value!!.uid,
+                repo.activeWallpaper.value!!.wid,
                 config,
                 ByteArray(0)
             )
@@ -437,19 +435,18 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
 
         }
         // update profile table
-        mRepo.setWallpaper(wallpaper)
+        repo.setWallpaper(wallpaper)
         return wallpaper.wid
     }
 
     // delete wallpaper
     fun deleteWallpaper(wid: Int) {
-        mRepo.deleteWallpaper(wid)
+        repo.deleteWallpaper(wid)
     }
 
     // create new wallpaper table
     fun createWallpaperTable(id: Int) {
-        var new_wallpaper = mRepo.createWallpaperTable(id)
-        mRepo.setWallpaper(new_wallpaper)
+        repo.setWallpaper(repo.createWallpaperTable(id))
     }
 
     // create wallpaper save with default values
@@ -460,28 +457,26 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
             config,
             ByteArray(0)
         )
-        mRepo.setWallpaper(wallpaper)
+        repo.setWallpaper(wallpaper)
     }
 
     // remove specified wallpapers from fragment list via wallpaper reference
     fun removeWallpaperFragId(wallpaperRef: WallpaperRef) {
         // remove wallpaperRef from list
-        var data = mRepo.wallpaperFragIds
+        val data = repo.wallpaperFragIds
         var toRemove = listOf<WallpaperRef>()
-        if (data != null) {
-            for (r in data) {
-                if (r.wallpaperId == wallpaperRef.wallpaperId) {
-                    toRemove = toRemove.plus(r)
-                }
+        for (r in data) {
+            if (r.wallpaperId == wallpaperRef.wallpaperId) {
+                toRemove = toRemove.plus(r)
             }
-            data.removeAll(toRemove)
         }
+        data.removeAll(toRemove)
     }
 
     // save active wallpaper and switch to new wallpaper. This allows us to save
     // the wallpaper before changing it, ensuring no changes are forgotten
     fun saveSwitchWallpaper(activeWid: Int, activeConfig: String) {
-        mRepo.saveSwitchWallpaper(0, activeWid, activeConfig)
+        repo.saveSwitchWallpaper(0, activeWid, activeConfig)
     }
 }
 

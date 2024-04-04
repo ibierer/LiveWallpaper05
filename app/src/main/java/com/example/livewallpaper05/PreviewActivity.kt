@@ -133,14 +133,14 @@ class PreviewActivity : AppCompatActivity() {
                 R.id.flip_normals_checkbox
             )
             for(id in textViewIds){
-                if(viewModel.visualization.relevantTextViewIds.contains(id) && !viewModel.isCollapsed){
+                if(viewModel.repo.visualization.relevantTextViewIds.contains(id) && !viewModel.repo.isCollapsed){
                     findViewById<TextView>(id).visibility = View.VISIBLE
                 } else {
                     findViewById<TextView>(id).visibility = View.GONE
                 }
             }
             for(id in seekBarIds){
-                if(viewModel.visualization.relevantSeekBarIds.contains(id) && !viewModel.isCollapsed){
+                if(viewModel.repo.visualization.relevantSeekBarIds.contains(id) && !viewModel.repo.isCollapsed){
                     findViewById<SeekBar>(id).visibility = View.VISIBLE
                     findViewById<SeekBar>(id).isEnabled = true
                 } else {
@@ -149,7 +149,7 @@ class PreviewActivity : AppCompatActivity() {
                 }
             }
             for(id in editTextIds){
-                if(viewModel.visualization.relevantEditTextIds.contains(id) && !viewModel.isCollapsed){
+                if(viewModel.repo.visualization.relevantEditTextIds.contains(id) && !viewModel.repo.isCollapsed){
                     findViewById<EditText>(id).visibility = View.VISIBLE
                     findViewById<EditText>(id).isEnabled = true
                 } else {
@@ -158,7 +158,7 @@ class PreviewActivity : AppCompatActivity() {
                 }
             }
             for(id in checkBoxIds){
-                if(viewModel.visualization.relevantCheckBoxIds.contains(id) && !viewModel.isCollapsed){
+                if(viewModel.repo.visualization.relevantCheckBoxIds.contains(id) && !viewModel.repo.isCollapsed){
                     findViewById<CheckBox>(id).visibility = View.VISIBLE
                     findViewById<CheckBox>(id).isEnabled = true
                 } else {
@@ -195,7 +195,7 @@ class PreviewActivity : AppCompatActivity() {
             }
         })
 
-        viewModel.mRepo.distanceFromOrigin.observe(this) { float ->
+        viewModel.repo.distanceFromOrigin.observe(this) { float ->
             distanceSeekBar.progress = (float * 100.0f).toInt()
         }
 
@@ -216,7 +216,7 @@ class PreviewActivity : AppCompatActivity() {
             }
         })
 
-        viewModel.mRepo.fieldOfView.observe(this) { float ->
+        viewModel.repo.fieldOfView.observe(this) { float ->
             fieldOfViewSeekBar.progress = (float * 100.0f).toInt()
         }
 
@@ -236,7 +236,7 @@ class PreviewActivity : AppCompatActivity() {
             }
         })
 
-        viewModel.mRepo.gravity.observe(this) { float ->
+        viewModel.repo.gravity.observe(this) { float ->
             gravitySeekBar.progress = (float * 100.0f).toInt()
         }
 
@@ -256,7 +256,7 @@ class PreviewActivity : AppCompatActivity() {
             }
         })
 
-        viewModel.mRepo.linearAcceleration.observe(this) { float ->
+        viewModel.repo.linearAcceleration.observe(this) { float ->
             linearAccelerationSeekBar.progress = (float * 100.0f).toInt()
         }
 
@@ -276,7 +276,7 @@ class PreviewActivity : AppCompatActivity() {
             }
         })
 
-        viewModel.mRepo.efficiency.observe(this) { float ->
+        viewModel.repo.efficiency.observe(this) { float ->
             efficiencySeekBar.progress = (float * 4000.0f).toInt()
         }
 
@@ -296,7 +296,7 @@ class PreviewActivity : AppCompatActivity() {
                 // Dynamically load or remove UI components
                 CoroutineScope(Dispatchers.Main).launch {
                     // Wait until viewModel.visualization is not null
-                    while (viewModel.visualization == null) {
+                    while (viewModel.repo.visualization == null) {
                         // Suspend the coroutine for a short duration to avoid blocking the main thread
                         delay(10)
                     }
@@ -336,7 +336,7 @@ class PreviewActivity : AppCompatActivity() {
         }*/
 
         // Observe changes to liveDataBitmap in the ViewModel
-        viewModel.liveDataBitmap.observe(this, Observer { bitmap ->
+        viewModel.repo.liveDataBitmap.observe(this, Observer { bitmap ->
             // This code will be executed on the main (UI) thread whenever liveDataBitmap changes
             findViewById<ImageView>(R.id.imageView).setImageBitmap(bitmap)
             viewModel.updatePreviewImg(bitmap)
@@ -346,14 +346,14 @@ class PreviewActivity : AppCompatActivity() {
         colorButton.setOnClickListener {
             val colorPickerDialog = AmbilWarnaDialog(
                 this,
-                viewModel.mRepo.rememberColorPickerValue,
+                viewModel.repo.rememberColorPickerValue,
                 object : AmbilWarnaDialog.OnAmbilWarnaListener {
                     override fun onCancel(dialog: AmbilWarnaDialog?) {
                         dialog?.dialog?.dismiss()
                     }
 
                     override fun onOk(dialog: AmbilWarnaDialog?, color: Int) {
-                        viewModel.mRepo.rememberColorPickerValue = color
+                        viewModel.repo.rememberColorPickerValue = color
                         viewModel.updateColor(Color.valueOf(color))
                         dialog?.dialog?.dismiss()
                         mView!!.onPause()
@@ -366,7 +366,7 @@ class PreviewActivity : AppCompatActivity() {
 
         saveButton.setOnClickListener {
             // Screen buffer capture
-            viewModel.getScreenBuffer = 1
+            viewModel.repo.getScreenBuffer = 1
         }
 
         /*saveAsButton.setOnClickListener {
@@ -470,14 +470,14 @@ class PreviewActivity : AppCompatActivity() {
         val animationListener = object : Animation.AnimationListener {
             override fun onAnimationStart(animation: Animation?) {
                 // Enable the UI elements before restoring the layout
-                if(!viewModel.isCollapsed){
+                if(!viewModel.repo.isCollapsed){
                     showUIComponents()
                 }
             }
 
             override fun onAnimationEnd(animation: Animation?) {
                 // Disable the UI elements after collapsing the layout
-                if (viewModel.isCollapsed) {
+                if (viewModel.repo.isCollapsed) {
                     hideUIComponents()
                 }
             }
@@ -492,11 +492,11 @@ class PreviewActivity : AppCompatActivity() {
             animation.fillAfter = true
             animation.setAnimationListener(animationListener)
             linearLayout.startAnimation(animation)
-            viewModel.isCollapsed = !viewModel.isCollapsed
+            viewModel.repo.isCollapsed = !viewModel.repo.isCollapsed
         }
 
         hideUIButton.setOnClickListener {
-            val animation: Animation = if(!viewModel.isCollapsed){
+            val animation: Animation = if(!viewModel.repo.isCollapsed){
                 TranslateAnimation(0f, linearLayout.width.toFloat(), 0f, 0f)
             } else {
                 TranslateAnimation(linearLayout.width.toFloat(), 0f, 0f, 0f)
@@ -521,10 +521,10 @@ class PreviewActivity : AppCompatActivity() {
         }
 
         flipsNormalsCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
-            viewModel.mRepo.flipNormals.value = isChecked
+            viewModel.repo.flipNormals.value = isChecked
         }
 
-        if(viewModel.isCollapsed){
+        if(viewModel.repo.isCollapsed){
             hideUIComponents()
         }else{
             showUIComponents()
