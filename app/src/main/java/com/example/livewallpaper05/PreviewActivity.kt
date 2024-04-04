@@ -19,6 +19,8 @@ import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.RadioButton
+import android.widget.RadioGroup
 import android.widget.ScrollView
 import android.widget.SeekBar
 import android.widget.Spinner
@@ -426,8 +428,21 @@ class PreviewActivity : AppCompatActivity() {
         fun showUIComponents(){
             hideUIButton.text = resources.getString(R.string.hideUIButtonText)
             colorButton.visibility = View.VISIBLE
+            findViewById<RadioGroup>(R.id.background_radio_group).visibility = View.VISIBLE
+            findViewById<RadioButton>(R.id.solid_color_radio_button).visibility = View.VISIBLE
+            findViewById<RadioButton>(R.id.image_radio_button).visibility = View.VISIBLE
+            findViewById<TextView>(R.id.background_label).visibility = View.VISIBLE
+            findViewById<Spinner>(R.id.image_selection_spinner).visibility = View.VISIBLE
+            findViewById<Button>(R.id.syncButton).visibility = View.VISIBLE
+            findViewById<Button>(R.id.save_button).visibility = View.VISIBLE
             colorButton.isEnabled = true
             linearLayout.isEnabled = true
+            findViewById<RadioGroup>(R.id.background_radio_group).isEnabled = true
+            findViewById<RadioButton>(R.id.solid_color_radio_button).isEnabled = true
+            findViewById<RadioButton>(R.id.image_radio_button).isEnabled = true
+            findViewById<Spinner>(R.id.image_selection_spinner).isEnabled = true
+            findViewById<Button>(R.id.syncButton).isEnabled = true
+            findViewById<Button>(R.id.save_button).isEnabled = true
             CoroutineScope(Dispatchers.Main).launch {
                 loadOrUnloadUIElements()
             }
@@ -436,8 +451,21 @@ class PreviewActivity : AppCompatActivity() {
         fun hideUIComponents(){
             hideUIButton.text = resources.getString(R.string.showUIButtonText)
             colorButton.visibility = View.GONE
+            findViewById<RadioButton>(R.id.solid_color_radio_button).visibility = View.GONE
+            findViewById<RadioButton>(R.id.image_radio_button).visibility = View.GONE
+            findViewById<RadioGroup>(R.id.background_radio_group).visibility = View.GONE
+            findViewById<TextView>(R.id.background_label).visibility = View.GONE
+            findViewById<Spinner>(R.id.image_selection_spinner).visibility = View.GONE
+            findViewById<Button>(R.id.syncButton).visibility = View.GONE
+            findViewById<Button>(R.id.save_button).visibility = View.GONE
             colorButton.isEnabled = false
             linearLayout.isEnabled = false
+            findViewById<RadioButton>(R.id.solid_color_radio_button).isEnabled = false
+            findViewById<RadioButton>(R.id.image_radio_button).isEnabled = false
+            findViewById<RadioGroup>(R.id.background_radio_group).isEnabled = false
+            findViewById<Spinner>(R.id.image_selection_spinner).isEnabled = false
+            findViewById<Button>(R.id.syncButton).isEnabled = false
+            findViewById<Button>(R.id.save_button).isEnabled = false
             CoroutineScope(Dispatchers.Main).launch {
                 loadOrUnloadUIElements()
             }
