@@ -325,9 +325,6 @@ class ActiveWallpaperRepo private constructor (val context: Context, wallpaperDa
         var fragmentTag: String = ""
     }
 
-
-
-
     val currentUserProfile = MutableLiveData<ProfileTable>(
         ProfileTable(
             context.resources.getInteger(R.integer.default_profile_id),
@@ -342,36 +339,8 @@ class ActiveWallpaperRepo private constructor (val context: Context, wallpaperDa
 
     fun setProfile(profileTable: ProfileTable){
         mScope.launch(Dispatchers.IO){
-            //val profileInfo = mProfileDao.getProfileData()
-            val profileInfo = profileTable
-            if(profileInfo != null){
-                currentUserProfile.postValue(profileInfo)
-                mProfileDao.updateProfileData(profileTable)
-            }
+            currentUserProfile.postValue(profileTable)
+            mProfileDao.updateProfileData(profileTable)
         }
     }
-
-    @WorkerThread
-    suspend fun insert() {
-        if(currentUserProfile.value != null)
-            mProfileDao.updateProfileData(currentUserProfile.value!!)
-    }
-
-    //companion object {
-    //    @Volatile
-    //    private var instance: ProfileRepo? = null
-    //    private lateinit var mScope: CoroutineScope
-    //
-    //    @Synchronized
-    //    fun getInstance(
-    //        context: Context,
-    //        profileDao: ProfileDao,
-    //        scope: CoroutineScope
-    //    ): ProfileRepo {
-    //        return instance ?: ProfileRepo(context, profileDao).also {
-    //            instance = it
-    //            mScope = scope
-    //        }
-    //    }
-    //}
 }
