@@ -7,10 +7,8 @@ import android.graphics.Color
 import android.hardware.SensorManager
 import android.util.Log
 import androidx.lifecycle.*
-import com.example.livewallpaper05.R
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo.WallpaperRef
 import com.example.livewallpaper05.savedWallpapers.SavedWallpaperRow
-import kotlinx.coroutines.Job
 import org.json.JSONObject
 import java.math.RoundingMode
 import java.util.Random
@@ -40,26 +38,22 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
 
     // grab bitmap from repo
     fun getPreviewImg(seed: Int): Bitmap {
-        if (repo.preview != null && false) // This condition is always false... hmm...
-            return repo.preview!!
-        else { // This branch is never executed!
-            val rng = Random()
-            rng.setSeed(seed.toLong())
-            val color = Color.argb(255,
-                rng.nextInt(256),
-                rng.nextInt(256),
-                rng.nextInt(256))
+        val rng = Random()
+        rng.setSeed(seed.toLong())
+        val color = Color.argb(255,
+            rng.nextInt(256),
+            rng.nextInt(256),
+            rng.nextInt(256))
 
-            val screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels
-            val screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels
-            val imgWidth = screenWidth/4
-            val imgHeight = screenHeight/4
+        val screenWidth = Resources.getSystem().displayMetrics.widthPixels
+        val screenHeight = Resources.getSystem().displayMetrics.heightPixels
+        val imgWidth = screenWidth/4
+        val imgHeight = screenHeight/4
 
-            val tmp = Bitmap.createBitmap(imgWidth, imgHeight, Bitmap.Config.ARGB_8888)
-            tmp.eraseColor(color)
+        val tmp = Bitmap.createBitmap(imgWidth, imgHeight, Bitmap.Config.ARGB_8888)
+        tmp.eraseColor(color)
 
-            return tmp
-        }
+        return tmp
     }
 
     // return distance value from repo
@@ -131,7 +125,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
                 config.put("field_of_view", getFieldOfView())
             }
             1 -> {
-                var sim = NaiveFluidVisualization()
+                val sim = NaiveFluidVisualization()
                 config.put("distance", getDistanceFromOrigin())
                 config.put("field_of_view", getFieldOfView())
                 config.put("background_is_solid_color", sim.backgroundIsSolidColor)
@@ -142,7 +136,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
                 config.put("particle_count", sim.particleCount)
             }
             2 -> {
-                var sim = PicFlipVisualization()
+                val sim = PicFlipVisualization()
                 config.put("distance", sim.distance)
                 config.put("field_of_view", sim.fieldOfView)
                 config.put("background_is_solid_color", sim.backgroundIsSolidColor)
@@ -151,19 +145,19 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
                 config.put("linear_acceleration", sim.linearAcceleration)
             }
             3 -> {
-                var sim = TriangleVisualization()
+                val sim = TriangleVisualization()
                 config.put("distance", sim.distance)
                 config.put("field_of_view", sim.fieldOfView)
                 config.put("background_is_solid_color", sim.backgroundIsSolidColor)
                 config.put("background_texture", sim.backgroundTexture)
             }
             4 -> {
-                var sim = GraphVisualization()
-                config.put("distance", sim.distance)
-                config.put("field_of_view", sim.fieldOfView)
-                config.put("background_is_solid_color", sim.backgroundIsSolidColor)
-                config.put("background_texture", sim.backgroundTexture)
-                config.put("equation", sim.equation)
+                val graph = GraphVisualization()
+                config.put("distance", graph.distance)
+                config.put("field_of_view", graph.fieldOfView)
+                config.put("background_is_solid_color", graph.backgroundIsSolidColor)
+                config.put("background_texture", graph.backgroundTexture)
+                config.put("equation", graph.equation)
             }
         }
 

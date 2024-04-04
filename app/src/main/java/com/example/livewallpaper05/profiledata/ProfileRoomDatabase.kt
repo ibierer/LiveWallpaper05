@@ -43,7 +43,7 @@ abstract class ProfileRoomDatabase : RoomDatabase() {
 
         private class RoomDatabaseCallback(
             private val scope: CoroutineScope
-        ): RoomDatabase.Callback() {
+        ): Callback() {
             override fun onCreate(db: SupportSQLiteDatabase) {
                 super.onCreate(db)
                 mInstance?.let {database ->
@@ -54,7 +54,7 @@ abstract class ProfileRoomDatabase : RoomDatabase() {
             }
 
             // seed database
-            suspend fun populateDbTask(profileDao: ProfileDao) {
+            fun populateDbTask(profileDao: ProfileDao) {
                 val tmpImg = ByteArray(0)
                 profileDao.updateProfileData(ProfileTable(0, 0,"Dummy_User", "Hello World!", tmpImg))
             }

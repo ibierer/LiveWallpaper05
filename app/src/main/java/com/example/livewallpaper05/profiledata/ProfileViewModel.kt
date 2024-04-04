@@ -35,7 +35,9 @@ class ProfileViewModel(repo: ActiveWallpaperRepo) : ViewModel() {
                 byteArray
                 //profileData.value!!.savedWallpapers
             )
-        } catch (e: Exception) {}
+        } catch (_: Exception) {
+
+        }
         // update profile table
         mRepo.setProfile(profile)
     }

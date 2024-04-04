@@ -218,10 +218,10 @@ class EquationChecker {
         syntaxError = ""
         return syntaxError
     }
-    fun aDigit(character: Char): Boolean {
+    private fun aDigit(character: Char): Boolean {
         return character in '0'..'9'
     }
-    fun aCharacter(character: Char): Boolean {
+    private fun aCharacter(character: Char): Boolean {
         return character == 'x' ||
                 character == 'y' ||
                 character == 'z' ||
@@ -230,7 +230,7 @@ class EquationChecker {
                 character == pi
     }
 
-    fun anOperator(character: Char): Boolean {
+    private fun anOperator(character: Char): Boolean {
         return character == '^' ||
                 character == '/' ||
                 character == '*' ||
@@ -238,5 +238,5 @@ class EquationChecker {
                 character == '+'
     }
 
-    val pi: Char = 5.toChar()
+    private val pi: Char = 5.toChar()
 }

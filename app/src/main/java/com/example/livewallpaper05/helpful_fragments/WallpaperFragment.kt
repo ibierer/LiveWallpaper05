@@ -28,7 +28,7 @@ class WallpaperFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // get fragment ui view object
-        var rootview = inflater.inflate(R.layout.fragment_wallpaper, container, false)
+        val rootview = inflater.inflate(R.layout.fragment_wallpaper, container, false)
 
         mIvPreviewPane = rootview?.findViewById(R.id.iv_preview)
         mBactiveWallpaper = rootview?.findViewById(R.id.b_active_wallpaper)

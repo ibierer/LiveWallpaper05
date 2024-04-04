@@ -1,8 +1,6 @@
 package com.example.livewallpaper05
 
-import android.content.Context
 import android.graphics.Color
-import android.hardware.SensorManager
 import android.os.Build
 import android.os.Bundle
 import android.text.TextWatcher
@@ -135,14 +133,14 @@ class PreviewActivity : AppCompatActivity() {
                 R.id.flip_normals_checkbox
             )
             for(id in textViewIds){
-                if(viewModel.visualization!!.relevantTextViewIds.contains(id) && !viewModel.isCollapsed){
+                if(viewModel.visualization.relevantTextViewIds.contains(id) && !viewModel.isCollapsed){
                     findViewById<TextView>(id).visibility = View.VISIBLE
                 } else {
                     findViewById<TextView>(id).visibility = View.GONE
                 }
             }
             for(id in seekBarIds){
-                if(viewModel.visualization!!.relevantSeekBarIds.contains(id) && !viewModel.isCollapsed){
+                if(viewModel.visualization.relevantSeekBarIds.contains(id) && !viewModel.isCollapsed){
                     findViewById<SeekBar>(id).visibility = View.VISIBLE
                     findViewById<SeekBar>(id).isEnabled = true
                 } else {
@@ -151,7 +149,7 @@ class PreviewActivity : AppCompatActivity() {
                 }
             }
             for(id in editTextIds){
-                if(viewModel.visualization!!.relevantEditTextIds.contains(id) && !viewModel.isCollapsed){
+                if(viewModel.visualization.relevantEditTextIds.contains(id) && !viewModel.isCollapsed){
                     findViewById<EditText>(id).visibility = View.VISIBLE
                     findViewById<EditText>(id).isEnabled = true
                 } else {
@@ -160,7 +158,7 @@ class PreviewActivity : AppCompatActivity() {
                 }
             }
             for(id in checkBoxIds){
-                if(viewModel.visualization!!.relevantCheckBoxIds.contains(id) && !viewModel.isCollapsed){
+                if(viewModel.visualization.relevantCheckBoxIds.contains(id) && !viewModel.isCollapsed){
                     findViewById<CheckBox>(id).visibility = View.VISIBLE
                     findViewById<CheckBox>(id).isEnabled = true
                 } else {
@@ -398,9 +396,7 @@ class PreviewActivity : AppCompatActivity() {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 // update equation in repo if valid
                 val equationChecker: EquationChecker = EquationChecker()
-                val result: String =
-                    equationChecker.checkEquationSyntax(equationEditor.text.toString())
-                //val result2: String = checkEquationSyntax2(equationEditor.text.toString())
+                val result: String = equationChecker.checkEquationSyntax(equationEditor.text.toString())
                 Log.d("LiveWallpaper05", "result is: $result")
                 //Log.d("LiveWallpaper05", "result2 is: " + result2)
                 if (result == "") {
@@ -434,7 +430,7 @@ class PreviewActivity : AppCompatActivity() {
             findViewById<TextView>(R.id.background_label).visibility = View.VISIBLE
             findViewById<Spinner>(R.id.image_selection_spinner).visibility = View.VISIBLE
             findViewById<Button>(R.id.syncButton).visibility = View.VISIBLE
-            findViewById<Button>(R.id.save_button).visibility = View.VISIBLE
+            saveButton.visibility = View.VISIBLE
             colorButton.isEnabled = true
             linearLayout.isEnabled = true
             findViewById<RadioGroup>(R.id.background_radio_group).isEnabled = true
@@ -457,7 +453,7 @@ class PreviewActivity : AppCompatActivity() {
             findViewById<TextView>(R.id.background_label).visibility = View.GONE
             findViewById<Spinner>(R.id.image_selection_spinner).visibility = View.GONE
             findViewById<Button>(R.id.syncButton).visibility = View.GONE
-            findViewById<Button>(R.id.save_button).visibility = View.GONE
+            saveButton.visibility = View.GONE
             colorButton.isEnabled = false
             linearLayout.isEnabled = false
             findViewById<RadioButton>(R.id.solid_color_radio_button).isEnabled = false
@@ -507,13 +503,6 @@ class PreviewActivity : AppCompatActivity() {
             }
             setDefaultAnimationParametersAndAnimate(animation)
         }
-
-        /*linearLayout.setOnClickListener {
-            if(viewModel.isCollapsed){
-                val animation: Animation = TranslateAnimation(linearLayout.width.toFloat(), 0f, 0f, 0f)
-                setDefaultAnimationParametersAndAnimate(animation)
-            }
-        }*/
 
         // Scroll the ScrollView to the bottom when the layout changes (e.g., keyboard shown/hidden)
         findViewById<ScrollView>(R.id.settings_scrollview).viewTreeObserver.addOnGlobalLayoutListener {
@@ -579,39 +568,6 @@ class PreviewActivity : AppCompatActivity() {
         super.onResume()
         mView!!.onResume()
     }
-
-    /*private val colorActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == RESULT_OK) {
-            val data = result.data
-            //val color = data?.extras?.get("data")
-            val color = data?.getIntExtra("color", Color.WHITE)
-
-            if (color == null) {
-                return@registerForActivityResult
-            }
-            val trueColor = color.toColor()
-            viewModel.updateColor(trueColor)
-            mView!!.onPause()
-            mView!!.onResume()
-        }
-    }
-
-    fun updatePreviewImage(): Bitmap {
-        // store view as preview image
-        *//**
-    var preview = Bitmap.createBitmap(mView!!.width, mView!!.height, Bitmap.Config.ARGB_8888)
-    var canvas = Canvas(preview)
-    mView!!.draw(canvas)*//*
-        val preview = Bitmap.createBitmap(mView!!.width, mView!!.height, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(preview)
-        val background = mView!!.background
-        if (background != null) {
-            background.draw(canvas)
-        }
-        mView!!.draw(canvas)
-
-        return preview
-    }*/
 
     companion object {
         // Used to load the 'livewallpaper05' library on application startup.

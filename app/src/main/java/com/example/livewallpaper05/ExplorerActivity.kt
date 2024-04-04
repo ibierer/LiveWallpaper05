@@ -14,7 +14,6 @@ import java.util.Properties
 
 class ExplorerActivity : AppCompatActivity() {
 
-    private var mPreviewButton: Button? = null
     private var mTestButton: Button? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {

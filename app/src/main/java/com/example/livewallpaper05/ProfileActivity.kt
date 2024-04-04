@@ -253,11 +253,6 @@ class ProfileActivity : AppCompatActivity() {
         mWallpaperGrid!!.viewTreeObserver.addOnGlobalLayoutListener {
             updateFragListeners()
         }
-
-        //findViewById<ImageView>(R.id.iv_profile_pic).setOnClickListener {
-        //    (application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("iv_profile_pic setOnClickListener")
-        //}
-        //(application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("ProfileActivity.onCrea8#2()")
     }
 
 
@@ -291,7 +286,7 @@ class ProfileActivity : AppCompatActivity() {
         lateinit var dbPassword: String
     }
 
-    private suspend fun loadUserDataFromAWS(username: String) {
+    private fun loadUserDataFromAWS(username: String) {
         val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance()
@@ -338,7 +333,7 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     // creates popup dialog to prompt user to chose how to update profile picture
-    fun changeProfilePic(view: View) {
+    private fun changeProfilePic(view: View) {
         // build dialog to choose between media and camera
         val dialog = AlertDialog.Builder(this)
         dialog.setTitle("Change Profile Picture")
@@ -366,17 +361,13 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     // opens camera to take picture for profile picture
-    private val cameraActivity =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                val data = result.data
-                val imageBitmap = data?.extras?.get("data") as Bitmap
-                if (imageBitmap == null) {
-                    return@registerForActivityResult
-                }
-                updateProfilePicture(imageBitmap)
-            }
+    private val cameraActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val data = result.data
+            val imageBitmap = data?.extras?.get("data") as Bitmap
+            updateProfilePicture(imageBitmap)
         }
+    }
 
     // opens phone photo gallery to grab picture for profile picture
     private val galleryActivity =
@@ -432,14 +423,14 @@ class ProfileActivity : AppCompatActivity() {
         return stream.toByteArray()
     }
 
-    private fun showLoginDialog() {
-        val dialog = Dialog(this)
-        dialog.requestWindowFeature(android.view.Window.FEATURE_NO_TITLE)
-        dialog.setCancelable(false)
-        dialog.setContentView(R.layout.dialog_login)
-        // create objects for different textBoxes
-        //check username, query database if valid->update the viewModel
-    }
+    //private fun showLoginDialog() {
+    //    val dialog = Dialog(this)
+    //    dialog.requestWindowFeature(android.view.Window.FEATURE_NO_TITLE)
+    //    dialog.setCancelable(false)
+    //    dialog.setContentView(R.layout.dialog_login)
+    //    // create objects for different textBoxes
+    //    //check username, query database if valid->update the viewModel
+    //}
 
     private fun newWallpaper(view: View) {
         // save current wallpaper

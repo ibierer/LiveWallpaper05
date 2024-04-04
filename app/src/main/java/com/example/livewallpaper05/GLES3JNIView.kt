@@ -43,7 +43,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
 
     class Renderer(private val context: Context, vm: ActiveWallpaperViewModel, var view: View) : GLSurfaceView.Renderer {
         private var mViewModel: ActiveWallpaperViewModel = vm
-        var auth: FirebaseAuth? = null
+        private var auth: FirebaseAuth? = null
         var username: String? = "Default User"
         var uid: Int? = 11 //uid for default user
 
@@ -176,7 +176,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                 }
                 1 -> {
                     mViewModel.visualization = NaiveFluidVisualization(loadedConfig)
-                    jsonConfig = mViewModel.visualization!!.toJsonObject()
+                    jsonConfig = mViewModel.visualization.toJsonObject()
                     val gravity: Float = jsonConfig.getDouble("gravity").toFloat()
                     val linearAcceleration: Float = jsonConfig.getDouble("linear_acceleration").toFloat()
                     val efficiency: Float = jsonConfig.getDouble("efficiency").toFloat()
@@ -187,7 +187,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                 }
                 2 -> {
                     mViewModel.visualization = PicFlipVisualization(loadedConfig)
-                    jsonConfig = mViewModel.visualization!!.toJsonObject()
+                    jsonConfig = mViewModel.visualization.toJsonObject()
                     val gravity: Float = jsonConfig.getDouble("gravity").toFloat()
                     val linearAcceleration: Float = jsonConfig.getDouble("linear_acceleration").toFloat()
                     mViewModel.mRepo.gravity.postValue(gravity)
@@ -213,12 +213,12 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             mViewModel.mRepo.distanceFromOrigin.postValue(distance)
             mViewModel.mRepo.fieldOfView.postValue(fieldOfView)
             val backgroundColorJSONObject: JSONObject = jsonConfig.getJSONObject("background_color")
-            val backgroundColor: Color = mViewModel.visualization!!.jsonObjectToColor(backgroundColorJSONObject)
+            val backgroundColor: Color = mViewModel.visualization.jsonObjectToColor(backgroundColorJSONObject)
             mViewModel.mRepo.color.postValue(backgroundColor)
             PreviewActivity.init(jsonConfig.toString())
         }
 
-        suspend fun insertWallpaper(contents: String, image: ByteArray, username: String) {
+        private suspend fun insertWallpaper(contents: String, image: ByteArray, username: String) {
             withContext(Dispatchers.IO) {
                 val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
                 Log.d("SQL", "in Insert")

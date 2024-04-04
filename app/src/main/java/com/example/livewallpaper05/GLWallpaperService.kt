@@ -40,11 +40,6 @@ class GLWallpaperService() : WallpaperService() {
         private var glSurfaceView: WallpaperGLSurfaceView? = null
         private var rendererSet = false
 
-        /*
-        private val viewModel: ActiveWallpaperViewModel by lazy {
-            ActiveWallpaperViewModel(ActiveWallpaperRepo.getInstance((application as ActiveWallpaperApplication).applicationScope))
-        }*/
-
         override fun onCreate(surfaceHolder: SurfaceHolder) {
             super.onCreate(surfaceHolder)
             glSurfaceView = WallpaperGLSurfaceView(this@GLWallpaperService)
