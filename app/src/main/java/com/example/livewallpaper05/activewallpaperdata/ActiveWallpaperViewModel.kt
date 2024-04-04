@@ -29,18 +29,18 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         abstract fun toJsonObject(): JSONObject
         fun colorToJSONObject(color: Color): JSONObject {
             val colorJSONObject = JSONObject()
-            colorJSONObject.put("r", (color.red() * 255).toInt())
-            colorJSONObject.put("g", (color.green() * 255).toInt())
-            colorJSONObject.put("b", (color.blue() * 255).toInt())
-            colorJSONObject.put("a", (color.alpha() * 255).toInt())
+            colorJSONObject.put("r", (color.red() * 255.0f).toInt())
+            colorJSONObject.put("g", (color.green() * 255.0f).toInt())
+            colorJSONObject.put("b", (color.blue() * 255.0f).toInt())
+            colorJSONObject.put("a", (color.alpha() * 255.0f).toInt())
             return colorJSONObject
         }
         fun jsonObjectToColor(colorJSONObject: JSONObject): Color {
-            val r = colorJSONObject.getInt("r").toFloat()
-            val g = colorJSONObject.getInt("g").toFloat()
-            val b = colorJSONObject.getInt("b").toFloat()
-            val a = colorJSONObject.getInt("a").toFloat()
-            return Color.valueOf(a, r, g, b)
+            val r = colorJSONObject.getDouble("r").toFloat()
+            val g = colorJSONObject.getDouble("g").toFloat()
+            val b = colorJSONObject.getDouble("b").toFloat()
+            val a = colorJSONObject.getDouble("a").toFloat()
+            return Color.valueOf(r, g, b, a)
         }
 
         // set unique values for each visualization type
@@ -48,18 +48,18 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
 
         companion object {
             fun createColorFromInts(r: Int, g: Int, b: Int, a: Int): Color {
-                val rf = r.toFloat() / 255
-                val gf = g.toFloat() / 255
-                val bf = b.toFloat() / 255
-                val af = a.toFloat() / 255
+                val rf = r.toFloat() / 255.0f
+                val gf = g.toFloat() / 255.0f
+                val bf = b.toFloat() / 255.0f
+                val af = a.toFloat() / 255.0f
                 return Color.valueOf(rf, gf, bf, af)
             }
             fun jsonObjectToColor(colorJSONObject: JSONObject): Color {
-                val r = colorJSONObject.getInt("r").toFloat()
-                val g = colorJSONObject.getInt("g").toFloat()
-                val b = colorJSONObject.getInt("b").toFloat()
-                val a = colorJSONObject.getInt("a").toFloat()
-                return Color.valueOf(a, r, g, b)
+                val r = colorJSONObject.getDouble("r").toFloat()
+                val g = colorJSONObject.getDouble("g").toFloat()
+                val b = colorJSONObject.getDouble("b").toFloat()
+                val a = colorJSONObject.getDouble("a").toFloat()
+                return Color.valueOf(r, g, b, a)
             }
         }
     }
@@ -505,7 +505,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
         // store simulation type, background color, and settings (with default values for now
         config.put("name", "New Wallpaper")
         config.put("type", repo.visualizationSelection)
-        val color = getColor()
+        val color: Color = getColor()
         config.put("background_color", JSONObject("{\"r\": ${color.red()}, \"g\": ${color.green()}, \"b\": ${color.blue()}, \"a\": ${color.alpha()} }"))
         val eq = if (repo.equation != "") repo.equation else "1/((sqrt(x^2 + y^2) - 2 + 1.25cos(t))^2 + (z - 1.5sin(t))^2) + 1/((sqrt(x^2 + y^2) - 2 - 1.25cos(t))^2 + (z + 1.5sin(t))^2) = 1.9"
         config.put("settings", eq)

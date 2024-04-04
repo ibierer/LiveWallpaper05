@@ -354,7 +354,6 @@ class PreviewActivity : AppCompatActivity() {
                     }
 
                     override fun onOk(dialog: AmbilWarnaDialog?, color: Int) {
-                        Log.d("colorPicker", "color selected is: $color")
                         viewModel.updateColor(Color.valueOf(color))
                         dialog?.dialog?.dismiss()
                         mView!!.onPause()
