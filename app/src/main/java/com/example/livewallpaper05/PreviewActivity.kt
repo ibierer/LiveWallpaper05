@@ -344,16 +344,16 @@ class PreviewActivity : AppCompatActivity() {
 
         // setup color selection dialog
         colorButton.setOnClickListener {
-            val initColor = 0
             val colorPickerDialog = AmbilWarnaDialog(
                 this,
-                initColor,
+                viewModel.mRepo.rememberColorPickerValue,
                 object : AmbilWarnaDialog.OnAmbilWarnaListener {
                     override fun onCancel(dialog: AmbilWarnaDialog?) {
                         dialog?.dialog?.dismiss()
                     }
 
                     override fun onOk(dialog: AmbilWarnaDialog?, color: Int) {
+                        viewModel.mRepo.rememberColorPickerValue = color
                         viewModel.updateColor(Color.valueOf(color))
                         dialog?.dialog?.dismiss()
                         mView!!.onPause()
