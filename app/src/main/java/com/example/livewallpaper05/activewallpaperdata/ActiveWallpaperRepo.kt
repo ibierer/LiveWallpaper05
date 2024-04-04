@@ -18,7 +18,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class ActiveWallpaperRepo private constructor (val context: Context, val wallpaperDao: SavedWallpaperDao, profileDao: ProfileDao) : SensorEventListener {
+class ActiveWallpaperRepo private constructor (val context: Context, private val wallpaperDao: SavedWallpaperDao, profileDao: ProfileDao) : SensorEventListener {
 
     // initialize default values for active wallpaper
     var wid: Int = 0
@@ -85,12 +85,6 @@ class ActiveWallpaperRepo private constructor (val context: Context, val wallpap
         val wallpaper = SavedWallpaperRow(
             context.resources.getInteger(R.integer.default_profile_id),
             wid,
-            //"{\n" +
-            //        "\"name\": \"New Wallpaper\",\n" +
-            //        "\"type\": \"0\",\n" +
-            //        "\"background_color\": {\"r\": 51, \"g\": 51, \"b\": 77, \"a\": 255},\n" +
-            //        "\"settings\": \"x^2+y^2+z^2=1\"\n" +
-            //        "}",
             NBodyVisualization().toString(),
             ByteArray(0)
         )
