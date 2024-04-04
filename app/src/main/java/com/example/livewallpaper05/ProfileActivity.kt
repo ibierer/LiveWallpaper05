@@ -154,7 +154,7 @@ class ProfileActivity : AppCompatActivity() {
             Log.d("OH_NO", "User not signed in!")
         }
         // link profile view elements to profile live data via callback function
-        mProfileViewModel.currentUserProfile.observe(this, Observer { profileData ->
+        viewModel.repo.currentUserProfile.observe(this, Observer { profileData ->
             if (profileData != null) {
                 // if profile data username is Dummy_user do nothing
                 if (profileData.username == "Dummy_user") {
@@ -183,7 +183,7 @@ class ProfileActivity : AppCompatActivity() {
         // if no wallpapers exist, create default wallpaper
         if (viewModel.repo.wallpapers.value == null) {
             viewModel.createDefaultWallpaperTable(
-                mProfileViewModel.currentUserProfile.value!!.uid,
+                viewModel.repo.currentUserProfile.value!!.uid,
                 viewModel.getWid(),
                 viewModel.getConfig()
             )
