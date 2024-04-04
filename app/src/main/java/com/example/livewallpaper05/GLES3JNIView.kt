@@ -10,6 +10,11 @@ import android.util.Log
 import android.view.View
 import androidx.core.content.ContextCompat.getSystemService
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
+import com.example.livewallpaper05.activewallpaperdata.GraphVisualization
+import com.example.livewallpaper05.activewallpaperdata.NBodyVisualization
+import com.example.livewallpaper05.activewallpaperdata.NaiveFluidVisualization
+import com.example.livewallpaper05.activewallpaperdata.PicFlipVisualization
+import com.example.livewallpaper05.activewallpaperdata.TriangleVisualization
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -163,14 +168,14 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
 
             when (mViewModel.getVisualization()) {
                 0 -> {
-                    mViewModel.visualization = ActiveWallpaperViewModel.NBodyVisualization(loadedConfig)
+                    mViewModel.visualization = NBodyVisualization(loadedConfig)
                     mViewModel.visualization.viewModel = mViewModel
                     selectionJSON = mViewModel.visualization.toJsonObject().toString()
                     jsonConfig = JSONObject(selectionJSON)
 
                 }
                 1 -> {
-                    mViewModel.visualization = ActiveWallpaperViewModel.NaiveFluidVisualization(loadedConfig)
+                    mViewModel.visualization = NaiveFluidVisualization(loadedConfig)
                     jsonConfig = mViewModel.visualization!!.toJsonObject()
                     val gravity: Float = jsonConfig.getDouble("gravity").toFloat()
                     val linearAcceleration: Float = jsonConfig.getDouble("linear_acceleration").toFloat()
@@ -181,7 +186,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
 
                 }
                 2 -> {
-                    mViewModel.visualization = ActiveWallpaperViewModel.PicFlipVisualization(loadedConfig)
+                    mViewModel.visualization = PicFlipVisualization(loadedConfig)
                     jsonConfig = mViewModel.visualization!!.toJsonObject()
                     val gravity: Float = jsonConfig.getDouble("gravity").toFloat()
                     val linearAcceleration: Float = jsonConfig.getDouble("linear_acceleration").toFloat()
@@ -190,13 +195,13 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
 
                 }
                 3 -> {
-                    mViewModel.visualization = ActiveWallpaperViewModel.TriangleVisualization(loadedConfig)
+                    mViewModel.visualization = TriangleVisualization(loadedConfig)
                     selectionJSON = mViewModel.visualization.toJsonObject().toString()
                     jsonConfig = JSONObject(selectionJSON)
 
                 }
                 4 -> {
-                    mViewModel.visualization = ActiveWallpaperViewModel.GraphVisualization(loadedConfig)
+                    mViewModel.visualization = GraphVisualization(loadedConfig)
                     selectionJSON = mViewModel.visualization.toJsonObject().toString()
                     jsonConfig = JSONObject(selectionJSON)
 

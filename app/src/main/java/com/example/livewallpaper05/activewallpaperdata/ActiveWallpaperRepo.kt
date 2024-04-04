@@ -92,7 +92,7 @@ class ActiveWallpaperRepo private constructor (val context: Context, wallpaperDa
             //        "\"background_color\": {\"r\": 51, \"g\": 51, \"b\": 77, \"a\": 255},\n" +
             //        "\"settings\": \"x^2+y^2+z^2=1\"\n" +
             //        "}",
-            ActiveWallpaperViewModel.NBodyVisualization().toString(),
+            NBodyVisualization().toString(),
             ByteArray(0)
         )
 
