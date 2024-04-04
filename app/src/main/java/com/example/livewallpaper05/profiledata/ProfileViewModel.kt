@@ -4,9 +4,10 @@ import android.graphics.Bitmap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo
 import java.io.ByteArrayOutputStream
 
-class ProfileViewModel(repo: ProfileRepo) : ViewModel() {
+class ProfileViewModel(repo: ActiveWallpaperRepo) : ViewModel() {
 
     val currentUserProfile: LiveData<ProfileTable> = repo.currentUserProfile
     private var mRepo = repo
@@ -39,7 +40,7 @@ class ProfileViewModel(repo: ProfileRepo) : ViewModel() {
         mRepo.setProfile(profile)
     }
 
-    class ProfileViewModelFactory(private val repo: ProfileRepo) : ViewModelProvider.Factory {
+    class ProfileViewModelFactory(private val repo: ActiveWallpaperRepo) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(ProfileViewModel::class.java)) {
                 @Suppress("UNCHECKED_CAST")

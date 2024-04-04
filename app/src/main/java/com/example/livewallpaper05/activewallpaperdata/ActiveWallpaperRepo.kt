@@ -7,16 +7,18 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import androidx.annotation.WorkerThread
 import androidx.lifecycle.MutableLiveData
 import com.example.livewallpaper05.R
 import com.example.livewallpaper05.savedWallpapers.SavedWallpaperDao
 import com.example.livewallpaper05.savedWallpapers.SavedWallpaperRow
-import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
+import com.example.livewallpaper05.profiledata.ProfileDao
+import com.example.livewallpaper05.profiledata.ProfileTable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class ActiveWallpaperRepo private constructor (val context: Context, wallpaperDao: SavedWallpaperDao) : SensorEventListener {
+class ActiveWallpaperRepo private constructor (val context: Context, wallpaperDao: SavedWallpaperDao, profileDao: ProfileDao) : SensorEventListener {
 
     // initialize default values for active wallpaper
     var wid: Int = 0
@@ -264,9 +266,10 @@ class ActiveWallpaperRepo private constructor (val context: Context, wallpaperDa
         fun getInstance(
             context: Context,
             savedWallpaperDao: SavedWallpaperDao,
+            profileDao: ProfileDao,
             scope: CoroutineScope
         ): ActiveWallpaperRepo {
-            return instance ?: ActiveWallpaperRepo(context, savedWallpaperDao).also {
+            return instance ?: ActiveWallpaperRepo(context, savedWallpaperDao, profileDao).also {
                 instance = it
                 mScope = scope
             }
@@ -321,4 +324,54 @@ class ActiveWallpaperRepo private constructor (val context: Context, wallpaperDa
         var fragmentId: Int = 0
         var fragmentTag: String = ""
     }
+
+
+
+
+    val currentUserProfile = MutableLiveData<ProfileTable>(
+        ProfileTable(
+            context.resources.getInteger(R.integer.default_profile_id),
+            0,
+            "Default User",
+            context.resources.getString(R.string.biography),
+            ByteArray(0)
+        )
+    )
+
+    private var mProfileDao: ProfileDao = profileDao
+
+    fun setProfile(profileTable: ProfileTable){
+        mScope.launch(Dispatchers.IO){
+            //val profileInfo = mProfileDao.getProfileData()
+            val profileInfo = profileTable
+            if(profileInfo != null){
+                currentUserProfile.postValue(profileInfo)
+                mProfileDao.updateProfileData(profileTable)
+            }
+        }
+    }
+
+    @WorkerThread
+    suspend fun insert() {
+        if(currentUserProfile.value != null)
+            mProfileDao.updateProfileData(currentUserProfile.value!!)
+    }
+
+    //companion object {
+    //    @Volatile
+    //    private var instance: ProfileRepo? = null
+    //    private lateinit var mScope: CoroutineScope
+    //
+    //    @Synchronized
+    //    fun getInstance(
+    //        context: Context,
+    //        profileDao: ProfileDao,
+    //        scope: CoroutineScope
+    //    ): ProfileRepo {
+    //        return instance ?: ProfileRepo(context, profileDao).also {
+    //            instance = it
+    //            mScope = scope
+    //        }
+    //    }
+    //}
 }

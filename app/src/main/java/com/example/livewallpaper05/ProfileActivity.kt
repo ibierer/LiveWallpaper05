@@ -62,7 +62,7 @@ class ProfileActivity : AppCompatActivity() {
 
     // profile table data
     private val mProfileViewModel: ProfileViewModel by viewModels {
-        ProfileViewModel.ProfileViewModelFactory((application as ActiveWallpaperApplication).profileRepo)
+        ProfileViewModel.ProfileViewModelFactory((application as ActiveWallpaperApplication).wallpaperRepo)
     }
 
     // active wallpaper view model
