@@ -41,11 +41,11 @@ class ActiveWallpaperRepo private constructor (val context: Context, val wallpap
     var visualizationName = MutableLiveData<String>("")
     var preview: Bitmap? = null
     var savedConfig: String = ""
-    var savedWids: List<Int> = listOf(1)
+    private var savedWids: List<Int> = listOf(1)
     var rememberColorPickerValue: Int = 0
 
     // initialize values for saved wallpaper info
-    val activeWallpaper: MutableLiveData<SavedWallpaperRow> = MutableLiveData()
+    val activeWallpaper: MutableLiveData<SavedWallpaperRow> = MutableLiveData<SavedWallpaperRow>()
     val wallpapers = MutableLiveData<List<SavedWallpaperRow>>()
     val wallpaperFragIds: MutableList<WallpaperRef> = mutableListOf()
 
@@ -144,7 +144,7 @@ class ActiveWallpaperRepo private constructor (val context: Context, val wallpap
     // set active wallpaper live data to wallpaper given by id
     fun setLiveWallpaperData(wid: Int) {
         mScope.launch(Dispatchers.IO) {
-            val wallpaper = wallpaperDao.getWallpaperData(wid)
+            val wallpaper = wallpaperDao.getWallpaperData(wid).value!!
             //if (wallpaper != null) {
                 activeWallpaper.postValue(wallpaper)
             //} else {
