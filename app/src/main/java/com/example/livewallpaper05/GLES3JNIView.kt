@@ -3,10 +3,12 @@ package com.example.livewallpaper05
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.hardware.SensorManager
 import android.opengl.GLSurfaceView
 import android.os.SystemClock
 import android.util.Log
 import android.view.View
+import androidx.core.content.ContextCompat.getSystemService
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
@@ -148,9 +150,12 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             PreviewActivity.resize(width, height, orientation)
             mViewModel.width = width
             mViewModel.height = height
+            // register sensor event listeners
+            mViewModel.registerSensorEvents(context.getSystemService(Context.SENSOR_SERVICE) as SensorManager)
         }
 
         override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
+
             var jsonConfig: JSONObject = JSONObject()
             var selectionJSON: String = ""
 

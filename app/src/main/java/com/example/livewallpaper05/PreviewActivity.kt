@@ -106,8 +106,6 @@ class PreviewActivity : AppCompatActivity() {
         // set default to viewmodel visualization type
         //environmentMapSelectorSpinner.setSelection(viewModel.getEnvironmentMap())
 
-        // register senser event listeners
-        viewModel.registerSensorEvents(getSystemService(Context.SENSOR_SERVICE) as SensorManager)
         // add gl engine view to viewport
         layout.addView(mView)
 
