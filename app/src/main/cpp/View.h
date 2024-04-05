@@ -118,6 +118,8 @@ public:
 
     int getFrameCount();
 
+    static mat3<float> incrementalRotationMatrix;
+
 protected:
 
     vec3 computeForce(const float& gravity, const bool& referenceFrameRotates, const Matrix4<float> rotation);

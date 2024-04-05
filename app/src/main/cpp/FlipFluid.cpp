@@ -59,6 +59,8 @@ void FlipFluid::integrateParticles(const float& _dt, const vec3& _gravity)
     for (int i = 0; i < numParticles; i++) {
         particleVel[i] += _dt * _gravity;
         particlePos[i] += particleVel[i] * _dt;
+
+        particlePos[i] *=
     }
 }
 

@@ -923,6 +923,9 @@ public:
         }
         return _return;
     }
+    T& operator[](int index) {
+        return ((T*)&m)[index];
+    }
 };
 
 template<class T>
