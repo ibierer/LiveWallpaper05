@@ -2,8 +2,6 @@ package com.example.livewallpaper05.activewallpaperdata
 
 import android.app.Application
 import android.util.Log
-import androidx.core.content.ContentProviderCompat.requireContext
-import com.example.livewallpaper05.profiledata.ProfileRepo
 import com.example.livewallpaper05.profiledata.ProfileRoomDatabase
 import com.example.livewallpaper05.profiledata.ProfileTable
 import com.example.livewallpaper05.savedWallpapers.SavedWallpaperRow
@@ -24,17 +22,14 @@ class ActiveWallpaperApplication : Application() {
 
     // wallpaper database
     private val savedWallpaperDatabase : SavedWallpaperRoomDatabase by lazy { SavedWallpaperRoomDatabase.getDatabase(this)}
-    // wallpaper repo
-    val wallpaperRepo : ActiveWallpaperRepo by lazy { ActiveWallpaperRepo.getInstance(this, savedWallpaperDatabase.wallpaperDao(), applicationScope)}
-
     // profile database
     private val profileDatabase : ProfileRoomDatabase by lazy { ProfileRoomDatabase.getDatabase(this, applicationScope)}
-    // profile repo
-    val profileRepo : ProfileRepo by lazy { ProfileRepo.getInstance(this, profileDatabase.profileDao(), applicationScope)}
+    // wallpaper repo
+    val wallpaperRepo : ActiveWallpaperRepo by lazy { ActiveWallpaperRepo.getInstance(this, savedWallpaperDatabase.wallpaperDao(), profileDatabase.profileDao(), applicationScope)}
 
     fun printProfilesAndWallpapersToLogcat(message : String){
         CoroutineScope(Dispatchers.Main).launch {
-            val profileD : ProfileTable? = profileRepo.currentUserProfile.value
+            val profileD : ProfileTable? = wallpaperRepo.currentUserProfile.value
             Log.d("WALLPAPERS", "$message\nprofile data: $profileD")
             val wallpapers : List<SavedWallpaperRow> = withContext(Dispatchers.IO) {
                 savedWallpaperDatabase.wallpaperDao().getAllWallpapers()

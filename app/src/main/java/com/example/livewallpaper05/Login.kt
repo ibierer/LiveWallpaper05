@@ -23,7 +23,6 @@ import java.sql.SQLException
 import java.util.Properties
 
 class Login : AppCompatActivity() {
-    private lateinit var binding: ActivityLoginBinding
     private lateinit var etEmail: TextInputEditText
     private lateinit var etPassword: TextInputEditText
     private lateinit var loginButton: Button
@@ -40,7 +39,6 @@ class Login : AppCompatActivity() {
         loginButton = findViewById(R.id.loginButton)
         regPageButton = findViewById(R.id.registerPageButton)
 
-        val profileBinding = ActivityProfileBinding.inflate(layoutInflater)
         // Access views from the layout using the binding object
         regPageButton.setOnClickListener {
             val registerPageIntent = Intent(this, Register::class.java)

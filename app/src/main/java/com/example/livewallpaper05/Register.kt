@@ -27,6 +27,7 @@ class Register : AppCompatActivity() {
     private lateinit var registerButton: Button
     private lateinit var loginTextView: TextView
     private lateinit var mAuth: FirebaseAuth
+
     /*public override fun onStart() {
         super.onStart()
         // Check if user is signed in (non-null) and update UI accordingly.
@@ -117,7 +118,7 @@ class Register : AppCompatActivity() {
             }
     }
 
-    suspend fun isUsernameOrEmailInDB(username: String, email: String): Pair<Boolean, Boolean> {
+    private suspend fun isUsernameOrEmailInDB(username: String, email: String): Pair<Boolean, Boolean> {
         return withContext(Dispatchers.IO) {
             val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
             var userExists = false
@@ -162,7 +163,7 @@ class Register : AppCompatActivity() {
         }
     }
 
-    fun insertIntoUsers(username: String, email: String) {
+    private fun insertIntoUsers(username: String, email: String) {
         GlobalScope.launch(Dispatchers.IO) {
             // write aws test code here -------------
             val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString

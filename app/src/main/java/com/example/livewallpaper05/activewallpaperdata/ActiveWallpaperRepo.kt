@@ -9,6 +9,8 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import androidx.lifecycle.MutableLiveData
 import com.example.livewallpaper05.R
+import com.example.livewallpaper05.profiledata.ProfileDao
+import com.example.livewallpaper05.profiledata.ProfileTable
 import com.example.livewallpaper05.savedWallpapers.SavedWallpaperDao
 import com.example.livewallpaper05.savedWallpapers.SavedWallpaperRow
 import kotlinx.coroutines.CoroutineScope
@@ -16,7 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 
-class ActiveWallpaperRepo private constructor (val context: Context, wallpaperDao: SavedWallpaperDao) : SensorEventListener {
+class ActiveWallpaperRepo private constructor (val context: Context, private val wallpaperDao: SavedWallpaperDao, profileDao: ProfileDao) : SensorEventListener {
 
     // initialize default values for active wallpaper
     var wid: Int = 0
@@ -40,17 +42,29 @@ class ActiveWallpaperRepo private constructor (val context: Context, wallpaperDa
     var preview: Bitmap? = null
     var savedConfig: String = ""
     var savedWids: List<Int> = listOf(0)
+    var rememberColorPickerValue: Int = 0
 
     // initialize values for saved wallpaper info
-    val activeWallpaper: MutableLiveData<SavedWallpaperRow> = MutableLiveData()
+    val activeWallpaper: MutableLiveData<SavedWallpaperRow> = MutableLiveData<SavedWallpaperRow>()
     val wallpapers = MutableLiveData<List<SavedWallpaperRow>>()
     val wallpaperFragIds: MutableList<WallpaperRef> = mutableListOf()
     //private val syncMutex: Mutex = Mutex()
 
-    val mWallpaperDao: SavedWallpaperDao = wallpaperDao
     private var lastId: Int = 1
 
     private lateinit var mSensorManager: SensorManager
+
+    // ViewModel state
+    lateinit var visualization : Visualization
+    var width: Int = 0
+    var height: Int = 0
+    private var mBitmap : Bitmap = Bitmap.createBitmap(500, 500, Bitmap.Config.ARGB_8888) as Bitmap
+    var liveDataBitmap : MutableLiveData<Bitmap> = MutableLiveData<Bitmap>(mBitmap)
+    var getScreenBuffer: Int = 0
+    var saveAsNew: Int = 0
+    var isCollapsed = false
+    // initialize local variables for saved wallpapers
+    //val savedWallpapers: LiveData<List<SavedWallpaperRow>> = repo.wallpapers
 
     // helper methods
 
@@ -89,13 +103,7 @@ class ActiveWallpaperRepo private constructor (val context: Context, wallpaperDa
         val wallpaper = SavedWallpaperRow(
             context.resources.getInteger(R.integer.default_profile_id),
             wid,
-            //"{\n" +
-            //        "\"name\": \"New Wallpaper\",\n" +
-            //        "\"type\": \"0\",\n" +
-            //        "\"background_color\": {\"r\": 51, \"g\": 51, \"b\": 77, \"a\": 255},\n" +
-            //        "\"settings\": \"x^2+y^2+z^2=1\"\n" +
-            //        "}",
-            ActiveWallpaperViewModel.NBodyVisualization().toString(),
+            NBodyVisualization().toString(),
             ByteArray(0)
         )
 
@@ -114,7 +122,7 @@ class ActiveWallpaperRepo private constructor (val context: Context, wallpaperDa
         }
 
         mScope.launch(Dispatchers.IO) {
-            mWallpaperDao.saveWallpaper(wallpaperRow)
+            wallpaperDao.saveWallpaper(wallpaperRow)
         }
     }
 
@@ -160,14 +168,14 @@ class ActiveWallpaperRepo private constructor (val context: Context, wallpaperDa
     // set active wallpaper live data to wallpaper given by id
     fun setLiveWallpaperData(wid: Int) {
         mScope.launch(Dispatchers.IO) {
-            var wallpaper = mWallpaperDao.getWallpaperData(wid)
-            if (wallpaper != null) {
+            val wallpaper = wallpaperDao.getWallpaperData(wid).value!!
+            //if (wallpaper != null) {
                 activeWallpaper.postValue(wallpaper)
-            } else {
-                // try again until wallpaper is found
-                var allWallpapers = mWallpaperDao.getAllWallpapers()
-                activeWallpaper.postValue(allWallpapers[0])
-            }
+            //} else {
+            //    // try again until wallpaper is found
+            //    val allWallpapers = wallpaperDao.getAllWallpapers()
+            //    activeWallpaper.postValue(allWallpapers[0])
+            //}
         }
     }
 
@@ -176,7 +184,7 @@ class ActiveWallpaperRepo private constructor (val context: Context, wallpaperDa
         // sync wallpapers with database, removing dead values
         mScope.launch(Dispatchers.IO) {
             syncMutex.lock()
-            var allWallpapers = mWallpaperDao.getAllWallpapers()
+            var allWallpapers = wallpaperDao.getAllWallpapers()
             var validWids = listOf<Int>()
             // if list is not the same size as wallpapers clear and add all wallpapers
             if (newWallpapers != null) {
@@ -186,7 +194,7 @@ class ActiveWallpaperRepo private constructor (val context: Context, wallpaperDa
                         continue
 
                     if (!newWallpapers.contains(wallpaper) && !savedWids.contains(wallpaper.wid)) {
-                        mWallpaperDao.deleteWallpaper(wallpaper.wid)
+                        wallpaperDao.deleteWallpaper(wallpaper.wid)
                     } else {
                         validWids = validWids.plus(wallpaper.wid)
                     }
@@ -194,7 +202,7 @@ class ActiveWallpaperRepo private constructor (val context: Context, wallpaperDa
 
                 // save all wallpapers in new wallpapers to database
                 for (wallpaper in newWallpapers) {
-                    mWallpaperDao.saveWallpaper(wallpaper)
+                    wallpaperDao.saveWallpaper(wallpaper)
                 }
 
                 // if savedWids is > 1, replace default wallpaper with saved wallpaper
@@ -226,7 +234,7 @@ class ActiveWallpaperRepo private constructor (val context: Context, wallpaperDa
                         uniqueWallpaperWids.add(wallpaper.wid)
                     } else {
                         // delete duplicate wallpaper
-                        //mWallpaperDao.deleteWallpaper(wallpaper.wid)
+                        //wallpaperDao.deleteWallpaper(wallpaper.wid)
                         //newWallpapers.remove(wallpaper)
                         wallpaperIterator.remove()
                     }
@@ -242,7 +250,7 @@ class ActiveWallpaperRepo private constructor (val context: Context, wallpaperDa
     // delete wallpaper
     fun deleteWallpaper(wid: Int) {
         mScope.launch(Dispatchers.IO) {
-            mWallpaperDao.deleteWallpaper(wid)
+            wallpaperDao.deleteWallpaper(wid)
             syncMutex.lock()
             // remove wid from saved wids
             savedWids = savedWids.filter { it != wid }
@@ -330,9 +338,10 @@ class ActiveWallpaperRepo private constructor (val context: Context, wallpaperDa
         fun getInstance(
             context: Context,
             savedWallpaperDao: SavedWallpaperDao,
+            profileDao: ProfileDao,
             scope: CoroutineScope
         ): ActiveWallpaperRepo {
-            return instance ?: ActiveWallpaperRepo(context, savedWallpaperDao).also {
+            return instance ?: ActiveWallpaperRepo(context, savedWallpaperDao, profileDao).also {
                 instance = it
                 mScope = scope
             }
@@ -382,5 +391,24 @@ class ActiveWallpaperRepo private constructor (val context: Context, wallpaperDa
         var wallpaperId: Int = 0
         var fragmentId: Int = 0
         var fragmentTag: String = ""
+    }
+
+    val currentUserProfile = MutableLiveData<ProfileTable>(
+        ProfileTable(
+            context.resources.getInteger(R.integer.default_profile_id),
+            0,
+            "Default User",
+            context.resources.getString(R.string.biography),
+            ByteArray(0)
+        )
+    )
+
+    private var mProfileDao: ProfileDao = profileDao
+
+    fun setProfile(profileTable: ProfileTable){
+        mScope.launch(Dispatchers.IO){
+            currentUserProfile.postValue(profileTable)
+            mProfileDao.updateProfileData(profileTable)
+        }
     }
 }

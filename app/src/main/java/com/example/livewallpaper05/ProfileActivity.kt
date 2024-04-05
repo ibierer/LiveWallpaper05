@@ -1,6 +1,5 @@
 package com.example.livewallpaper05
 
-import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -62,7 +61,7 @@ class ProfileActivity : AppCompatActivity() {
 
     // profile table data
     private val mProfileViewModel: ProfileViewModel by viewModels {
-        ProfileViewModel.ProfileViewModelFactory((application as ActiveWallpaperApplication).profileRepo)
+        ProfileViewModel.ProfileViewModelFactory((application as ActiveWallpaperApplication).wallpaperRepo)
     }
 
     // active wallpaper view model
@@ -154,7 +153,7 @@ class ProfileActivity : AppCompatActivity() {
             Log.d("OH_NO", "User not signed in!")
         }
         // link profile view elements to profile live data via callback function
-        mProfileViewModel.currentUserProfile.observe(this, Observer { profileData ->
+        viewModel.repo.currentUserProfile.observe(this, Observer { profileData ->
             if (profileData != null) {
                 // if profile data username is Dummy_user do nothing
                 if (profileData.username == "Dummy_user") {
@@ -181,9 +180,9 @@ class ProfileActivity : AppCompatActivity() {
         })
 
         // if no wallpapers exist, create default wallpaper
-        if (viewModel.savedWallpapers.value == null) {
+        if (viewModel.repo.wallpapers.value == null) {
             viewModel.createDefaultWallpaperTable(
-                mProfileViewModel.currentUserProfile.value!!.uid,
+                viewModel.repo.currentUserProfile.value!!.uid,
                 viewModel.getWid(),
                 viewModel.getConfig()
             )
@@ -196,11 +195,11 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         // link active wallpaper to active wallpaper live data via callback function
-        viewModel.activeWallpaper.observe(this, Observer { wallpaper ->
+        viewModel.repo.activeWallpaper.observe(this, Observer { wallpaper ->
             // if wallpaper is not the same as saved wallpaper, return
             // if wallpaper not in wallpapers, return
             var contained = false
-            for (w in viewModel.savedWallpapers.value!!) {
+            for (w in viewModel.repo.wallpapers.value!!) {
                 if (w.wid == wallpaper.wid && w.config == wallpaper.config){
                     contained = true
                     break
@@ -218,7 +217,7 @@ class ProfileActivity : AppCompatActivity() {
         })
 
         // link saved wallpaper view elements to saved wallpaper live data via callback function
-        viewModel.mRepo.wallpapers.observe(this, Observer { wallpapers ->
+        viewModel.repo.wallpapers.observe(this, Observer { wallpapers ->
             var existingFragCount = mWallpaperGrid!!.childCount
             if (wallpapers != null && wallpapers.size != existingFragCount) {
                 // update saved wallpaper ids
@@ -267,11 +266,6 @@ class ProfileActivity : AppCompatActivity() {
         mWallpaperGrid!!.viewTreeObserver.addOnGlobalLayoutListener {
             updateFragListeners()
         }
-
-        //findViewById<ImageView>(R.id.iv_profile_pic).setOnClickListener {
-        //    (application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("iv_profile_pic setOnClickListener")
-        //}
-        //(application as ActiveWallpaperApplication).printProfilesAndWallpapersToLogcat("ProfileActivity.onCrea8#2()")
     }
 
 
@@ -305,7 +299,7 @@ class ProfileActivity : AppCompatActivity() {
         lateinit var dbPassword: String
     }
 
-    private suspend fun loadUserDataFromAWS(username: String) {
+    private fun loadUserDataFromAWS(username: String) {
         val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance()
@@ -352,7 +346,7 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     // creates popup dialog to prompt user to chose how to update profile picture
-    fun changeProfilePic(view: View) {
+    private fun changeProfilePic(view: View) {
         // build dialog to choose between media and camera
         val dialog = AlertDialog.Builder(this)
         dialog.setTitle("Change Profile Picture")
@@ -380,17 +374,13 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     // opens camera to take picture for profile picture
-    private val cameraActivity =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                val data = result.data
-                val imageBitmap = data?.extras?.get("data") as Bitmap
-                if (imageBitmap == null) {
-                    return@registerForActivityResult
-                }
-                updateProfilePicture(imageBitmap)
-            }
+    private val cameraActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val data = result.data
+            val imageBitmap = data?.extras?.get("data") as Bitmap
+            updateProfilePicture(imageBitmap)
         }
+    }
 
     // opens phone photo gallery to grab picture for profile picture
     private val galleryActivity =
@@ -446,14 +436,14 @@ class ProfileActivity : AppCompatActivity() {
         return stream.toByteArray()
     }
 
-    private fun showLoginDialog() {
-        val dialog = Dialog(this)
-        dialog.requestWindowFeature(android.view.Window.FEATURE_NO_TITLE)
-        dialog.setCancelable(false)
-        dialog.setContentView(R.layout.dialog_login)
-        // create objects for different textBoxes
-        //check username, query database if valid->update the viewModel
-    }
+    //private fun showLoginDialog() {
+    //    val dialog = Dialog(this)
+    //    dialog.requestWindowFeature(android.view.Window.FEATURE_NO_TITLE)
+    //    dialog.setCancelable(false)
+    //    dialog.setContentView(R.layout.dialog_login)
+    //    // create objects for different textBoxes
+    //    //check username, query database if valid->update the viewModel
+    //}
 
     private fun newWallpaper(view: View) {
         // save current wallpaper
