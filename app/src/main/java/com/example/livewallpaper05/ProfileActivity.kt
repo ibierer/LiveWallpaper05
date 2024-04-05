@@ -453,9 +453,13 @@ class ProfileActivity : AppCompatActivity() {
         viewModel.createWallpaperTable(-1)
         viewModel.saveWids(this)
 
+        // switch active wallpaper to new wallpaper
+        val newWid = viewModel.getWid()
+
+
         // force user to preview activity
-        //val intent = Intent(this, PreviewActivity::class.java)
-        //startActivity(intent)
+        val intent = Intent(this, PreviewActivity::class.java)
+        startActivity(intent)
 
     }
 
