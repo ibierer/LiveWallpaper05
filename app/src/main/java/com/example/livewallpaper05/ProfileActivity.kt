@@ -218,15 +218,21 @@ class ProfileActivity : AppCompatActivity() {
         })
 
         // link saved wallpaper view elements to saved wallpaper live data via callback function
-        viewModel.savedWallpapers.observe(this, Observer { wallpapers ->
-            if (wallpapers != null) {
+        viewModel.mRepo.wallpapers.observe(this, Observer { wallpapers ->
+            var existingFragCount = mWallpaperGrid!!.childCount
+            if (wallpapers != null && wallpapers.size != existingFragCount) {
                 // update saved wallpaper ids
                 viewModel.saveWids(this)
                 // clear wallpaper layout
                 mWallpaperGrid!!.removeAllViews()
+                var used = listOf<Int>()
 
                 // add each wallpaper to layout
                 for (wallpaper in wallpapers) {
+                    // if already made wallpaper skip
+                    if (used.contains(wallpaper.wid)) {
+                        continue
+                    }
                     // find if wallpaper is active
                     val is_active = wallpaper.wid == viewModel.getWid()
                     // create random color bitmap preview based on wid
@@ -245,9 +251,17 @@ class ProfileActivity : AppCompatActivity() {
                     ref.fragmentId = fragment.id
                     ref.fragmentTag = tag
                     viewModel.updateWallpaperFragIds(ref)
+
+                    used = used.plus(wallpaper.wid)
                 }
             }
         })
+
+        /*
+        viewModel.savedWallpapers.observe(this, Observer { wallpapers ->
+
+        })
+        */
 
         // observe amount of wallpapers in mWallpaperGrid and update listeners when it changes
         mWallpaperGrid!!.viewTreeObserver.addOnGlobalLayoutListener {
@@ -448,11 +462,15 @@ class ProfileActivity : AppCompatActivity() {
         // create new empty wallpaper config
         viewModel.createWallpaperTable(-1)
         viewModel.saveWids(this)
+
+        // force user to preview activity
+        //val intent = Intent(this, PreviewActivity::class.java)
+        //startActivity(intent)
+
     }
 
     private fun updateFragListeners() {
         // for each fragment in fragment list, set delete button listener
-        val removeList = mutableListOf<WallpaperRef>()
         val wallpaperFragIds = viewModel.getWallpaperFragIds()
         Log.d("LiveWallpaper05", "saved frag count: ${wallpaperFragIds.size}")
         for (ref in wallpaperFragIds) {
@@ -476,7 +494,6 @@ class ProfileActivity : AppCompatActivity() {
                 viewModel.deleteWallpaper(ref.wallpaperId)
                 // remove fragment from grid
                 supportFragmentManager.beginTransaction().remove(frag).commit()
-                removeList.add(ref)
                 viewModel.removeWallpaperFragId(ref)
             }
 

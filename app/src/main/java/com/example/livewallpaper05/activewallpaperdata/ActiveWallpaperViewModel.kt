@@ -500,6 +500,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
     }
 
     // return config string from repo
+    // [TODO] fix to use dynamic config generation
     fun getConfig(): String {
         val config = JSONObject()
         // store simulation type, background color, and settings (with default values for now
@@ -558,6 +559,7 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
 
     }
 
+    // get active wallpaper id from repo
     fun getWid(): Int {
         return repo.wid
     }
@@ -830,7 +832,8 @@ class ActiveWallpaperViewModel(private val repo: ActiveWallpaperRepo) : ViewMode
 
         }
         // update profile table
-        mRepo.setWallpaper(wallpaper)
+        //mRepo.setWallpaper(wallpaper)
+        mRepo.saveActiveWallpaper(wallpaper)
         return wallpaper.wid
     }
 
