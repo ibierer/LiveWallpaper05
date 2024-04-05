@@ -118,7 +118,7 @@ public:
 
     int getFrameCount();
 
-    static mat3<float> incrementalRotationMatrix;
+    mat3<float> incrementalRotationMatrix;
 
 protected:
 
