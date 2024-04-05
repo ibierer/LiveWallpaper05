@@ -233,8 +233,20 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
     }
 
     // update color in repo
-    fun updateColor(color: Color) {
-        repo.color.value = color
+    fun updateColor(color: Color, back: Boolean = false) {
+        // scale values to 0-1 range
+        // if any value is greater than 1
+        val r = if (color.red() > 1) color.red() / 255.0f else color.red()
+        val g = if (color.green() > 1) color.green() / 255.0f else color.green()
+        val b = if (color.blue() > 1) color.blue() / 255.0f else color.blue()
+        val a = if (color.alpha() > 1) color.alpha() / 255.0f else color.alpha()
+
+        // update color in repo
+        if (back){
+            repo.color.postValue(Color.valueOf(r, g, b, a))
+        } else {
+            repo.updateColor(r, g, b, a)
+        }
     }
 
     // update fps in repo (scale float to 2 decimal places)
@@ -420,12 +432,7 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
     // save wallpaper from config string
     fun saveWallpaper(config: String) : Int {
         // create new wallpaper table with given data
-        var wallpaper = SavedWallpaperRow(
-            1,
-            1,
-            config,
-            ByteArray(0)
-        )
+        var wallpaper: SavedWallpaperRow
         try {
             wallpaper = SavedWallpaperRow(
                 repo.activeWallpaper.value!!.uid,
@@ -433,12 +440,23 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
                 config,
                 ByteArray(0)
             )
+
+            // update profile table
+            //mRepo.setWallpaper(wallpaper)
+            repo.saveActiveWallpaper(wallpaper)
         } catch (_: Exception) {
+            // update active wallpaper
+            wallpaper = SavedWallpaperRow(
+                repo.uid,
+                repo.wid,
+                getConfig(),
+                ByteArray(0)
+            )
+            repo.activeWallpaper.postValue(wallpaper)
+            //repo.saveActiveWallpaper(wallpaper)
 
         }
-        // update profile table
-        //mRepo.setWallpaper(wallpaper)
-        repo.saveActiveWallpaper(wallpaper)
+
         return wallpaper.wid
     }
 

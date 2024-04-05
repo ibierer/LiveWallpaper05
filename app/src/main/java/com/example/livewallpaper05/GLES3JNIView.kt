@@ -8,7 +8,6 @@ import android.opengl.GLSurfaceView
 import android.os.SystemClock
 import android.util.Log
 import android.view.View
-import androidx.core.content.ContextCompat.getSystemService
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.example.livewallpaper05.activewallpaperdata.GraphVisualization
 import com.example.livewallpaper05.activewallpaperdata.NBodyVisualization
@@ -214,7 +213,8 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             mViewModel.repo.fieldOfView.postValue(fieldOfView)
             val backgroundColorJSONObject: JSONObject = jsonConfig.getJSONObject("background_color")
             val backgroundColor: Color = mViewModel.repo.visualization.jsonObjectToColor(backgroundColorJSONObject)
-            mViewModel.repo.color.postValue(backgroundColor)
+            //mViewModel.repo.color.postValue(backgroundColor)
+            mViewModel.updateColor(backgroundColor, true)
             PreviewActivity.init(jsonConfig.toString())
         }
 

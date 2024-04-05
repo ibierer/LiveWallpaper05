@@ -22,6 +22,7 @@ class ActiveWallpaperRepo private constructor (val context: Context, private val
 
     // initialize default values for active wallpaper
     var wid: Int = 0
+    var uid: Int = 0
     var equation: String = ""
     var color: MutableLiveData<Color> = MutableLiveData<Color>(Color.valueOf(0.0f,0.0f,0.0f,0.0f))
     var orientation: Int = 0
@@ -120,6 +121,8 @@ class ActiveWallpaperRepo private constructor (val context: Context, private val
                 break
             }
         }
+        // update active wallpaper
+        activeWallpaper.postValue(wallpaperRow)
 
         mScope.launch(Dispatchers.IO) {
             wallpaperDao.saveWallpaper(wallpaperRow)
@@ -169,13 +172,7 @@ class ActiveWallpaperRepo private constructor (val context: Context, private val
     fun setLiveWallpaperData(wid: Int) {
         mScope.launch(Dispatchers.IO) {
             val wallpaper = wallpaperDao.getWallpaperData(wid).value!!
-            //if (wallpaper != null) {
-                activeWallpaper.postValue(wallpaper)
-            //} else {
-            //    // try again until wallpaper is found
-            //    val allWallpapers = wallpaperDao.getAllWallpapers()
-            //    activeWallpaper.postValue(allWallpapers[0])
-            //}
+            activeWallpaper.postValue(wallpaper)
         }
     }
 
@@ -242,6 +239,12 @@ class ActiveWallpaperRepo private constructor (val context: Context, private val
 
                 // sync new wallpapers with local wallpapers list
                 wallpapers.postValue(newWallpapers)
+
+                // find active wallpaper from saved and set local variable
+                val active = newWallpapers.find { it.wid == wid }
+                if (active != null) {
+                    activeWallpaper.postValue(active!!)
+                }
             }
             syncMutex.unlock()
         }
@@ -299,6 +302,7 @@ class ActiveWallpaperRepo private constructor (val context: Context, private val
             activeConfig,
             ByteArray(0)
         )
+        this.uid = activeUid
 
         if(wallpapers.value != null) {
             // if wallpaper not in list, add it
@@ -410,5 +414,10 @@ class ActiveWallpaperRepo private constructor (val context: Context, private val
             currentUserProfile.postValue(profileTable)
             mProfileDao.updateProfileData(profileTable)
         }
+    }
+
+    fun updateColor(r: Float, g: Float, b: Float, a: Float) {
+        color.value = Color.valueOf(r, g, b, a)
+        //color.postValue(Color.valueOf(r, g, b, a))
     }
 }
