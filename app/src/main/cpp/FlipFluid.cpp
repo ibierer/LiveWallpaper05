@@ -560,5 +560,5 @@ void FlipFluid::simulate(const float& _dt, const vec3& _gravity, const float& _f
         this->transferVelocities(false, _flipRatio);
     }
 
-    this->updateParticleColors();
+    //this->updateParticleColors();
 }
