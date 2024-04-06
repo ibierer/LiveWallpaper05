@@ -86,9 +86,22 @@ class ActiveWallpaperRepo private constructor(
     //val savedWallpapers: LiveData<List<SavedWallpaperRow>> = repo.wallpapers
 
     // helper methods
-    fun getSavedWids(): List<Int> {
-        return savedWids.distinct()
+    fun getSavedWids(): String{
+        var widString = ""
+        var used = listOf<Int>()
+
+        for (w in savedWids){
+            if (used.contains(w)){
+                continue
+            }
+            widString += w.toString() + ","
+            used = used.plus(w)
+        }
+        // strip last comma
+        widString = widString.substring(0, widString.length - 1)
+        return widString
     }
+
 
     private fun getLocalWidsByUID(uid: Int): List<Tuple> {
         return wallpaperDao.getAllWallpapersByUID(uid)
