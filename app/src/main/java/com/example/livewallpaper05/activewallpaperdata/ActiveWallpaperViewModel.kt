@@ -171,6 +171,10 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
         return repo.wid
     }
 
+    fun getLastModified(): Long {
+        return repo.lastModified
+    }
+
     // get equation string from repo
     fun getEquation(): String {
         return repo.equation
@@ -438,7 +442,8 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
                 repo.activeWallpaper.value!!.uid,
                 repo.activeWallpaper.value!!.wid,
                 config,
-                ByteArray(0)
+                ByteArray(0),
+                System.currentTimeMillis()
             )
 
             // update profile table
@@ -450,13 +455,12 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
                 repo.uid,
                 repo.wid,
                 getConfig(),
-                ByteArray(0)
+                ByteArray(0),
+                System.currentTimeMillis()
             )
             repo.activeWallpaper.postValue(wallpaper)
             //repo.saveActiveWallpaper(wallpaper)
-
         }
-
         return wallpaper.wid
     }
 
@@ -476,7 +480,8 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
             uid,
             wid,
             config,
-            ByteArray(0)
+            ByteArray(0),
+            System.currentTimeMillis()
         )
         repo.setWallpaper(wallpaper)
     }
@@ -496,9 +501,11 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
 
     // save active wallpaper and switch to new wallpaper. This allows us to save
     // the wallpaper before changing it, ensuring no changes are forgotten
-    fun saveSwitchWallpaper(activeWid: Int, activeConfig: String) {
-        repo.saveSwitchWallpaper(0, activeWid, activeConfig)
+    fun saveSwitchWallpaper(activeWid: Int, activeConfig: String, lastModified: Long) {
+        repo.saveSwitchWallpaper(0, activeWid, activeConfig, lastModified)
     }
+
+
 }
 
 /**

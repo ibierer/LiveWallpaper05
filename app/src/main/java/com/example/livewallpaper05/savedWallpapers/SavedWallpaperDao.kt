@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.OnConflictStrategy
+import com.example.livewallpaper05.activewallpaperdata.Tuple
 
 @Dao
 interface SavedWallpaperDao {
@@ -16,6 +17,10 @@ interface SavedWallpaperDao {
     // get all saved wallpapers
     @Query("SELECT * FROM wallpaper_table")
     fun getAllWallpapers(): List<SavedWallpaperRow>
+
+    // get wallpapers by uid
+    @Query("SELECT wid, lastModified FROM wallpaper_table WHERE uid = :uid")
+    fun getAllWallpapersByUID(uid: Int): List<Tuple>
 
     // save wallpaper
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -29,3 +34,5 @@ interface SavedWallpaperDao {
     @Query("DELETE FROM wallpaper_table")
     fun deleteAll()
 }
+
+data class Tuple(val wid: Int, val lastModified: Long)

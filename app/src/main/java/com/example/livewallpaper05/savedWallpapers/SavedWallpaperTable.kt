@@ -12,5 +12,7 @@ data class SavedWallpaperRow(
     @ColumnInfo(name = "config")
     var config: String,
     @ColumnInfo(name = "previewImage")
-    var previewImage: ByteArray
+    var previewImage: ByteArray,
+    @ColumnInfo(name = "lastModified")
+    var lastModified: Long
 )

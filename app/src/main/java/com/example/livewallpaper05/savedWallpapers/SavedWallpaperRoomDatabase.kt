@@ -48,7 +48,7 @@ abstract class SavedWallpaperRoomDatabase : RoomDatabase() {
 
             // seed database
             fun populateDbTask(wallpaperDao: SavedWallpaperDao) {
-                wallpaperDao.saveWallpaper(SavedWallpaperRow(0, 0, "", ByteArray(0)))
+                wallpaperDao.saveWallpaper(SavedWallpaperRow(0, 0, "", ByteArray(0), System.currentTimeMillis()))
             }
         }
     }

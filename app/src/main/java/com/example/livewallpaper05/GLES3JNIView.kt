@@ -111,31 +111,9 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
 
                 scaledSquareBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
                 val blob = outputStream.toByteArray()
-
                 mViewModel.repo.liveDataBitmap.postValue(scaledSquareBitmap)
-
-                if (mViewModel.repo.saveAsNew > 0) {
-                    mViewModel.repo.saveAsNew = 0
-                    /* insert wallpaper to DB (JSON contents, blob image, uid */
-                    auth = FirebaseAuth.getInstance()
-                    if (auth!!.currentUser != null) {
-                        val sharedPreferences =
-                            context.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
-                        username = sharedPreferences.getString("USERNAME", "").toString()
-                        uid = sharedPreferences.getInt("UID", 0)
-                        val visualizationDetails = mViewModel.repo.visualization!!.toJsonObject()
-                        GlobalScope.launch {
-                            insertWallpaper(visualizationDetails.toString(), blob, username!!)
-                        }
-                    } else {
-                        username = "Default User"
-                        uid = 11
-                        val visualizationDetails = mViewModel.repo.visualization!!.toJsonObject()
-                        GlobalScope.launch {
-                            insertWallpaper(visualizationDetails.toString(), blob, username!!)
-                        }
-                    }
-                }
+                // TODO: get this working
+                mViewModel.repo.synchronizeWithServer()
             }
 
             // get time after frame
@@ -216,36 +194,6 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
             //mViewModel.repo.color.postValue(backgroundColor)
             mViewModel.updateColor(backgroundColor, true)
             PreviewActivity.init(jsonConfig.toString())
-        }
-
-        private suspend fun insertWallpaper(contents: String, image: ByteArray, username: String) {
-            withContext(Dispatchers.IO) {
-                val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
-                Log.d("SQL", "in Insert")
-                try {
-                    Class.forName("com.mysql.jdbc.Driver").newInstance()
-                    val connectionProperties = Properties()
-                    connectionProperties["user"] = ProfileActivity.DatabaseConfig.dbUser
-                    connectionProperties["password"] = ProfileActivity.DatabaseConfig.dbPassword
-                    connectionProperties["useSSL"] = "false"
-                    DriverManager.getConnection(jdbcConnectionString, connectionProperties)
-                        .use { conn ->
-                            Log.d("SQL", "Connection made")
-                            val insertQuery =
-                                "INSERT INTO wallpapers (contents, image, username) VALUES (?, ?, ?);"
-                            conn.prepareStatement(insertQuery).use { preparedStatement ->
-                                preparedStatement.setString(1, contents)
-                                preparedStatement.setBytes(2, image)
-                                preparedStatement.setString(3, username)
-                                preparedStatement.executeUpdate()
-                            }
-                        }
-                } catch (e: SQLException) {
-                    Log.e("SQL_ERROR", "Error inserting wallpaper: ${e.message}", e)
-                } catch (e: Exception) {
-                    Log.e("SQL_ERROR", "Unexpected error: ${e.message}", e)
-                }
-            }
         }
     }
 }

@@ -81,7 +81,7 @@ class PreviewActivity : AppCompatActivity() {
         val colorButton = findViewById<Button>(R.id.b_color_picker)
         val hideUIButton = findViewById<Button>(R.id.hide_ui_button)
         val saveButton = findViewById<Button>(R.id.save_button)
-        //val saveAsButton = findViewById<Button>(R.id.save_as_new_button)
+        val syncButton = findViewById<Button>(R.id.sync_button)
         val equationEditor = findViewById<EditText>(R.id.et_equation)
         val flipsNormalsCheckBox = findViewById<CheckBox>(R.id.flip_normals_checkbox)
         val linearLayout = findViewById<LinearLayout>(R.id.settings_linearlayout)
@@ -369,11 +369,9 @@ class PreviewActivity : AppCompatActivity() {
             viewModel.repo.getScreenBuffer = 1
         }
 
-        /*saveAsButton.setOnClickListener {
-            // Screen buffer capture
-            viewModel.getScreenBuffer = 1
-            viewModel.saveAsNew = 1
-        }*/
+        syncButton.setOnClickListener {
+            viewModel.repo.synchronizeWithServer()
+        }
 
         // setup equation editor
         viewModel.updateEquation(equationEditor.text.toString())
@@ -429,7 +427,7 @@ class PreviewActivity : AppCompatActivity() {
             findViewById<RadioButton>(R.id.image_radio_button).visibility = View.VISIBLE
             findViewById<TextView>(R.id.background_label).visibility = View.VISIBLE
             findViewById<Spinner>(R.id.image_selection_spinner).visibility = View.VISIBLE
-            findViewById<Button>(R.id.syncButton).visibility = View.VISIBLE
+            findViewById<Button>(R.id.sync_button).visibility = View.VISIBLE
             saveButton.visibility = View.VISIBLE
             colorButton.isEnabled = true
             linearLayout.isEnabled = true
@@ -437,7 +435,7 @@ class PreviewActivity : AppCompatActivity() {
             findViewById<RadioButton>(R.id.solid_color_radio_button).isEnabled = true
             findViewById<RadioButton>(R.id.image_radio_button).isEnabled = true
             findViewById<Spinner>(R.id.image_selection_spinner).isEnabled = true
-            findViewById<Button>(R.id.syncButton).isEnabled = true
+            findViewById<Button>(R.id.sync_button).isEnabled = true
             findViewById<Button>(R.id.save_button).isEnabled = true
             CoroutineScope(Dispatchers.Main).launch {
                 loadOrUnloadUIElements()
@@ -452,7 +450,7 @@ class PreviewActivity : AppCompatActivity() {
             findViewById<RadioGroup>(R.id.background_radio_group).visibility = View.GONE
             findViewById<TextView>(R.id.background_label).visibility = View.GONE
             findViewById<Spinner>(R.id.image_selection_spinner).visibility = View.GONE
-            findViewById<Button>(R.id.syncButton).visibility = View.GONE
+            findViewById<Button>(R.id.sync_button).visibility = View.GONE
             saveButton.visibility = View.GONE
             colorButton.isEnabled = false
             linearLayout.isEnabled = false
@@ -460,7 +458,7 @@ class PreviewActivity : AppCompatActivity() {
             findViewById<RadioButton>(R.id.image_radio_button).isEnabled = false
             findViewById<RadioGroup>(R.id.background_radio_group).isEnabled = false
             findViewById<Spinner>(R.id.image_selection_spinner).isEnabled = false
-            findViewById<Button>(R.id.syncButton).isEnabled = false
+            findViewById<Button>(R.id.sync_button).isEnabled = false
             findViewById<Button>(R.id.save_button).isEnabled = false
             CoroutineScope(Dispatchers.Main).launch {
                 loadOrUnloadUIElements()

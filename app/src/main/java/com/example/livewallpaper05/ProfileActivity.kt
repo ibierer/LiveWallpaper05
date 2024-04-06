@@ -190,8 +190,9 @@ class ProfileActivity : AppCompatActivity() {
             // updated active wallpaper params with saved wallpaper data
             val activeConfig = viewModel.getConfig()
             val activeWid = viewModel.getWid()
+            val activeLastModified = viewModel.getLastModified()
             // if wid is in saved wallpapers, update active wallpaper with saved wallpaper data
-            viewModel.saveSwitchWallpaper(activeWid, activeConfig)
+            viewModel.saveSwitchWallpaper(activeWid, activeConfig, activeLastModified)
         }
 
         // link active wallpaper to active wallpaper live data via callback function
@@ -453,14 +454,12 @@ class ProfileActivity : AppCompatActivity() {
         viewModel.createWallpaperTable(-1)
         viewModel.saveWids(this)
 
+
         // switch active wallpaper to new wallpaper
         val newWid = viewModel.getWid()
-
-
         // force user to preview activity
         val intent = Intent(this, PreviewActivity::class.java)
         startActivity(intent)
-
     }
 
     private fun updateFragListeners() {
