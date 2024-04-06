@@ -18,6 +18,10 @@ interface SavedWallpaperDao {
     @Query("SELECT * FROM wallpaper_table")
     fun getAllWallpapers(): List<SavedWallpaperRow>
 
+
+    @Query("SELECT * FROM wallpaper_table WHERE uid = :uid and wid = :wid")
+    fun getWallpaperByUidAndWid(uid: Int, wid: Int): SavedWallpaperRow
+
     // get wallpapers by uid
     @Query("SELECT wid, lastModified FROM wallpaper_table WHERE uid = :uid")
     fun getAllWallpapersByUID(uid: Int): List<Tuple>

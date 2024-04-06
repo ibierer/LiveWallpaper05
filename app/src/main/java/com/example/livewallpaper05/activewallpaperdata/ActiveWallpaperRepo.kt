@@ -86,12 +86,12 @@ class ActiveWallpaperRepo private constructor(
     //val savedWallpapers: LiveData<List<SavedWallpaperRow>> = repo.wallpapers
 
     // helper methods
-    fun getSavedWids(): String{
+    fun getSavedWids(): String {
         var widString = ""
         var used = listOf<Int>()
 
-        for (w in savedWids){
-            if (used.contains(w)){
+        for (w in savedWids) {
+            if (used.contains(w)) {
                 continue
             }
             widString += w.toString() + ","
@@ -145,7 +145,6 @@ class ActiveWallpaperRepo private constructor(
         }
         // update active wallpaper
         activeWallpaper.postValue(wallpaperRow)
-
         mScope.launch(Dispatchers.IO) {
             wallpaperDao.saveWallpaper(wallpaperRow)
         }
@@ -154,25 +153,31 @@ class ActiveWallpaperRepo private constructor(
     /* insert wallpaper to AWS DB (JSON contents, blob image, uid
     *  syncronize with RoomDB before posting to server */
     @OptIn(DelicateCoroutinesApi::class)
-    suspend fun synchronizeWithServer() {
+    suspend fun synchronizeWithServer(uid: Int) {
         // Non-registered user, don't sync with server
         if (uid == context.resources.getInteger(R.integer.default_profile_id)) {
             return
         }
-        // construct list of Pair/Tuple (wid, lastModified)
-        withContext(Dispatchers.IO){
-            // One with all wids on AWS for the user
+        withContext(Dispatchers.IO) {
+            // Construct list w/ all wids on AWS for the user
             val widsRoom: List<Tuple> = getLocalWidsByUID(uid)
-            // another with wids in Room for the user
+            // another w/ wids in Room for the user
             val widsServer: List<Tuple> = getServerWidsByUID(uid)
-            for (tuple in widsServer){
-                if (!widsRoom.any{ it.wid == tuple.wid }) {
+            for (tuple in widsServer) {
+                if (!widsRoom.any { it.wid == tuple.wid }) {
                     // insert visualization from server to local db
+                    val savedWallpaperRow: SavedWallpaperRow? =
+                        getServerWallpaperByUidAndWid(uid, tuple.wid)
+                    if (savedWallpaperRow != null) {
+                        wallpaperDao.saveWallpaper(savedWallpaperRow)
+                    }
                 }
             }
-            for (tuple in widsRoom){
-                if (!widsServer.any{ it.wid == tuple.wid }){
+            for (tuple in widsRoom) {
+                if (!widsServer.any { it.wid == tuple.wid }) {
                     // insert visualization from local db to server
+                    val wallpaperRow = wallpaperDao.getWallpaperByUidAndWid(uid, tuple.wid)
+                    insertLocalWallpaperToServer(wallpaperRow)
                 }
             }
 
@@ -181,43 +186,85 @@ class ActiveWallpaperRepo private constructor(
                 val tupleRoom = widsRoom.find { it.wid == tupleServer.wid }
                 if (tupleRoom != null) {
                     if (tupleServer.lastModified > tupleRoom.lastModified) {
-                        // Insert visualization from server to local db
+                        // Overwrite local db visualization with server visualization
+                        val savedWallpaperRow: SavedWallpaperRow? =
+                            getServerWallpaperByUidAndWid(uid, tupleServer.wid)
+                        if (savedWallpaperRow != null) {
+                            wallpaperDao.saveWallpaper(savedWallpaperRow)
+                        }
                     } else if (tupleServer.lastModified < tupleRoom.lastModified) {
-                        // Insert visualization from local db to server
+                        // Overwrite server visualization with local db visualization
+                        val wallpaperRow = wallpaperDao.getWallpaperByUidAndWid(uid, tupleServer.wid)
+                        insertLocalWallpaperToServer(wallpaperRow)
                     }
                 }
             }
         }
+    }
 
 
-
-
-
-
-
-
-        auth = FirebaseAuth.getInstance()
-        val outputStream = ByteArrayOutputStream()
-        liveDataBitmap.value?.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-        val convertedBitmap: ByteArray = outputStream.toByteArray()
-        // REGISTERED USER
-        if (auth.currentUser != null) {
-            val sharedPreferences = context.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
-            username = sharedPreferences.getString("USERNAME", "").toString()
-            uid = sharedPreferences.getInt("UID", 0)
-            val visualizationDetails = visualization.toJsonObject()
-            GlobalScope.launch {
-                insertWallpaper(visualizationDetails.toString(), convertedBitmap, username)
+    private fun insertLocalWallpaperToServer(wallpaperRow: SavedWallpaperRow) {
+        val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
+        Log.d("SQL", "in insertLocalWallpaperToServer")
+        try {
+            Class.forName("com.mysql.jdbc.Driver").newInstance()
+            val connectionProperties = Properties()
+            connectionProperties["user"] = ProfileActivity.DatabaseConfig.dbUser
+            connectionProperties["password"] = ProfileActivity.DatabaseConfig.dbPassword
+            connectionProperties["useSSL"] = "false"
+            DriverManager.getConnection(jdbcConnectionString, connectionProperties).use { conn ->
+                Log.d("SQL", "Connection made")
+                val selectQuery =
+                    "INSERT INTO wallpapers (contents, image, username, lastModified) VALUES (?, ?, ?, ?);"
+                conn.prepareStatement(selectQuery).use { preparedStatement ->
+                    preparedStatement.setString(1, wallpaperRow.config)
+                    preparedStatement.setBytes(2, wallpaperRow.previewImage)
+                    preparedStatement.setString(3, username)
+                    preparedStatement.setLong(4, wallpaperRow.lastModified)
+                    preparedStatement.execute()
+                }
             }
-        } else {
-            // DEFAULT USER
-            uid = 11
-            val visualizationDetails = visualization.toJsonObject()
-            GlobalScope.launch {
-                insertWallpaper(visualizationDetails.toString(), convertedBitmap, username)
-            }
+        } catch (e: SQLException) {
+            Log.e("SQL_ERROR", "Error inserting wallpaper: ${e.message}", e)
+        } catch (e: Exception) {
+            Log.e("SQL_ERROR", "Unexpected error: ${e.message}", e)
         }
+    }
 
+    private fun getServerWallpaperByUidAndWid(uid: Int, wid: Int): SavedWallpaperRow? {
+        val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
+        var localWallpaper: SavedWallpaperRow? = null
+        Log.d("SQL", "in getServerWallpaperByUidAndWid")
+        try {
+            Class.forName("com.mysql.jdbc.Driver").newInstance()
+            val connectionProperties = Properties()
+            connectionProperties["user"] = ProfileActivity.DatabaseConfig.dbUser
+            connectionProperties["password"] = ProfileActivity.DatabaseConfig.dbPassword
+            connectionProperties["useSSL"] = "false"
+            DriverManager.getConnection(jdbcConnectionString, connectionProperties)
+                .use { conn ->
+                    Log.d("SQL", "Connection made")
+                    val selectQuery =
+                        "SELECT * FROM wallpapers where uid = ? and wid = ?;"
+                    conn.prepareStatement(selectQuery).use { preparedStatement ->
+                        preparedStatement.setInt(1, uid)
+                        preparedStatement.setInt(2, wid)
+                        val resultSet = preparedStatement.executeQuery()
+
+                        if (resultSet.next()) {
+                            val contents = resultSet.getString("contents")
+                            val image = resultSet.getBytes("image")
+                            val lastMod = resultSet.getLong("lastModified")
+                            localWallpaper = SavedWallpaperRow(uid, wid, contents, image, lastMod)
+                        }
+                    }
+                }
+        } catch (e: SQLException) {
+            Log.e("SQL_ERROR", "Error getting wid and lastModified column values: ${e.message}", e)
+        } catch (e: Exception) {
+            Log.e("SQL_ERROR", "Unexpected error: ${e.message}", e)
+        }
+        return localWallpaper
     }
 
     private fun getServerWidsByUID(uid: Int): List<Tuple> {
@@ -233,12 +280,11 @@ class ActiveWallpaperRepo private constructor(
             DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                 .use { conn ->
                     Log.d("SQL", "Connection made")
-                    val selectQuery =
-                        "SELECT wid, lastModified FROM wallpapers where uid = ?;"
+                    val selectQuery = "SELECT wid, lastModified FROM wallpapers where uid = ?;"
                     conn.prepareStatement(selectQuery).use { preparedStatement ->
                         preparedStatement.setInt(1, uid)
                         val resultSet = preparedStatement.executeQuery()
-                        while (resultSet.next()){
+                        while (resultSet.next()) {
                             val wid = resultSet.getInt("wid")
                             val lastModified = resultSet.getLong("lastModified")
                             val widTuple = Tuple(wid, lastModified)

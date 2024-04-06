@@ -370,7 +370,7 @@ class PreviewActivity : AppCompatActivity() {
         }
 
         syncButton.setOnClickListener {
-            CoroutineScope(Dispatchers.Main).launch {
+            CoroutineScope(Dispatchers.IO).launch {
                 viewModel.repo.synchronizeWithServer()
             }
         }
