@@ -370,7 +370,7 @@ class PreviewActivity : AppCompatActivity() {
         }
 
         syncButton.setOnClickListener {
-            viewModel.repo.synchronizeWithServer()
+            //viewModel.repo.synchronizeWithServer()
         }
 
         // setup equation editor

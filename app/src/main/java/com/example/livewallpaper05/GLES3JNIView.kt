@@ -113,7 +113,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                 val blob = outputStream.toByteArray()
                 mViewModel.repo.liveDataBitmap.postValue(scaledSquareBitmap)
                 // TODO: get this working
-                mViewModel.repo.synchronizeWithServer()
+                //mViewModel.repo.synchronizeWithServer()
             }
 
             // get time after frame
