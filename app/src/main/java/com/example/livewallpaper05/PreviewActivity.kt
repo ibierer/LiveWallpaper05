@@ -85,10 +85,6 @@ class PreviewActivity : AppCompatActivity() {
         val equationEditor = findViewById<EditText>(R.id.et_equation)
         val flipsNormalsCheckBox = findViewById<CheckBox>(R.id.flip_normals_checkbox)
         val linearLayout = findViewById<LinearLayout>(R.id.settings_linearlayout)
-        //
-        val backgroundRadioButton = findViewById<RadioGroup>(R.id.background_radio_group)
-        findViewById<RadioButton>(R.id.solid_color_radio_button).visibility = View.VISIBLE
-        findViewById<RadioButton>(R.id.image_radio_button).visibility = View.VISIBLE
 
         // fill visualization selector box with wallpaper options from native-lib.cpp
         val visualizationSelectorAdapter = ArrayAdapter.createFromResource(

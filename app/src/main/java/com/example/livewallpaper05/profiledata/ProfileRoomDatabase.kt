@@ -1,5 +1,4 @@
 package com.example.livewallpaper05.profiledata
-
 import android.content.Context
 import android.util.Log
 import androidx.room.Database
