@@ -370,7 +370,9 @@ class PreviewActivity : AppCompatActivity() {
         }
 
         syncButton.setOnClickListener {
-            //viewModel.repo.synchronizeWithServer()
+            CoroutineScope(Dispatchers.Main).launch {
+                viewModel.repo.synchronizeWithServer()
+            }
         }
 
         // setup equation editor

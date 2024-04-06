@@ -132,7 +132,6 @@ class ActiveWallpaperRepo private constructor(
         )
 
         savedWids = savedWids.plus(wid)
-
         return wallpaper
     }
 

@@ -15,6 +15,7 @@ import com.example.livewallpaper05.activewallpaperdata.NaiveFluidVisualization
 import com.example.livewallpaper05.activewallpaperdata.PicFlipVisualization
 import com.example.livewallpaper05.activewallpaperdata.TriangleVisualization
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -113,7 +114,9 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                 val blob = outputStream.toByteArray()
                 mViewModel.repo.liveDataBitmap.postValue(scaledSquareBitmap)
                 // TODO: get this working
-                //mViewModel.repo.synchronizeWithServer()
+                CoroutineScope(Dispatchers.Main).launch{
+                    mViewModel.repo.synchronizeWithServer()
+                }
             }
 
             // get time after frame
