@@ -115,7 +115,11 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                 mViewModel.repo.liveDataBitmap.postValue(scaledSquareBitmap)
                 // TODO: get this working
                 CoroutineScope(Dispatchers.IO).launch{
-                    mViewModel.repo.synchronizeWithServer()
+                    if (auth!!.currentUser != null){
+                        val sharedPreferences = context.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+                        val storedUid = sharedPreferences.getInt("UID", 11)
+                        mViewModel.repo.synchronizeWithServer(storedUid)
+                    }
                 }
             }
 

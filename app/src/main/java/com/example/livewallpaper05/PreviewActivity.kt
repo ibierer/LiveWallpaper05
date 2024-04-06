@@ -1,5 +1,6 @@
 package com.example.livewallpaper05
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -48,8 +49,7 @@ class PreviewActivity : AppCompatActivity() {
         // update syntax check message
         val equationChecker = EquationChecker()
         val result: String = equationChecker.checkEquationSyntax(findViewById<EditText>(R.id.et_equation).text.toString())
-        val message: String
-        message = if (result == "") {
+        val message: String = if (result == "") {
             "No syntax errors."
         } else {
             result
@@ -60,7 +60,7 @@ class PreviewActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(icicle: Bundle?) {
         super.onCreate(icicle)
-        getWindow().setFlags(
+        window.setFlags(
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
             WindowManager.LayoutParams.FLAG_FULLSCREEN
         );
@@ -85,6 +85,10 @@ class PreviewActivity : AppCompatActivity() {
         val equationEditor = findViewById<EditText>(R.id.et_equation)
         val flipsNormalsCheckBox = findViewById<CheckBox>(R.id.flip_normals_checkbox)
         val linearLayout = findViewById<LinearLayout>(R.id.settings_linearlayout)
+        //
+        val backgroundRadioButton = findViewById<RadioGroup>(R.id.background_radio_group)
+        findViewById<RadioButton>(R.id.solid_color_radio_button).visibility = View.VISIBLE
+        findViewById<RadioButton>(R.id.image_radio_button).visibility = View.VISIBLE
 
         // fill visualization selector box with wallpaper options from native-lib.cpp
         val visualizationSelectorAdapter = ArrayAdapter.createFromResource(
@@ -371,7 +375,7 @@ class PreviewActivity : AppCompatActivity() {
 
         syncButton.setOnClickListener {
             CoroutineScope(Dispatchers.IO).launch {
-                viewModel.repo.synchronizeWithServer()
+                viewModel.repo.synchronizeWithServer(viewModel.repo.uid)
             }
         }
 

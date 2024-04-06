@@ -15,7 +15,7 @@ import java.sql.DriverManager
 import java.time.LocalDateTime
 import kotlin.jvm.Volatile
 
-@Database(entities = [ProfileTable::class], version = 2, exportSchema = false)
+@Database(entities = [ProfileTable::class], version = 3, exportSchema = false)
 abstract class ProfileRoomDatabase : RoomDatabase() {
     abstract fun profileDao(): ProfileDao
 
