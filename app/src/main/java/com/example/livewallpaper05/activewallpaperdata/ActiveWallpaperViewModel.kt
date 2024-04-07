@@ -131,9 +131,9 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
                 config.put("field_of_view", getFieldOfView())
                 config.put("background_is_solid_color", sim.backgroundIsSolidColor)
                 config.put("background_texture", sim.backgroundTexture)
-                config.put("gravity", getGravity())
-                config.put("linear_acceleration", getLinearAcceleration())
-                config.put("efficiency", getEfficiency())
+                //config.put("gravity", getGravity())
+                //config.put("linear_acceleration", getLinearAcceleration())
+                //config.put("efficiency", getEfficiency())
                 config.put("particle_count", sim.particleCount)
             }
             2 -> {

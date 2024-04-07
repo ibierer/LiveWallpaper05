@@ -26,10 +26,12 @@ PicFlipView::~PicFlipView(){
 
 }
 
-void PicFlipView::simulate(const vec3& acceleration){
+void
+PicFlipView::simulate(const vec3 &acceleration, const mat3<float> &incrementalRotationMatrix) {
     fluid->simulate(
-            fluid->dt, acceleration, fluid->flipRatio, fluid->numPressureIters, fluid->numParticleIters,
-            fluid->overRelaxation, fluid->compensateDrift, fluid->separateParticles);
+            fluid->dt, acceleration, fluid->flipRatio, fluid->numPressureIters,
+            fluid->numParticleIters,
+            fluid->overRelaxation, fluid->compensateDrift, fluid->separateParticles, incrementalRotationMatrix);
     fluid->frameNr++;
 }
 
@@ -152,6 +154,6 @@ void PicFlipView::render() {
     // Simulate
     vec3 forceVector = computeForce(gravity, referenceFrameRotates, rotation);
     for(int i = 0; i < 2; i++){
-        simulate(forceVector);
+        simulate(forceVector, incrementalRotationMatrix);
     }
 }

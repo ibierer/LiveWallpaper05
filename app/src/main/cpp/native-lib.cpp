@@ -71,6 +71,7 @@ using std::string;
 using nlohmann::json;
 
 View* view = nullptr;
+Matrix3<float> rotationMatrix;
 
 extern "C"
 JNIEXPORT void JNICALL
@@ -174,17 +175,20 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_step(JNIEnv *env
         view->accelerometerVector = vec3(acc_x, acc_y, acc_z);
         view->linearAccelerationVector = vec3(linear_acc_x, linear_acc_y, linear_acc_z);
         view->rotationVector = vec4(rot_x, rot_y, rot_z, rot_w);
-        static Matrix3<float> rotationMatrix;
-        if(view->getFrameCount() == 0){
-            rotationMatrix = quaternionTo3x3(Vec4<float>(rot_x, rot_y, rot_z, rot_w));
-        }else{
-            Matrix3<float> currentRotationMatrix = quaternionTo3x3(Vec4<float>(rot_x, rot_y, rot_z, rot_w));
-            Matrix3<float> incrementalRotationMatrix = rotationMatrix.GetInverse() * currentRotationMatrix;
-            for(int i = 0; i < 9; i++){
-                view->incrementalRotationMatrix[i] = incrementalRotationMatrix[i];
-            }
-            rotationMatrix = currentRotationMatrix;
-        }
+        //if(view->getFrameCount() == 0){
+        //    rotationMatrix = quaternionTo3x3(Vec4<float>(rot_x, rot_y, rot_z, rot_w));
+        //    for(int i = 0; i < 9; i++){
+        //        view->incrementalRotationMatrix[i] = (float)(i % 4 == 0);
+        //    }
+        //}else{
+        //    Matrix3<float> currentRotationMatrix = quaternionTo3x3(Vec4<float>(rot_x, rot_y, rot_z, rot_w));
+        //    Matrix3<float> incrementalRotationMatrix = rotationMatrix.GetInverse() * currentRotationMatrix;
+        //    for(int i = 0; i < 9; i++){
+        //        view->incrementalRotationMatrix[i] = incrementalRotationMatrix[i];
+        //    }
+        //    rotationMatrix = currentRotationMatrix;
+        //}
+        //ALOGI("view->incrementalRotationMatrix = %s %s %s\n", view->incrementalRotationMatrix.m[0].str().c_str(), view->incrementalRotationMatrix.m[1].str().c_str(), view->incrementalRotationMatrix.m[2].str().c_str());
         view->distanceToOrigin = distance;
         view->maxViewAngle = field_of_view;
         view->gravity = gravity;

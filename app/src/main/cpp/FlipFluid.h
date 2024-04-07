@@ -102,7 +102,7 @@ public:
 
     FlipFluid(const float& _density, const float& _width, const float& _height, const float& _depth, const float& _spacing, const float& _particleRadius, const int& _maxParticles);
 
-    void simulate(const float& _dt, const vec3& _gravity, const float& _flipRatio, const int& _numPressureIters, const int& _numParticleIters, const float& _overRelaxation, const bool& _compensateDrift, const bool& _separateParticles);
+    void simulate(const float &_dt, const vec3 &_gravity, const float &_flipRatio, const int &_numPressureIters, const int &_numParticleIters, const float &_overRelaxation, const bool &_compensateDrift, const bool &_separateParticles, const mat3<float>& incrementalRotationMatrix);
 
 private:
 
@@ -112,7 +112,7 @@ private:
 
     static const int SOLID_CELL = 2;
 
-    void integrateParticles(const float& _dt, const vec3& _gravity);
+    void integrateParticles(const float &_dt, const vec3 &_gravity, const mat3<float>& incrementalRotationMatrix);
 
     void pushParticlesApart(const float& _numIters);
 

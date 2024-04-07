@@ -54,13 +54,14 @@ FlipFluid::FlipFluid(const float& _density, const float& _width, const float& _h
     numParticles = 0;                                                     // Set the initial number of stars to zero
 }
 
-void FlipFluid::integrateParticles(const float& _dt, const vec3& _gravity)
+void FlipFluid::integrateParticles(const float &_dt, const vec3 &_gravity, const mat3<float>& incrementalRotationMatrix)
 {
     for (int i = 0; i < numParticles; i++) {
         particleVel[i] += _dt * _gravity;
         particlePos[i] += particleVel[i] * _dt;
 
-        //particlePos[i] *=
+        //particlePos[i] = incrementalRotationMatrix * particlePos[i];
+        //particleVel[i] = incrementalRotationMatrix * particleVel[i];
     }
 }
 
@@ -546,13 +547,13 @@ void FlipFluid::updateParticleColors()
     }
 }
 
-void FlipFluid::simulate(const float& _dt, const vec3& _gravity, const float& _flipRatio, const int& _numPressureIters, const int& _numParticleIters, const float& _overRelaxation, const bool& _compensateDrift, const bool& _separateParticles)
+void FlipFluid::simulate(const float &_dt, const vec3 &_gravity, const float &_flipRatio, const int &_numPressureIters, const int &_numParticleIters, const float &_overRelaxation, const bool &_compensateDrift, const bool &_separateParticles, const mat3<float>& incrementalRotationMatrix)
 {
     int numSubSteps = 1;
     float sdt = _dt / numSubSteps;
 
     for (int step = 0; step < numSubSteps; step++) {
-        this->integrateParticles(sdt, _gravity);
+        this->integrateParticles(sdt, _gravity, incrementalRotationMatrix);
         if (_separateParticles)
             this->pushParticlesApart(_numParticleIters);
         this->handleParticleCollisions();

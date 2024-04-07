@@ -926,6 +926,13 @@ public:
     T& operator[](int index) {
         return ((T*)&m)[index];
     }
+    _vec3<T> operator*(const _vec3<T>& vec) const {
+        return _vec3<T>(
+                vec.x * m[0].x + vec.y * m[1].x + vec.z * m[2].x,
+                vec.x * m[0].y + vec.y * m[1].y + vec.z * m[2].y,
+                vec.x * m[0].z + vec.y * m[1].z + vec.z * m[2].z
+        );
+    }
 };
 
 template<class T>

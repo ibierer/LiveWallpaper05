@@ -69,7 +69,7 @@ public:
 
     FlipFluid* fluid;
 
-    void simulate(const vec3& acceleration);
+    void simulate(const vec3 &acceleration, const mat3<float> &incrementalRotationMatrix);
 
     void setupScene();
 
