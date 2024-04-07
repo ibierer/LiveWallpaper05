@@ -70,22 +70,25 @@ class PreviewActivity : AppCompatActivity() {
         mView = GLES3JNIView(application, viewModel)
 
         // grab ui element for preview page
-        val layout = findViewById<LinearLayout>(R.id.render_layout)
-        val distanceSeekBar = findViewById<SeekBar>(R.id.distance_seekbar)
-        val fieldOfViewSeekBar = findViewById<SeekBar>(R.id.field_of_view_seekbar)
-        val gravitySeekBar = findViewById<SeekBar>(R.id.gravity_seekbar)
-        val linearAccelerationSeekBar = findViewById<SeekBar>(R.id.linear_acceleration_seekbar)
-        val efficiencySeekBar = findViewById<SeekBar>(R.id.efficiency_seekbar)
-        val visualizationSelectorSpinner = findViewById<Spinner>(R.id.visualization_type_spinner)
-        val environmentMapSelectorSpinner = findViewById<Spinner>(R.id.image_selection_spinner)
-        val colorButton = findViewById<Button>(R.id.b_color_picker)
-        val hideUIButton = findViewById<Button>(R.id.hide_ui_button)
-        val saveButton = findViewById<Button>(R.id.save_button)
-        val syncButton = findViewById<Button>(R.id.sync_button)
-        val equationEditor = findViewById<EditText>(R.id.et_equation)
-        val flipsNormalsCheckBox = findViewById<CheckBox>(R.id.flip_normals_checkbox)
-        val linearLayout = findViewById<LinearLayout>(R.id.settings_linearlayout)
-        val doneButton = findViewById<Button>(R.id.done_button)
+        val layout: LinearLayout = findViewById<LinearLayout>(R.id.render_layout)
+        val distanceSeekBar: SeekBar = findViewById<SeekBar>(R.id.distance_seekbar)
+        val fieldOfViewSeekBar: SeekBar = findViewById<SeekBar>(R.id.field_of_view_seekbar)
+        val gravitySeekBar: SeekBar = findViewById<SeekBar>(R.id.gravity_seekbar)
+        val linearAccelerationSeekBar: SeekBar = findViewById<SeekBar>(R.id.linear_acceleration_seekbar)
+        val efficiencySeekBar: SeekBar = findViewById<SeekBar>(R.id.efficiency_seekbar)
+        val visualizationSelectorSpinner: Spinner = findViewById<Spinner>(R.id.visualization_type_spinner)
+        val environmentMapSelectorSpinner: Spinner = findViewById<Spinner>(R.id.image_selection_spinner)
+        val colorButton: Button = findViewById<Button>(R.id.b_color_picker)
+        val hideUIButton: Button = findViewById<Button>(R.id.hide_ui_button)
+        val saveButton: Button = findViewById<Button>(R.id.save_button)
+        val syncButton: Button = findViewById<Button>(R.id.sync_button)
+        val equationEditor: EditText = findViewById<EditText>(R.id.et_equation)
+        val flipsNormalsCheckBox: CheckBox = findViewById<CheckBox>(R.id.flip_normals_checkbox)
+        val linearLayout: LinearLayout = findViewById<LinearLayout>(R.id.settings_linearlayout)
+        val doneButton: Button = findViewById<Button>(R.id.done_button)
+        val backgroundRadioButton: RadioGroup = findViewById<RadioGroup>(R.id.background_radio_group)
+        val solidColorRadioButton: RadioButton = findViewById<RadioButton>(R.id.solid_color_radio_button)
+        val imageRadioButton: RadioButton = findViewById<RadioButton>(R.id.image_radio_button)
 
         // fill visualization selector box with wallpaper options from native-lib.cpp
         val visualizationSelectorAdapter = ArrayAdapter.createFromResource(
@@ -445,21 +448,21 @@ class PreviewActivity : AppCompatActivity() {
         fun showUIComponents(){
             hideUIButton.text = resources.getString(R.string.hideUIButtonText)
             colorButton.visibility = View.VISIBLE
-            findViewById<RadioGroup>(R.id.background_radio_group).visibility = View.VISIBLE
-            findViewById<RadioButton>(R.id.solid_color_radio_button).visibility = View.VISIBLE
-            findViewById<RadioButton>(R.id.image_radio_button).visibility = View.VISIBLE
+            backgroundRadioButton.visibility = View.VISIBLE
+            solidColorRadioButton.visibility = View.VISIBLE
+            imageRadioButton.visibility = View.VISIBLE
             findViewById<TextView>(R.id.background_label).visibility = View.VISIBLE
-            findViewById<Spinner>(R.id.image_selection_spinner).visibility = View.VISIBLE
-            findViewById<Button>(R.id.sync_button).visibility = View.VISIBLE
+            environmentMapSelectorSpinner.visibility = View.VISIBLE
+            syncButton.visibility = View.VISIBLE
             saveButton.visibility = View.VISIBLE
             colorButton.isEnabled = true
             linearLayout.isEnabled = true
-            findViewById<RadioGroup>(R.id.background_radio_group).isEnabled = true
-            findViewById<RadioButton>(R.id.solid_color_radio_button).isEnabled = true
-            findViewById<RadioButton>(R.id.image_radio_button).isEnabled = true
-            findViewById<Spinner>(R.id.image_selection_spinner).isEnabled = true
-            findViewById<Button>(R.id.sync_button).isEnabled = true
-            findViewById<Button>(R.id.save_button).isEnabled = true
+            backgroundRadioButton.isEnabled = true
+            solidColorRadioButton.isEnabled = true
+            imageRadioButton.isEnabled = true
+            environmentMapSelectorSpinner.isEnabled = true
+            syncButton.isEnabled = true
+            saveButton.isEnabled = true
             CoroutineScope(Dispatchers.Main).launch {
                 loadOrUnloadUIElements()
             }
@@ -468,21 +471,21 @@ class PreviewActivity : AppCompatActivity() {
         fun hideUIComponents(){
             hideUIButton.text = resources.getString(R.string.showUIButtonText)
             colorButton.visibility = View.GONE
-            findViewById<RadioButton>(R.id.solid_color_radio_button).visibility = View.GONE
-            findViewById<RadioButton>(R.id.image_radio_button).visibility = View.GONE
-            findViewById<RadioGroup>(R.id.background_radio_group).visibility = View.GONE
+            solidColorRadioButton.visibility = View.GONE
+            imageRadioButton.visibility = View.GONE
+            backgroundRadioButton.visibility = View.GONE
             findViewById<TextView>(R.id.background_label).visibility = View.GONE
-            findViewById<Spinner>(R.id.image_selection_spinner).visibility = View.GONE
-            findViewById<Button>(R.id.sync_button).visibility = View.GONE
+            environmentMapSelectorSpinner.visibility = View.GONE
+            syncButton.visibility = View.GONE
             saveButton.visibility = View.GONE
             colorButton.isEnabled = false
             linearLayout.isEnabled = false
-            findViewById<RadioButton>(R.id.solid_color_radio_button).isEnabled = false
-            findViewById<RadioButton>(R.id.image_radio_button).isEnabled = false
-            findViewById<RadioGroup>(R.id.background_radio_group).isEnabled = false
-            findViewById<Spinner>(R.id.image_selection_spinner).isEnabled = false
-            findViewById<Button>(R.id.sync_button).isEnabled = false
-            findViewById<Button>(R.id.save_button).isEnabled = false
+            solidColorRadioButton.isEnabled = false
+            imageRadioButton.isEnabled = false
+            backgroundRadioButton.isEnabled = false
+            environmentMapSelectorSpinner.isEnabled = false
+            syncButton.isEnabled = false
+            saveButton.isEnabled = false
             CoroutineScope(Dispatchers.Main).launch {
                 loadOrUnloadUIElements()
             }
