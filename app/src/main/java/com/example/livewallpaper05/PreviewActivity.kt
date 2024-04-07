@@ -32,6 +32,7 @@ import androidx.lifecycle.Observer
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModelFactory
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -41,7 +42,7 @@ import java.io.InputStream
 import java.util.Properties
 
 class PreviewActivity : AppCompatActivity() {
-
+    private lateinit var auth: FirebaseAuth
     var mView: GLES3JNIView? = null
 
     private val viewModel: ActiveWallpaperViewModel by viewModels {
@@ -69,7 +70,7 @@ class PreviewActivity : AppCompatActivity() {
         );
         setContentView(R.layout.activity_preview)
         DatabaseConfig.initialize(this)
-
+        auth = FirebaseAuth.getInstance()
         // get view window from GLES3JNIView
         mView = GLES3JNIView(application, viewModel)
 
@@ -391,7 +392,16 @@ class PreviewActivity : AppCompatActivity() {
 
         syncButton.setOnClickListener {
             CoroutineScope(Dispatchers.IO).launch {
-                viewModel.repo.synchronizeWithServer(viewModel.repo.uid)
+                if (auth.currentUser != null){
+                    val sharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+                    viewModel.repo.uid = sharedPreferences.getInt("UID", 11)
+                    viewModel.repo.username = sharedPreferences.getString("USERNAME", "").toString()
+                    viewModel.repo.synchronizeWithServer(viewModel.repo.uid)
+                }
+                else{
+                    viewModel.repo.uid = 11
+                    viewModel.repo.synchronizeWithServer(viewModel.repo.uid)
+                }
             }
         }
 

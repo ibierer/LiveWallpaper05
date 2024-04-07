@@ -40,12 +40,12 @@ class ActiveWallpaperRepo private constructor(
     // initialize default values for active wallpaper
     var wid: Int = 0
     val lastModified: Long = 0
-    var uid: Int = 0
+    var uid: Int = 11
     var username: String = "Default User"
     var equation: String = ""
     var color: MutableLiveData<Color> =
         MutableLiveData<Color>(Color.valueOf(0.0f, 0.0f, 0.0f, 0.0f))
-    var orientation: Int = 0
+    var orientation: Int = 11
     var fps: MutableLiveData<Float> = MutableLiveData<Float>(0.0f)
     var lastFrame: Long = 0
     var distanceFromOrigin: MutableLiveData<Float> = MutableLiveData<Float>(0.5f)
@@ -156,6 +156,7 @@ class ActiveWallpaperRepo private constructor(
     @OptIn(DelicateCoroutinesApi::class)
     suspend fun synchronizeWithServer(uid: Int) {
         // Non-registered user, don't sync with server
+        Log.d("in synchronizeWithServer", "uid is $uid")
         if (uid == context.resources.getInteger(R.integer.default_profile_id)) {
             return
         }
