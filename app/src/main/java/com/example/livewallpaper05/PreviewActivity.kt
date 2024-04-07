@@ -85,6 +85,7 @@ class PreviewActivity : AppCompatActivity() {
         val equationEditor = findViewById<EditText>(R.id.et_equation)
         val flipsNormalsCheckBox = findViewById<CheckBox>(R.id.flip_normals_checkbox)
         val linearLayout = findViewById<LinearLayout>(R.id.settings_linearlayout)
+        val doneButton = findViewById<Button>(R.id.done_button)
 
         // fill visualization selector box with wallpaper options from native-lib.cpp
         val visualizationSelectorAdapter = ArrayAdapter.createFromResource(
@@ -132,6 +133,9 @@ class PreviewActivity : AppCompatActivity() {
             val checkBoxIds: List<Int> = listOf(
                 R.id.flip_normals_checkbox
             )
+            val buttonIds: List<Int> = listOf(
+                R.id.done_button
+            )
             for(id in textViewIds){
                 if(viewModel.repo.visualization.relevantTextViewIds.contains(id) && !viewModel.repo.isCollapsed){
                     findViewById<TextView>(id).visibility = View.VISIBLE
@@ -164,6 +168,15 @@ class PreviewActivity : AppCompatActivity() {
                 } else {
                     findViewById<CheckBox>(id).visibility = View.GONE
                     findViewById<CheckBox>(id).isEnabled = false
+                }
+            }
+            for(id in buttonIds){
+                if(viewModel.repo.visualization.relevantButtonIds.contains(id) && !viewModel.repo.isCollapsed){
+                    findViewById<Button>(id).visibility = View.VISIBLE
+                    findViewById<Button>(id).isEnabled = true
+                } else {
+                    findViewById<Button>(id).visibility = View.GONE
+                    findViewById<Button>(id).isEnabled = false
                 }
             }
         }
@@ -391,26 +404,34 @@ class PreviewActivity : AppCompatActivity() {
             }
         })
 
+        fun doneButton(){
+            // update equation in repo if valid
+            val equationChecker: EquationChecker = EquationChecker()
+            val result: String = equationChecker.checkEquationSyntax(equationEditor.text.toString())
+            Log.d("LiveWallpaper05", "result is: $result")
+            //Log.d("LiveWallpaper05", "result2 is: " + result2)
+            if (result == "") {
+                viewModel.updateEquation(equationEditor.text.toString())
+                Log.d("LiveWallpaper05", "Syntax check passed.")
+            } else {
+                viewModel.updateEquation(getString(R.string.default_equation))
+                Log.d("LiveWallpaper05", "Syntax check failed.")
+            }
+            mView!!.onPause()
+            mView!!.onResume()
+        }
+
         // setup listener for the Done button
         equationEditor.setOnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                // update equation in repo if valid
-                val equationChecker: EquationChecker = EquationChecker()
-                val result: String = equationChecker.checkEquationSyntax(equationEditor.text.toString())
-                Log.d("LiveWallpaper05", "result is: $result")
-                //Log.d("LiveWallpaper05", "result2 is: " + result2)
-                if (result == "") {
-                    viewModel.updateEquation(equationEditor.text.toString())
-                    Log.d("LiveWallpaper05", "Syntax check passed.")
-                } else {
-                    viewModel.updateEquation(getString(R.string.default_equation))
-                    Log.d("LiveWallpaper05", "Syntax check failed.")
-                }
-                mView!!.onPause()
-                mView!!.onResume()
+                doneButton()
                 return@setOnEditorActionListener true // Return true to consume the event
             }
             return@setOnEditorActionListener false // Return false if you want to allow further handling of the event
+        }
+
+        doneButton.setOnClickListener {
+            doneButton()
         }
 
         // connect fps data to ui fps meter

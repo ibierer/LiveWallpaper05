@@ -44,6 +44,9 @@ data class GraphVisualization (
     override val relevantCheckBoxIds: List<Int> = listOf(
         R.id.flip_normals_checkbox
     )
+    override val relevantButtonIds: List<Int> = listOf(
+        R.id.done_button
+    )
 
     override fun toJsonObject() : JSONObject {
         val jsonObject = JSONObject()

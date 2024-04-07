@@ -52,6 +52,9 @@ data class NBodyVisualization (
     override val relevantCheckBoxIds: List<Int> = listOf(
 
     )
+    override val relevantButtonIds: List<Int> = listOf(
+
+    )
 
     override fun toJsonObject() : JSONObject {
         val jsonObject = JSONObject()
