@@ -10,6 +10,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.example.livewallpaper05.PreviewActivity
 import com.example.livewallpaper05.ProfileActivity
 import com.example.livewallpaper05.R
 import com.example.livewallpaper05.profiledata.ProfileDao
@@ -204,13 +205,13 @@ class ActiveWallpaperRepo private constructor(
 
 
     private fun insertLocalWallpaperToServer(wallpaperRow: SavedWallpaperRow) {
-        val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
+        val jdbcConnectionString = PreviewActivity.DatabaseConfig.jdbcConnectionString
         Log.d("SQL", "in insertLocalWallpaperToServer")
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance()
             val connectionProperties = Properties()
-            connectionProperties["user"] = ProfileActivity.DatabaseConfig.dbUser
-            connectionProperties["password"] = ProfileActivity.DatabaseConfig.dbPassword
+            connectionProperties["user"] = PreviewActivity.DatabaseConfig.dbUser
+            connectionProperties["password"] = PreviewActivity.DatabaseConfig.dbPassword
             connectionProperties["useSSL"] = "false"
             DriverManager.getConnection(jdbcConnectionString, connectionProperties).use { conn ->
                 Log.d("SQL", "Connection made")
@@ -232,14 +233,14 @@ class ActiveWallpaperRepo private constructor(
     }
 
     private fun getServerWallpaperByUidAndWid(uid: Int, wid: Int): SavedWallpaperRow? {
-        val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
+        val jdbcConnectionString = PreviewActivity.DatabaseConfig.jdbcConnectionString
         var localWallpaper: SavedWallpaperRow? = null
         Log.d("SQL", "in getServerWallpaperByUidAndWid")
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance()
             val connectionProperties = Properties()
-            connectionProperties["user"] = ProfileActivity.DatabaseConfig.dbUser
-            connectionProperties["password"] = ProfileActivity.DatabaseConfig.dbPassword
+            connectionProperties["user"] = PreviewActivity.DatabaseConfig.dbUser
+            connectionProperties["password"] = PreviewActivity.DatabaseConfig.dbPassword
             connectionProperties["useSSL"] = "false"
             DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                 .use { conn ->
@@ -260,7 +261,7 @@ class ActiveWallpaperRepo private constructor(
                     }
                 }
         } catch (e: SQLException) {
-            Log.e("SQL_ERROR", "Error getting wid and lastModified column values: ${e.message}", e)
+            Log.e("SQL_ERROR", "In getServerWallpaperByUidAndWid: Error getting wid and lastModified column values: ${e.message}", e)
         } catch (e: Exception) {
             Log.e("SQL_ERROR", "Unexpected error: ${e.message}", e)
         }
@@ -268,14 +269,15 @@ class ActiveWallpaperRepo private constructor(
     }
 
     private fun getServerWidsByUID(uid: Int): List<Tuple> {
-        val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
+        val jdbcConnectionString = PreviewActivity.DatabaseConfig.jdbcConnectionString
+        Log.d("SQL", "jdbcConnectionString: $jdbcConnectionString")
         val tuples = mutableListOf<Tuple>()
         Log.d("SQL", "in getServerWidsByUID")
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance()
             val connectionProperties = Properties()
-            connectionProperties["user"] = ProfileActivity.DatabaseConfig.dbUser
-            connectionProperties["password"] = ProfileActivity.DatabaseConfig.dbPassword
+            connectionProperties["user"] = PreviewActivity.DatabaseConfig.dbUser
+            connectionProperties["password"] = PreviewActivity.DatabaseConfig.dbPassword
             connectionProperties["useSSL"] = "false"
             DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                 .use { conn ->
@@ -293,7 +295,7 @@ class ActiveWallpaperRepo private constructor(
                     }
                 }
         } catch (e: SQLException) {
-            Log.e("SQL_ERROR", "Error getting wid and lastModified column values: ${e.message}", e)
+            Log.e("SQL_ERROR", "In getServerWidsByUID: Error getting wid and lastModified column values: ${e.message}", e)
         } catch (e: Exception) {
             Log.e("SQL_ERROR", "Unexpected error: ${e.message}", e)
         }

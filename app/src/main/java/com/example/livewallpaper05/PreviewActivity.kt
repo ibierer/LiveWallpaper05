@@ -1,6 +1,7 @@
 package com.example.livewallpaper05
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -36,6 +37,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import yuku.ambilwarna.AmbilWarnaDialog
+import java.io.InputStream
+import java.util.Properties
 
 class PreviewActivity : AppCompatActivity() {
 
@@ -65,6 +68,7 @@ class PreviewActivity : AppCompatActivity() {
             WindowManager.LayoutParams.FLAG_FULLSCREEN
         );
         setContentView(R.layout.activity_preview)
+        DatabaseConfig.initialize(this)
 
         // get view window from GLES3JNIView
         mView = GLES3JNIView(application, viewModel)
@@ -621,5 +625,22 @@ class PreviewActivity : AppCompatActivity() {
         )
 
         external fun getScreenBuffer(): ByteArray
+    }
+
+    object DatabaseConfig {
+        lateinit var jdbcConnectionString: String
+        lateinit var dbUser: String
+        lateinit var dbPassword: String
+
+        fun initialize(context: Context) {
+            val inputStream: InputStream = context.resources.openRawResource(R.raw.database_config)
+            val properties = Properties()
+            properties.load(inputStream)
+
+            // Set values in DatabaseConfig object
+            jdbcConnectionString = properties.getProperty("jdbcConnectionString", "")
+            dbUser = properties.getProperty("dbUser", "")
+            dbPassword = properties.getProperty("dbPassword", "")
+        }
     }
 }

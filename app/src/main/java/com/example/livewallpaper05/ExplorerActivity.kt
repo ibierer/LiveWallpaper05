@@ -1,5 +1,6 @@
 package com.example.livewallpaper05
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.WindowManager
@@ -25,7 +26,7 @@ class ExplorerActivity : AppCompatActivity() {
             WindowManager.LayoutParams.FLAG_FULLSCREEN
         );
         setContentView(R.layout.activity_explorer)
-
+        DatabaseConfig.loadProperties(applicationContext)
         mTestButton = findViewById(R.id.b_test_button)
 
         mTestButton?.setOnClickListener {
@@ -64,5 +65,28 @@ class ExplorerActivity : AppCompatActivity() {
             }
 
         }
+    }
+}
+
+object DatabaseConfig {
+    private var properties: Properties? = null
+
+    fun loadProperties(context: Context) {
+        val rawResourceId = context.resources.getIdentifier("database_config", "raw", context.packageName)
+        val inputStream = context.resources.openRawResource(rawResourceId)
+        properties = Properties()
+        properties?.load(inputStream)
+    }
+
+    fun getJdbcConnectionString(): String? {
+        return properties?.getProperty("jdbcConnectionString")
+    }
+
+    fun getDbUser(): String? {
+        return properties?.getProperty("dbUser")
+    }
+
+    fun getDbPassword(): String? {
+        return properties?.getProperty("dbPassword")
     }
 }
