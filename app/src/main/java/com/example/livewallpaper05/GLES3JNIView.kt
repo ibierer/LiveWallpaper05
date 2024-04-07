@@ -15,17 +15,9 @@ import com.example.livewallpaper05.activewallpaperdata.NaiveFluidVisualization
 import com.example.livewallpaper05.activewallpaperdata.PicFlipVisualization
 import com.example.livewallpaper05.activewallpaperdata.TriangleVisualization
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
-import java.sql.DriverManager
-import java.sql.SQLException
-import java.util.Properties
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 

@@ -20,11 +20,9 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
-import java.io.ByteArrayOutputStream
 import java.sql.DriverManager
 import java.sql.SQLException
 import java.util.Properties
@@ -71,6 +69,7 @@ class ActiveWallpaperRepo private constructor(
     //private val syncMutex: Mutex = Mutex()
 
     private var lastId: Int = 1
+    private var transitionNewId: Int = 0
 
     private lateinit var mSensorManager: SensorManager
 
@@ -375,8 +374,23 @@ class ActiveWallpaperRepo private constructor(
     // set active wallpaper live data to wallpaper given by id
     fun setLiveWallpaperData(wid: Int) {
         mScope.launch(Dispatchers.IO) {
-            val wallpaper = wallpaperDao.getWallpaperData(wid).value!!
-            activeWallpaper.postValue(wallpaper)
+            try {
+                val wallpaper = wallpaperDao.getWallpaperData(wid).value!!
+                activeWallpaper.postValue(wallpaper)
+            } catch (e: Exception) {
+                Log.e("ActiveWallpaperRepo", "Error setting live wallpaper data: ${e.message}")
+                // log and try again 50 times
+                for (i in 0 until 50) {
+                    try {
+                        val wallpaper = wallpaperDao.getWallpaperData(wid).value!!
+                        activeWallpaper.postValue(wallpaper)
+                        break
+                    } catch (e: Exception) {
+                        Log.e("ActiveWallpaperRepo", "Error setting live wallpaper data: ${e.message}")
+                    }
+                }
+
+            }
         }
     }
 
@@ -638,6 +652,18 @@ class ActiveWallpaperRepo private constructor(
     fun updateColor(r: Float, g: Float, b: Float, a: Float) {
         color.value = Color.valueOf(r, g, b, a)
         //color.postValue(Color.valueOf(r, g, b, a))
+    }
+
+    fun setTransitionNewId(newId: Int) {
+        if (newId < 0){
+            this.wid = this.transitionNewId
+        }
+
+        this.transitionNewId = newId
+    }
+
+    fun getTransitionNewId(): Int {
+        return this.transitionNewId
     }
 }
 

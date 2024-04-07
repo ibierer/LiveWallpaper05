@@ -28,7 +28,6 @@ import com.example.livewallpaper05.helpful_fragments.WallpaperFragment
 import com.example.livewallpaper05.profiledata.ProfileViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -187,14 +186,17 @@ class ProfileActivity : AppCompatActivity() {
             val activeWid = viewModel.getWid()
             val activeLastModified = viewModel.getLastModified()
             // if wid is in saved wallpapers, update active wallpaper with saved wallpaper data
-            viewModel.saveSwitchWallpaper(activeWid, activeConfig, activeLastModified)
+            //viewModel.saveSwitchWallpaper(activeWid, activeConfig, activeLastModified)
         }
 
         // link active wallpaper to active wallpaper live data via callback function
         viewModel.repo.activeWallpaper.observe(this, Observer { wallpaper ->
-            // if wallpaper is not the same as saved wallpaper, return
-            // if wallpaper not in wallpapers, return
             var contained = false
+            // if wallpapers is null return
+            if (viewModel.repo.wallpapers.value == null) {
+                return@Observer
+            }
+
             for (w in viewModel.repo.wallpapers.value!!) {
                 if (w.wid == wallpaper.wid && w.config == wallpaper.config){
                     contained = true
@@ -206,10 +208,10 @@ class ProfileActivity : AppCompatActivity() {
             }
 
             // set active wallpaper wid to wallpaper wid
-            viewModel.setWid(wallpaper.wid)
+            ///viewModel.setWid(wallpaper.wid)
             // [TODO] use this to update active wallpaper with saved wallpaper data
             // load new active wallpaper config
-            viewModel.loadConfig(wallpaper)
+            //viewModel.loadConfig(wallpaper)
         })
 
         // link saved wallpaper view elements to saved wallpaper live data via callback function
@@ -252,11 +254,6 @@ class ProfileActivity : AppCompatActivity() {
             }
         })
 
-        /*
-        viewModel.savedWallpapers.observe(this, Observer { wallpapers ->
-
-        })
-        */
 
         // observe amount of wallpapers in mWallpaperGrid and update listeners when it changes
         mWallpaperGrid!!.viewTreeObserver.addOnGlobalLayoutListener {
@@ -440,15 +437,11 @@ class ProfileActivity : AppCompatActivity() {
         val activeConfig = viewModel.getConfig()
         viewModel.saveWallpaper(activeConfig)
         // create new empty wallpaper config
-        viewModel.createWallpaperTable(-1)
+        val newId = viewModel.createWallpaperTable(-1)
         viewModel.saveWids(this)
 
-
-        // switch active wallpaper to new wallpaper
-        val newWid = viewModel.getWid()
-        // force user to preview activity
-        val intent = Intent(this, PreviewActivity::class.java)
-        startActivity(intent)
+        // set new wallpaper as active wallpaper
+        viewModel.setNewId(newId)
     }
 
     private fun updateFragListeners() {
@@ -458,7 +451,6 @@ class ProfileActivity : AppCompatActivity() {
         for (ref in wallpaperFragIds) {
             val fragTag = ref.fragmentTag
             val frag = supportFragmentManager.findFragmentByTag(fragTag) ?: continue
-            // if fragment doesn't exist yet, skip
 
             // connect delete button to delete wallpaper function
             frag.requireView().findViewById<FloatingActionButton>(R.id.b_delete_wallpaper).setOnClickListener {
@@ -499,6 +491,16 @@ class ProfileActivity : AppCompatActivity() {
                 wallFrag.active = true
                 // switch active wallpaper in repo (this data is linked to active wallpaper via live data observer in onCreate)
                 viewModel.switchWallpaper(ref.wallpaperId)
+
+                // open preview activity
+                val intent = Intent(this, PreviewActivity::class.java)
+                startActivity(intent)
+            }
+
+            // if repo.newId > 0 and ref.wallpaperId == repo.newId, click active button
+            if (viewModel.getTransitionNewId() > 0 && ref.wallpaperId == viewModel.getTransitionNewId()) {
+                viewModel.setNewId(-1)
+                frag.requireView().findViewById<Button>(R.id.b_active_wallpaper).performClick()
             }
         }
     }
