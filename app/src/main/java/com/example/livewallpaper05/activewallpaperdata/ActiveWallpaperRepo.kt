@@ -10,8 +10,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import com.example.livewallpaper05.PreviewActivity
-import com.example.livewallpaper05.ProfileActivity
+import com.example.livewallpaper05.ExplorerActivity
 import com.example.livewallpaper05.R
 import com.example.livewallpaper05.profiledata.ProfileDao
 import com.example.livewallpaper05.profiledata.ProfileTable
@@ -206,13 +205,13 @@ class ActiveWallpaperRepo private constructor(
 
 
     private fun insertLocalWallpaperToServer(wallpaperRow: SavedWallpaperRow) {
-        val jdbcConnectionString = PreviewActivity.DatabaseConfig.jdbcConnectionString
+        val jdbcConnectionString = ExplorerActivity.DatabaseConfig.getJdbcConnectionString()
         Log.d("SQL", "in insertLocalWallpaperToServer")
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance()
             val connectionProperties = Properties()
-            connectionProperties["user"] = PreviewActivity.DatabaseConfig.dbUser
-            connectionProperties["password"] = PreviewActivity.DatabaseConfig.dbPassword
+            connectionProperties["user"] = ExplorerActivity.DatabaseConfig.getDbUser()
+            connectionProperties["password"] = ExplorerActivity.DatabaseConfig.getDbPassword()
             connectionProperties["useSSL"] = "false"
             DriverManager.getConnection(jdbcConnectionString, connectionProperties).use { conn ->
                 Log.d("SQL", "Connection made")
@@ -234,14 +233,14 @@ class ActiveWallpaperRepo private constructor(
     }
 
     private fun getServerWallpaperByUidAndWid(uid: Int, wid: Int): SavedWallpaperRow? {
-        val jdbcConnectionString = PreviewActivity.DatabaseConfig.jdbcConnectionString
+        val jdbcConnectionString = ExplorerActivity.DatabaseConfig.getJdbcConnectionString()
         var localWallpaper: SavedWallpaperRow? = null
         Log.d("SQL", "in getServerWallpaperByUidAndWid")
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance()
             val connectionProperties = Properties()
-            connectionProperties["user"] = PreviewActivity.DatabaseConfig.dbUser
-            connectionProperties["password"] = PreviewActivity.DatabaseConfig.dbPassword
+            connectionProperties["user"] = ExplorerActivity.DatabaseConfig.getDbUser()
+            connectionProperties["password"] = ExplorerActivity.DatabaseConfig.getDbPassword()
             connectionProperties["useSSL"] = "false"
             DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                 .use { conn ->
@@ -270,15 +269,15 @@ class ActiveWallpaperRepo private constructor(
     }
 
     private fun getServerWidsByUID(uid: Int): List<Tuple> {
-        val jdbcConnectionString = PreviewActivity.DatabaseConfig.jdbcConnectionString
+        val jdbcConnectionString = ExplorerActivity.DatabaseConfig.getJdbcConnectionString()
         Log.d("SQL", "jdbcConnectionString: $jdbcConnectionString")
         val tuples = mutableListOf<Tuple>()
         Log.d("SQL", "in getServerWidsByUID")
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance()
             val connectionProperties = Properties()
-            connectionProperties["user"] = PreviewActivity.DatabaseConfig.dbUser
-            connectionProperties["password"] = PreviewActivity.DatabaseConfig.dbPassword
+            connectionProperties["user"] = ExplorerActivity.DatabaseConfig.getDbUser()
+            connectionProperties["password"] = ExplorerActivity.DatabaseConfig.getDbPassword()
             connectionProperties["useSSL"] = "false"
             DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                 .use { conn ->
@@ -306,13 +305,13 @@ class ActiveWallpaperRepo private constructor(
 
     private suspend fun insertWallpaper(contents: String, image: ByteArray, username: String) {
         withContext(Dispatchers.IO) {
-            val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
+            val jdbcConnectionString = ExplorerActivity.DatabaseConfig.getJdbcConnectionString()
             Log.d("SQL", "in Insert")
             try {
                 Class.forName("com.mysql.jdbc.Driver").newInstance()
                 val connectionProperties = Properties()
-                connectionProperties["user"] = ProfileActivity.DatabaseConfig.dbUser
-                connectionProperties["password"] = ProfileActivity.DatabaseConfig.dbPassword
+                connectionProperties["user"] = ExplorerActivity.DatabaseConfig.getDbUser()
+                connectionProperties["password"] = ExplorerActivity.DatabaseConfig.getDbPassword()
                 connectionProperties["useSSL"] = "false"
                 DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                     .use { conn ->

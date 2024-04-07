@@ -49,7 +49,6 @@ class ProfileActivity : AppCompatActivity() {
     private var mWallpaperGrid: GridLayout? = null
 
     /* User authentication data */
-    private var authUser: FirebaseUser? = null
     private var uid by Delegates.notNull<Int>()
     private var bio: String? = null
     private lateinit var username: String
@@ -105,10 +104,6 @@ class ProfileActivity : AppCompatActivity() {
         val properties = Properties()
         properties.load(inputStream)
 
-        // Set values in DatabaseConfig object
-        DatabaseConfig.jdbcConnectionString = properties.getProperty("jdbcConnectionString", "")
-        DatabaseConfig.dbUser = properties.getProperty("dbUser", "")
-        DatabaseConfig.dbPassword = properties.getProperty("dbPassword", "")
         // set up loginPageButton
         loginRegisterButton!!.setOnClickListener {
             val loginPageIntent = Intent(this, Login::class.java)
@@ -272,12 +267,12 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun insertBio(bio: String, username: String) {
         GlobalScope.launch(Dispatchers.IO) {
-            val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
+            val jdbcConnectionString = ExplorerActivity.DatabaseConfig.getJdbcConnectionString()
             try {
                 Class.forName("com.mysql.jdbc.Driver").newInstance()
                 val connectionProperties = Properties()
-                connectionProperties["user"] = DatabaseConfig.dbUser
-                connectionProperties["password"] = DatabaseConfig.dbPassword
+                connectionProperties["user"] = ExplorerActivity.DatabaseConfig.getDbUser()
+                connectionProperties["password"] = ExplorerActivity.DatabaseConfig.getDbPassword()
                 connectionProperties["useSSL"] = "false"
                 DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                     .use { conn ->
@@ -294,19 +289,13 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
-    object DatabaseConfig {
-        lateinit var jdbcConnectionString: String
-        lateinit var dbUser: String
-        lateinit var dbPassword: String
-    }
-
     private fun loadUserDataFromAWS(username: String) {
-        val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
+        val jdbcConnectionString = ExplorerActivity.DatabaseConfig.getJdbcConnectionString()
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance()
             val connectionProperties = Properties()
-            connectionProperties["user"] = DatabaseConfig.dbUser
-            connectionProperties["password"] = DatabaseConfig.dbPassword
+            connectionProperties["user"] = ExplorerActivity.DatabaseConfig.getDbUser()
+            connectionProperties["password"] = ExplorerActivity.DatabaseConfig.getDbPassword()
             connectionProperties["useSSL"] = "false"
             DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                 .use { conn -> // this syntax ensures that connection will be closed whether normally or from exception
@@ -405,13 +394,13 @@ class ProfileActivity : AppCompatActivity() {
     private fun insertProfilePicture(username: String, image: Bitmap) {
         GlobalScope.launch(Dispatchers.IO) {
             // write aws test code here -------------
-            val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
+            val jdbcConnectionString = ExplorerActivity.DatabaseConfig.getJdbcConnectionString()
             try {
                 Class.forName("com.mysql.jdbc.Driver").newInstance()
                 // connect to mysql server
                 val connectionProperties = Properties()
-                connectionProperties["user"] = DatabaseConfig.dbUser
-                connectionProperties["password"] = DatabaseConfig.dbPassword
+                connectionProperties["user"] = ExplorerActivity.DatabaseConfig.getDbUser()
+                connectionProperties["password"] = ExplorerActivity.DatabaseConfig.getDbPassword()
                 connectionProperties["useSSL"] = "false"
                 DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                     .use { conn -> // this syntax ensures that connection will be closed whether normally or from exception
