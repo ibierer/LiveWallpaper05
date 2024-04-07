@@ -78,7 +78,7 @@ class ActiveWallpaperRepo private constructor(
     lateinit var visualization: Visualization
     var width: Int = 0
     var height: Int = 0
-    private var mBitmap: Bitmap = Bitmap.createBitmap(500, 500, Bitmap.Config.ARGB_8888) as Bitmap
+    private var mBitmap: Bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888) as Bitmap
     var liveDataBitmap: MutableLiveData<Bitmap> = MutableLiveData<Bitmap>(mBitmap)
     var getScreenBuffer: Int = 0
     var isCollapsed = false

@@ -279,7 +279,7 @@
                     android:text="Done" />
             </LinearLayout>
 
-            <EditText
+            <!--<EditText
                 android:id="@+id/et_equation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -289,6 +289,15 @@
                 android:inputType="textCapSentences|textMultiLine"
                 android:paddingBottom="20dp"
                 android:scrollHorizontally="false"
+                android:text="@string/default_equation" />-->
+            <EditText
+                android:id="@+id/et_equation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/slightly_opaque_border_background"
+                android:hint="Enter equation here"
+                android:inputType="text"
                 android:text="@string/default_equation" />
 
             <TextView
