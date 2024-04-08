@@ -212,7 +212,12 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     jsonConfig = mViewModel.repo.visualization.toJsonObject()
                 }
                 4 -> {
-                    loadedConfig.put("settings", mViewModel.repo.currentEquation)
+                    if (mViewModel.repo.graphSelection == 0){
+                        loadedConfig.put("equation", mViewModel.repo.userDefinedEquation)
+                    }
+                    else{
+                        loadedConfig.put("equation", context.resources.getStringArray(R.array.graph_options)[mViewModel.repo.graphSelection])
+                    }
                     mViewModel.repo.visualization = GraphVisualization(loadedConfig)
                     jsonConfig = mViewModel.repo.visualization.toJsonObject()
                 }

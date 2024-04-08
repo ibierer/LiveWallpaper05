@@ -162,7 +162,7 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
                 config.put("field_of_view", graph.fieldOfView)
                 config.put("background_is_solid_color", graph.backgroundIsSolidColor)
                 config.put("background_texture", graph.backgroundTexture)
-                config.put("equation", graph.equation)
+                //config.put("equation", graph.equation)
             }
         }
 
