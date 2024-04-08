@@ -10,12 +10,13 @@ import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.Button
-import android.widget.GridLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
+import android.widget.GridLayout
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -27,8 +28,8 @@ import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModelFactory
 import com.example.livewallpaper05.activewallpaperdata.ExplorerViewModel
 import com.example.livewallpaper05.activewallpaperdata.ExplorerViewModelFactory
-import com.example.livewallpaper05.helpful_fragments.WallpaperFragment
 import com.example.livewallpaper05.profiledata.ProfileViewModel
+import com.example.livewallpaper05.helpful_fragments.WallpaperFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
@@ -36,15 +37,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
-import java.sql.DriverManager
 import java.sql.SQLException
 import java.util.Properties
+import java.sql.Connection
+import java.sql.DriverManager
+import java.sql.ResultSet
+
 
 class ExplorerActivity : AppCompatActivity() {
 
-    private var mProfilePic: ImageView? = null
-    private var mUsername: TextView? = null
-    private var mBio: TextView? = null
     private var mNewWallpaper: FloatingActionButton? = null
     private var mWallpaperLayout: LinearLayout? = null
     private var mWallpaperGrid: GridLayout? = null
@@ -52,10 +53,169 @@ class ExplorerActivity : AppCompatActivity() {
     /* User authentication data */
     private var bio: String? = null
     private lateinit var username: String
-    private var loginRegisterButton: Button? = null
-    private var logoutButton: Button? = null
 
     private var mTestButton: Button? = null
+    private val stopWords = listOf<String>(
+        "a",
+        "about",
+        "actually",
+        "almost",
+        "also",
+        "although",
+        "always",
+        "am",
+        "an",
+        "and",
+        "any",
+        "are",
+        "as",
+        "at",
+        "be",
+        "became",
+        "become",
+        "but",
+        "by",
+        "can",
+        "could",
+        "did",
+        "do",
+        "does",
+        "each",
+        "either",
+        "else",
+        "for",
+        "from",
+        "had",
+        "has",
+        "hence",
+        "how",
+        "i",
+        "if",
+        "is",
+        "in",
+        "it",
+        "its",
+        "it's",
+        "just",
+        "may",
+        "maybe",
+        "me",
+        "might",
+        "mine",
+        "must",
+        "my",
+        "neither",
+        "nor",
+        "not",
+        "of",
+        "oh",
+        "ok",
+        "when",
+        "where",
+        "whereas",
+        "wherever",
+        "whether",
+        "which",
+        "while",
+        "who",
+        "whom",
+        "whoever",
+        "whose",
+        "why",
+        "will",
+        "with",
+        "within",
+        "without",
+        "would",
+        "yes",
+        "yet",
+        "you",
+        "your"
+    )
+
+
+    private fun extractTags(comment: String): List<String> {
+        val allTokens = comment.lowercase().split("\\s+".toRegex())
+        val valTokens = arrayListOf<String>()
+        for (token in allTokens) {
+            if (stopWords.contains(token)) {
+                continue;
+            }
+            valTokens.add(token)
+        }
+
+        // ML to choose keywords
+        // For now, all non stop words are keywords
+
+        return valTokens.toList()
+    }
+
+    private fun commentOnWallpaper(commenter: String, wid: Int, comment: String) {
+        // send the comment to DB
+        runUpdate("INSERT INTO Comments VALUES ($wid, '$commenter', '$comment');")
+
+        var tags = extractTags(comment)
+        for (tag in tags) {
+            runUpdate("INSERT INTO WallpaperTags VALUES ($wid,'$tag');")
+        }
+    }
+
+    private fun likeWallpaper(wid: Int, likerUsername: String) {
+        runUpdate("INSERT INTO Likes VALUES ($wid, '$likerUsername');")
+    }
+
+    private fun getComments(wid: Int): List<String> {
+        val res = runQuery("select * from Comments where wID = $wid;")
+        var comments = ArrayList<String>()
+        while (res.next()) {
+            comments += res.getString(1) + res.getString(3)
+        }
+        return comments
+    }
+
+    private fun getCommentCount(wid: Int): Int {
+        val res = runQuery("select count(*) from Comments where wID = $wid;")
+        var count = 0
+        if (res.next()) {
+            count = res.getInt(1)
+        }
+        return count
+    }
+
+    // DONE
+    fun getWallpapersWithSharedTagsFromUser(username: String): ResultSet {
+        return runQuery(
+            "select * from WallpaperTags natural join UserTags join" +
+                    " wallpapers where WallpaperTags.wid = wallpapers.wid && UserTags.username = '$username';"
+        )
+    }
+
+
+    private var connectionString =
+        "jdbc:mysql://database-1.cxo8mkcogo8p.us-east-1.rds.amazonaws.com:3306/?user=admin";
+
+    private fun establishConnection(): Connection {
+        Class.forName("com.mysql.jdbc.Driver").newInstance()
+        val conn = DriverManager.getConnection(
+            connectionString, "admin", "UtahUtesLiveWallz!"
+        )
+        conn.createStatement().executeQuery("USE myDatabase;")
+        return conn;
+    }
+
+    private fun runQuery(query: String): ResultSet {
+        val connection = establishConnection();
+        val statement = connection.createStatement()
+        val retVal = statement.executeQuery(query)
+        return retVal
+    }
+
+    private fun runUpdate(query: String) {
+        val connection = establishConnection();
+        val statement = connection.createStatement()
+        statement.executeUpdate(query)
+    }
+
     private lateinit var auth: FirebaseAuth
 
     // profile table data
@@ -72,7 +232,14 @@ class ExplorerActivity : AppCompatActivity() {
         ExplorerViewModelFactory((application as ActiveWallpaperApplication).wallpaperRepo)
     }
 
-    data class Wallpaper(val wid: Int, val contents: String, val image: ByteArray?, val username: String, val lastModified: Long)
+    data class Wallpaper(
+        val wid: Int,
+        val contents: String,
+        val image: ByteArray?,
+        val username: String,
+        val lastModified: Long
+    )
+
     private val wallpapersList = mutableListOf<Wallpaper>()
 
     public override fun onStart() {
@@ -98,8 +265,7 @@ class ExplorerActivity : AppCompatActivity() {
             val sharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
             viewModel.repo.uid = sharedPreferences.getInt("UID", 11)
             viewModel.repo.username = sharedPreferences.getString("USERNAME", "").toString()
-        }
-        else{
+        } else {
             viewModel.repo.uid = 11
             viewModel.repo.username = "Default User"
         }
@@ -111,39 +277,32 @@ class ExplorerActivity : AppCompatActivity() {
         DatabaseConfig.loadProperties(applicationContext)
         mTestButton = findViewById(R.id.b_test_button)
 
-        mProfilePic = findViewById(R.id.iv_profile_picae)
-        mUsername = findViewById(R.id.tv_usernameae)
-        mBio = findViewById(R.id.tv_biographyae)
         mNewWallpaper = findViewById(R.id.b_new_wallpaperae)
         mWallpaperLayout = findViewById(R.id.sv_ll_wallpapersae)
         mWallpaperGrid = findViewById(R.id.sv_ll_gl_wallpapersae)
-        loginRegisterButton = findViewById(R.id.loginRegisterButtonae)
-        logoutButton = findViewById(R.id.logoutButtonae)
+
+        mTestButton?.setOnClickListener {
+            // launch async task to connect to postgre mock server
+            GlobalScope.launch(Dispatchers.IO) {
+                // write aws test code here -------------
+                try {
+//                    var res = getWallpapersWithSharedTagsFromUser("Jo")
+//                    for (r in res) {
+//                        Log.d("LiveWallpaper05", res.toString())
+//                    }
+//                    commentOnWallpaper("Jo", 1, "test comment 1")
+                    viewModel.populateExplore(getWallpapersWithSharedTagsFromUser(viewModel.repo.username))
+                } catch (e: Exception) {
+                    Log.d("LiveWallpaper05", e.printStackTrace().toString())
+                }
+            }
+        }
 
         viewModel.loadWidsFromMem(this)
 
-        // set up loginPageButton
-        loginRegisterButton!!.setOnClickListener {
-            val loginPageIntent = Intent(this, Login::class.java)
-            startActivity(loginPageIntent)
-        }
 
-        logoutButton!!.setOnClickListener {
-            val currentUser = FirebaseAuth.getInstance().currentUser
-            if (currentUser != null) {
-                // User is signed in, perform sign-out
-                FirebaseAuth.getInstance().signOut()
-                loginRegisterButton!!.visibility = View.VISIBLE
-                mUsername!!.text = "Default User"
-                Toast.makeText(this, "Signed out", Toast.LENGTH_SHORT).show()
-            } else {
-                // User is not signed in, display a toast
-                logoutButton!!.visibility = View.GONE
-                Toast.makeText(this, "You are not signed in", Toast.LENGTH_SHORT).show()
-            }
-        }
-        // set profile pic click listener
-        mProfilePic!!.setOnClickListener(this::changeProfilePic)
+
+
         // set new wallpaper button click listener
         mNewWallpaper!!.setOnClickListener(this::newWallpaper)
         auth = FirebaseAuth.getInstance()
@@ -153,9 +312,7 @@ class ExplorerActivity : AppCompatActivity() {
             viewModel.repo.uid = sharedPreferences.getInt("UID", 11)
             // put uid in local profile table
             Log.d("OKAY", "uid is ${viewModel.repo.uid}\n username is $username")
-            mUsername!!.text = username
-            loginRegisterButton!!.visibility = View.GONE
-            logoutButton!!.visibility = View.VISIBLE
+
             lifecycleScope.launch {
                 // User is signed in, get (username, bio, profile_picture, uid, etc) from AWS
                 Log.d("OKAY", "Calling LoadUserDataFromAWS")
@@ -172,27 +329,15 @@ class ExplorerActivity : AppCompatActivity() {
                 if (profileData.username == "Dummy_user") {
                     return@Observer
                 }
-                mUsername!!.text = username
-                if (bio != null){
-                    mBio!!.text = bio
-                }
-                else{
-                    mBio!!.text = profileData.bio
-                }
+
                 if (username != "Default User"){
                     insertBio(profileData.bio, username)
                 }
-                val imageData = profileData.profilepic
-                if (imageData.isNotEmpty()) {
-                    val imageBitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.size)
-                    mProfilePic!!.setImageBitmap(imageBitmap)
-                } else {
-                    mProfilePic!!.setImageResource(R.drawable.baseline_account_circle_24)
-                }
+
             }
         })
 
-        // if no wallpapers exist, create default wallpaper
+        //if no wallpapers exist, create default wallpaper
         if (viewModel.repo.wallpapers.value == null) {
             viewModel.createDefaultWallpaperTable(
                 viewModel.repo.currentUserProfile.value!!.uid,
@@ -233,12 +378,14 @@ class ExplorerActivity : AppCompatActivity() {
             //viewModel.loadConfig(wallpaper)
         })
 
+//        viewModel.populateExplore(getWallpapersWithSharedTagsFromUser("Jo"))
+
         // link saved wallpaper view elements to saved wallpaper live data via callback function
         viewModel.repo.wallpapers.observe(this, Observer { wallpapers ->
             var existingFragCount = mWallpaperGrid!!.childCount
             if (wallpapers != null && wallpapers.size != existingFragCount) {
                 // update saved wallpaper ids
-                viewModel.saveWids(this)
+                //viewModel.saveWids(this)
                 // clear wallpaper layout
                 mWallpaperGrid!!.removeAllViews()
                 var used = listOf<Int>()
@@ -279,7 +426,6 @@ class ExplorerActivity : AppCompatActivity() {
             updateFragListeners()
         }
     }
-
 
     private fun insertBio(bio: String, username: String) {
         GlobalScope.launch(Dispatchers.IO) {
@@ -328,21 +474,7 @@ class ExplorerActivity : AppCompatActivity() {
                         val profilePictureNullable =
                             if (resultSet.wasNull()) null else profilePicture
                         //val dateCreated = resultSet.getString("date_created")
-                        runOnUiThread {
-                            mBio!!.text = bioNullable ?: "No biography"
-                            if (profilePictureNullable != null) {
-                                val profilePictureBytes = profilePictureNullable.getBytes(
-                                    1,
-                                    profilePictureNullable.length().toInt()
-                                )
-                                val bitmap = BitmapFactory.decodeByteArray(
-                                    profilePictureBytes,
-                                    0,
-                                    profilePictureBytes.size
-                                )
-                                mProfilePic!!.setImageBitmap(bitmap)
-                            }
-                        }
+
                     }
                     conn.close()
                 }
@@ -472,23 +604,24 @@ class ExplorerActivity : AppCompatActivity() {
             val frag = supportFragmentManager.findFragmentByTag(fragTag) ?: continue
 
             // connect delete button to delete wallpaper function
-            frag.requireView().findViewById<FloatingActionButton>(R.id.b_delete_wallpaper).setOnClickListener {
-                // if wallpaper is active, make pop up telling user to switch wallpaper before removing
-                val activeId = viewModel.getWid()
-                if (ref.wallpaperId == activeId) {
-                    val dialog = AlertDialog.Builder(this)
-                    dialog.setTitle("Active Wallpaper")
-                    dialog.setMessage("Please switch wallpapers before removing this wallpaper.")
-                    dialog.setPositiveButton("Ok") { _, _ -> }
-                    dialog.show()
-                    return@setOnClickListener
+            frag.requireView().findViewById<FloatingActionButton>(R.id.b_delete_wallpaper)
+                .setOnClickListener {
+                    // if wallpaper is active, make pop up telling user to switch wallpaper before removing
+                    val activeId = viewModel.getWid()
+                    if (ref.wallpaperId == activeId) {
+                        val dialog = AlertDialog.Builder(this)
+                        dialog.setTitle("Active Wallpaper")
+                        dialog.setMessage("Please switch wallpapers before removing this wallpaper.")
+                        dialog.setPositiveButton("Ok") { _, _ -> }
+                        dialog.show()
+                        return@setOnClickListener
+                    }
+                    // delete wallpaper from database
+                    viewModel.deleteWallpaper(ref.wallpaperId)
+                    // remove fragment from grid
+                    supportFragmentManager.beginTransaction().remove(frag).commit()
+                    viewModel.removeWallpaperFragId(ref)
                 }
-                // delete wallpaper from database
-                viewModel.deleteWallpaper(ref.wallpaperId)
-                // remove fragment from grid
-                supportFragmentManager.beginTransaction().remove(frag).commit()
-                viewModel.removeWallpaperFragId(ref)
-            }
 
             // connect set active button to set active wallpaper function
             frag.requireView().findViewById<Button>(R.id.b_active_wallpaper).setOnClickListener {
@@ -548,6 +681,7 @@ class ExplorerActivity : AppCompatActivity() {
         fun getDbPassword(): String? {
             return properties?.getProperty("dbPassword")
         }
+
     }
 }
 

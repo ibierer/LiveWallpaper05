@@ -22,7 +22,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
+import java.sql.Connection
 import java.sql.DriverManager
+import java.sql.ResultSet
 import java.sql.SQLException
 import java.util.Properties
 
@@ -64,6 +66,7 @@ class ActiveWallpaperRepo private constructor(
     // initialize values for saved wallpaper info
     val activeWallpaper: MutableLiveData<SavedWallpaperRow> = MutableLiveData<SavedWallpaperRow>()
     val wallpapers = MutableLiveData<List<SavedWallpaperRow>>()
+    val exploreWallpapers = MutableLiveData<List<SavedWallpaperRow>>()
     val wallpaperFragIds: MutableList<WallpaperRef> = mutableListOf()
     //private val syncMutex: Mutex = Mutex()
 
@@ -100,6 +103,44 @@ class ActiveWallpaperRepo private constructor(
         return widString
     }
 
+    fun setExploreWallpapers(wps: ResultSet) {
+        Log.d("LiveWallpaper05", "EXPLORE POP1")
+        var wpsList = wallpapers.value?.toMutableList()
+        while (wps.next()) {
+            var wp = SavedWallpaperRow(
+                0, wps.getInt(2), wps.getString(5),
+                wps.getBytes(6), wps.getLong(8)
+            )
+            Log.d("LiveWallpaper05", "EXPLORE POP3")
+
+            wpsList?.add(wp)
+
+            Log.d("LiveWallpaper05", "EXPLORE POP6")
+        }
+        if (wpsList != null) {
+            wallpapers.postValue(wpsList.toList())
+        }
+    }
+
+    fun setExploreWallpapers1(wps: ResultSet) {
+        Log.d("LiveWallpaper05", "EXPLORE POP1")
+        var wpsList = exploreWallpapers.value?.toMutableList()
+        while (wps.next()) {
+            var wp = SavedWallpaperRow(
+                0, wps.getInt(2), wps.getString(5),
+                wps.getBytes(6), wps.getLong(8)
+            )
+            Log.d("LiveWallpaper05", "EXPLORE POP3")
+
+            wpsList?.add(wp)
+
+            Log.d("LiveWallpaper05", "EXPLORE POP6")
+        }
+        if (wpsList != null) {
+            exploreWallpapers.postValue(wpsList.toList())
+        }
+        Log.d("LiveWallpaper05", "EXPLORE POP2")
+    }
 
     private fun getLocalWidsByUID(uid: Int): List<Tuple> {
         return wallpaperDao.getAllWallpapersByUID(uid)
