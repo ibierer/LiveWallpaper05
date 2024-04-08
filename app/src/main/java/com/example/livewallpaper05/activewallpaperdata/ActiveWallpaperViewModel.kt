@@ -11,6 +11,7 @@ import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo.Wallp
 import com.example.livewallpaper05.savedWallpapers.SavedWallpaperRow
 import org.json.JSONObject
 import java.math.RoundingMode
+import java.sql.ResultSet
 import java.util.Random
 
 /**
@@ -486,6 +487,10 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
             System.currentTimeMillis()
         )
         repo.setWallpaper(wallpaper)
+    }
+
+    fun populateExplore(wallpapers: ResultSet) {
+        repo.setExploreWallpapers(wallpapers)
     }
 
     // remove specified wallpapers from fragment list via wallpaper reference
