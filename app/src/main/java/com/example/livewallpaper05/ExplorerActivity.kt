@@ -13,7 +13,6 @@ import android.widget.GridLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
@@ -43,7 +42,6 @@ class ExplorerActivity : AppCompatActivity() {
 
     /* User authentication data */
     private var bio: String? = null
-    private lateinit var username: String
 
     private val stopWords = listOf<String>(
         "a",
@@ -226,7 +224,7 @@ class ExplorerActivity : AppCompatActivity() {
             Log.d("AUTH", "Current user: $currentUser")
             // load from AWS
         } else { // Not registered/logged in
-            username = "Default User"
+            viewModel.repo.username = "Default User"
             Log.d("AUTH", "No user logged in")
         }
     }
@@ -259,22 +257,7 @@ class ExplorerActivity : AppCompatActivity() {
         // set new wallpaper button click listener
         mNewWallpaper!!.setOnClickListener(this::newWallpaper)
         auth = FirebaseAuth.getInstance()
-        if (auth.currentUser != null) {
-            val sharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
-            username = sharedPreferences.getString("USERNAME", "").toString()
-            viewModel.repo.uid = sharedPreferences.getInt("UID", 11)
-            // put uid in local profile table
-            Log.d("OKAY", "uid is ${viewModel.repo.uid}\n username is $username")
 
-            lifecycleScope.launch {
-                // User is signed in, get (username, bio, profile_picture, uid, etc) from AWS
-                Log.d("OKAY", "Calling LoadUserDataFromAWS")
-                loadUserDataFromAWS(username)
-            }
-        } else {
-            // User is not signed in
-            Log.d("OH_NO", "User not signed in!")
-        }
         // link profile view elements to profile live data via callback function
         viewModel.repo.currentUserProfile.observe(this, Observer { profileData ->
             if (profileData != null) {
@@ -283,10 +266,9 @@ class ExplorerActivity : AppCompatActivity() {
                     return@Observer
                 }
 
-                if (username != "Default User"){
-                    insertBio(profileData.bio, username)
+                if (viewModel.repo.username != "Default User"){
+                    insertBio(profileData.bio, viewModel.repo.username)
                 }
-
             }
         })
 
@@ -297,15 +279,7 @@ class ExplorerActivity : AppCompatActivity() {
                 viewModel.getWid(),
                 viewModel.getConfig()
             )
-        } else {
-            // updated active wallpaper params with saved wallpaper data
-            val activeConfig = viewModel.getConfig()
-            val activeWid = viewModel.getWid()
-            val activeLastModified = viewModel.getLastModified()
-            // if wid is in saved wallpapers, update active wallpaper with saved wallpaper data
-            //viewModel.saveSwitchWallpaper(activeWid, activeConfig, activeLastModified)
         }
-
         // link active wallpaper to active wallpaper live data via callback function
         viewModel.repo.activeWallpaper.observe(this, Observer { wallpaper ->
             var contained = false
@@ -329,10 +303,8 @@ class ExplorerActivity : AppCompatActivity() {
 
         // link saved wallpaper view elements to saved wallpaper live data via callback function
         viewModel.repo.wallpapers.observe(this, Observer { wallpapers ->
-            var existingFragCount = mWallpaperGrid!!.childCount
+            val existingFragCount = mWallpaperGrid!!.childCount
             if (wallpapers != null && wallpapers.size != existingFragCount) {
-                // update saved wallpaper ids
-                //viewModel.saveWids(this)
                 // clear wallpaper layout
                 mWallpaperGrid!!.removeAllViews()
                 var used = listOf<Int>()
@@ -344,11 +316,11 @@ class ExplorerActivity : AppCompatActivity() {
                         continue
                     }
                     // find if wallpaper is active
-                    val is_active = wallpaper.wid == viewModel.getWid()
+                    val isActive = wallpaper.wid == viewModel.getWid()
                     // create random color bitmap preview based on wid
                     val preview = viewModel.getPreviewImg(wallpaper.wid)
                     // create fragment
-                    val fragment = WallpaperFragment.newInstance(is_active, preview, wallpaper.wid)
+                    val fragment = WallpaperFragment.newInstance(isActive, preview, wallpaper.wid)
                     val tag = "wallpaper_" + wallpaper.wid.toString()
                     // add fragment to grid
                     supportFragmentManager.beginTransaction()
@@ -376,12 +348,12 @@ class ExplorerActivity : AppCompatActivity() {
 
     private fun insertBio(bio: String, username: String) {
         GlobalScope.launch(Dispatchers.IO) {
-            val jdbcConnectionString = ExplorerActivity.DatabaseConfig.getJdbcConnectionString()
+            val jdbcConnectionString = DatabaseConfig.getJdbcConnectionString()
             try {
                 Class.forName("com.mysql.jdbc.Driver").newInstance()
                 val connectionProperties = Properties()
-                connectionProperties["user"] = ExplorerActivity.DatabaseConfig.getDbUser()
-                connectionProperties["password"] = ExplorerActivity.DatabaseConfig.getDbPassword()
+                connectionProperties["user"] = DatabaseConfig.getDbUser()
+                connectionProperties["password"] = DatabaseConfig.getDbPassword()
                 connectionProperties["useSSL"] = "false"
                 DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                     .use { conn ->
@@ -399,12 +371,12 @@ class ExplorerActivity : AppCompatActivity() {
     }
 
     private fun loadUserDataFromAWS(username: String) {
-        val jdbcConnectionString = ExplorerActivity.DatabaseConfig.getJdbcConnectionString()
+        val jdbcConnectionString = DatabaseConfig.getJdbcConnectionString()
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance()
             val connectionProperties = Properties()
-            connectionProperties["user"] = ExplorerActivity.DatabaseConfig.getDbUser()
-            connectionProperties["password"] = ExplorerActivity.DatabaseConfig.getDbPassword()
+            connectionProperties["user"] = DatabaseConfig.getDbUser()
+            connectionProperties["password"] = DatabaseConfig.getDbPassword()
             connectionProperties["useSSL"] = "false"
             DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                 .use { conn -> // this syntax ensures that connection will be closed whether normally or from exception
@@ -489,7 +461,6 @@ class ExplorerActivity : AppCompatActivity() {
                 wallFrag.active = true
                 // switch active wallpaper in repo (this data is linked to active wallpaper via live data observer in onCreate)
                 viewModel.switchWallpaper(ref.wallpaperId)
-                //viewModel.setNewId(ref.wallpaperId)
                 viewModel.setWid(ref.wallpaperId)
 
                 // open preview activity
@@ -526,7 +497,6 @@ class ExplorerActivity : AppCompatActivity() {
         fun getDbPassword(): String? {
             return properties?.getProperty("dbPassword")
         }
-
     }
 }
 
