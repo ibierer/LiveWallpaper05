@@ -48,7 +48,6 @@ class ProfileActivity : AppCompatActivity() {
     private var mWallpaperGrid: GridLayout? = null
 
     /* User authentication data */
-    private var uid by Delegates.notNull<Int>()
     private var bio: String? = null
     private lateinit var username: String
     private var loginRegisterButton: Button? = null
@@ -98,11 +97,6 @@ class ProfileActivity : AppCompatActivity() {
 
         viewModel.loadWidsFromMem(this)
 
-        /* Used to securely access db credentials and keep out of source code */
-        val inputStream: InputStream = resources.openRawResource(R.raw.database_config)
-        val properties = Properties()
-        properties.load(inputStream)
-
         // set up loginPageButton
         loginRegisterButton!!.setOnClickListener {
             val loginPageIntent = Intent(this, Login::class.java)
@@ -131,9 +125,9 @@ class ProfileActivity : AppCompatActivity() {
         if (auth.currentUser != null) {
             val sharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
             username = sharedPreferences.getString("USERNAME", "").toString()
-            uid = sharedPreferences.getInt("UID", 11)
+            viewModel.repo.uid = sharedPreferences.getInt("UID", 11)
             // put uid in local profile table
-            Log.d("OKAY", "uid is $uid\n username is $username")
+            Log.d("OKAY", "uid is ${viewModel.repo.uid}\n username is $username")
             mUsername!!.text = username
             loginRegisterButton!!.visibility = View.GONE
             logoutButton!!.visibility = View.VISIBLE
@@ -302,7 +296,7 @@ class ProfileActivity : AppCompatActivity() {
                     selectStatement.setString(1, username)
                     val resultSet = selectStatement.executeQuery()
                     while (resultSet.next()) {
-                        uid = resultSet.getInt("uid")
+                        viewModel.repo.uid = resultSet.getInt("uid")
                         bio = resultSet.getString("bio")
                         val bioNullable = if (resultSet.wasNull()) null else bio
                         val profilePicture = resultSet.getBlob("profile_picture")
@@ -484,6 +478,7 @@ class ProfileActivity : AppCompatActivity() {
                         wallFrag.active = false
                     }
                 }
+                // viewModel.setActiveWallpaperId(ref.wallpaperId)
                 // disable active button for this wallpaper
                 frag.requireView().findViewById<Button>(R.id.b_active_wallpaper).isEnabled = false
                 // set frag active variable to true
@@ -491,6 +486,8 @@ class ProfileActivity : AppCompatActivity() {
                 wallFrag.active = true
                 // switch active wallpaper in repo (this data is linked to active wallpaper via live data observer in onCreate)
                 viewModel.switchWallpaper(ref.wallpaperId)
+                //viewModel.setNewId(ref.wallpaperId)
+                viewModel.setWid(ref.wallpaperId)
 
                 // open preview activity
                 val intent = Intent(this, PreviewActivity::class.java)
