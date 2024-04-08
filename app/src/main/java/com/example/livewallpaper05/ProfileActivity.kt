@@ -486,6 +486,8 @@ class ProfileActivity : AppCompatActivity() {
                 wallFrag.active = true
                 // switch active wallpaper in repo (this data is linked to active wallpaper via live data observer in onCreate)
                 viewModel.switchWallpaper(ref.wallpaperId)
+                //viewModel.setNewId(ref.wallpaperId)
+                viewModel.setWid(ref.wallpaperId)
 
                 // open preview activity
                 val intent = Intent(this, PreviewActivity::class.java)
