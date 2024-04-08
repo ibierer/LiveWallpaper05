@@ -255,6 +255,15 @@
                     app:layout_constraintStart_toEndOf="@+id/b_color_picker"
                     app:layout_constraintBottom_toBottomOf="@+id/background_radio_group" />
 
+                <Spinner
+                    android:id="@+id/graph_selection_spinner"
+                    style="@style/Widget.AppCompat.Spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="@+id/background_radio_group"
+                    app:layout_constraintStart_toEndOf="@+id/image_selection_spinner"
+                    app:layout_constraintBottom_toBottomOf="@+id/background_radio_group" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <LinearLayout

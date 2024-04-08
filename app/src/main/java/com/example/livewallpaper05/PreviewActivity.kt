@@ -84,6 +84,8 @@ class PreviewActivity : AppCompatActivity() {
             findViewById<Spinner>(R.id.visualization_type_spinner)
         val environmentMapSelectorSpinner: Spinner =
             findViewById<Spinner>(R.id.image_selection_spinner)
+        val graphSelectorSpinner: Spinner =
+            findViewById<Spinner>(R.id.graph_selection_spinner)
         val colorButton: Button = findViewById<Button>(R.id.b_color_picker)
         val hideUIButton: Button = findViewById<Button>(R.id.hide_ui_button)
         val saveButton: Button = findViewById<Button>(R.id.save_button)
@@ -117,6 +119,14 @@ class PreviewActivity : AppCompatActivity() {
         environmentMapSelectorSpinner.adapter = environmentMapSelectorAdapter
         // set default to viewmodel visualization type
         //environmentMapSelectorSpinner.setSelection(viewModel.getEnvironmentMap())
+
+        // fill image selector box with image options from native-lib.cpp
+        val graphSelectorAdapter = ArrayAdapter.createFromResource(
+            this,
+            R.array.graph_options,
+            android.R.layout.simple_spinner_item
+        )
+        graphSelectorSpinner.adapter = environmentMapSelectorAdapter
 
         // add gl engine view to viewport
         layout.addView(mView)
