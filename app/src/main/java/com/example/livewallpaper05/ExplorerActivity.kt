@@ -154,6 +154,16 @@ class ExplorerActivity : AppCompatActivity() {
         runUpdate("INSERT INTO Likes VALUES ($wid, '$likerUsername');")
     }
 
+    private fun getLikeCount(wid: Int): Int {
+        val res = runQuery("select count(*) from Likes where wID = $wid;")
+        var count = 0
+        if (res.next()) {
+            count = res.getInt(1)
+        }
+        return count
+    }
+
+
     private fun getComments(wid: Int): List<String> {
         val res = runQuery("select * from Comments where wID = $wid;")
         var comments = ArrayList<String>()
