@@ -237,32 +237,32 @@
 
                 <Button
                     android:id="@+id/b_color_picker"
-                    android:layout_width="wrap_content"
+                    android:layout_width="55dp"
                     android:layout_height="wrap_content"
-                    android:text="Select Color"
                     android:layout_margin="@dimen/preview_ui_margin"
                     android:background="@drawable/slightly_opaque_border_background"
-                    app:layout_constraintTop_toTopOf="@+id/background_radio_group"
+                    android:text="Select Color"
+                    app:layout_constraintBottom_toBottomOf="@+id/background_radio_group"
                     app:layout_constraintStart_toEndOf="@+id/background_radio_group"
-                    app:layout_constraintBottom_toBottomOf="@+id/background_radio_group" />
+                    app:layout_constraintTop_toTopOf="@+id/background_radio_group" />
 
                 <Spinner
                     android:id="@+id/image_selection_spinner"
                     style="@style/Widget.AppCompat.Spinner"
-                    android:layout_width="wrap_content"
+                    android:layout_width="133dp"
                     android:layout_height="wrap_content"
-                    app:layout_constraintTop_toTopOf="@+id/background_radio_group"
+                    app:layout_constraintBottom_toBottomOf="@+id/background_radio_group"
                     app:layout_constraintStart_toEndOf="@+id/b_color_picker"
-                    app:layout_constraintBottom_toBottomOf="@+id/background_radio_group" />
+                    app:layout_constraintTop_toTopOf="@+id/background_radio_group" />
 
                 <Spinner
                     android:id="@+id/graph_selection_spinner"
                     style="@style/Widget.AppCompat.Spinner"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:layout_constraintTop_toTopOf="@+id/background_radio_group"
+                    app:layout_constraintBottom_toBottomOf="@+id/background_radio_group"
                     app:layout_constraintStart_toEndOf="@+id/image_selection_spinner"
-                    app:layout_constraintBottom_toBottomOf="@+id/background_radio_group" />
+                    app:layout_constraintTop_toTopOf="@+id/background_radio_group" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
