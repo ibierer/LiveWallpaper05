@@ -119,14 +119,15 @@ class PreviewActivity : AppCompatActivity() {
         environmentMapSelectorSpinner.adapter = environmentMapSelectorAdapter
         // set default to viewmodel visualization type
         //environmentMapSelectorSpinner.setSelection(viewModel.getEnvironmentMap())
-
+        val graphNames = arrayOf("")
         // fill image selector box with image options from native-lib.cpp
         val graphSelectorAdapter = ArrayAdapter.createFromResource(
             this,
-            R.array.graph_options,
+            R.array.graph_names,
             android.R.layout.simple_spinner_item
         )
-        graphSelectorSpinner.adapter = environmentMapSelectorAdapter
+        graphSelectorSpinner.adapter = graphSelectorAdapter
+        graphSelectorSpinner.setSelection(viewModel.getGraph())
 
         // add gl engine view to viewport
         layout.addView(mView)
@@ -316,39 +317,69 @@ class PreviewActivity : AppCompatActivity() {
         }
 
         // register spinner actions to update visualization type in repo
-        visualizationSelectorSpinner.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>,
-                    view: View?,
-                    pos: Int,
-                    id: Long
-                ) {
-                    val changed = viewModel.updateVisualizationSelection(pos)
-                    if (changed) {
-                        // update visualization in repo
-                        viewModel.updateSimulationType(parent.getItemAtPosition(pos).toString())
-
-                        // tell view it needs to be reloaded
-                        mView!!.onPause()
-                        mView!!.onResume()
-                    }
-
-                    // Dynamically load or remove UI components
-                    CoroutineScope(Dispatchers.Main).launch {
-                        // Wait until viewModel.visualization is not null
-                        while (viewModel.repo.visualization == null) {
-                            // Suspend the coroutine for a short duration to avoid blocking the main thread
-                            delay(10)
-                        }
-                        loadOrUnloadUIElements()
-                    }
+        visualizationSelectorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>,
+                view: View?,
+                pos: Int,
+                id: Long
+            ) {
+                val changed = viewModel.updateVisualizationSelection(pos)
+                if (changed) {
+                    // update visualization in repo
+                    viewModel.updateSimulationType(parent.getItemAtPosition(pos).toString())
+                    // tell view it needs to be reloaded
+                    mView!!.onPause()
+                    mView!!.onResume()
                 }
-
-                override fun onNothingSelected(parent: AdapterView<*>) {
-                    // Do nothing
+                // Dynamically load or remove UI components
+                CoroutineScope(Dispatchers.Main).launch {
+                    // Wait until viewModel.visualization is not null
+                    while (viewModel.repo.visualization == null) {
+                        // Suspend the coroutine for a short duration to avoid blocking the main thread
+                        delay(10)
+                    }
+                    loadOrUnloadUIElements()
                 }
             }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+            // Do nothing
+            }
+        }
+
+        graphSelectorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                val changed = viewModel.updateGraphSelection(position)
+                if (changed) {
+                    if (position == 0){
+                        viewModel.repo.currentEquation = viewModel.repo.userDefinedEquation
+                        // enable the edit text
+                        equationEditor.isEnabled = true
+                    }
+                    else{
+                        viewModel.repo.currentEquation = resources.getStringArray(R.array.graph_options)[position]
+                        // disable the edit text
+                        equationEditor.isEnabled = false
+                    }
+                    // set text of equation editor
+                    equationEditor.setText(viewModel.repo.currentEquation)
+                }
+                // tell view it needs to be reloaded
+                mView!!.onPause()
+                mView!!.onResume()
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                TODO("Not yet implemented")
+            }
+
+        }
 
         // register spinner actions to update image selection in repo
         /*environmentMapSelectorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {

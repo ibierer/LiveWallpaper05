@@ -16,7 +16,6 @@ import com.example.livewallpaper05.profiledata.ProfileDao
 import com.example.livewallpaper05.profiledata.ProfileTable
 import com.example.livewallpaper05.savedWallpapers.SavedWallpaperDao
 import com.example.livewallpaper05.savedWallpapers.SavedWallpaperRow
-import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -34,14 +33,13 @@ class ActiveWallpaperRepo private constructor(
     private val wallpaperDao: SavedWallpaperDao,
     profileDao: ProfileDao
 ) : SensorEventListener {
-    private lateinit var auth: FirebaseAuth
-
     // initialize default values for active wallpaper
     var wid: Int = 0
     val lastModified: Long = 0
     var uid: Int = 11
     var username: String = "Default User"
-    var equation: String = ""
+    var userDefinedEquation: String = ""
+    var currentEquation: String = "1/((sqrt(x^2 + y^2) - 1.5 + sin(t))^2 + (z + cos(t))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 2π/3))^2 + (z + cos(t + 2π/3))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 4π/3))^2 + (z + cos(t + 4π/3))^2) = 5"
     var color: MutableLiveData<Color> =
         MutableLiveData<Color>(Color.valueOf(0.0f, 0.0f, 0.0f, 0.0f))
     var orientation: Int = 11
@@ -58,6 +56,7 @@ class ActiveWallpaperRepo private constructor(
     var accelerationData: Array<Float> = arrayOf(0.0f, 0.0f, 0.0f)
     var linearAccelerationData: Array<Float> = arrayOf(0.0f, 0.0f, 0.0f)
     var visualizationSelection: Int = 0
+    var graphSelection: Int = 0
     var visualizationName = MutableLiveData<String>("")
     var preview: Bitmap? = null
     var savedConfig: String = ""

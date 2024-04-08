@@ -87,6 +87,10 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
         return repo.visualizationSelection
     }
 
+    fun getGraph(): Int {
+        return repo.graphSelection
+    }
+
     // return orientation from repo
     fun getOrientation(): Int {
         return repo.orientation
@@ -116,7 +120,7 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
         config.put("type", repo.visualizationSelection)
         val color: Color = getColor()
         config.put("background_color", JSONObject("{\"r\": ${color.red()}, \"g\": ${color.green()}, \"b\": ${color.blue()}, \"a\": ${color.alpha()} }"))
-        val eq = if (repo.equation != "") repo.equation else "1/((sqrt(x^2 + y^2) - 2 + 1.25cos(t))^2 + (z - 1.5sin(t))^2) + 1/((sqrt(x^2 + y^2) - 2 - 1.25cos(t))^2 + (z + 1.5sin(t))^2) = 1.9"
+        val eq = if (repo.userDefinedEquation != "") repo.userDefinedEquation else "1/((sqrt(x^2 + y^2) - 2 + 1.25cos(t))^2 + (z - 1.5sin(t))^2) + 1/((sqrt(x^2 + y^2) - 2 - 1.25cos(t))^2 + (z + 1.5sin(t))^2) = 1.9"
         config.put("settings", eq)
 
         // [TODO] temp solution
@@ -178,7 +182,7 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
 
     // get equation string from repo
     fun getEquation(): String {
-        return repo.equation
+        return repo.userDefinedEquation
     }
 
     // get efficiency value from repo
@@ -237,6 +241,14 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
         return false
     }
 
+    fun updateGraphSelection(selection: Int): Boolean {
+        if (selection != repo.graphSelection) {
+            repo.graphSelection = selection
+            return true
+        }
+        return false
+    }
+
     // update color in repo
     fun updateColor(color: Color, back: Boolean = false) {
         // scale values to 0-1 range
@@ -279,7 +291,7 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
 
     // update equation string in repo
     fun updateEquation(toString: String) {
-        repo.equation = toString
+        repo.userDefinedEquation = toString
     }
 
     // update gravity value in repo
@@ -519,6 +531,7 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
     fun getTransitionNewId(): Int {
         return repo.getTransitionNewId()
     }
+
 }
 
 /**

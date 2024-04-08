@@ -105,14 +105,6 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                 scaledSquareBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
                 val blob = outputStream.toByteArray()
                 mViewModel.repo.liveDataBitmap.postValue(scaledSquareBitmap)
-                // TODO: get this working
-                //CoroutineScope(Dispatchers.IO).launch{
-                //    if (auth!!.currentUser != null){
-                //        val sharedPreferences = context.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
-                //        val storedUid = sharedPreferences.getInt("UID", 11)
-                //        mViewModel.repo.synchronizeWithServer(storedUid)
-                //    }
-                //}
             }
 
             // get time after frame
@@ -220,6 +212,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     jsonConfig = mViewModel.repo.visualization.toJsonObject()
                 }
                 4 -> {
+                    loadedConfig.put("settings", mViewModel.repo.currentEquation)
                     mViewModel.repo.visualization = GraphVisualization(loadedConfig)
                     jsonConfig = mViewModel.repo.visualization.toJsonObject()
                 }
