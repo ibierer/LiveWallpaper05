@@ -14,7 +14,7 @@ data class NaiveFluidVisualization (
     var particleCount: Int = 1000,
     var smoothSphereSurface: Boolean = true,
     var gravity: Float = 0.0f,
-    var linearAcceleration: Float = 1.75f,
+    var linearAcceleration: Float = 0.8f,
     var efficiency: Float = 1.0f,
     var referenceFrameRotates: Boolean = false,
     var backgroundIsSolidColor: Boolean = false,

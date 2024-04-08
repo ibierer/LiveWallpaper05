@@ -95,15 +95,15 @@ class Login : AppCompatActivity() {
 
     private suspend fun getUsernameAndUidFromEmail(email: String): Pair<String, Int> {
         return withContext(Dispatchers.IO) {
-            val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
+            val jdbcConnectionString = ExplorerActivity.DatabaseConfig.getJdbcConnectionString()
             var username = ""
             var uid = 0
 
             try {
                 Class.forName("com.mysql.jdbc.Driver").newInstance()
                 val connectionProperties = Properties()
-                connectionProperties["user"] = ProfileActivity.DatabaseConfig.dbUser
-                connectionProperties["password"] = ProfileActivity.DatabaseConfig.dbPassword
+                connectionProperties["user"] = ExplorerActivity.DatabaseConfig.getDbUser()
+                connectionProperties["password"] = ExplorerActivity.DatabaseConfig.getDbPassword()
                 connectionProperties["useSSL"] = "false"
                 DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                     .use { conn ->

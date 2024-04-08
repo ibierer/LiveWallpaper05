@@ -32,6 +32,7 @@ import androidx.lifecycle.Observer
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModelFactory
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -41,7 +42,6 @@ import java.io.InputStream
 import java.util.Properties
 
 class PreviewActivity : AppCompatActivity() {
-
     var mView: GLES3JNIView? = null
 
     private val viewModel: ActiveWallpaperViewModel by viewModels {
@@ -51,7 +51,8 @@ class PreviewActivity : AppCompatActivity() {
     private fun updateSyntaxResult() {
         // update syntax check message
         val equationChecker = EquationChecker()
-        val result: String = equationChecker.checkEquationSyntax(findViewById<EditText>(R.id.et_equation).text.toString())
+        val result: String =
+            equationChecker.checkEquationSyntax(findViewById<EditText>(R.id.et_equation).text.toString())
         val message: String = if (result == "") {
             "No syntax errors."
         } else {
@@ -68,8 +69,6 @@ class PreviewActivity : AppCompatActivity() {
             WindowManager.LayoutParams.FLAG_FULLSCREEN
         );
         setContentView(R.layout.activity_preview)
-        DatabaseConfig.initialize(this)
-
         // get view window from GLES3JNIView
         mView = GLES3JNIView(application, viewModel)
 
@@ -78,10 +77,15 @@ class PreviewActivity : AppCompatActivity() {
         val distanceSeekBar: SeekBar = findViewById<SeekBar>(R.id.distance_seekbar)
         val fieldOfViewSeekBar: SeekBar = findViewById<SeekBar>(R.id.field_of_view_seekbar)
         val gravitySeekBar: SeekBar = findViewById<SeekBar>(R.id.gravity_seekbar)
-        val linearAccelerationSeekBar: SeekBar = findViewById<SeekBar>(R.id.linear_acceleration_seekbar)
+        val linearAccelerationSeekBar: SeekBar =
+            findViewById<SeekBar>(R.id.linear_acceleration_seekbar)
         val efficiencySeekBar: SeekBar = findViewById<SeekBar>(R.id.efficiency_seekbar)
-        val visualizationSelectorSpinner: Spinner = findViewById<Spinner>(R.id.visualization_type_spinner)
-        val environmentMapSelectorSpinner: Spinner = findViewById<Spinner>(R.id.image_selection_spinner)
+        val visualizationSelectorSpinner: Spinner =
+            findViewById<Spinner>(R.id.visualization_type_spinner)
+        val environmentMapSelectorSpinner: Spinner =
+            findViewById<Spinner>(R.id.image_selection_spinner)
+        val graphSelectorSpinner: Spinner =
+            findViewById<Spinner>(R.id.graph_selection_spinner)
         val colorButton: Button = findViewById<Button>(R.id.b_color_picker)
         val hideUIButton: Button = findViewById<Button>(R.id.hide_ui_button)
         val saveButton: Button = findViewById<Button>(R.id.save_button)
@@ -90,8 +94,10 @@ class PreviewActivity : AppCompatActivity() {
         val flipsNormalsCheckBox: CheckBox = findViewById<CheckBox>(R.id.flip_normals_checkbox)
         val linearLayout: LinearLayout = findViewById<LinearLayout>(R.id.settings_linearlayout)
         val doneButton: Button = findViewById<Button>(R.id.done_button)
-        val backgroundRadioButton: RadioGroup = findViewById<RadioGroup>(R.id.background_radio_group)
-        val solidColorRadioButton: RadioButton = findViewById<RadioButton>(R.id.solid_color_radio_button)
+        val backgroundRadioButton: RadioGroup =
+            findViewById<RadioGroup>(R.id.background_radio_group)
+        val solidColorRadioButton: RadioButton =
+            findViewById<RadioButton>(R.id.solid_color_radio_button)
         val imageRadioButton: RadioButton = findViewById<RadioButton>(R.id.image_radio_button)
 
         // fill visualization selector box with wallpaper options from native-lib.cpp
@@ -114,11 +120,19 @@ class PreviewActivity : AppCompatActivity() {
         // set default to viewmodel visualization type
         //environmentMapSelectorSpinner.setSelection(viewModel.getEnvironmentMap())
 
+        // fill image selector box with image options from native-lib.cpp
+        val graphSelectorAdapter = ArrayAdapter.createFromResource(
+            this,
+            R.array.graph_options,
+            android.R.layout.simple_spinner_item
+        )
+        graphSelectorSpinner.adapter = environmentMapSelectorAdapter
+
         // add gl engine view to viewport
         layout.addView(mView)
 
-        suspend fun loadOrUnloadUIElements(){
-            val textViewIds : List<Int> = listOf(
+        suspend fun loadOrUnloadUIElements() {
+            val textViewIds: List<Int> = listOf(
                 R.id.distance_label,
                 R.id.field_of_view_label,
                 R.id.gravity_label,
@@ -127,14 +141,14 @@ class PreviewActivity : AppCompatActivity() {
                 R.id.tv_equation,
                 R.id.tv_syntax_check
             )
-            val seekBarIds : List<Int> = listOf(
+            val seekBarIds: List<Int> = listOf(
                 R.id.distance_seekbar,
                 R.id.field_of_view_seekbar,
                 R.id.gravity_seekbar,
                 R.id.linear_acceleration_seekbar,
                 R.id.efficiency_seekbar
             )
-            val editTextIds : List<Int> = listOf(
+            val editTextIds: List<Int> = listOf(
                 R.id.et_equation
             )
             val checkBoxIds: List<Int> = listOf(
@@ -143,15 +157,15 @@ class PreviewActivity : AppCompatActivity() {
             val buttonIds: List<Int> = listOf(
                 R.id.done_button
             )
-            for(id in textViewIds){
-                if(viewModel.repo.visualization.relevantTextViewIds.contains(id) && !viewModel.repo.isCollapsed){
+            for (id in textViewIds) {
+                if (viewModel.repo.visualization.relevantTextViewIds.contains(id) && !viewModel.repo.isCollapsed) {
                     findViewById<TextView>(id).visibility = View.VISIBLE
                 } else {
                     findViewById<TextView>(id).visibility = View.GONE
                 }
             }
-            for(id in seekBarIds){
-                if(viewModel.repo.visualization.relevantSeekBarIds.contains(id) && !viewModel.repo.isCollapsed){
+            for (id in seekBarIds) {
+                if (viewModel.repo.visualization.relevantSeekBarIds.contains(id) && !viewModel.repo.isCollapsed) {
                     findViewById<SeekBar>(id).visibility = View.VISIBLE
                     findViewById<SeekBar>(id).isEnabled = true
                 } else {
@@ -159,8 +173,8 @@ class PreviewActivity : AppCompatActivity() {
                     findViewById<SeekBar>(id).isEnabled = false
                 }
             }
-            for(id in editTextIds){
-                if(viewModel.repo.visualization.relevantEditTextIds.contains(id) && !viewModel.repo.isCollapsed){
+            for (id in editTextIds) {
+                if (viewModel.repo.visualization.relevantEditTextIds.contains(id) && !viewModel.repo.isCollapsed) {
                     findViewById<EditText>(id).visibility = View.VISIBLE
                     findViewById<EditText>(id).isEnabled = true
                 } else {
@@ -168,8 +182,8 @@ class PreviewActivity : AppCompatActivity() {
                     findViewById<EditText>(id).isEnabled = false
                 }
             }
-            for(id in checkBoxIds){
-                if(viewModel.repo.visualization.relevantCheckBoxIds.contains(id) && !viewModel.repo.isCollapsed){
+            for (id in checkBoxIds) {
+                if (viewModel.repo.visualization.relevantCheckBoxIds.contains(id) && !viewModel.repo.isCollapsed) {
                     findViewById<CheckBox>(id).visibility = View.VISIBLE
                     findViewById<CheckBox>(id).isEnabled = true
                 } else {
@@ -177,8 +191,8 @@ class PreviewActivity : AppCompatActivity() {
                     findViewById<CheckBox>(id).isEnabled = false
                 }
             }
-            for(id in buttonIds){
-                if(viewModel.repo.visualization.relevantButtonIds.contains(id) && !viewModel.repo.isCollapsed){
+            for (id in buttonIds) {
+                if (viewModel.repo.visualization.relevantButtonIds.contains(id) && !viewModel.repo.isCollapsed) {
                     findViewById<Button>(id).visibility = View.VISIBLE
                     findViewById<Button>(id).isEnabled = true
                 } else {
@@ -261,7 +275,8 @@ class PreviewActivity : AppCompatActivity() {
         }
 
         // register seekbar actions to update linear acceleration in repo
-        linearAccelerationSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        linearAccelerationSeekBar.setOnSeekBarChangeListener(object :
+            SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 // Do nothing until changes are stopped for smooth ui updates
                 viewModel.updateLinearAcceleration(seekBar.progress.toFloat() / 100.0f)
@@ -301,33 +316,39 @@ class PreviewActivity : AppCompatActivity() {
         }
 
         // register spinner actions to update visualization type in repo
-        visualizationSelectorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
-                val changed = viewModel.updateVisualizationSelection(pos)
-                if (changed) {
-                    // update visualization in repo
-                    viewModel.updateSimulationType(parent.getItemAtPosition(pos).toString())
+        visualizationSelectorSpinner.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>,
+                    view: View?,
+                    pos: Int,
+                    id: Long
+                ) {
+                    val changed = viewModel.updateVisualizationSelection(pos)
+                    if (changed) {
+                        // update visualization in repo
+                        viewModel.updateSimulationType(parent.getItemAtPosition(pos).toString())
 
-                    // tell view it needs to be reloaded
-                    mView!!.onPause()
-                    mView!!.onResume()
-                }
-
-                // Dynamically load or remove UI components
-                CoroutineScope(Dispatchers.Main).launch {
-                    // Wait until viewModel.visualization is not null
-                    while (viewModel.repo.visualization == null) {
-                        // Suspend the coroutine for a short duration to avoid blocking the main thread
-                        delay(10)
+                        // tell view it needs to be reloaded
+                        mView!!.onPause()
+                        mView!!.onResume()
                     }
-                    loadOrUnloadUIElements()
+
+                    // Dynamically load or remove UI components
+                    CoroutineScope(Dispatchers.Main).launch {
+                        // Wait until viewModel.visualization is not null
+                        while (viewModel.repo.visualization == null) {
+                            // Suspend the coroutine for a short duration to avoid blocking the main thread
+                            delay(10)
+                        }
+                        loadOrUnloadUIElements()
+                    }
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>) {
+                    // Do nothing
                 }
             }
-
-            override fun onNothingSelected(parent: AdapterView<*>) {
-                // Do nothing
-            }
-        }
 
         // register spinner actions to update image selection in repo
         /*environmentMapSelectorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -392,6 +413,7 @@ class PreviewActivity : AppCompatActivity() {
         syncButton.setOnClickListener {
             CoroutineScope(Dispatchers.IO).launch {
                 viewModel.repo.synchronizeWithServer(viewModel.repo.uid)
+                viewModel.repo.synchronizeWithServer(viewModel.repo.uid)
             }
         }
 
@@ -411,7 +433,7 @@ class PreviewActivity : AppCompatActivity() {
             }
         })
 
-        fun doneButton(){
+        fun doneButton() {
             // update equation in repo if valid
             val equationChecker: EquationChecker = EquationChecker()
             val result: String = equationChecker.checkEquationSyntax(equationEditor.text.toString())
@@ -449,7 +471,7 @@ class PreviewActivity : AppCompatActivity() {
 
         updateSyntaxResult()
 
-        fun showUIComponents(){
+        fun showUIComponents() {
             hideUIButton.text = resources.getString(R.string.hideUIButtonText)
             colorButton.visibility = View.VISIBLE
             backgroundRadioButton.visibility = View.VISIBLE
@@ -472,7 +494,7 @@ class PreviewActivity : AppCompatActivity() {
             }
         }
 
-        fun hideUIComponents(){
+        fun hideUIComponents() {
             hideUIButton.text = resources.getString(R.string.showUIButtonText)
             colorButton.visibility = View.GONE
             solidColorRadioButton.visibility = View.GONE
@@ -498,7 +520,7 @@ class PreviewActivity : AppCompatActivity() {
         val animationListener = object : Animation.AnimationListener {
             override fun onAnimationStart(animation: Animation?) {
                 // Enable the UI elements before restoring the layout
-                if(!viewModel.repo.isCollapsed){
+                if (!viewModel.repo.isCollapsed) {
                     showUIComponents()
                 }
             }
@@ -515,7 +537,7 @@ class PreviewActivity : AppCompatActivity() {
             }
         }
 
-        fun setDefaultAnimationParametersAndAnimate(animation: Animation){
+        fun setDefaultAnimationParametersAndAnimate(animation: Animation) {
             animation.duration = 500
             animation.fillAfter = true
             animation.setAnimationListener(animationListener)
@@ -524,7 +546,7 @@ class PreviewActivity : AppCompatActivity() {
         }
 
         hideUIButton.setOnClickListener {
-            val animation: Animation = if(!viewModel.repo.isCollapsed){
+            val animation: Animation = if (!viewModel.repo.isCollapsed) {
                 TranslateAnimation(0f, linearLayout.width.toFloat(), 0f, 0f)
             } else {
                 TranslateAnimation(linearLayout.width.toFloat(), 0f, 0f, 0f)
@@ -552,9 +574,9 @@ class PreviewActivity : AppCompatActivity() {
             viewModel.repo.flipNormals.value = isChecked
         }
 
-        if(viewModel.repo.isCollapsed){
+        if (viewModel.repo.isCollapsed) {
             hideUIComponents()
-        }else{
+        } else {
             showUIComponents()
         }
     }
@@ -625,22 +647,5 @@ class PreviewActivity : AppCompatActivity() {
         )
 
         external fun getScreenBuffer(): ByteArray
-    }
-
-    object DatabaseConfig {
-        lateinit var jdbcConnectionString: String
-        lateinit var dbUser: String
-        lateinit var dbPassword: String
-
-        fun initialize(context: Context) {
-            val inputStream: InputStream = context.resources.openRawResource(R.raw.database_config)
-            val properties = Properties()
-            properties.load(inputStream)
-
-            // Set values in DatabaseConfig object
-            jdbcConnectionString = properties.getProperty("jdbcConnectionString", "")
-            dbUser = properties.getProperty("dbUser", "")
-            dbPassword = properties.getProperty("dbPassword", "")
-        }
     }
 }

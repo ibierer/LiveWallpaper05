@@ -120,7 +120,7 @@ class Register : AppCompatActivity() {
 
     private suspend fun isUsernameOrEmailInDB(username: String, email: String): Pair<Boolean, Boolean> {
         return withContext(Dispatchers.IO) {
-            val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
+            val jdbcConnectionString = ExplorerActivity.DatabaseConfig.getJdbcConnectionString()
             var userExists = false
             var emailExists = false
 
@@ -128,8 +128,8 @@ class Register : AppCompatActivity() {
                 Class.forName("com.mysql.jdbc.Driver").newInstance()
                 // connect to mysql server
                 val connectionProperties = Properties()
-                connectionProperties["user"] = ProfileActivity.DatabaseConfig.dbUser
-                connectionProperties["password"] = ProfileActivity.DatabaseConfig.dbPassword
+                connectionProperties["user"] = ExplorerActivity.DatabaseConfig.getDbUser()
+                connectionProperties["password"] = ExplorerActivity.DatabaseConfig.getDbPassword()
                 connectionProperties["useSSL"] = "false"
 
                 DriverManager.getConnection(jdbcConnectionString, connectionProperties)
@@ -166,13 +166,13 @@ class Register : AppCompatActivity() {
     private fun insertIntoUsers(username: String, email: String) {
         GlobalScope.launch(Dispatchers.IO) {
             // write aws test code here -------------
-            val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
+            val jdbcConnectionString = ExplorerActivity.DatabaseConfig.getJdbcConnectionString()
             try {
                 Class.forName("com.mysql.jdbc.Driver").newInstance()
                 // connect to mysql server
                 val connectionProperties = Properties()
-                connectionProperties["user"] = ProfileActivity.DatabaseConfig.dbUser
-                connectionProperties["password"] = ProfileActivity.DatabaseConfig.dbPassword
+                connectionProperties["user"] = ExplorerActivity.DatabaseConfig.getDbUser()
+                connectionProperties["password"] = ExplorerActivity.DatabaseConfig.getDbPassword()
                 connectionProperties["useSSL"] = "false"
 
                 DriverManager.getConnection(jdbcConnectionString, connectionProperties)

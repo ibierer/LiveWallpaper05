@@ -10,8 +10,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import com.example.livewallpaper05.PreviewActivity
-import com.example.livewallpaper05.ProfileActivity
+import com.example.livewallpaper05.ExplorerActivity
 import com.example.livewallpaper05.R
 import com.example.livewallpaper05.profiledata.ProfileDao
 import com.example.livewallpaper05.profiledata.ProfileTable
@@ -21,11 +20,9 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
-import java.io.ByteArrayOutputStream
 import java.sql.DriverManager
 import java.sql.SQLException
 import java.util.Properties
@@ -40,12 +37,12 @@ class ActiveWallpaperRepo private constructor(
     // initialize default values for active wallpaper
     var wid: Int = 0
     val lastModified: Long = 0
-    var uid: Int = 0
+    var uid: Int = 11
     var username: String = "Default User"
     var equation: String = ""
     var color: MutableLiveData<Color> =
         MutableLiveData<Color>(Color.valueOf(0.0f, 0.0f, 0.0f, 0.0f))
-    var orientation: Int = 0
+    var orientation: Int = 11
     var fps: MutableLiveData<Float> = MutableLiveData<Float>(0.0f)
     var lastFrame: Long = 0
     var distanceFromOrigin: MutableLiveData<Float> = MutableLiveData<Float>(0.5f)
@@ -72,6 +69,7 @@ class ActiveWallpaperRepo private constructor(
     //private val syncMutex: Mutex = Mutex()
 
     private var lastId: Int = 1
+    private var transitionNewId: Int = 0
 
     private lateinit var mSensorManager: SensorManager
 
@@ -156,6 +154,7 @@ class ActiveWallpaperRepo private constructor(
     @OptIn(DelicateCoroutinesApi::class)
     suspend fun synchronizeWithServer(uid: Int) {
         // Non-registered user, don't sync with server
+        Log.d("in synchronizeWithServer", "uid is $uid")
         if (uid == context.resources.getInteger(R.integer.default_profile_id)) {
             return
         }
@@ -205,13 +204,13 @@ class ActiveWallpaperRepo private constructor(
 
 
     private fun insertLocalWallpaperToServer(wallpaperRow: SavedWallpaperRow) {
-        val jdbcConnectionString = PreviewActivity.DatabaseConfig.jdbcConnectionString
+        val jdbcConnectionString = ExplorerActivity.DatabaseConfig.getJdbcConnectionString()
         Log.d("SQL", "in insertLocalWallpaperToServer")
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance()
             val connectionProperties = Properties()
-            connectionProperties["user"] = PreviewActivity.DatabaseConfig.dbUser
-            connectionProperties["password"] = PreviewActivity.DatabaseConfig.dbPassword
+            connectionProperties["user"] = ExplorerActivity.DatabaseConfig.getDbUser()
+            connectionProperties["password"] = ExplorerActivity.DatabaseConfig.getDbPassword()
             connectionProperties["useSSL"] = "false"
             DriverManager.getConnection(jdbcConnectionString, connectionProperties).use { conn ->
                 Log.d("SQL", "Connection made")
@@ -233,14 +232,14 @@ class ActiveWallpaperRepo private constructor(
     }
 
     private fun getServerWallpaperByUidAndWid(uid: Int, wid: Int): SavedWallpaperRow? {
-        val jdbcConnectionString = PreviewActivity.DatabaseConfig.jdbcConnectionString
+        val jdbcConnectionString = ExplorerActivity.DatabaseConfig.getJdbcConnectionString()
         var localWallpaper: SavedWallpaperRow? = null
         Log.d("SQL", "in getServerWallpaperByUidAndWid")
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance()
             val connectionProperties = Properties()
-            connectionProperties["user"] = PreviewActivity.DatabaseConfig.dbUser
-            connectionProperties["password"] = PreviewActivity.DatabaseConfig.dbPassword
+            connectionProperties["user"] = ExplorerActivity.DatabaseConfig.getDbUser()
+            connectionProperties["password"] = ExplorerActivity.DatabaseConfig.getDbPassword()
             connectionProperties["useSSL"] = "false"
             DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                 .use { conn ->
@@ -269,15 +268,15 @@ class ActiveWallpaperRepo private constructor(
     }
 
     private fun getServerWidsByUID(uid: Int): List<Tuple> {
-        val jdbcConnectionString = PreviewActivity.DatabaseConfig.jdbcConnectionString
+        val jdbcConnectionString = ExplorerActivity.DatabaseConfig.getJdbcConnectionString()
         Log.d("SQL", "jdbcConnectionString: $jdbcConnectionString")
         val tuples = mutableListOf<Tuple>()
         Log.d("SQL", "in getServerWidsByUID")
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance()
             val connectionProperties = Properties()
-            connectionProperties["user"] = PreviewActivity.DatabaseConfig.dbUser
-            connectionProperties["password"] = PreviewActivity.DatabaseConfig.dbPassword
+            connectionProperties["user"] = ExplorerActivity.DatabaseConfig.getDbUser()
+            connectionProperties["password"] = ExplorerActivity.DatabaseConfig.getDbPassword()
             connectionProperties["useSSL"] = "false"
             DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                 .use { conn ->
@@ -305,13 +304,13 @@ class ActiveWallpaperRepo private constructor(
 
     private suspend fun insertWallpaper(contents: String, image: ByteArray, username: String) {
         withContext(Dispatchers.IO) {
-            val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
+            val jdbcConnectionString = ExplorerActivity.DatabaseConfig.getJdbcConnectionString()
             Log.d("SQL", "in Insert")
             try {
                 Class.forName("com.mysql.jdbc.Driver").newInstance()
                 val connectionProperties = Properties()
-                connectionProperties["user"] = ProfileActivity.DatabaseConfig.dbUser
-                connectionProperties["password"] = ProfileActivity.DatabaseConfig.dbPassword
+                connectionProperties["user"] = ExplorerActivity.DatabaseConfig.getDbUser()
+                connectionProperties["password"] = ExplorerActivity.DatabaseConfig.getDbPassword()
                 connectionProperties["useSSL"] = "false"
                 DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                     .use { conn ->
@@ -375,8 +374,23 @@ class ActiveWallpaperRepo private constructor(
     // set active wallpaper live data to wallpaper given by id
     fun setLiveWallpaperData(wid: Int) {
         mScope.launch(Dispatchers.IO) {
-            val wallpaper = wallpaperDao.getWallpaperData(wid).value!!
-            activeWallpaper.postValue(wallpaper)
+            try {
+                val wallpaper = wallpaperDao.getWallpaperData(wid).value!!
+                activeWallpaper.postValue(wallpaper)
+            } catch (e: Exception) {
+                Log.e("ActiveWallpaperRepo", "Error setting live wallpaper data: ${e.message}")
+                // log and try again 50 times
+                for (i in 0 until 50) {
+                    try {
+                        val wallpaper = wallpaperDao.getWallpaperData(wid).value!!
+                        activeWallpaper.postValue(wallpaper)
+                        break
+                    } catch (e: Exception) {
+                        Log.e("ActiveWallpaperRepo", "Error setting live wallpaper data: ${e.message}")
+                    }
+                }
+
+            }
         }
     }
 
@@ -638,6 +652,18 @@ class ActiveWallpaperRepo private constructor(
     fun updateColor(r: Float, g: Float, b: Float, a: Float) {
         color.value = Color.valueOf(r, g, b, a)
         //color.postValue(Color.valueOf(r, g, b, a))
+    }
+
+    fun setTransitionNewId(newId: Int) {
+        if (newId < 0){
+            this.wid = this.transitionNewId
+        }
+
+        this.transitionNewId = newId
+    }
+
+    fun getTransitionNewId(): Int {
+        return this.transitionNewId
     }
 }
 

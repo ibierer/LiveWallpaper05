@@ -28,7 +28,7 @@ import com.example.livewallpaper05.helpful_fragments.WallpaperFragment
 import com.example.livewallpaper05.profiledata.ProfileViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.core.DatabaseConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -49,8 +49,6 @@ class ProfileActivity : AppCompatActivity() {
     private var mWallpaperGrid: GridLayout? = null
 
     /* User authentication data */
-    private var authUser: FirebaseUser? = null
-    private var uid by Delegates.notNull<Int>()
     private var bio: String? = null
     private lateinit var username: String
     private var loginRegisterButton: Button? = null
@@ -100,15 +98,6 @@ class ProfileActivity : AppCompatActivity() {
 
         viewModel.loadWidsFromMem(this)
 
-        /* Used to securely access db credentials and keep out of source code */
-        val inputStream: InputStream = resources.openRawResource(R.raw.database_config)
-        val properties = Properties()
-        properties.load(inputStream)
-
-        // Set values in DatabaseConfig object
-        DatabaseConfig.jdbcConnectionString = properties.getProperty("jdbcConnectionString", "")
-        DatabaseConfig.dbUser = properties.getProperty("dbUser", "")
-        DatabaseConfig.dbPassword = properties.getProperty("dbPassword", "")
         // set up loginPageButton
         loginRegisterButton!!.setOnClickListener {
             val loginPageIntent = Intent(this, Login::class.java)
@@ -137,9 +126,9 @@ class ProfileActivity : AppCompatActivity() {
         if (auth.currentUser != null) {
             val sharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
             username = sharedPreferences.getString("USERNAME", "").toString()
-            uid = sharedPreferences.getInt("UID", 11)
+            viewModel.repo.uid = sharedPreferences.getInt("UID", 11)
             // put uid in local profile table
-            Log.d("OKAY", "uid is $uid\n username is $username")
+            Log.d("OKAY", "uid is ${viewModel.repo.uid}\n username is $username")
             mUsername!!.text = username
             loginRegisterButton!!.visibility = View.GONE
             logoutButton!!.visibility = View.VISIBLE
@@ -192,14 +181,17 @@ class ProfileActivity : AppCompatActivity() {
             val activeWid = viewModel.getWid()
             val activeLastModified = viewModel.getLastModified()
             // if wid is in saved wallpapers, update active wallpaper with saved wallpaper data
-            viewModel.saveSwitchWallpaper(activeWid, activeConfig, activeLastModified)
+            //viewModel.saveSwitchWallpaper(activeWid, activeConfig, activeLastModified)
         }
 
         // link active wallpaper to active wallpaper live data via callback function
         viewModel.repo.activeWallpaper.observe(this, Observer { wallpaper ->
-            // if wallpaper is not the same as saved wallpaper, return
-            // if wallpaper not in wallpapers, return
             var contained = false
+            // if wallpapers is null return
+            if (viewModel.repo.wallpapers.value == null) {
+                return@Observer
+            }
+
             for (w in viewModel.repo.wallpapers.value!!) {
                 if (w.wid == wallpaper.wid && w.config == wallpaper.config){
                     contained = true
@@ -211,10 +203,10 @@ class ProfileActivity : AppCompatActivity() {
             }
 
             // set active wallpaper wid to wallpaper wid
-            viewModel.setWid(wallpaper.wid)
+            ///viewModel.setWid(wallpaper.wid)
             // [TODO] use this to update active wallpaper with saved wallpaper data
             // load new active wallpaper config
-            viewModel.loadConfig(wallpaper)
+            //viewModel.loadConfig(wallpaper)
         })
 
         // link saved wallpaper view elements to saved wallpaper live data via callback function
@@ -257,11 +249,6 @@ class ProfileActivity : AppCompatActivity() {
             }
         })
 
-        /*
-        viewModel.savedWallpapers.observe(this, Observer { wallpapers ->
-
-        })
-        */
 
         // observe amount of wallpapers in mWallpaperGrid and update listeners when it changes
         mWallpaperGrid!!.viewTreeObserver.addOnGlobalLayoutListener {
@@ -272,12 +259,12 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun insertBio(bio: String, username: String) {
         GlobalScope.launch(Dispatchers.IO) {
-            val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
+            val jdbcConnectionString = ExplorerActivity.DatabaseConfig.getJdbcConnectionString()
             try {
                 Class.forName("com.mysql.jdbc.Driver").newInstance()
                 val connectionProperties = Properties()
-                connectionProperties["user"] = DatabaseConfig.dbUser
-                connectionProperties["password"] = DatabaseConfig.dbPassword
+                connectionProperties["user"] = ExplorerActivity.DatabaseConfig.getDbUser()
+                connectionProperties["password"] = ExplorerActivity.DatabaseConfig.getDbPassword()
                 connectionProperties["useSSL"] = "false"
                 DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                     .use { conn ->
@@ -294,19 +281,13 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
-    object DatabaseConfig {
-        lateinit var jdbcConnectionString: String
-        lateinit var dbUser: String
-        lateinit var dbPassword: String
-    }
-
     private fun loadUserDataFromAWS(username: String) {
-        val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
+        val jdbcConnectionString = ExplorerActivity.DatabaseConfig.getJdbcConnectionString()
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance()
             val connectionProperties = Properties()
-            connectionProperties["user"] = DatabaseConfig.dbUser
-            connectionProperties["password"] = DatabaseConfig.dbPassword
+            connectionProperties["user"] = ExplorerActivity.DatabaseConfig.getDbUser()
+            connectionProperties["password"] = ExplorerActivity.DatabaseConfig.getDbPassword()
             connectionProperties["useSSL"] = "false"
             DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                 .use { conn -> // this syntax ensures that connection will be closed whether normally or from exception
@@ -316,7 +297,7 @@ class ProfileActivity : AppCompatActivity() {
                     selectStatement.setString(1, username)
                     val resultSet = selectStatement.executeQuery()
                     while (resultSet.next()) {
-                        uid = resultSet.getInt("uid")
+                        viewModel.repo.uid = resultSet.getInt("uid")
                         bio = resultSet.getString("bio")
                         val bioNullable = if (resultSet.wasNull()) null else bio
                         val profilePicture = resultSet.getBlob("profile_picture")
@@ -405,13 +386,13 @@ class ProfileActivity : AppCompatActivity() {
     private fun insertProfilePicture(username: String, image: Bitmap) {
         GlobalScope.launch(Dispatchers.IO) {
             // write aws test code here -------------
-            val jdbcConnectionString = ProfileActivity.DatabaseConfig.jdbcConnectionString
+            val jdbcConnectionString = ExplorerActivity.DatabaseConfig.getJdbcConnectionString()
             try {
                 Class.forName("com.mysql.jdbc.Driver").newInstance()
                 // connect to mysql server
                 val connectionProperties = Properties()
-                connectionProperties["user"] = DatabaseConfig.dbUser
-                connectionProperties["password"] = DatabaseConfig.dbPassword
+                connectionProperties["user"] = ExplorerActivity.DatabaseConfig.getDbUser()
+                connectionProperties["password"] = ExplorerActivity.DatabaseConfig.getDbPassword()
                 connectionProperties["useSSL"] = "false"
                 DriverManager.getConnection(jdbcConnectionString, connectionProperties)
                     .use { conn -> // this syntax ensures that connection will be closed whether normally or from exception
@@ -451,15 +432,11 @@ class ProfileActivity : AppCompatActivity() {
         val activeConfig = viewModel.getConfig()
         viewModel.saveWallpaper(activeConfig)
         // create new empty wallpaper config
-        viewModel.createWallpaperTable(-1)
+        val newId = viewModel.createWallpaperTable(-1)
         viewModel.saveWids(this)
 
-
-        // switch active wallpaper to new wallpaper
-        val newWid = viewModel.getWid()
-        // force user to preview activity
-        val intent = Intent(this, PreviewActivity::class.java)
-        startActivity(intent)
+        // set new wallpaper as active wallpaper
+        viewModel.setNewId(newId)
     }
 
     private fun updateFragListeners() {
@@ -469,7 +446,6 @@ class ProfileActivity : AppCompatActivity() {
         for (ref in wallpaperFragIds) {
             val fragTag = ref.fragmentTag
             val frag = supportFragmentManager.findFragmentByTag(fragTag) ?: continue
-            // if fragment doesn't exist yet, skip
 
             // connect delete button to delete wallpaper function
             frag.requireView().findViewById<FloatingActionButton>(R.id.b_delete_wallpaper).setOnClickListener {
@@ -503,6 +479,7 @@ class ProfileActivity : AppCompatActivity() {
                         wallFrag.active = false
                     }
                 }
+                // viewModel.setActiveWallpaperId(ref.wallpaperId)
                 // disable active button for this wallpaper
                 frag.requireView().findViewById<Button>(R.id.b_active_wallpaper).isEnabled = false
                 // set frag active variable to true
@@ -510,6 +487,18 @@ class ProfileActivity : AppCompatActivity() {
                 wallFrag.active = true
                 // switch active wallpaper in repo (this data is linked to active wallpaper via live data observer in onCreate)
                 viewModel.switchWallpaper(ref.wallpaperId)
+                //viewModel.setNewId(ref.wallpaperId)
+                viewModel.setWid(ref.wallpaperId)
+
+                // open preview activity
+                val intent = Intent(this, PreviewActivity::class.java)
+                startActivity(intent)
+            }
+
+            // if repo.newId > 0 and ref.wallpaperId == repo.newId, click active button
+            if (viewModel.getTransitionNewId() > 0 && ref.wallpaperId == viewModel.getTransitionNewId()) {
+                viewModel.setNewId(-1)
+                frag.requireView().findViewById<Button>(R.id.b_active_wallpaper).performClick()
             }
         }
     }

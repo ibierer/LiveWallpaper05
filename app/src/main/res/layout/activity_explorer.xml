@@ -17,10 +17,49 @@
         app:layout_constraintEnd_toEndOf="parent"
         />
 
-    <ScrollView
-        android:id="@+id/sv_wallpapers"
+    <ImageView
+        android:id="@+id/iv_profile_picae"
+        android:layout_width="match_parent"
+        android:layout_height="220sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="30sp"
+        android:layout_marginEnd="30sp"
+        android:layout_marginTop="30sp"
+        android:contentDescription="@string/img_description"
+        android:src="@drawable/baseline_account_circle_24"
+        />
+
+    <TextView
+        android:id="@+id/tv_usernameae"
         android:layout_width="wrap_content"
-        android:layout_height="650dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/iv_profile_picae"
+        android:layout_marginTop="20sp"
+        android:text="@string/username"
+        />
+
+    <TextView
+        android:id="@+id/tv_biographyae"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_usernameae"
+        android:layout_marginTop="20sp"
+        android:layout_marginStart="20sp"
+        android:layout_marginEnd="20sp"
+        android:text="@string/biography"
+        />
+
+    <ScrollView
+        android:id="@+id/sv_wallpapersae"
+        android:layout_width="wrap_content"
+        android:layout_height="400dp"
+        app:layout_constraintTop_toBottomOf="@id/tv_biographyae"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -29,13 +68,13 @@
         >
 
         <LinearLayout
-            android:id="@+id/sv_ll_wallpapers"
+            android:id="@+id/sv_ll_wallpapersae"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <GridLayout
-                android:id="@+id/sv_ll_gl_wallpapers"
+                android:id="@+id/sv_ll_gl_wallpapersae"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:columnCount="3"
@@ -45,6 +84,52 @@
         </LinearLayout>
 
     </ScrollView>
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/b_new_wallpaperae"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_margin="10dp"
+        android:src="@drawable/plus_symbol" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/f_toolbarae"
+        android:name="com.example.livewallpaper05.helpful_fragments.Toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="15dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/tv_biographyae"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        >
+
+        <Button
+            android:id="@+id/loginRegisterButtonae"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:text="Login" />
+
+        <Button
+            android:id="@+id/logoutButtonae"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:text="Logout" />
+    </LinearLayout>
 
     <!-- menu button below -->
     <androidx.fragment.app.FragmentContainerView

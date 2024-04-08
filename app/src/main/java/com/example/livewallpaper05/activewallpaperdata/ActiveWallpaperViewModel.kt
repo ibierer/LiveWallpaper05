@@ -470,8 +470,10 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
     }
 
     // create new wallpaper table
-    fun createWallpaperTable(id: Int) {
-        repo.setWallpaper(repo.createWallpaperTable(id))
+    fun createWallpaperTable(id: Int): Int {
+        val newWallpaper = repo.createWallpaperTable(id)
+        repo.setWallpaper(newWallpaper)
+        return newWallpaper.wid
     }
 
     // create wallpaper save with default values
@@ -505,7 +507,13 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
         repo.saveSwitchWallpaper(0, activeWid, activeConfig, lastModified)
     }
 
+    fun setNewId(newId: Int) {
+        repo.setTransitionNewId(newId)
+    }
 
+    fun getTransitionNewId(): Int {
+        return repo.getTransitionNewId()
+    }
 }
 
 /**
