@@ -2,22 +2,14 @@ package com.example.livewallpaper05
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.Button
-import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import android.widget.GridLayout
-import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -36,7 +28,6 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.io.ByteArrayOutputStream
 import java.sql.SQLException
 import java.util.Properties
 import java.sql.Connection
@@ -189,14 +180,10 @@ class ExplorerActivity : AppCompatActivity() {
         )
     }
 
-
-    private var connectionString =
-        "jdbc:mysql://database-1.cxo8mkcogo8p.us-east-1.rds.amazonaws.com:3306/?user=admin";
-
     private fun establishConnection(): Connection {
         Class.forName("com.mysql.jdbc.Driver").newInstance()
         val conn = DriverManager.getConnection(
-            connectionString, "admin", "UtahUtesLiveWallz!"
+            DatabaseConfig.getJdbcConnectionString(), DatabaseConfig.getDbUser(), DatabaseConfig.getDbPassword()
         )
         conn.createStatement().executeQuery("USE myDatabase;")
         return conn;
@@ -205,8 +192,7 @@ class ExplorerActivity : AppCompatActivity() {
     private fun runQuery(query: String): ResultSet {
         val connection = establishConnection();
         val statement = connection.createStatement()
-        val retVal = statement.executeQuery(query)
-        return retVal
+        return statement.executeQuery(query)
     }
 
     private fun runUpdate(query: String) {
@@ -230,16 +216,6 @@ class ExplorerActivity : AppCompatActivity() {
     private val mExplorerViewModel: ExplorerViewModel by viewModels {
         ExplorerViewModelFactory((application as ActiveWallpaperApplication).wallpaperRepo)
     }
-
-    data class Wallpaper(
-        val wid: Int,
-        val contents: String,
-        val image: ByteArray?,
-        val username: String,
-        val lastModified: Long
-    )
-
-    private val wallpapersList = mutableListOf<Wallpaper>()
 
     public override fun onStart() {
         super.onStart()
@@ -451,106 +427,6 @@ class ExplorerActivity : AppCompatActivity() {
             Log.d("OH_NO", e.message.toString())
         }
     }
-
-    // creates popup dialog to prompt user to chose how to update profile picture
-    private fun changeProfilePic(view: View) {
-        // build dialog to choose between media and camera
-        val dialog = AlertDialog.Builder(this)
-        dialog.setTitle("Change Profile Picture")
-        dialog.setMessage("Would you like to take a picture or choose from your gallery?")
-        dialog.setPositiveButton("Camera") { _, _ ->
-            // open camera
-            val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            try {
-                cameraActivity.launch(cameraIntent)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-        dialog.setNegativeButton("Gallery") { _, _ ->
-            // open gallery
-            val galleryIntent =
-                Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-            try {
-                galleryActivity.launch(galleryIntent)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-        dialog.show()
-    }
-
-    // opens camera to take picture for profile picture
-    private val cameraActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == RESULT_OK) {
-            val data = result.data
-            val imageBitmap = data?.extras?.get("data") as Bitmap
-            updateProfilePicture(imageBitmap)
-        }
-    }
-
-    // opens phone photo gallery to grab picture for profile picture
-    private val galleryActivity =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                val data = result.data
-                // get image from uri returned in data
-                val imageBitmap =
-                    MediaStore.Images.Media.getBitmap(this.contentResolver, data?.data)
-                updateProfilePicture(imageBitmap)
-            }
-        }
-
-    // [TODO] [PHASE OUT] calls view model to update local storage of profile picture
-    private fun updateProfilePicture(pic: Bitmap) {
-        // update profile pic in database
-        mProfileViewModel.updateProfilePic(pic)
-        insertProfilePicture(username, pic)
-    }
-
-    private fun insertProfilePicture(username: String, image: Bitmap) {
-        GlobalScope.launch(Dispatchers.IO) {
-            // write aws test code here -------------
-            val jdbcConnectionString = ExplorerActivity.DatabaseConfig.getJdbcConnectionString()
-            try {
-                Class.forName("com.mysql.jdbc.Driver").newInstance()
-                // connect to mysql server
-                val connectionProperties = Properties()
-                connectionProperties["user"] = ExplorerActivity.DatabaseConfig.getDbUser()
-                connectionProperties["password"] = ExplorerActivity.DatabaseConfig.getDbPassword()
-                connectionProperties["useSSL"] = "false"
-                DriverManager.getConnection(jdbcConnectionString, connectionProperties)
-                    .use { conn -> // this syntax ensures that connection will be closed whether normally or from exception
-                        Log.d("OH_YES", "Connected to database in insertProfilePicture!")
-                        val updateQuery = "UPDATE users SET profile_picture = ? WHERE username = ?;"
-                        conn.prepareStatement(updateQuery).use { updateStatement ->
-                            val convertedImage = convertBitmapToByteArray(image)
-                            updateStatement.setBytes(1, convertedImage)
-                            updateStatement.setString(2, username)
-                            updateStatement.executeUpdate()
-                        }
-                    }
-            } catch (e: SQLException) {
-                Log.d("OH_NO", e.message.toString())
-            }
-        }
-    }
-
-    // Helper function to convert Bitmap to byte array
-    private fun convertBitmapToByteArray(bitmap: Bitmap): ByteArray {
-        val stream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-        return stream.toByteArray()
-    }
-
-    //private fun showLoginDialog() {
-    //    val dialog = Dialog(this)
-    //    dialog.requestWindowFeature(android.view.Window.FEATURE_NO_TITLE)
-    //    dialog.setCancelable(false)
-    //    dialog.setContentView(R.layout.dialog_login)
-    //    // create objects for different textBoxes
-    //    //check username, query database if valid->update the viewModel
-    //}
 
     private fun newWallpaper(view: View) {
         // save current wallpaper
