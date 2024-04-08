@@ -565,6 +565,8 @@ public:
 
     static int valuesCounter[maxNumOfEquations];
 
+    static int hasTimeVariable[maxNumOfEquations];
+
     static int sequenceLengths[maxNumOfEquations];
 
     static int constants[maxNumOfEquations][maxEquationLength];

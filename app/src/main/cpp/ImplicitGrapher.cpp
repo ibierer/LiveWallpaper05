@@ -24,6 +24,8 @@ int ImplicitGrapher::constants[maxNumOfEquations][maxEquationLength] = {};
 
 int ImplicitGrapher::valuesCounter[maxNumOfEquations] = {};
 
+int ImplicitGrapher::hasTimeVariable[maxNumOfEquations] = {};
+
 string ImplicitGrapher::debug_string = "";
 
 float ImplicitGrapher::equationValues[maxNumOfEquations][maxEquationLength] = {};
@@ -874,6 +876,7 @@ void ImplicitGrapher::processEquation(const int& i) {
     int codedEquation[2 * maxEquationLength];
     int codedEquationCounter = 0;
     valuesCounter[i] = 0;
+    hasTimeVariable[i] = false;
     for (int j = 0; j < length; j++, codedEquationCounter++) {
         if (equation[j] != '.' && !aDigit(equation[j])) {
             if (equation[j] == 'x') {
@@ -891,6 +894,7 @@ void ImplicitGrapher::processEquation(const int& i) {
             else if (equation[j] == 't' && equation[j + 1] != 'a') {
                 codedEquation[codedEquationCounter] = constants[i][valuesCounter[i]] = T;
                 valuesCounter[i]++;
+                hasTimeVariable[i] = true;
             }
             else if (equation[j] == 'e') {
                 codedEquation[codedEquationCounter] = constants[i][valuesCounter[i]] = E;

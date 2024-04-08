@@ -121,7 +121,7 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
         val color: Color = getColor()
         config.put("background_color", JSONObject("{\"r\": ${color.red()}, \"g\": ${color.green()}, \"b\": ${color.blue()}, \"a\": ${color.alpha()} }"))
         val eq = if (repo.userDefinedEquation != "") repo.userDefinedEquation else "1/((sqrt(x^2 + y^2) - 2 + 1.25cos(t))^2 + (z - 1.5sin(t))^2) + 1/((sqrt(x^2 + y^2) - 2 - 1.25cos(t))^2 + (z + 1.5sin(t))^2) = 1.9"
-        config.put("settings", eq)
+        config.put("equation", eq)
 
         // [TODO] temp solution
         when (repo.visualizationSelection){
@@ -131,39 +131,57 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
                 config.put("field_of_view", getFieldOfView())
             }
             1 -> {
-                val sim = NaiveFluidVisualization()
+                //val sim = NaiveFluidVisualization()
                 config.put("distance", getDistanceFromOrigin())
                 config.put("field_of_view", getFieldOfView())
-                config.put("background_is_solid_color", sim.backgroundIsSolidColor)
-                config.put("background_texture", sim.backgroundTexture)
+                //config.put("background_is_solid_color", sim.backgroundIsSolidColor)
+                config.put("background_is_solid_color", repo.backgroundIsSolidColor)
+                //config.put("background_texture", sim.backgroundTexture)
+                config.put("background_texture", repo.backgroundTexture)
+                config.put("fluid_surface", repo.fluidSurface)
                 //config.put("gravity", getGravity())
                 //config.put("linear_acceleration", getLinearAcceleration())
                 //config.put("efficiency", getEfficiency())
-                config.put("particle_count", sim.particleCount)
+                //config.put("particle_count", sim.particleCount)
+                config.put("particle_count", repo.particleCount)
             }
             2 -> {
-                val sim = PicFlipVisualization()
-                config.put("distance", sim.distance)
-                config.put("field_of_view", sim.fieldOfView)
-                config.put("background_is_solid_color", sim.backgroundIsSolidColor)
-                config.put("background_texture", sim.backgroundTexture)
-                config.put("gravity", sim.gravity)
-                config.put("linear_acceleration", sim.linearAcceleration)
+                //val sim = PicFlipVisualization()
+                //config.put("distance", sim.distance)
+                config.put("distance", repo.distanceFromOrigin.value)
+                //config.put("field_of_view", sim.fieldOfView)
+                config.put("field_of_view", repo.fieldOfView)
+                //config.put("background_is_solid_color", sim.backgroundIsSolidColor)
+                config.put("background_is_solid_color", repo.backgroundIsSolidColor)
+                //config.put("background_texture", sim.backgroundTexture)
+                config.put("background_texture", repo.backgroundTexture)
+                //config.put("gravity", sim.gravity)
+                config.put("gravity", repo.gravity)
+                //config.put("linear_acceleration", sim.linearAcceleration)
+                config.put("linear_acceleration", repo.linearAcceleration)
             }
             3 -> {
-                val sim = TriangleVisualization()
-                config.put("distance", sim.distance)
-                config.put("field_of_view", sim.fieldOfView)
-                config.put("background_is_solid_color", sim.backgroundIsSolidColor)
-                config.put("background_texture", sim.backgroundTexture)
+                //val sim = TriangleVisualization()
+                //config.put("distance", sim.distance)
+                config.put("distance", repo.distanceFromOrigin.value)
+                //config.put("field_of_view", sim.fieldOfView)
+                config.put("field_of_view", repo.fieldOfView)
+                //config.put("background_is_solid_color", sim.backgroundIsSolidColor)
+                config.put("background_is_solid_color", repo.backgroundIsSolidColor)
+                //config.put("background_texture", sim.backgroundTexture)
+                config.put("background_texture", repo.backgroundTexture)
             }
             4 -> {
-                val graph = GraphVisualization()
-                config.put("distance", graph.distance)
-                config.put("field_of_view", graph.fieldOfView)
-                config.put("background_is_solid_color", graph.backgroundIsSolidColor)
-                config.put("background_texture", graph.backgroundTexture)
-                //config.put("equation", graph.equation)
+                //val graph = GraphVisualization()
+                //config.put("distance", graph.distance)
+                config.put("distance", repo.distanceFromOrigin.value)
+                //config.put("field_of_view", graph.fieldOfView)
+                config.put("field_of_view", repo.fieldOfView)
+                //config.put("background_is_solid_color", graph.backgroundIsSolidColor)
+                config.put("background_is_solid_color", repo.backgroundIsSolidColor)
+                //config.put("background_texture", graph.backgroundTexture)
+                config.put("background_texture", repo.backgroundTexture)
+                config.put("equation", eq)
             }
         }
 
@@ -362,6 +380,8 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
                     updateDistanceFromCenter(sim.distance)
                     updateFieldOfView(sim.fieldOfView)
                     updateColor(sim.backgroundColor)
+                    repo.backgroundIsSolidColor.value = sim.backgroundIsSolidColor
+                    repo.backgroundTexture.value = sim.backgroundTexture
                     //updateColor(Color.valueOf(red, green, blue, alpha))
                     updateVizualizationName("N-Body Simulation")
                 }
@@ -370,6 +390,8 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
                     updateDistanceFromCenter(sim.distance)
                     updateFieldOfView(sim.fieldOfView)
                     updateColor(sim.backgroundColor)
+                    repo.fluidSurface.value = sim.fluidSurface
+                    repo.backgroundIsSolidColor.value = sim.backgroundIsSolidColor
                     //updateColor(Color.valueOf(red, green, blue, alpha))
                     updateGravity(sim.gravity)
                     updateLinearAcceleration(sim.linearAcceleration)

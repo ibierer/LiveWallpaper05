@@ -12,6 +12,7 @@ import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.TranslateAnimation
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -466,6 +467,10 @@ class PreviewActivity : AppCompatActivity() {
         })
 
         fun doneButton() {
+            //val currentFocusView = currentFocus
+            //if (currentFocusView != null) {
+            //    (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(currentFocusView.windowToken, 0)
+            //}
             // update equation in repo if valid
             val equationChecker: EquationChecker = EquationChecker()
             val result: String = equationChecker.checkEquationSyntax(equationEditor.text.toString())

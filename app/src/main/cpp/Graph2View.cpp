@@ -87,7 +87,9 @@ void Graph2View::render(){
     normalMatrix = referenceFrameRotates ? rotation.GetSubMatrix3().GetInverse() : normalMatrix.Identity();
     cameraTransformation = rotation.GetInverse() * translation * model.Translation(Vec3<float>(0.0f, 0.0f, 0.0f));
 
-    ImplicitGrapher::calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, implicitGrapher.vectorPointsPositive, false, ImplicitGrapher::vertices, ImplicitGrapher::indices, ImplicitGrapher::numIndices);
+    if(getFrameCount() == 0 || ImplicitGrapher::hasTimeVariable[ImplicitGrapher::surfaceEquation]){
+        ImplicitGrapher::calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, implicitGrapher.vectorPointsPositive, false, ImplicitGrapher::vertices, ImplicitGrapher::indices, ImplicitGrapher::numIndices);
+    }
 
     // Render to texture
     glBindFramebuffer(GL_FRAMEBUFFER, fbo.getFrameBuffer());

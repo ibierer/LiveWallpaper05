@@ -33,6 +33,10 @@ class ActiveWallpaperRepo private constructor(
     private val wallpaperDao: SavedWallpaperDao,
     profileDao: ProfileDao
 ) : SensorEventListener {
+    val fluidSurface: MutableLiveData<Boolean> = MutableLiveData(true)
+    val backgroundTexture: MutableLiveData<String> = MutableLiveData<String>("")
+    var backgroundIsSolidColor: MutableLiveData<Boolean> = MutableLiveData<Boolean>(true)
+
     // initialize default values for active wallpaper
     var wid: Int = 0
     val lastModified: Long = 0
@@ -415,7 +419,7 @@ class ActiveWallpaperRepo private constructor(
     fun setLiveWallpaperData(wid: Int) {
         mScope.launch(Dispatchers.IO) {
             try {
-                val wallpaper = wallpaperDao.getWallpaperData(wid).value!!
+                val wallpaper: SavedWallpaperRow = wallpaperDao.getWallpaperData(wid).value!!
                 activeWallpaper.postValue(wallpaper)
             } catch (e: Exception) {
                 Log.e("ActiveWallpaperRepo", "Error setting live wallpaper data: ${e.message}")
