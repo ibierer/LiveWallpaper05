@@ -503,7 +503,9 @@ class ActiveWallpaperRepo private constructor(
 
             // find active wallpaper from saved and set local variable
             val active = newWallpapers.find { it.wid == wid }
-            activeWallpaper.postValue(active!!)
+            if (active != null){
+                activeWallpaper.postValue(active)
+            }
             syncMutex.unlock()
         }
     }

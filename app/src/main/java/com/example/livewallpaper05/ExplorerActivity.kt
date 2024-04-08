@@ -54,7 +54,6 @@ class ExplorerActivity : AppCompatActivity() {
     private var bio: String? = null
     private lateinit var username: String
 
-    private var mTestButton: Button? = null
     private val stopWords = listOf<String>(
         "a",
         "about",
@@ -275,33 +274,11 @@ class ExplorerActivity : AppCompatActivity() {
         );
         setContentView(R.layout.activity_explorer)
         DatabaseConfig.loadProperties(applicationContext)
-        mTestButton = findViewById(R.id.b_test_button)
 
         mNewWallpaper = findViewById(R.id.b_new_wallpaperae)
         mWallpaperLayout = findViewById(R.id.sv_ll_wallpapersae)
         mWallpaperGrid = findViewById(R.id.sv_ll_gl_wallpapersae)
-
-        mTestButton?.setOnClickListener {
-            // launch async task to connect to postgre mock server
-            GlobalScope.launch(Dispatchers.IO) {
-                // write aws test code here -------------
-                try {
-//                    var res = getWallpapersWithSharedTagsFromUser("Jo")
-//                    for (r in res) {
-//                        Log.d("LiveWallpaper05", res.toString())
-//                    }
-//                    commentOnWallpaper("Jo", 1, "test comment 1")
-                    viewModel.populateExplore(getWallpapersWithSharedTagsFromUser(viewModel.repo.username))
-                } catch (e: Exception) {
-                    Log.d("LiveWallpaper05", e.printStackTrace().toString())
-                }
-            }
-        }
-
         viewModel.loadWidsFromMem(this)
-
-
-
 
         // set new wallpaper button click listener
         mNewWallpaper!!.setOnClickListener(this::newWallpaper)
@@ -370,12 +347,6 @@ class ExplorerActivity : AppCompatActivity() {
             if (!contained) {
                 return@Observer
             }
-
-            // set active wallpaper wid to wallpaper wid
-            ///viewModel.setWid(wallpaper.wid)
-            // [TODO] use this to update active wallpaper with saved wallpaper data
-            // load new active wallpaper config
-            //viewModel.loadConfig(wallpaper)
         })
 
 //        viewModel.populateExplore(getWallpapersWithSharedTagsFromUser("Jo"))
@@ -473,8 +444,6 @@ class ExplorerActivity : AppCompatActivity() {
                         val profilePicture = resultSet.getBlob("profile_picture")
                         val profilePictureNullable =
                             if (resultSet.wasNull()) null else profilePicture
-                        //val dateCreated = resultSet.getString("date_created")
-
                     }
                     conn.close()
                 }
