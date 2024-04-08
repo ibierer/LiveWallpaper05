@@ -17,6 +17,35 @@
         app:layout_constraintEnd_toEndOf="parent"
         />
 
+    <ScrollView
+        android:id="@+id/sv_wallpapers"
+        android:layout_width="wrap_content"
+        android:layout_height="650dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:fadeScrollbars="false"
+        android:layout_margin="10dp"
+        >
+
+        <LinearLayout
+            android:id="@+id/sv_ll_wallpapers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <GridLayout
+                android:id="@+id/sv_ll_gl_wallpapers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:columnCount="3"
+                android:layout_margin="30dp"
+                android:useDefaultMargins="true"
+                />
+        </LinearLayout>
+
+    </ScrollView>
+
     <!-- menu button below -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/f_toolbar"
