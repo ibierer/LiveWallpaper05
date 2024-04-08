@@ -42,7 +42,7 @@ class ExplorerActivity : AppCompatActivity() {
 
     /* User authentication data */
     private var bio: String? = null
-
+    private var syncWallpapersButton: Button? = null
     private val stopWords = listOf<String>(
         "a",
         "about",
@@ -247,11 +247,30 @@ class ExplorerActivity : AppCompatActivity() {
             WindowManager.LayoutParams.FLAG_FULLSCREEN
         );
         setContentView(R.layout.activity_explorer)
+        syncWallpapersButton = findViewById(R.id.b_sync_wallpaper_button)
         DatabaseConfig.loadProperties(applicationContext)
 
         mNewWallpaper = findViewById(R.id.b_new_wallpaperae)
         mWallpaperLayout = findViewById(R.id.sv_ll_wallpapersae)
         mWallpaperGrid = findViewById(R.id.sv_ll_gl_wallpapersae)
+
+        syncWallpapersButton?.setOnClickListener {
+            // launch async task to connect to postgre mock server
+            GlobalScope.launch(Dispatchers.IO) {
+                // write aws test code here -------------
+                try {
+//                    var res = getWallpapersWithSharedTagsFromUser("Jo")
+//                    for (r in res) {
+//                        Log.d("LiveWallpaper05", res.toString())
+//                    }
+//                    commentOnWallpaper("Jo", 1, "test comment 1")
+                    viewModel.populateExplore(getWallpapersWithSharedTagsFromUser(viewModel.repo.username))
+                } catch (e: Exception) {
+                    Log.d("LiveWallpaper05", e.printStackTrace().toString())
+                }
+            }
+        }
+
         viewModel.loadWidsFromMem(this)
 
         // set new wallpaper button click listener

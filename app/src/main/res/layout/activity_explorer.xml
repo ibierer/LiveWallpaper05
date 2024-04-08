@@ -8,14 +8,13 @@
 
     <!-- Explorer UI elements here -->
     <Button
-        android:id="@+id/b_test_button"
+        android:id="@+id/b_sync_wallpaper_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Test Send"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:text="Sync Wallpapers"
         app:layout_constraintEnd_toEndOf="parent"
-        />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ScrollView
         android:id="@+id/sv_wallpapersae"
