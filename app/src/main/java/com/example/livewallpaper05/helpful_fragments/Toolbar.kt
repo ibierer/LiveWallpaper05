@@ -3,12 +3,13 @@ package com.example.livewallpaper05.helpful_fragments
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.motion.widget.MotionLayout
+import androidx.fragment.app.Fragment
 import com.example.livewallpaper05.ExplorerActivity
+import com.example.livewallpaper05.HelpActivity
 import com.example.livewallpaper05.PreviewActivity
 import com.example.livewallpaper05.ProfileActivity
 import com.example.livewallpaper05.R
@@ -25,6 +26,7 @@ class Toolbar : Fragment() {
     private var mBExplore: FloatingActionButton? = null
     private var mBProfile: FloatingActionButton? = null
     private var mBEditor: FloatingActionButton? = null
+    private var mBHelp: FloatingActionButton? = null
     private var mBExpand: FloatingActionButton? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,6 +44,7 @@ class Toolbar : Fragment() {
         mBExplore = rootview?.findViewById(R.id.b_explore_toolbar)
         mBProfile = rootview?.findViewById(R.id.b_profile_toolbar)
         mBEditor = rootview?.findViewById(R.id.b_editor_toolbar)
+        mBHelp = rootview?.findViewById(R.id.b_help_toolbar)
         mBExpand = rootview?.findViewById(R.id.b_expand_toolbar)
 
         // set onClick listeners
@@ -67,6 +70,9 @@ class Toolbar : Fragment() {
             }
             is ProfileActivity -> {
                 mBProfile?.isEnabled = false
+            }
+            is HelpActivity -> {
+                mBHelp?.isEnabled = false
             }
         }
 
@@ -94,6 +100,11 @@ class Toolbar : Fragment() {
             R.id.b_profile_toolbar -> {
                 val profileIntent = Intent(activity, ProfileActivity::class.java)
                 startActivity(profileIntent)
+            }
+
+            R.id.b_help_toolbar -> {
+                val helpIntent = Intent(activity, HelpActivity::class.java)
+                startActivity(helpIntent)
             }
         }
     }
