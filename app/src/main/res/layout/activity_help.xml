@@ -6,4 +6,72 @@
     android:layout_height="match_parent"
     tools:context=".HelpActivity">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@id/f_toolbarae"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.034">
+
+        <!-- Help Page TextView -->
+        <TextView
+            android:id="@+id/helpPageTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Help Page"
+            android:textSize="24sp" />
+
+        <!-- FAQ 1 TextView -->
+        <TextView
+            android:id="@+id/faq1TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:text="FAQ 1: How to create a wallpaper?"
+            android:textStyle="bold" />
+
+        <!-- Video 1 for FAQ 1 -->
+        <VideoView
+            android:id="@+id/faq1VideoView"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_margin="10dp"
+            android:layout_marginTop="70dp" />
+
+        <!-- FAQ 2 TextView -->
+        <TextView
+            android:id="@+id/faq2TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="FAQ 2: How to create a LiveWallz Profile"
+            android:textStyle="bold" />
+
+        <!-- Video 2 for FAQ 2 -->
+
+        <!-- Center the layout vertically -->
+        <VideoView
+            android:id="@+id/faq2VideoView"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_margin="10dp"
+            android:layout_marginTop="60dp"
+            android:layout_marginBottom="16dp" />
+
+    </LinearLayout>
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/f_toolbarae"
+        android:name="com.example.livewallpaper05.helpful_fragments.Toolbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
