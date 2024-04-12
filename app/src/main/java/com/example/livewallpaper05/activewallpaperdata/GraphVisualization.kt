@@ -47,6 +47,9 @@ data class GraphVisualization (
     override val relevantButtonIds: List<Int> = listOf(
         R.id.done_button
     )
+    override val relevantSpinnerIds: List<Int> = listOf(
+        R.id.graph_selection_spinner
+    )
 
     override fun toJsonObject() : JSONObject {
         val jsonObject = JSONObject()

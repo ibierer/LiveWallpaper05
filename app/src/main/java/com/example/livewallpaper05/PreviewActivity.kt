@@ -154,6 +154,9 @@ class PreviewActivity : AppCompatActivity() {
             val buttonIds: List<Int> = listOf(
                 R.id.done_button
             )
+            val spinnerIds: List<Int> = listOf(
+                R.id.graph_selection_spinner
+            )
             for (id in textViewIds) {
                 if (viewModel.repo.visualization.relevantTextViewIds.contains(id) && !viewModel.repo.isCollapsed) {
                     findViewById<TextView>(id).visibility = View.VISIBLE
@@ -195,6 +198,15 @@ class PreviewActivity : AppCompatActivity() {
                 } else {
                     findViewById<Button>(id).visibility = View.GONE
                     findViewById<Button>(id).isEnabled = false
+                }
+            }
+            for (id in spinnerIds) {
+                if (viewModel.repo.visualization.relevantSpinnerIds.contains(id) && !viewModel.repo.isCollapsed) {
+                    findViewById<Spinner>(id).visibility = View.VISIBLE
+                    findViewById<Spinner>(id).isEnabled = true
+                } else {
+                    findViewById<Spinner>(id).visibility = View.GONE
+                    findViewById<Spinner>(id).isEnabled = false
                 }
             }
         }

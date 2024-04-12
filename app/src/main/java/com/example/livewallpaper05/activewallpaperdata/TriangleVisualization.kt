@@ -39,6 +39,9 @@ data class TriangleVisualization (
     override val relevantButtonIds: List<Int> = listOf(
 
     )
+    override val relevantSpinnerIds: List<Int> = listOf(
+
+    )
 
     override fun toJsonObject() : JSONObject {
         val jsonObject = JSONObject()
