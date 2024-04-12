@@ -22,7 +22,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
-import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.ResultSet
 import java.sql.SQLException
@@ -34,8 +33,8 @@ class ActiveWallpaperRepo private constructor(
     profileDao: ProfileDao
 ) : SensorEventListener {
     val fluidSurface: MutableLiveData<Boolean> = MutableLiveData(true)
-    val backgroundTexture: MutableLiveData<String> = MutableLiveData<String>("")
-    var backgroundIsSolidColor: MutableLiveData<Boolean> = MutableLiveData<Boolean>(true)
+    val backgroundTexture: MutableLiveData<String> = MutableLiveData<String>("ms_paint_colors")
+    var backgroundIsSolidColor: MutableLiveData<Boolean> = MutableLiveData<Boolean>(false)
 
     // initialize default values for active wallpaper
     var wid: Int = 0
@@ -81,6 +80,11 @@ class ActiveWallpaperRepo private constructor(
 
     // ViewModel state
     lateinit var visualization: Visualization
+
+    fun isVisualizationInitialized(): Boolean {
+        return this::visualization.isInitialized
+    }
+
     var width: Int = 0
     var height: Int = 0
     private var mBitmap: Bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888) as Bitmap
@@ -91,6 +95,12 @@ class ActiveWallpaperRepo private constructor(
     //val savedWallpapers: LiveData<List<SavedWallpaperRow>> = repo.wallpapers
 
     // helper methods
+
+    // get bitmap of active wallpaper
+    fun getPreviewBitmap(): Bitmap? {
+        return liveDataBitmap.value
+    }
+    // get saved wids as string
     fun getSavedWids(): String {
         var widString = ""
         var used = listOf<Int>()
@@ -416,25 +426,40 @@ class ActiveWallpaperRepo private constructor(
     }
 
     // set active wallpaper live data to wallpaper given by id
-    fun setLiveWallpaperData(wid: Int) {
-        mScope.launch(Dispatchers.IO) {
-            try {
-                val wallpaper: SavedWallpaperRow = wallpaperDao.getWallpaperData(wid).value!!
-                activeWallpaper.postValue(wallpaper)
-            } catch (e: Exception) {
-                Log.e("ActiveWallpaperRepo", "Error setting live wallpaper data: ${e.message}")
-                // log and try again 50 times
-                for (i in 0 until 50) {
-                    try {
-                        val wallpaper = wallpaperDao.getWallpaperData(wid).value!!
-                        activeWallpaper.postValue(wallpaper)
-                        break
-                    } catch (e: Exception) {
-                        Log.e("ActiveWallpaperRepo", "Error setting live wallpaper data: ${e.message}")
+    fun setLiveWallpaperData(nWid: Int) : SavedWallpaperRow {
+        // set active wallpaper live data to wallpaper given by id
+        val w = wallpapers.value!!.find { it.wid == nWid }
+        if (w != null) {
+            activeWallpaper.postValue(w!!)
+            wid = nWid
+            return w!!
+        } else {
+            mScope.launch(Dispatchers.IO) {
+                try {
+                    val all = wallpaperDao.getAllWallpapers()
+                    val w = all.find { it.wid == nWid }!!
+                    val wallpaper: SavedWallpaperRow = wallpaperDao.getWallpaperData(nWid).value!!
+                    activeWallpaper.postValue(wallpaper)
+                    wid = nWid
+                } catch (e: Exception) {
+                    Log.e("ActiveWallpaperRepo", "Error setting live wallpaper data: ${e.message}")
+                    // log and try again 50 times
+                    for (i in 0 until 50) {
+                        try {
+                            val wallpaper = wallpaperDao.getWallpaperData(nWid).value!!
+                            activeWallpaper.postValue(wallpaper)
+                            wid = nWid
+                            break
+                        } catch (e: Exception) {
+                            Log.e(
+                                "ActiveWallpaperRepo",
+                                "Error setting live wallpaper data: ${e.message}"
+                            )
+                        }
                     }
                 }
-
             }
+            return activeWallpaper.value!!
         }
     }
 
@@ -504,7 +529,7 @@ class ActiveWallpaperRepo private constructor(
             // find active wallpaper from saved and set local variable
             val active = newWallpapers.find { it.wid == wid }
             if (active != null){
-                activeWallpaper.postValue(active)
+                activeWallpaper.postValue(active!!)
             }
             syncMutex.unlock()
         }

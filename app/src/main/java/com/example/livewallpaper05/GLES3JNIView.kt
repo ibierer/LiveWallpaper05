@@ -219,6 +219,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                     }
                 }
             }
+                //mViewModel.repo.visualization.viewModel = mViewModel
             Log.d("VISUALIZATION jsonConfig = ", jsonConfig.toString())
             mViewModel.repo.distanceFromOrigin.postValue(jsonConfig.getDouble("distance").toFloat())
             mViewModel.repo.fieldOfView.postValue(jsonConfig.getDouble("field_of_view").toFloat())

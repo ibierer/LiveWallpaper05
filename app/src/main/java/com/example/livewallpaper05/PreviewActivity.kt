@@ -1,7 +1,5 @@
 package com.example.livewallpaper05
 
-import android.annotation.SuppressLint
-import android.content.Context
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -12,7 +10,6 @@ import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.TranslateAnimation
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -33,15 +30,11 @@ import androidx.lifecycle.Observer
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModelFactory
-import com.example.livewallpaper05.activewallpaperdata.GraphVisualization
-import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import yuku.ambilwarna.AmbilWarnaDialog
-import java.io.InputStream
-import java.util.Properties
 
 class PreviewActivity : AppCompatActivity() {
     var mView: GLES3JNIView? = null
@@ -135,6 +128,7 @@ class PreviewActivity : AppCompatActivity() {
         layout.addView(mView)
 
         suspend fun loadOrUnloadUIElements() {
+            // if repo.visualization is not initialized wait until it is
             val textViewIds: List<Int> = listOf(
                 R.id.distance_label,
                 R.id.field_of_view_label,
@@ -381,6 +375,36 @@ class PreviewActivity : AppCompatActivity() {
                 TODO("Not yet implemented")
             }
 
+        }
+
+        solidColorRadioButton.setOnClickListener {
+            viewModel.repo.backgroundIsSolidColor.postValue(true)
+            mView!!.onPause()
+            mView!!.onResume()
+        }
+
+        imageRadioButton.setOnClickListener {
+            viewModel.repo.backgroundIsSolidColor.postValue(false)
+            mView!!.onPause()
+            mView!!.onResume()
+        }
+
+        environmentMapSelectorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
+                // get array from arrays
+                val environmentMapOptions = resources.getStringArray(R.array.environment_map_options)
+                // update environment map in repo
+                when (pos){
+                    0 -> viewModel.repo.backgroundTexture.value = "ms_paint_colors"
+                    1 -> viewModel.repo.backgroundTexture.value = "mandelbrot"
+                }
+                mView!!.onPause()
+                mView!!.onResume()
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                // Do nothing
+            }
         }
 
         // register spinner actions to update image selection in repo

@@ -3,6 +3,7 @@ package com.example.livewallpaper05.activewallpaperdata
 import android.app.Activity
 import android.content.res.Resources
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.hardware.SensorManager
 import android.util.Log
@@ -10,6 +11,7 @@ import androidx.lifecycle.*
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo.WallpaperRef
 import com.example.livewallpaper05.savedWallpapers.SavedWallpaperRow
 import org.json.JSONObject
+import java.io.ByteArrayOutputStream
 import java.math.RoundingMode
 import java.sql.ResultSet
 import java.util.Random
@@ -39,6 +41,31 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
 
     // grab bitmap from repo
     fun getPreviewImg(seed: Int): Bitmap {
+        // [TODO] revamp to use see to pull img from repo
+        // if seed is in saved wids, get wallpaper from saved wallpapers
+        val savedWids = repo.getSavedWids()
+        if (savedWids.contains(seed.toString())) {
+            val wallpapers = repo.wallpapers.value
+            if (wallpapers != null) {
+                for (wallpaper in wallpapers) {
+                    if (wallpaper.wid == seed) {
+                        // if preview image is not ready (null), create random color img
+                        if (wallpaper.previewImage != null && wallpaper.previewImage.isNotEmpty()) {
+                            val screenWidth = Resources.getSystem().displayMetrics.widthPixels
+                            val screenHeight = Resources.getSystem().displayMetrics.heightPixels
+                            val imgWidth = screenWidth/4
+                            val imgHeight = screenHeight/4
+                            // create bitmap from byte array
+                            val bmp = BitmapFactory.decodeByteArray(wallpaper.previewImage, 0, wallpaper.previewImage.size)
+                            // resize img to fit fragment
+                            val resized = Bitmap.createScaledBitmap(bmp, imgWidth, imgHeight, true)
+                            return resized
+                        }
+                    }
+                }
+            }
+        }
+        // if preview image is not ready (null), create random color img
         val rng = Random()
         rng.setSeed(seed.toLong())
         val color = Color.argb(255,
@@ -114,79 +141,74 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
     // return config string from repo
     // [TODO] fix to use dynamic config generation
     fun getConfig(): String {
-        val config = JSONObject()
-        // store simulation type, background color, and settings (with default values for now
-        config.put("name", "New Wallpaper")
-        config.put("type", repo.visualizationSelection)
-        val color: Color = getColor()
-        config.put("background_color", JSONObject("{\"r\": ${color.red()}, \"g\": ${color.green()}, \"b\": ${color.blue()}, \"a\": ${color.alpha()} }"))
-        val eq = if (repo.userDefinedEquation != "") repo.userDefinedEquation else "1/((sqrt(x^2 + y^2) - 2 + 1.25cos(t))^2 + (z - 1.5sin(t))^2) + 1/((sqrt(x^2 + y^2) - 2 - 1.25cos(t))^2 + (z + 1.5sin(t))^2) = 1.9"
-        config.put("equation", eq)
+        var config = JSONObject()
 
-        // [TODO] temp solution
-        when (repo.visualizationSelection){
+        // create visualization object based on selection
+        when (getVisualization()){
             0 -> {
-                //var sim = NBodyVisualization()
-                config.put("distance", getDistanceFromOrigin())
-                config.put("field_of_view", getFieldOfView())
+                val viz = NBodyVisualization(
+                    distance = getDistanceFromOrigin(),
+                    fieldOfView = getFieldOfView(),
+                    backgroundColor = getColor(),
+                    backgroundIsSolidColor = repo.backgroundIsSolidColor.value!!,
+                    backgroundTexture = repo.backgroundTexture.value!!
+                )
+                config = viz.toJsonObject()
+                config.put("name", "New Wallpaper")
             }
             1 -> {
-                //val sim = NaiveFluidVisualization()
-                config.put("distance", getDistanceFromOrigin())
-                config.put("field_of_view", getFieldOfView())
-                //config.put("background_is_solid_color", sim.backgroundIsSolidColor)
-                config.put("background_is_solid_color", repo.backgroundIsSolidColor)
-                //config.put("background_texture", sim.backgroundTexture)
-                config.put("background_texture", repo.backgroundTexture)
-                config.put("fluid_surface", repo.fluidSurface)
-                //config.put("gravity", getGravity())
-                //config.put("linear_acceleration", getLinearAcceleration())
-                //config.put("efficiency", getEfficiency())
-                //config.put("particle_count", sim.particleCount)
-                config.put("particle_count", repo.particleCount)
+                val viz = NaiveFluidVisualization(
+                    distance = getDistanceFromOrigin(),
+                    fieldOfView = getFieldOfView(),
+                    backgroundColor = getColor(),
+                    fluidSurface = repo.fluidSurface.value!!,
+                    particleCount = repo.particleCount.value!!,
+                    backgroundIsSolidColor = repo.backgroundIsSolidColor.value!!,
+                    gravity = repo.gravity.value!!,
+                    linearAcceleration = repo.linearAcceleration.value!!,
+                    efficiency = repo.efficiency.value!!,
+                    backgroundTexture = repo.backgroundTexture.value!!
+                )
+                config = viz.toJsonObject()
+                config.put("name", "New Wallpaper")
             }
             2 -> {
-                //val sim = PicFlipVisualization()
-                //config.put("distance", sim.distance)
-                config.put("distance", repo.distanceFromOrigin.value)
-                //config.put("field_of_view", sim.fieldOfView)
-                config.put("field_of_view", repo.fieldOfView)
-                //config.put("background_is_solid_color", sim.backgroundIsSolidColor)
-                config.put("background_is_solid_color", repo.backgroundIsSolidColor)
-                //config.put("background_texture", sim.backgroundTexture)
-                config.put("background_texture", repo.backgroundTexture)
-                //config.put("gravity", sim.gravity)
-                config.put("gravity", repo.gravity)
-                //config.put("linear_acceleration", sim.linearAcceleration)
-                config.put("linear_acceleration", repo.linearAcceleration)
+            val viz = PicFlipVisualization(
+                    distance = getDistanceFromOrigin(),
+                    fieldOfView = getFieldOfView(),
+                    backgroundColor = getColor(),
+                    backgroundIsSolidColor = repo.backgroundIsSolidColor.value!!,
+                    backgroundTexture = repo.backgroundTexture.value!!,
+                    gravity = repo.gravity.value!!,
+                    linearAcceleration = repo.linearAcceleration.value!!
+                )
+                config = viz.toJsonObject()
+                config.put("name", "New Wallpaper")
             }
             3 -> {
-                //val sim = TriangleVisualization()
-                //config.put("distance", sim.distance)
-                config.put("distance", repo.distanceFromOrigin.value)
-                //config.put("field_of_view", sim.fieldOfView)
-                config.put("field_of_view", repo.fieldOfView)
-                //config.put("background_is_solid_color", sim.backgroundIsSolidColor)
-                config.put("background_is_solid_color", repo.backgroundIsSolidColor)
-                //config.put("background_texture", sim.backgroundTexture)
-                config.put("background_texture", repo.backgroundTexture)
+                val viz = TriangleVisualization(
+                    distance = getDistanceFromOrigin(),
+                    fieldOfView = getFieldOfView(),
+                    backgroundColor = getColor(),
+                    backgroundIsSolidColor = repo.backgroundIsSolidColor.value!!,
+                    backgroundTexture = repo.backgroundTexture.value!!
+                )
+                config = viz.toJsonObject()
+                config.put("name", "New Wallpaper")
             }
             4 -> {
-                //val graph = GraphVisualization()
-                //config.put("distance", graph.distance)
-                config.put("distance", repo.distanceFromOrigin.value)
-                //config.put("field_of_view", graph.fieldOfView)
-                config.put("field_of_view", repo.fieldOfView)
-                //config.put("background_is_solid_color", graph.backgroundIsSolidColor)
-                config.put("background_is_solid_color", repo.backgroundIsSolidColor)
-                //config.put("background_texture", graph.backgroundTexture)
-                config.put("background_texture", repo.backgroundTexture)
-                config.put("equation", eq)
+                val viz = GraphVisualization(
+                    distance = getDistanceFromOrigin(),
+                    fieldOfView = getFieldOfView(),
+                    backgroundColor = getColor(),
+                    equation = getEquation()
+                )
+                config = viz.toJsonObject()
+                config.put("name", "New Wallpaper")
             }
         }
 
         return config.toString()
-
     }
 
     // get active wallpaper id from repo
@@ -392,7 +414,6 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
                     updateColor(sim.backgroundColor)
                     repo.fluidSurface.value = sim.fluidSurface
                     repo.backgroundIsSolidColor.value = sim.backgroundIsSolidColor
-                    //updateColor(Color.valueOf(red, green, blue, alpha))
                     updateGravity(sim.gravity)
                     updateLinearAcceleration(sim.linearAcceleration)
                     updateEfficiency(sim.efficiency)
@@ -440,7 +461,8 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
 
     // switch active wallpaper
     fun switchWallpaper(wid: Int) {
-        repo.setLiveWallpaperData(wid)
+        val new_config = repo.setLiveWallpaperData(wid)
+        loadConfig(new_config)
     }
 
     // save current list of wids to memory
@@ -471,18 +493,28 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
     // save wallpaper from config string
     fun saveWallpaper(config: String) : Int {
         // create new wallpaper table with given data
+        var imgData = ByteArray(0)
         var wallpaper: SavedWallpaperRow
         try {
+            // get preview from repo and if it's null or not bigger than 1x1 use empty byte array
+            val preview = repo.getPreviewBitmap()
+            if (preview != null && preview.width > 1 && preview.height > 1) {
+                val stream = ByteArrayOutputStream()
+                preview.compress(Bitmap.CompressFormat.PNG, 100, stream)
+                val img = stream.toByteArray()
+                stream.close()
+                imgData = img
+            }
+            // create table row with given data
             wallpaper = SavedWallpaperRow(
                 repo.activeWallpaper.value!!.uid,
                 repo.activeWallpaper.value!!.wid,
                 config,
-                ByteArray(0),
+                imgData,
                 System.currentTimeMillis()
             )
 
-            // update profile table
-            //mRepo.setWallpaper(wallpaper)
+            // update/save profile table
             repo.saveActiveWallpaper(wallpaper)
         } catch (_: Exception) {
             // update active wallpaper
@@ -490,11 +522,10 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
                 repo.uid,
                 repo.wid,
                 getConfig(),
-                ByteArray(0),
+                imgData,
                 System.currentTimeMillis()
             )
             repo.activeWallpaper.postValue(wallpaper)
-            //repo.saveActiveWallpaper(wallpaper)
         }
         return wallpaper.wid
     }

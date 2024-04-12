@@ -199,11 +199,6 @@ class ProfileActivity : AppCompatActivity() {
                 return@Observer
             }
 
-            // set active wallpaper wid to wallpaper wid
-            ///viewModel.setWid(wallpaper.wid)
-            // [TODO] use this to update active wallpaper with saved wallpaper data
-            // load new active wallpaper config
-            //viewModel.loadConfig(wallpaper)
         })
 
         // link saved wallpaper view elements to saved wallpaper live data via callback function
@@ -476,7 +471,6 @@ class ProfileActivity : AppCompatActivity() {
                         wallFrag.active = false
                     }
                 }
-                // viewModel.setActiveWallpaperId(ref.wallpaperId)
                 // disable active button for this wallpaper
                 frag.requireView().findViewById<Button>(R.id.b_active_wallpaper).isEnabled = false
                 // set frag active variable to true
@@ -484,8 +478,6 @@ class ProfileActivity : AppCompatActivity() {
                 wallFrag.active = true
                 // switch active wallpaper in repo (this data is linked to active wallpaper via live data observer in onCreate)
                 viewModel.switchWallpaper(ref.wallpaperId)
-                //viewModel.setNewId(ref.wallpaperId)
-                viewModel.setWid(ref.wallpaperId)
 
                 // open preview activity
                 val intent = Intent(this, PreviewActivity::class.java)
