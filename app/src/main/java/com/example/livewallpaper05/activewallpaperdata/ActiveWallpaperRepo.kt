@@ -51,8 +51,8 @@ class ActiveWallpaperRepo private constructor(
     var distanceFromOrigin: MutableLiveData<Float> = MutableLiveData<Float>(0.5f)
     var fieldOfView: MutableLiveData<Float> = MutableLiveData<Float>(60.0f)
     var gravity: MutableLiveData<Float> = MutableLiveData<Float>(0.0f)
-    var linearAcceleration: MutableLiveData<Float> = MutableLiveData<Float>(0.0f)
-    var efficiency: MutableLiveData<Float> = MutableLiveData<Float>(0.0f)
+    var linearAcceleration: MutableLiveData<Float> = MutableLiveData<Float>(1.0f)
+    var efficiency: MutableLiveData<Float> = MutableLiveData<Float>(1.0f)
     var particleCount: MutableLiveData<Int> = MutableLiveData<Int>(1000)
     val flipNormals: MutableLiveData<Boolean> = MutableLiveData<Boolean>(false)
     var rotationData: Array<Float> = arrayOf(0.0f, 0.0f, 0.0f, 0.0f)
@@ -179,7 +179,7 @@ class ActiveWallpaperRepo private constructor(
         val wallpaper = SavedWallpaperRow(
             context.resources.getInteger(R.integer.default_profile_id),
             wid,
-            NBodyVisualization().toString(),
+            NBodyVisualization().toJsonObject().toString(),
             ByteArray(0),
             System.currentTimeMillis()
         )
@@ -517,8 +517,6 @@ class ActiveWallpaperRepo private constructor(
                     uniqueWallpaperWids.add(wallpaper.wid)
                 } else {
                     // delete duplicate wallpaper
-                    //wallpaperDao.deleteWallpaper(wallpaper.wid)
-                    //newWallpapers.remove(wallpaper)
                     wallpaperIterator.remove()
                 }
             }

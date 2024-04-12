@@ -387,16 +387,34 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
         try {
             repo.wid = table.wid
             val configJson = JSONObject(table.config)
+            var selection = 0
+            when (configJson.getString("visualization_type")){
+                "simulation" -> {
+                    when (configJson.getString("simulation_type")) {
+                        "nbody" -> {
+                            selection = 0
+                        }
+                        "naive" -> {
+                            selection = 1
+                        }
+                        "picflip" -> {
+                            selection = 2
+                        }
+                    }
+                }
+                "other" -> {
+                    selection = 3
+                }
+                "graph" -> {
+                    selection = 4
+                }
+            }
 
-            repo.visualizationSelection = configJson.getInt("type")
-            //val red = configJson.getJSONObject("background_color").getInt("r").toFloat()
-            //val green = configJson.getJSONObject("background_color").getInt("g").toFloat()
-            //val blue = configJson.getJSONObject("background_color").getInt("b").toFloat()
-            //val alpha = configJson.getJSONObject("background_color").getInt("a").toFloat()
+            repo.visualizationSelection = selection
 
             // update visualization specific parameters
             // [TODO] - add all viz parameters here and in repo (requires getter and setter functions as well)
-            when (repo.visualizationSelection) {
+            when (selection) {
                 0 -> {
                     val sim = NBodyVisualization(configJson)
                     updateDistanceFromCenter(sim.distance)
@@ -404,7 +422,6 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
                     updateColor(sim.backgroundColor)
                     repo.backgroundIsSolidColor.value = sim.backgroundIsSolidColor
                     repo.backgroundTexture.value = sim.backgroundTexture
-                    //updateColor(Color.valueOf(red, green, blue, alpha))
                     updateVizualizationName("N-Body Simulation")
                 }
                 1 -> {
@@ -425,7 +442,6 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
                     updateDistanceFromCenter(sim.distance)
                     updateFieldOfView(sim.fieldOfView)
                     updateColor(sim.backgroundColor)
-                    //updateColor(Color.valueOf(red, green, blue, alpha))
                     updateGravity(sim.gravity)
                     updateLinearAcceleration(sim.linearAcceleration)
                     updateVizualizationName("PicFlip Simulation")
@@ -435,7 +451,6 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
                     updateDistanceFromCenter(sim.distance)
                     updateFieldOfView(sim.fieldOfView)
                     updateColor(sim.backgroundColor)
-                    //updateColor(Color.valueOf(red, green, blue, alpha))
                     updateVizualizationName("Triangle Visualization")
                 }
                 4 -> {
@@ -443,7 +458,6 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
                     updateDistanceFromCenter(sim.distance)
                     updateFieldOfView(sim.fieldOfView)
                     updateColor(sim.backgroundColor)
-                    //updateColor(Color.valueOf(red, green, blue, alpha))
                     updateEquation(sim.equation)
                     updateVizualizationName("Graph Visualization")
                 }
