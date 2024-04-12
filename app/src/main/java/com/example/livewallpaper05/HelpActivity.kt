@@ -24,24 +24,22 @@ class HelpActivity : AppCompatActivity() {
         val videoPath2 =
             "android.resource://${packageName}/${R.raw.create_account}" // For a video file in the raw folder
 
-        try {
-            // Set the video source for the VideoViews
-            videoView1.setVideoURI(Uri.parse(videoPath1))
-            videoView2.setVideoURI(Uri.parse(videoPath2))
-        } catch (e: Exception) {
-            // Handle the exception by showing a toast with an error message
-            Toast.makeText(this, "Error loading videos", Toast.LENGTH_SHORT).show()
-            e.printStackTrace()
-        }
+
+        // Set the video source for the VideoViews
+        videoView1.setVideoURI(Uri.parse(videoPath1))
+        videoView2.setVideoURI(Uri.parse(videoPath2))
+
+        // Handle the exception by showing a toast with an error message
+        //Toast.makeText(this, "Error loading videos", Toast.LENGTH_SHORT).show()
 
         val retriever = MediaMetadataRetriever()
         val retriever2 = MediaMetadataRetriever()
         retriever.setDataSource(this, Uri.parse(videoPath1))
         retriever2.setDataSource(this, Uri.parse(videoPath2))
-        val bitmap = retriever.getFrameAtTime(0, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+        /*val bitmap = retriever.getFrameAtTime(0, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
         val bitmap2 = retriever2.getFrameAtTime(0, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
         videoView1.background = BitmapDrawable(resources, bitmap)
-        videoView2.background = BitmapDrawable(resources, bitmap2)
+        videoView2.background = BitmapDrawable(resources, bitmap2)*/
 
         videoView1.setOnCompletionListener {
             // Reset the video to the beginning
