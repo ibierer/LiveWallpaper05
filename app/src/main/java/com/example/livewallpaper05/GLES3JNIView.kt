@@ -128,63 +128,6 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
         }
 
         override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
-            //var jsonConfig: JSONObject = JSONObject()
-            //var selectionJSON: String = ""
-            //
-            //val loadedConfig = JSONObject(mViewModel.getConfig())
-            //
-            //when (mViewModel.getVisualization()) {
-            //    0 -> {
-            //        mViewModel.repo.visualization = NBodyVisualization(loadedConfig)
-            //        mViewModel.repo.visualization.viewModel = mViewModel
-            //        selectionJSON = mViewModel.repo.visualization.toJsonObject().toString()
-            //        jsonConfig = JSONObject(selectionJSON)
-            //
-            //    }
-            //    1 -> {
-            //        mViewModel.repo.visualization = NaiveFluidVisualization(loadedConfig)
-            //        jsonConfig = mViewModel.repo.visualization.toJsonObject()
-            //        val gravity: Float = jsonConfig.getDouble("gravity").toFloat()
-            //        val linearAcceleration: Float = jsonConfig.getDouble("linear_acceleration").toFloat()
-            //        val efficiency: Float = jsonConfig.getDouble("efficiency").toFloat()
-            //        mViewModel.repo.gravity.postValue(gravity)
-            //        mViewModel.repo.linearAcceleration.postValue(linearAcceleration)
-            //        mViewModel.repo.efficiency.postValue(efficiency)
-            //
-            //    }
-            //    2 -> {
-            //        mViewModel.repo.visualization = PicFlipVisualization(loadedConfig)
-            //        jsonConfig = mViewModel.repo.visualization.toJsonObject()
-            //        val gravity: Float = jsonConfig.getDouble("gravity").toFloat()
-            //        val linearAcceleration: Float = jsonConfig.getDouble("linear_acceleration").toFloat()
-            //        mViewModel.repo.gravity.postValue(gravity)
-            //        mViewModel.repo.linearAcceleration.postValue(linearAcceleration)
-            //
-            //    }
-            //    3 -> {
-            //        mViewModel.repo.visualization = TriangleVisualization(loadedConfig)
-            //        selectionJSON = mViewModel.repo.visualization.toJsonObject().toString()
-            //        jsonConfig = JSONObject(selectionJSON)
-            //
-            //    }
-            //    4 -> {
-            //        mViewModel.repo.visualization = GraphVisualization(loadedConfig)
-            //        selectionJSON = mViewModel.repo.visualization.toJsonObject().toString()
-            //        jsonConfig = JSONObject(selectionJSON)
-            //
-            //    }
-            //}
-            ////Log.d("VISUALIZATION = ", jsonConfig.toString())
-            //val distance: Float = jsonConfig.getDouble("distance").toFloat()
-            //val fieldOfView: Float = jsonConfig.getDouble("field_of_view").toFloat()
-            //mViewModel.repo.distanceFromOrigin.postValue(distance)
-            //mViewModel.repo.fieldOfView.postValue(fieldOfView)
-            //val backgroundColorJSONObject: JSONObject = jsonConfig.getJSONObject("background_color")
-            //val backgroundColor: Color = mViewModel.repo.visualization.jsonObjectToColor(backgroundColorJSONObject)
-            ////mViewModel.repo.color.postValue(backgroundColor)
-            //mViewModel.updateColor(backgroundColor, true)
-            //PreviewActivity.init(jsonConfig.toString())
-
             var jsonConfig: JSONObject = JSONObject()
             val loadedConfig = JSONObject(mViewModel.getConfig())
             Log.d("VISUALIZATION loadedConfig = ", loadedConfig.toString())

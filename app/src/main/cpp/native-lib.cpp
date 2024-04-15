@@ -1,4 +1,3 @@
-
 #define DEBUG 1
 
 #define LOG_TAG "GLES3JNI"

@@ -29,31 +29,26 @@ class HelpActivity : AppCompatActivity() {
         videoView1.setVideoURI(Uri.parse(videoPath1))
         videoView2.setVideoURI(Uri.parse(videoPath2))
 
-        // Handle the exception by showing a toast with an error message
-        //Toast.makeText(this, "Error loading videos", Toast.LENGTH_SHORT).show()
-
         val retriever = MediaMetadataRetriever()
         val retriever2 = MediaMetadataRetriever()
         retriever.setDataSource(this, Uri.parse(videoPath1))
         retriever2.setDataSource(this, Uri.parse(videoPath2))
-        /*val bitmap = retriever.getFrameAtTime(0, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+        val bitmap = retriever.getFrameAtTime(0, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
         val bitmap2 = retriever2.getFrameAtTime(0, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
         videoView1.background = BitmapDrawable(resources, bitmap)
-        videoView2.background = BitmapDrawable(resources, bitmap2)*/
+        videoView2.background = BitmapDrawable(resources, bitmap2)
 
         videoView1.setOnCompletionListener {
-            // Reset the video to the beginning
             videoView1.seekTo(0)
         }
 
-        // Set OnClickListener for the first VideoView
         videoView1.setOnClickListener {
-            // Toggle playback
+            videoView1.background = null
             togglePlayback(videoView1)
         }
 
-        // Set OnClickListener for the second VideoView
         videoView2.setOnClickListener {
+            videoView2.background = null
             togglePlayback(videoView2)
         }
 
