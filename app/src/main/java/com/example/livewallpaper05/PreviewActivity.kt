@@ -94,6 +94,7 @@ class PreviewActivity : AppCompatActivity() {
         val solidColorRadioButton: RadioButton =
             findViewById<RadioButton>(R.id.solid_color_radio_button)
         val imageRadioButton: RadioButton = findViewById<RadioButton>(R.id.image_radio_button)
+        val previewImageView: ImageView = findViewById<ImageView>(R.id.imageView)
 
         // fill visualization selector box with wallpaper options from native-lib.cpp
         val visualizationSelectorAdapter = ArrayAdapter.createFromResource(
@@ -554,6 +555,7 @@ class PreviewActivity : AppCompatActivity() {
             environmentMapSelectorSpinner.visibility = View.VISIBLE
             syncButton.visibility = View.VISIBLE
             saveButton.visibility = View.VISIBLE
+            previewImageView.visibility = View.VISIBLE
             colorButton.isEnabled = true
             linearLayout.isEnabled = true
             backgroundRadioButton.isEnabled = true
@@ -577,6 +579,7 @@ class PreviewActivity : AppCompatActivity() {
             environmentMapSelectorSpinner.visibility = View.GONE
             syncButton.visibility = View.GONE
             saveButton.visibility = View.GONE
+            previewImageView.visibility = View.GONE
             colorButton.isEnabled = false
             linearLayout.isEnabled = false
             solidColorRadioButton.isEnabled = false

@@ -33,7 +33,7 @@ class ActiveWallpaperRepo private constructor(
     profileDao: ProfileDao
 ) : SensorEventListener {
     val fluidSurface: MutableLiveData<Boolean> = MutableLiveData(true)
-    val backgroundTexture: MutableLiveData<String> = MutableLiveData<String>("ms_paint_colors")
+    val backgroundTexture: MutableLiveData<String> = MutableLiveData<String>("mandelbrot")
     var backgroundIsSolidColor: MutableLiveData<Boolean> = MutableLiveData<Boolean>(false)
 
     // initialize default values for active wallpaper
