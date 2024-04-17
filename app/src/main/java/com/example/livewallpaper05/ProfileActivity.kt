@@ -97,6 +97,7 @@ class ProfileActivity : AppCompatActivity() {
 
         // set up loginPageButton
         loginRegisterButton!!.setOnClickListener {
+            logoutButton!!.visibility = View.VISIBLE
             val loginPageIntent = Intent(this, Login::class.java)
             startActivity(loginPageIntent)
         }
@@ -107,6 +108,7 @@ class ProfileActivity : AppCompatActivity() {
                 // User is signed in, perform sign-out
                 FirebaseAuth.getInstance().signOut()
                 loginRegisterButton!!.visibility = View.VISIBLE
+                logoutButton!!.visibility = View.GONE
                 mUsername!!.text = "Default User"
                 Toast.makeText(this, "Signed out", Toast.LENGTH_SHORT).show()
             } else {

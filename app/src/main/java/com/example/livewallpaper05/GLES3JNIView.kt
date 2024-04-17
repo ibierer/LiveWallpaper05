@@ -103,8 +103,8 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
                 val outputStream = ByteArrayOutputStream()
 
                 scaledSquareBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-                val blob = outputStream.toByteArray()
                 mViewModel.repo.liveDataBitmap.postValue(scaledSquareBitmap)
+                //`mViewModel.repo.liveDataBitmap.postValue(bitmap)
             }
 
             // get time after frame
