@@ -74,6 +74,7 @@ class ProfileActivity : AppCompatActivity() {
             // load from AWS
         } else { // Not registered/logged in
             username = "Default User"
+            logoutButton!!.visibility = View.GONE
             Log.d("AUTH", "No user logged in")
         }
     }
