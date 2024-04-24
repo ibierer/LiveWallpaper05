@@ -90,8 +90,14 @@ const string View::DOUBLE_REFRACT2_FUNCTION =
         "}\n";
 
 const string View::FRESNEL_EFFECT_FUNCTION =
+        "const float minReflectance = 0.06f; \n"
+        "const float multiplier = 1.0f - pow(minReflectance, 1.0 / 3.0); \n"
         "float fresnel(float dotNI){ \n"
-        "    return pow(1.0 + dotNI, 3.0); \n"
+        //"    return pow(1.0 + dotNI, 3.0); \n"
+        //"    float F0 = 0.4f; \n"
+        //"    float f = pow(1.0 - dotNI, 5.0); \n"
+        //"    return F0 + (1.0 - F0) * f; \n"
+        "    return pow(1.0 + multiplier * dotNI, 3.0); \n" // Reflectance in [minReflectance, 1.0]
         "} \n";
 
 int View:: backgroundTexture = 0;
