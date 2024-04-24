@@ -54,6 +54,7 @@
 #include "PicFlipView.cpp"
 #include "CubeMapView.cpp"
 #include "SphereMapView.cpp"
+#include "ShaderToyView.cpp"
 #include "TextureView.cpp"
 #include "RenderToTextureView.cpp"
 #include "RenderToCubeMapView.cpp"
@@ -114,6 +115,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
                 //view = new SphereWithReflectionView();
                 //view = new SphereWithFresnelEffectView();
                 //view = new SimpleNBodySimulationView();
+                //view = new ShaderToyView();
                 view = new LinearithmicNBodySimulationView();
             }else if(simulation == "naive"){
                 int particleCount = visualizationJSON["particle_count"];
