@@ -30,8 +30,6 @@ void ShaderToyView::render(){
             1,
             GL_FALSE,
             (GLfloat*)&inverseViewProjection);
-    ALOGI("iResolution.x = %s\n", to_string(width).c_str());
-    ALOGI("iResolution.y = %s\n", to_string(height).c_str());
     glUniform2fv(glGetUniformLocation(sphereMapProgram,"iResolution"), 1, vec2(width, height).v);
     glUniform1f(glGetUniformLocation(sphereMapProgram,"iTime"),(float)getFrameCount());
     glUniform2fv(glGetUniformLocation(sphereMapProgram,"iMouse"), 1, vec2(0.0f, 0.0f).v);
