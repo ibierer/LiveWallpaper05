@@ -45,16 +45,16 @@ public:
             "uniform float iTime;      // Pass the elapsed time since the start of the application\n"
             "uniform vec2 iMouse;      // Pass the current mouse position\n"
             "in vec3 direction;\n"
-            "out vec4 outColor;\n" +
+            "out vec4 outColor;\n"
             "void main(){\n"
-            "   vec2 fragCoord = gl_FragCoord.xy;\n"
-            //"   vec2 fragCoord = direction.xy;\n"
-            "   float ratio = iResolution.x / iResolution.y;\n"
-            "   vec2 uv = vec2(ratio, 1.0) * (2.0 * fragCoord / iResolution - 1.0);\n"
-            "   vec3 n = vec3(uv, sqrt(1.0 - clamp(dot(uv, uv), 0.0, 1.0)));\n"
-            "   vec3 color = 0.5 + 0.5 * n;\n"
-            "   color = mix(vec3(0.5), color, smoothstep(1.01, 1.0, dot(uv, uv)));\n"
-            "   outColor = vec4(color, 1.0);\n"
+            "   float ratio = vec2(1024, 576).x / vec2(1024, 576).y;\n"
+            "   vec2 uv = vec2(ratio, 1.0f) * (2.0f * gl_FragCoord.xy / vec2(1024, 576).xy - 1.0f);\n"
+            "   \n"
+            "   vec3 n = vec3(uv, sqrt(1.0f - clamp(dot(uv, uv), 0.0f, 1.0f)));\n"
+            "   \n"
+            "   vec3 color = 0.5f + 0.5f * n;\n"
+            "   color = mix(vec3(0.5f), color, smoothstep(1.01f, 1.0f, dot(uv, uv)));\n"
+            "   outColor = vec4(color, 1.0f);\n"
             "}\n";
 
     ShaderToyView();
