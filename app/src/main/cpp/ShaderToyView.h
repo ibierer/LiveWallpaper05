@@ -29,15 +29,6 @@ public:
             "}\n";
 
     const string SPHERE_MAP_FRAGMENT_SHADER =
-            //ES_VERSION +
-            //"precision mediump float;\n"
-            //"uniform sampler2D environmentTexture;\n"
-            //"in vec3 direction;\n"
-            //"out vec4 outColor;\n" +
-            //SPHERE_MAP_TEXTURE_FUNCTION +
-            //"void main() {\n"
-            //"    outColor = Texture(environmentTexture, direction);\n"
-            //"}\n";
             ES_VERSION +
             "precision mediump float;\n"
             "uniform sampler2D environmentTexture;\n"
