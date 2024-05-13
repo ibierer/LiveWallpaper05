@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 3.22.1)
 # build script scope).
 project("livewallpaper05")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -lGLESv3 -lEGL -O3 -fno-rtti -fno-exceptions -Wall")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -lGLESv3 -lEGL -O3 -fno-exceptions -Wall")
 
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
