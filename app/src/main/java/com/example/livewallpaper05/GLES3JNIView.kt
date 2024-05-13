@@ -21,7 +21,7 @@ class GLES3JNIView(context: Context) : GLSurfaceView(context) {
         }
 
         override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {
-            PreviewActivity.resize(width, height)
+            PreviewActivity.resize(width, height, 1)
         }
 
         override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {

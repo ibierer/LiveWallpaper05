@@ -624,7 +624,7 @@ class PreviewActivity : Activity() {
     companion object {
 
         external fun init(visualization: String)
-        external fun resize(width: Int, height: Int)
+        external fun resize(width: Int, height: Int, orientation: Int)
         external fun step(
             acc_x: Float,
             acc_y: Float,
