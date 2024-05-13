@@ -14,18 +14,18 @@ class GLES3JNIView(context: Context) : GLSurfaceView(context) {
         setRenderer(Renderer())
     }
 
-    class Renderer() : GLSurfaceView.Renderer {
+    class Renderer : GLSurfaceView.Renderer {
 
         override fun onDrawFrame(gl: GL10) {
-            MainActivity.step(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, false)
+            PreviewActivity.step(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, false)
         }
 
         override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {
-            MainActivity.resize(width, height)
+            PreviewActivity.resize(width, height)
         }
 
         override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
-            MainActivity.init("")
+            PreviewActivity.init("")
         }
     }
 }

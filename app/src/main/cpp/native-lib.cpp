@@ -306,7 +306,7 @@ static Renderer* g_renderer = NULL;
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_livewallpaper05_MainActivity_00024Companion_init(JNIEnv *env, jobject thiz, jstring JSON) {
+Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env, jobject thiz, jstring JSON) {
     if (g_renderer) {
         delete g_renderer;
         g_renderer = NULL;
@@ -333,7 +333,7 @@ Java_com_example_livewallpaper05_MainActivity_00024Companion_init(JNIEnv *env, j
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_livewallpaper05_MainActivity_00024Companion_resize(JNIEnv *env, jobject thiz, jint width, jint height) {
+Java_com_example_livewallpaper05_PreviewActivity_00024Companion_resize(JNIEnv *env, jobject thiz, jint width, jint height) {
     if (g_renderer) {
         g_renderer->resize(width, height);
     }
@@ -341,7 +341,7 @@ Java_com_example_livewallpaper05_MainActivity_00024Companion_resize(JNIEnv *env,
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_livewallpaper05_MainActivity_00024Companion_step(JNIEnv *env, jobject thiz, jfloat acc_x, jfloat acc_y, jfloat acc_z, jfloat rot_x, jfloat rot_y, jfloat rot_z, jfloat rot_w, jfloat linear_acc_x, jfloat linear_acc_y, jfloat linear_acc_z, jfloat distance, jfloat field_of_view, jfloat gravity, jfloat efficiency, jboolean flip_normals) {
+Java_com_example_livewallpaper05_PreviewActivity_00024Companion_step(JNIEnv *env, jobject thiz, jfloat acc_x, jfloat acc_y, jfloat acc_z, jfloat rot_x, jfloat rot_y, jfloat rot_z, jfloat rot_w, jfloat linear_acc_x, jfloat linear_acc_y, jfloat linear_acc_z, jfloat distance, jfloat field_of_view, jfloat gravity, jfloat efficiency, jboolean flip_normals) {
     if (g_renderer) {
         g_renderer->render();
     }

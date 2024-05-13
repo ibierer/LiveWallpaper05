@@ -4,7 +4,7 @@ import android.app.Activity
 import android.os.Bundle
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
 
-class MainActivity : Activity() {
+class PreviewActivity : Activity() {
 
     override fun onCreate(icicle: Bundle?) {
         super.onCreate(icicle)
