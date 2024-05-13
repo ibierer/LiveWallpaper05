@@ -327,15 +327,6 @@ Java_com_example_livewallpaper05_MainActivity_stringFromJNI(
 
 // ----------------------------------------------------------------------------
 
-extern "C" {
-JNIEXPORT void JNICALL Java_com_example_livewallpaper05_MainActivity_00024Companion_init(JNIEnv* env,
-                                                                  jobject obj);
-JNIEXPORT void JNICALL Java_com_example_livewallpaper05_MainActivity_00024Companion_resize(
-        JNIEnv* env, jobject obj, jint width, jint height);
-JNIEXPORT void JNICALL Java_com_example_livewallpaper05_MainActivity_00024Companion_step(JNIEnv* env,
-                                                                  jobject obj, jfloat acc_x, jfloat acc_y, jfloat acc_z, jfloat rot_x, jfloat rot_y, jfloat rot_z, jfloat rot_w);
-};
-
 #if !defined(DYNAMIC_ES3)
 static GLboolean gl3stubInit() { return GL_TRUE; }
 #endif
@@ -371,8 +362,7 @@ Java_com_example_livewallpaper05_MainActivity_00024Companion_init(JNIEnv *env, j
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_livewallpaper05_MainActivity_00024Companion_resize(JNIEnv *env, jobject thiz,
-                                                                    jint width, jint height) {
+Java_com_example_livewallpaper05_MainActivity_00024Companion_resize(JNIEnv *env, jobject thiz, jint width, jint height) {
     if (g_renderer) {
         g_renderer->resize(width, height);
     }
