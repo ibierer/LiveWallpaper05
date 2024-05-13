@@ -325,12 +325,6 @@ Java_com_example_livewallpaper05_MainActivity_stringFromJNI(
     return env->NewStringUTF(hello.c_str());
 }
 
-// ----------------------------------------------------------------------------
-
-#if !defined(DYNAMIC_ES3)
-static GLboolean gl3stubInit() { return GL_TRUE; }
-#endif
-
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_livewallpaper05_MainActivity_00024Companion_init(JNIEnv *env, jobject thiz, jstring JSON) {
@@ -345,7 +339,7 @@ Java_com_example_livewallpaper05_MainActivity_00024Companion_init(JNIEnv *env, j
     printGlString("Extensions", GL_EXTENSIONS);
 
     const char* versionStr = (const char*)glGetString(GL_VERSION);
-    if (strstr(versionStr, "OpenGL ES 3.") && gl3stubInit()) {
+    if (strstr(versionStr, "OpenGL ES 3.")) {
         Renderer* renderer = new Renderer;
         if (!renderer->init()) {
             delete renderer;
