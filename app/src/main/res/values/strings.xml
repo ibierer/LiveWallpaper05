@@ -1,25 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2013 The Android Open Source Project
-
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
-
-          http://www.apache.org/licenses/LICENSE-2.0
-
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License.
--->
-
 <!-- This file contains resource definitions for displayed strings, allowing
      them to be changed based on the locale and options. -->
-
 <resources>
     <!-- Simple strings. -->
     <string name="gles3jni_activity">GLES3JNI</string>
     <string name="app_name">Physics In Color</string>
-
+    <string name="distance_label">Distance:</string>
+    <string name="field_of_view_label">Field of View:</string>
+    <string name="img_description">Profile Image</string>
+    <string name="username">Username</string>
+    <string name="biography">Hello! Aspiring physicist and mathematician here to show off my mad skillz!</string>
+    <string name="login">Login</string>
+    <string name="password">Password</string>
+    <string name="default_equation">1/((sqrt(x^2 + y^2) - 1.5 + sin(t))^2 + (z + cos(t))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 2π/3))^2 + (z + cos(t + 2π/3))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 4π/3))^2 + (z + cos(t + 4π/3))^2) = 5</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="loginTextView">Login</string>
+    <string name="email">email</string>
+    <string name="passwordText">password</string>
+    <string name="loginButtonText">login</string>
+    <string name="register">Register</string>
+    <string name="registerButtonText">REGISTER</string>
+    <string name="usernameHint">username</string>
+    <string name="no_account_register">No account? Register!</string>
+    <string name="gravity_label">Gravity:</string>
+    <string name="linear_acceleration_label">Linear Acceleration:</string>
+    <string name="efficiency_label">Efficiency:</string>
+    <string name="background_label">Background:</string>
+    <string name="showUIButtonText">Show Controls</string>
+    <string name="hideUIButtonText">Hide Controls</string>
+    <string name="update_preview_button_text">Update Preview Thumbnail</string>
 </resources>

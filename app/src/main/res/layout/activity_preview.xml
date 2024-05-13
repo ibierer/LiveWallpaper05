@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_activity"
+    android:name='com.example.lifestyle_app_refactor.MainActivity'
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PreviewActivity">
+
+    <LinearLayout
+        android:id="@+id/render_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/settings_header_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tv_fps_meter"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/preview_ui_margin"
+            android:background="@drawable/slightly_opaque_border_background" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/preview_ui_margin"
+            android:background="@drawable/slightly_opaque_border_background"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/visualization_type_selection_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Visualization Type Selection:"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/visualization_type_spinner"
+                style="@style/Widget.AppCompat.Spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/hide_ui_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/preview_ui_margin"
+            android:layout_weight="1"
+            android:background="@drawable/slightly_opaque_border_background"
+            android:text="@+id/showUIButtonText" />
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/settings_scrollview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fadeScrollbars="false"
+        android:fillViewport="true"
+        app:layout_constraintTop_toBottomOf="@+id/settings_header_layout">
+
+        <LinearLayout
+            android:id="@+id/settings_linearlayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="100dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/distance_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/slightly_opaque_border_background"
+                android:text="@string/distance_label" />
+
+            <SeekBar
+                android:id="@+id/distance_seekbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/slightly_opaque_border_background"
+                android:max="100"
+                android:min="0" />
+
+            <TextView
+                android:id="@+id/field_of_view_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/slightly_opaque_border_background"
+                android:text="@string/field_of_view_label" />
+
+            <SeekBar
+                android:id="@+id/field_of_view_seekbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/slightly_opaque_border_background"
+                android:max="17999"
+                android:min="1" />
+
+            <TextView
+                android:id="@+id/gravity_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/slightly_opaque_border_background"
+                android:text="@string/gravity_label" />
+
+            <SeekBar
+                android:id="@+id/gravity_seekbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/slightly_opaque_border_background"
+                android:max="200"
+                android:min="0" />
+
+            <TextView
+                android:id="@+id/linear_acceleration_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/slightly_opaque_border_background"
+                android:text="@string/linear_acceleration_label" />
+
+            <SeekBar
+                android:id="@+id/linear_acceleration_seekbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/slightly_opaque_border_background"
+                android:max="400"
+                android:min="0" />
+
+            <TextView
+                android:id="@+id/efficiency_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/slightly_opaque_border_background"
+                android:text="@string/efficiency_label" />
+
+            <SeekBar
+                android:id="@+id/efficiency_seekbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/slightly_opaque_border_background"
+                android:max="4040"
+                android:min="3960" />
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_launcher_background" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:paddingRight="70dp">
+
+                <Button
+                    android:id="@+id/save_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/preview_ui_margin"
+                    android:layout_weight="1"
+                    android:background="@drawable/slightly_opaque_border_background"
+                    android:text="@string/update_preview_button_text" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/background_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/slightly_opaque_border_background"
+                android:text="@string/background_label" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <RadioGroup
+                    android:id="@+id/background_radio_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/b_color_picker"
+                    app:layout_constraintHorizontal_chainStyle="packed">
+
+                    <RadioButton
+                        android:id="@+id/solid_color_radio_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Solid Color"
+                        android:checked="true" />
+
+                    <RadioButton
+                        android:id="@+id/image_radio_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Image" />
+                </RadioGroup>
+
+                <Button
+                    android:id="@+id/b_color_picker"
+                    android:layout_width="55dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/preview_ui_margin"
+                    android:background="@drawable/slightly_opaque_border_background"
+                    android:text="Select Color"
+                    app:layout_constraintBottom_toBottomOf="@+id/background_radio_group"
+                    app:layout_constraintStart_toEndOf="@+id/background_radio_group"
+                    app:layout_constraintTop_toTopOf="@+id/background_radio_group" />
+
+                <Spinner
+                    android:id="@+id/image_selection_spinner"
+                    style="@style/Widget.AppCompat.Spinner"
+                    android:layout_width="133dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@+id/background_radio_group"
+                    app:layout_constraintStart_toEndOf="@+id/b_color_picker"
+                    app:layout_constraintTop_toTopOf="@+id/background_radio_group" />
+
+                <Spinner
+                    android:id="@+id/graph_selection_spinner"
+                    style="@style/Widget.AppCompat.Spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@+id/background_radio_group"
+                    app:layout_constraintStart_toEndOf="@+id/image_selection_spinner"
+                    app:layout_constraintTop_toTopOf="@+id/background_radio_group" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_equation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/preview_ui_margin"
+                    android:background="@drawable/slightly_opaque_border_background"
+                    android:text="Input Equation:" />
+
+                <Button
+                    android:id="@+id/done_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/slightly_opaque_border_background"
+                    android:text="Done" />
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/et_equation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/slightly_opaque_border_background"
+                android:hint="Enter equation here"
+                android:inputType="textCapSentences|textMultiLine"
+                android:paddingBottom="20dp"
+                android:scrollHorizontally="false"
+                android:text="@string/default_equation" />
+
+            <TextView
+                android:id="@+id/tv_syntax_check"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/slightly_opaque_border_background"
+                android:text="Syntax check result" />
+
+            <CheckBox
+                android:id="@+id/flip_normals_checkbox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Flip Normals" />
+
+            <Button
+                android:id="@+id/sync_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#3C3868AF"
+                android:text="SYNC" />
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
