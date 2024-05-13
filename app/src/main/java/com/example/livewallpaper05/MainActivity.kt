@@ -8,6 +8,7 @@ class MainActivity : Activity() {
 
     override fun onCreate(icicle: Bundle?) {
         super.onCreate(icicle)
+        ActiveWallpaperApplication.mView = GLES3JNIView(application)
         setContentView(ActiveWallpaperApplication.mView)
     }
 

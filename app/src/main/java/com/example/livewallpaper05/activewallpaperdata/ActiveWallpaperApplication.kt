@@ -7,11 +7,6 @@ import com.example.livewallpaper05.GLES3JNIView
 
 class ActiveWallpaperApplication : Application() {
 
-    override fun onCreate() {
-        super.onCreate()
-        mView = GLES3JNIView(this)
-    }
-
     companion object {
         var mView: GLES3JNIView? = null
     }
