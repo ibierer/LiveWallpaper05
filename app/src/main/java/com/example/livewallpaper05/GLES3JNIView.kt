@@ -6,9 +6,6 @@ import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
 class GLES3JNIView(context: Context) : GLSurfaceView(context) {
-    private val TAG = "GLES3JNI"
-    private val DEBUG = true
-
     init {
         // Pick an EGLConfig with RGB8 color, 16-bit depth, no stencil,
         // supporting OpenGL ES 2.0 or later backwards-compatible versions.

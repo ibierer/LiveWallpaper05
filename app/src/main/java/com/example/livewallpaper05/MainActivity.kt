@@ -2,21 +2,12 @@ package com.example.livewallpaper05
 
 import android.app.Activity
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : Activity() {
 
     var mView: GLES3JNIView? = null
 
     override fun onCreate(icicle: Bundle?) {
-        /*super.onCreate(savedInstanceState)
-
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        // Example of a call to a native method
-        binding.sampleText.text = stringFromJNI()*/
-
         super.onCreate(icicle)
         mView = GLES3JNIView(application)
         setContentView(mView)
@@ -31,12 +22,6 @@ class MainActivity : Activity() {
         super.onResume()
         mView!!.onResume()
     }
-
-    /**
-     * A native method that is implemented by the 'livewallpaper05' native library,
-     * which is packaged with this application.
-     */
-    external fun stringFromJNI(): String
 
     companion object {
         // Used to load the 'livewallpaper05' library on application startup.
