@@ -28,20 +28,7 @@
 using cy::Matrix4;
 using cy::Vec3;
 
-#if DYNAMIC_ES3
-#include "gl3stub.h"
-#else
-// Include the latest possible header file( GL version header )
-#if __ANDROID_API__ >= 24
 #include <GLES3/gl32.h>
-#elif __ANDROID_API__ >= 21
-#include <GLES3/gl31.h>
-#else
-#include <GLES3/gl3.h>
-#endif
-
-#endif
-
 #define DEBUG 1
 
 #define LOG_TAG "GLES3JNI"
@@ -317,14 +304,6 @@ public:
 
 static Renderer* g_renderer = NULL;
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_com_example_livewallpaper05_MainActivity_stringFromJNI(
-        JNIEnv* env,
-        jobject /* this */) {
-    std::string hello = "Hello from C++";
-    return env->NewStringUTF(hello.c_str());
-}
-
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_livewallpaper05_MainActivity_00024Companion_init(JNIEnv *env, jobject thiz, jstring JSON) {
@@ -347,8 +326,6 @@ Java_com_example_livewallpaper05_MainActivity_00024Companion_init(JNIEnv *env, j
         } else {
             g_renderer = renderer;
         }
-    } else if (strstr(versionStr, "OpenGL ES 2.")) {
-        //g_renderer = createES2Renderer();
     } else {
         ALOGE("Unsupported OpenGL ES version");
     }
