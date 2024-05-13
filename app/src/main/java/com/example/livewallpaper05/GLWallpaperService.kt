@@ -16,7 +16,7 @@ class GLWallpaperService : WallpaperService() {
         override fun onCreate(surfaceHolder: SurfaceHolder) {
             super.onCreate(surfaceHolder)
             glSurfaceView = WallpaperGLSurfaceView(this@GLWallpaperService)
-            val renderer: GLES3JNIView.Renderer = GLES3JNIView.Renderer(this@GLWallpaperService)
+            val renderer: GLES3JNIView.Renderer = GLES3JNIView.Renderer()
             glSurfaceView!!.setEGLContextClientVersion(3)
             glSurfaceView!!.setRenderer(renderer)
             rendererSet = true

@@ -11,15 +11,10 @@ class GLES3JNIView(context: Context) : GLSurfaceView(context) {
         // supporting OpenGL ES 2.0 or later backwards-compatible versions.
         setEGLConfigChooser(8, 8, 8, 0, 16, 0)
         setEGLContextClientVersion(3)
-        setRenderer(Renderer(context))
+        setRenderer(Renderer())
     }
 
-    class Renderer(context: Context) : GLSurfaceView.Renderer {
-        private var context: Context? = null
-
-        fun Renderer(context: Context) {
-            this.context = context
-        }
+    class Renderer() : GLSurfaceView.Renderer {
 
         override fun onDrawFrame(gl: GL10) {
             MainActivity.step(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, false)
