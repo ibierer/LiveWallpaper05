@@ -333,7 +333,7 @@ static GLboolean gl3stubInit() { return GL_TRUE; }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_livewallpaper05_MainActivity_00024Companion_init(JNIEnv *env, jobject thiz) {
+Java_com_example_livewallpaper05_MainActivity_00024Companion_init(JNIEnv *env, jobject thiz, jstring JSON) {
     if (g_renderer) {
         delete g_renderer;
         g_renderer = NULL;
@@ -370,7 +370,7 @@ Java_com_example_livewallpaper05_MainActivity_00024Companion_resize(JNIEnv *env,
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_livewallpaper05_MainActivity_00024Companion_step(JNIEnv *env, jobject thiz, jfloat acc_x, jfloat acc_y, jfloat acc_z, jfloat rot_x, jfloat rot_y, jfloat rot_z, jfloat rot_w) {
+Java_com_example_livewallpaper05_MainActivity_00024Companion_step(JNIEnv *env, jobject thiz, jfloat acc_x, jfloat acc_y, jfloat acc_z, jfloat rot_x, jfloat rot_y, jfloat rot_z, jfloat rot_w, jfloat linear_acc_x, jfloat linear_acc_y, jfloat linear_acc_z, jfloat distance, jfloat field_of_view, jfloat gravity, jfloat efficiency, jboolean flip_normals) {
     if (g_renderer) {
         g_renderer->render();
     }
