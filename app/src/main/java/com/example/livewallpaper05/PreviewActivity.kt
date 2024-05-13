@@ -20,7 +20,6 @@ class PreviewActivity : Activity() {
         )
         setContentView(R.layout.activity_preview)
         ActiveWallpaperApplication.mView = GLES3JNIView(application)
-        //setContentView(ActiveWallpaperApplication.mView)
 
         //// grab ui element for preview page
           val layout: LinearLayout = findViewById<LinearLayout>(R.id.render_layout)

@@ -49,9 +49,10 @@
 
             <Spinner
                 android:id="@+id/visualization_type_spinner"
-                style="@style/Widget.AppCompat.Spinner"
+                style="?android:attr/spinnerItemStyle"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:entries="@array/visualization_types" />
 
         </LinearLayout>
 
