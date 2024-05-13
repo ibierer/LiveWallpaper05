@@ -2,25 +2,23 @@ package com.example.livewallpaper05
 
 import android.app.Activity
 import android.os.Bundle
+import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
 
 class MainActivity : Activity() {
 
-    var mView: GLES3JNIView? = null
-
     override fun onCreate(icicle: Bundle?) {
         super.onCreate(icicle)
-        mView = GLES3JNIView(application)
-        setContentView(mView)
+        setContentView(ActiveWallpaperApplication.mView)
     }
 
     override fun onPause() {
         super.onPause()
-        mView!!.onPause()
+        ActiveWallpaperApplication.mView!!.onPause()
     }
 
     override fun onResume() {
         super.onResume()
-        mView!!.onResume()
+        ActiveWallpaperApplication.mView!!.onResume()
     }
 
     companion object {
