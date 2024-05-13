@@ -11,14 +11,13 @@ class GLWallpaperService : WallpaperService() {
     }
 
     inner class GLEngine : Engine() {
-        private var glSurfaceView: WallpaperGLSurfaceView? = null
+        private val glSurfaceView by lazy { WallpaperGLSurfaceView(this@GLWallpaperService) }
         private var rendererSet = false
+
         override fun onCreate(surfaceHolder: SurfaceHolder) {
             super.onCreate(surfaceHolder)
-            glSurfaceView = WallpaperGLSurfaceView(this@GLWallpaperService)
-            val renderer: GLES3JNIView.Renderer = GLES3JNIView.Renderer()
-            glSurfaceView!!.setEGLContextClientVersion(3)
-            glSurfaceView!!.setRenderer(renderer)
+            glSurfaceView.setEGLContextClientVersion(3)
+            glSurfaceView.setRenderer(GLES3JNIView.Renderer())
             rendererSet = true
         }
 
