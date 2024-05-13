@@ -2,6 +2,7 @@ package com.example.livewallpaper05
 
 import android.app.Activity
 import android.os.Bundle
+import android.util.Log
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
 
 class PreviewActivity : Activity() {
@@ -23,10 +24,6 @@ class PreviewActivity : Activity() {
     }
 
     companion object {
-        // Used to load the 'livewallpaper05' library on application startup.
-        init {
-            System.loadLibrary("livewallpaper05")
-        }
 
         external fun init(visualization: String)
         external fun resize(width: Int, height: Int)

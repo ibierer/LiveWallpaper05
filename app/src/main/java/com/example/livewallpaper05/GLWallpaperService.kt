@@ -26,25 +26,25 @@ class GLWallpaperService : WallpaperService() {
                 return surfaceHolder
             }
 
-            fun onWallpaperDestroy() {
+            /*fun onWallpaperDestroy() {
                 super.onDetachedFromWindow()
-            }
+            }*/
         }
 
         override fun onVisibilityChanged(visible: Boolean) {
             super.onVisibilityChanged(visible)
             if (rendererSet) {
                 if (visible) {
-                    glSurfaceView!!.onResume()
+                    glSurfaceView.onResume()
                 } else {
-                    glSurfaceView!!.onPause()
+                    glSurfaceView.onPause()
                 }
             }
         }
 
-        override fun onDestroy() {
+        /*override fun onDestroy() {
             super.onDestroy()
-            glSurfaceView!!.onWallpaperDestroy()
-        }
+            glSurfaceView.onWallpaperDestroy()
+        }*/
     }
 }
