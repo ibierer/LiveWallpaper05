@@ -25,11 +25,11 @@ interface SavedWallpaperDao {
     //// get wallpapers by uid
     //@Query("SELECT wid, lastModified FROM wallpaper_table WHERE uid = :uid")
     //fun getAllWallpapersByUID(uid: Int): List<Tuple>
-    //
-    //// save wallpaper
-    //@Insert(onConflict = OnConflictStrategy.REPLACE)
-    //fun saveWallpaper(wallpaper: SavedWallpaperTable)
-    //
+
+    // save wallpaper
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun saveWallpaper(wallpaper: SavedWallpaperRow)
+
     //// delete wallpaper
     //@Query("DELETE FROM wallpaper_table WHERE wid = :wid")
     //fun deleteWallpaper(wid: Int)

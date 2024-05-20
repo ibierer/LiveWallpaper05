@@ -12,6 +12,8 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 //import com.example.livewallpaper05.ExplorerActivity
 import com.example.livewallpaper05.R
+import com.example.livewallpaper05.profiledata.ProfileDao
+import com.example.livewallpaper05.profiledata.ProfileTable
 //import com.example.livewallpaper05.profiledata.ProfileDao
 //import com.example.livewallpaper05.profiledata.ProfileTable
 import com.example.livewallpaper05.savedWallpapers.SavedWallpaperDao
@@ -27,7 +29,7 @@ import java.sql.ResultSet
 import java.sql.SQLException
 import java.util.Properties
 
-class ActiveWallpaperRepo private constructor(val context: Context, private val wallpaperDao: SavedWallpaperDao/*, profileDao: ProfileDao*/) : SensorEventListener {
+class ActiveWallpaperRepo private constructor(val context: Context, private val wallpaperDao: SavedWallpaperDao, profileDao: ProfileDao) : SensorEventListener {
     //val fluidSurface: MutableLiveData<Boolean> = MutableLiveData(true)
     //val backgroundTexture: MutableLiveData<String> = MutableLiveData<String>("mandelbrot")
     //var backgroundIsSolidColor: MutableLiveData<Boolean> = MutableLiveData<Boolean>(false)
@@ -40,8 +42,8 @@ class ActiveWallpaperRepo private constructor(val context: Context, private val 
     var userDefinedEquation: String = ""
     //var currentEquation: String = "1/((sqrt(x^2 + y^2) - 1.5 + sin(t))^2 + (z + cos(t))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 2π/3))^2 + (z + cos(t + 2π/3))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 4π/3))^2 + (z + cos(t + 4π/3))^2) = 5"
     var color: MutableLiveData<Color> = MutableLiveData<Color>(Color.valueOf(0.0f, 0.0f, 0.0f, 0.0f))
-    //var orientation: Int = 11
-    //var fps: MutableLiveData<Float> = MutableLiveData<Float>(0.0f)
+    var orientation: Int = 0
+    var fps: MutableLiveData<Float> = MutableLiveData<Float>(0.0f)
     //var lastFrame: Long = 0
     var distanceFromOrigin: MutableLiveData<Float> = MutableLiveData<Float>(0.5f)
     var fieldOfView: MutableLiveData<Float> = MutableLiveData<Float>(60.0f)
@@ -49,7 +51,7 @@ class ActiveWallpaperRepo private constructor(val context: Context, private val 
     var linearAcceleration: MutableLiveData<Float> = MutableLiveData<Float>(1.0f)
     var efficiency: MutableLiveData<Float> = MutableLiveData<Float>(1.0f)
     //var particleCount: MutableLiveData<Int> = MutableLiveData<Int>(1000)
-    //val flipNormals: MutableLiveData<Boolean> = MutableLiveData<Boolean>(false)
+    val flipNormals: MutableLiveData<Boolean> = MutableLiveData<Boolean>(false)
     var rotationData: Array<Float> = arrayOf(0.0f, 0.0f, 0.0f, 0.0f)
     var accelerationData: Array<Float> = arrayOf(0.0f, 0.0f, 0.0f)
     var linearAccelerationData: Array<Float> = arrayOf(0.0f, 0.0f, 0.0f)
@@ -70,9 +72,9 @@ class ActiveWallpaperRepo private constructor(val context: Context, private val 
     //
     //private var lastId: Int = 1
     //private var transitionNewId: Int = 0
-    //
-    //private lateinit var mSensorManager: SensorManager
-    //
+
+    private lateinit var mSensorManager: SensorManager
+
     //// ViewModel state
     //lateinit var visualization: Visualization
     //
@@ -614,48 +616,48 @@ class ActiveWallpaperRepo private constructor(val context: Context, private val 
     //    activeWallpaper.postValue(wallpaper)
     //    //}
     //}
-    //
-    //// setup companion object so repo can be created from any thread and still be a singleton
-    //companion object {
-    //    @SuppressLint("StaticFieldLeak")
-    //    @Volatile
-    //    private var instance: ActiveWallpaperRepo? = null
-    //    private lateinit var mScope: CoroutineScope
-    //    private val syncMutex: Mutex = Mutex()
-    //
-    //    @Synchronized
-    //    fun getInstance(
-    //        context: Context,
-    //        savedWallpaperDao: SavedWallpaperDao,
-    //        profileDao: ProfileDao,
-    //        scope: CoroutineScope
-    //    ): ActiveWallpaperRepo {
-    //        return instance ?: ActiveWallpaperRepo(context, savedWallpaperDao, profileDao).also {
-    //            instance = it
-    //            mScope = scope
-    //        }
-    //    }
-    //}
-    //
-    //// register sensor events to repo sensor manager
-    //fun registerSensors(mSensorManager: SensorManager) {
-    //    this.mSensorManager = mSensorManager
-    //    mSensorManager.registerListener(
-    //        this,
-    //        mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR),
-    //        SensorManager.SENSOR_DELAY_GAME
-    //    )
-    //    mSensorManager.registerListener(
-    //        this,
-    //        mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-    //        SensorManager.SENSOR_DELAY_GAME
-    //    )
-    //    mSensorManager.registerListener(
-    //        this,
-    //        mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION),
-    //        SensorManager.SENSOR_DELAY_GAME
-    //    )
-    //}
+
+    // setup companion object so repo can be created from any thread and still be a singleton
+    companion object {
+        @SuppressLint("StaticFieldLeak")
+        @Volatile
+        private var instance: ActiveWallpaperRepo? = null
+        private lateinit var mScope: CoroutineScope
+        private val syncMutex: Mutex = Mutex()
+
+        @Synchronized
+        fun getInstance(
+            context: Context,
+            savedWallpaperDao: SavedWallpaperDao,
+            profileDao: ProfileDao,
+            scope: CoroutineScope
+        ): ActiveWallpaperRepo {
+            return instance ?: ActiveWallpaperRepo(context, savedWallpaperDao, profileDao).also {
+                instance = it
+                mScope = scope
+            }
+        }
+    }
+
+    // register sensor events to repo sensor manager
+    fun registerSensors(mSensorManager: SensorManager) {
+        this.mSensorManager = mSensorManager
+        mSensorManager.registerListener(
+            this,
+            mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR),
+            SensorManager.SENSOR_DELAY_GAME
+        )
+        mSensorManager.registerListener(
+            this,
+            mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+            SensorManager.SENSOR_DELAY_GAME
+        )
+        mSensorManager.registerListener(
+            this,
+            mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION),
+            SensorManager.SENSOR_DELAY_GAME
+        )
+    }
 
     // update sensor data variables when sensor values change
     override fun onSensorChanged(p0: SensorEvent?) {
@@ -677,11 +679,11 @@ class ActiveWallpaperRepo private constructor(val context: Context, private val 
         // Do nothing
     }
 
-    //// update orientation value
-    //fun updateOrientation(orient: Int) {
-    //    this.orientation = orient
-    //}
-    //
+    // update orientation value
+    fun updateOrientation(orient: Int) {
+        this.orientation = orient
+    }
+
     //// update saved wids after they're extracted from memory
     //fun setSavedWids(wids: String) {
     //    savedWids = wids.split(",").map { it.toInt() }
@@ -693,26 +695,26 @@ class ActiveWallpaperRepo private constructor(val context: Context, private val 
     //    var fragmentId: Int = 0
     //    var fragmentTag: String = ""
     //}
-    //
-    //val currentUserProfile = MutableLiveData<ProfileTable>(
-    //    ProfileTable(
-    //        context.resources.getInteger(R.integer.default_profile_id),
-    //        0,
-    //        "Default User",
-    //        context.resources.getString(R.string.biography),
-    //        ByteArray(0)
-    //    )
-    //)
-    //
-    //private var mProfileDao: ProfileDao = profileDao
-    //
-    //fun setProfile(profileTable: ProfileTable) {
-    //    mScope.launch(Dispatchers.IO) {
-    //        currentUserProfile.postValue(profileTable)
-    //        mProfileDao.updateProfileData(profileTable)
-    //    }
-    //}
-    //
+
+    val currentUserProfile = MutableLiveData<ProfileTable>(
+        ProfileTable(
+            context.resources.getInteger(R.integer.default_profile_id),
+            0,
+            "Default User",
+            context.resources.getString(R.string.biography),
+            ByteArray(0)
+        )
+    )
+
+    private var mProfileDao: ProfileDao = profileDao
+
+    fun setProfile(profileTable: ProfileTable) {
+        mScope.launch(Dispatchers.IO) {
+            currentUserProfile.postValue(profileTable)
+            mProfileDao.updateProfileData(profileTable)
+        }
+    }
+
     //fun updateColor(r: Float, g: Float, b: Float, a: Float) {
     //    color.value = Color.valueOf(r, g, b, a)
     //    //color.postValue(Color.valueOf(r, g, b, a))

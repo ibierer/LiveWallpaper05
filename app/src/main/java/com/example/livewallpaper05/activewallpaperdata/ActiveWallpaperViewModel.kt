@@ -94,21 +94,21 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
         return repo.fieldOfView.value!!
     }
 
-    //// return rotation data from repo
-    //fun getRotationData(): Array<Float> {
-    //    return repo.rotationData
-    //}
-    //
-    //// return acceleration data from repo
-    //fun getAccelerationData(): Array<Float> {
-    //    return repo.accelerationData
-    //}
-    //
-    //// return linear acceleration data from repo
-    //fun getLinearAccelerationData(): Array<Float> {
-    //    return repo.linearAccelerationData
-    //}
-    //
+    // return rotation data from repo
+    fun getRotationData(): Array<Float> {
+        return repo.rotationData
+    }
+
+    // return acceleration data from repo
+    fun getAccelerationData(): Array<Float> {
+        return repo.accelerationData
+    }
+
+    // return linear acceleration data from repo
+    fun getLinearAccelerationData(): Array<Float> {
+        return repo.linearAccelerationData
+    }
+
     //// return simulation type from repo
     //fun getVisualization(): Int {
     //    return repo.visualizationSelection
@@ -117,22 +117,22 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
     //fun getGraph(): Int {
     //    return repo.graphSelection
     //}
-    //
-    //// return orientation from repo
-    //fun getOrientation(): Int {
-    //    return repo.orientation
-    //}
+
+    // return orientation from repo
+    fun getOrientation(): Int {
+        return repo.orientation
+    }
 
     // return color from repo
     fun getColor(): Color {
         return repo.color.value!!
     }
 
-    //// return fps from repo
-    //fun getFPS(): MutableLiveData<Float> {
-    //    return repo.fps
-    //}
-    //
+    // return fps from repo
+    fun getFPS(): MutableLiveData<Float> {
+        return repo.fps
+    }
+
     //// return last frame time value from repo
     //fun getLastFrame(): Long {
     //    return repo.lastFrame
@@ -230,10 +230,10 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
         return repo.efficiency.value!!
     }
 
-    //// get vector direction from repo
-    //fun getVectorDirection(): Boolean {
-    //    return repo.flipNormals.value!!
-    //}
+    // get vector direction from repo
+    fun getVectorDirection(): Boolean {
+        return repo.flipNormals.value!!
+    }
 
     // get linear acceleration value from repo
     fun getLinearAcceleration(): Float {
@@ -256,12 +256,12 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
     //fun updateSimulationType(type: String) {
     //    repo.visualizationName.postValue(type)
     //}
-    //
-    //// update orientation in repo
-    //fun updateOrientation(orient: Int) {
-    //    repo.updateOrientation(orient)
-    //}
-    //
+
+    // update orientation in repo
+    fun updateOrientation(orient: Int) {
+        repo.updateOrientation(orient)
+    }
+
     //// update distance from origin in repo
     //fun updateDistanceFromCenter(distance: Float) {
     //    repo.distanceFromOrigin.value = distance
@@ -371,13 +371,13 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
     //private fun updateVizualizationName(s: String) {
     //    repo.visualizationName.postValue(s)
     //}
-    //
-    //// OTHER - other helper methods ----------------------------------------------------------
-    //// register sensor events to repo sensor manager
-    //fun registerSensorEvents(manager: SensorManager) {
-    //    repo.registerSensors(manager)
-    //}
-    //
+
+    // OTHER - other helper methods ----------------------------------------------------------
+    // register sensor events to repo sensor manager
+    fun registerSensorEvents(manager: SensorManager) {
+        repo.registerSensors(manager)
+    }
+
     //// load config table into repo
     //fun loadConfig(table: SavedWallpaperRow) {
     //    // prevent reloading same config

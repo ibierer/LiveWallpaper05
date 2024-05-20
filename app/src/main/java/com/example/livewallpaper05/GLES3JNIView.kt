@@ -1,7 +1,9 @@
 package com.example.livewallpaper05
 
 import android.content.Context
+import android.hardware.SensorManager
 import android.opengl.GLSurfaceView
+import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.example.livewallpaper05.activewallpaperdata.NBodyVisualization
 import com.example.livewallpaper05.activewallpaperdata.NaiveFluidVisualization
 import com.example.livewallpaper05.activewallpaperdata.PicFlipVisualization
@@ -10,20 +12,20 @@ import com.example.livewallpaper05.activewallpaperdata.GraphVisualization
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
-class GLES3JNIView(context: Context) : GLSurfaceView(context) {
+class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceView(context) {
     init {
         // Pick an EGLConfig with RGB8 color, 16-bit depth, no stencil,
         // supporting OpenGL ES 2.0 or later backwards-compatible versions.
         setEGLConfigChooser(8, 8, 8, 0, 16, 0)
         setEGLContextClientVersion(3)
-        setRenderer(Renderer())
+        setRenderer(Renderer(context, vm))
     }
 
-    class Renderer : GLSurfaceView.Renderer {
+    class Renderer(private val context: Context, private var mViewModel: ActiveWallpaperViewModel) : GLSurfaceView.Renderer {
 
         override fun onDrawFrame(gl: GL10) {
-            PreviewActivity.step(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, false)
-            /*val accelData = mViewModel.getAccelerationData()
+            //PreviewActivity.step(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, false)
+            val accelData = mViewModel.getAccelerationData()
             val rotData = mViewModel.getRotationData()
             val linearAccelData = mViewModel.getLinearAccelerationData()
             val multiplier = mViewModel.getLinearAcceleration()
@@ -43,17 +45,22 @@ class GLES3JNIView(context: Context) : GLSurfaceView(context) {
                 mViewModel.getGravity(),
                 mViewModel.getEfficiency(),
                 mViewModel.getVectorDirection()
-            )*/
+            )
         }
 
         override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {
-            PreviewActivity.resize(width, height, 1)
-            /*val orientation = mViewModel.getOrientation()
-            PreviewActivity.resize(width, height, orientation)*/
+            mViewModel.registerSensorEvents(context.getSystemService(Context.SENSOR_SERVICE) as SensorManager)
+            //PreviewActivity.resize(width, height, 0)
+            val orientation = mViewModel.getOrientation()
+            PreviewActivity.resize(width, height, orientation)
         }
 
         override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
-            PreviewActivity.init(PicFlipVisualization().toJsonObject().toString())
+            PreviewActivity.init(NBodyVisualization().toJsonObject().toString())
+            //PreviewActivity.init(NaiveFluidVisualization().toJsonObject().toString())
+            //PreviewActivity.init(PicFlipVisualization().toJsonObject().toString())
+            //PreviewActivity.init(TriangleVisualization().toJsonObject().toString())
+            //PreviewActivity.init(GraphVisualization().toJsonObject().toString())
         }
     }
 }

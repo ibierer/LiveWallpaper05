@@ -9,10 +9,10 @@ data class SavedWallpaperRow(
     var uid: Int,
     @ColumnInfo(name = "wid")
     var wid: Int,
-    //@ColumnInfo(name = "config")
-    //var config: String,
-    //@ColumnInfo(name = "previewImage")
-    //var previewImage: ByteArray,
-    //@ColumnInfo(name = "lastModified")
-    //var lastModified: Long
+    @ColumnInfo(name = "config")
+    var config: String,
+    @ColumnInfo(name = "previewImage")
+    var previewImage: ByteArray,
+    @ColumnInfo(name = "lastModified")
+    var lastModified: Long
 )
