@@ -1,20 +1,20 @@
 package com.example.livewallpaper05.activewallpaperdata
 
-import android.app.Activity
-import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+//import android.app.Activity
+//import android.content.res.Resources
+//import android.graphics.Bitmap
+//import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.hardware.SensorManager
-import android.util.Log
+//import android.util.Log
 import androidx.lifecycle.*
 //import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo.WallpaperRef
 //import com.example.livewallpaper05.savedWallpapers.SavedWallpaperRow
-import org.json.JSONObject
-import java.io.ByteArrayOutputStream
-import java.math.RoundingMode
-import java.sql.ResultSet
-import java.util.Random
+//import org.json.JSONObject
+//import java.io.ByteArrayOutputStream
+//import java.math.RoundingMode
+//import java.sql.ResultSet
+//import java.util.Random
 
 /**
  * View Model to keep a reference to the active wallpaper data

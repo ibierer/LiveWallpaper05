@@ -2,34 +2,34 @@ package com.example.livewallpaper05.activewallpaperdata
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Bitmap
+//import android.graphics.Bitmap
 import android.graphics.Color
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.util.Log
+//import android.util.Log
 import androidx.lifecycle.MutableLiveData
 //import com.example.livewallpaper05.ExplorerActivity
-import com.example.livewallpaper05.R
-import com.example.livewallpaper05.profiledata.ProfileDao
-import com.example.livewallpaper05.profiledata.ProfileTable
+//import com.example.livewallpaper05.R
 //import com.example.livewallpaper05.profiledata.ProfileDao
 //import com.example.livewallpaper05.profiledata.ProfileTable
-import com.example.livewallpaper05.savedWallpapers.SavedWallpaperDao
-import com.example.livewallpaper05.savedWallpapers.SavedWallpaperRow
+//import com.example.livewallpaper05.profiledata.ProfileDao
+//import com.example.livewallpaper05.profiledata.ProfileTable
+//import com.example.livewallpaper05.savedWallpapers.SavedWallpaperDao
+//import com.example.livewallpaper05.savedWallpapers.SavedWallpaperRow
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.withContext
-import java.sql.DriverManager
-import java.sql.ResultSet
-import java.sql.SQLException
-import java.util.Properties
+//import kotlinx.coroutines.DelicateCoroutinesApi
+//import kotlinx.coroutines.Dispatchers
+//import kotlinx.coroutines.launch
+//import kotlinx.coroutines.sync.Mutex
+//import kotlinx.coroutines.withContext
+//import java.sql.DriverManager
+//import java.sql.ResultSet
+//import java.sql.SQLException
+//import java.util.Properties
 
-class ActiveWallpaperRepo private constructor(val context: Context, private val wallpaperDao: SavedWallpaperDao, profileDao: ProfileDao) : SensorEventListener {
+class ActiveWallpaperRepo private constructor(val context: Context/*, private val wallpaperDao: SavedWallpaperDao, profileDao: ProfileDao*/) : SensorEventListener {
     //val fluidSurface: MutableLiveData<Boolean> = MutableLiveData(true)
     //val backgroundTexture: MutableLiveData<String> = MutableLiveData<String>("mandelbrot")
     //var backgroundIsSolidColor: MutableLiveData<Boolean> = MutableLiveData<Boolean>(false)
@@ -623,16 +623,16 @@ class ActiveWallpaperRepo private constructor(val context: Context, private val 
         @Volatile
         private var instance: ActiveWallpaperRepo? = null
         private lateinit var mScope: CoroutineScope
-        private val syncMutex: Mutex = Mutex()
+        //private val syncMutex: Mutex = Mutex()
 
         @Synchronized
         fun getInstance(
             context: Context,
-            savedWallpaperDao: SavedWallpaperDao,
-            profileDao: ProfileDao,
+            /*savedWallpaperDao: SavedWallpaperDao,
+            profileDao: ProfileDao,*/
             scope: CoroutineScope
         ): ActiveWallpaperRepo {
-            return instance ?: ActiveWallpaperRepo(context, savedWallpaperDao, profileDao).also {
+            return instance ?: ActiveWallpaperRepo(context/*, savedWallpaperDao, profileDao*/).also {
                 instance = it
                 mScope = scope
             }
@@ -695,26 +695,26 @@ class ActiveWallpaperRepo private constructor(val context: Context, private val 
     //    var fragmentId: Int = 0
     //    var fragmentTag: String = ""
     //}
-
-    val currentUserProfile = MutableLiveData<ProfileTable>(
-        ProfileTable(
-            context.resources.getInteger(R.integer.default_profile_id),
-            0,
-            "Default User",
-            context.resources.getString(R.string.biography),
-            ByteArray(0)
-        )
-    )
-
-    private var mProfileDao: ProfileDao = profileDao
-
-    fun setProfile(profileTable: ProfileTable) {
-        mScope.launch(Dispatchers.IO) {
-            currentUserProfile.postValue(profileTable)
-            mProfileDao.updateProfileData(profileTable)
-        }
-    }
-
+    //
+    //val currentUserProfile = MutableLiveData<ProfileTable>(
+    //    ProfileTable(
+    //        context.resources.getInteger(R.integer.default_profile_id),
+    //        0,
+    //        "Default User",
+    //        context.resources.getString(R.string.biography),
+    //        ByteArray(0)
+    //    )
+    //)
+    //
+    //private var mProfileDao: ProfileDao = profileDao
+    //
+    //fun setProfile(profileTable: ProfileTable) {
+    //    mScope.launch(Dispatchers.IO) {
+    //        currentUserProfile.postValue(profileTable)
+    //        mProfileDao.updateProfileData(profileTable)
+    //    }
+    //}
+    //
     //fun updateColor(r: Float, g: Float, b: Float, a: Float) {
     //    color.value = Color.valueOf(r, g, b, a)
     //    //color.postValue(Color.valueOf(r, g, b, a))

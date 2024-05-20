@@ -26,8 +26,7 @@ abstract class Visualization {
         val g = colorJSONObject.getDouble("g").toFloat()
         val b = colorJSONObject.getDouble("b").toFloat()
         val a = colorJSONObject.getDouble("a").toFloat()
-        val c = Color.valueOf(r/255, g/255, b/255, a/255)
-        return c
+        return Color.valueOf(r / 255, g / 255, b / 255, a / 255)
     }
 
     // set unique values for each visualization type

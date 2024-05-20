@@ -1,101 +1,95 @@
 package com.example.livewallpaper05
 
-import android.graphics.Color
+//import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.text.TextWatcher
+//import android.text.TextWatcher
 import android.util.Log
-import android.view.View
-import android.view.WindowManager
-import android.view.animation.Animation
-import android.view.animation.TranslateAnimation
-import android.view.inputmethod.EditorInfo
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.CheckBox
-import android.widget.EditText
-import android.widget.ImageView
+//import android.view.View
+//import android.view.WindowManager
+//import android.view.animation.Animation
+//import android.view.animation.TranslateAnimation
+//import android.view.inputmethod.EditorInfo
+//import android.widget.AdapterView
+//import android.widget.ArrayAdapter
+//import android.widget.Button
+//import android.widget.CheckBox
+//import android.widget.EditText
+//import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.RadioButton
-import android.widget.RadioGroup
-import android.widget.ScrollView
-import android.widget.SeekBar
-import android.widget.Spinner
+//import android.widget.RadioButton
+//import android.widget.RadioGroup
+//import android.widget.ScrollView
+//import android.widget.SeekBar
+//import android.widget.Spinner
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
+//import androidx.lifecycle.Observer
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModelFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+//import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import yuku.ambilwarna.AmbilWarnaDialog
+//import yuku.ambilwarna.AmbilWarnaDialog
 
 class PreviewActivity : AppCompatActivity() {
-    var mView: GLES3JNIView? = null
+    private var mView: GLES3JNIView? = null
 
     private val viewModel: ActiveWallpaperViewModel by viewModels {
         ActiveWallpaperViewModelFactory((application as ActiveWallpaperApplication).wallpaperRepo)
     }
 
-    private fun updateSyntaxResult() {
-        // update syntax check message
-        val equationChecker = EquationChecker()
-        val result: String =
-            equationChecker.checkEquationSyntax(findViewById<EditText>(R.id.et_equation).text.toString())
-        val message: String = if (result == "") {
-            "No syntax errors."
-        } else {
-            result
-        }
-        findViewById<TextView>(R.id.tv_syntax_check).text = message
-    }
+    //private fun updateSyntaxResult() {
+    //    // update syntax check message
+    //    val equationChecker = EquationChecker()
+    //    val result: String =
+    //        equationChecker.checkEquationSyntax(findViewById<EditText>(R.id.et_equation).text.toString())
+    //    val message: String = if (result == "") {
+    //        "No syntax errors."
+    //    } else {
+    //        result
+    //    }
+    //    findViewById<TextView>(R.id.tv_syntax_check).text = message
+    //}
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(icicle: Bundle?) {
         super.onCreate(icicle)
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_FULLSCREEN,
-            WindowManager.LayoutParams.FLAG_FULLSCREEN
-        );
+        //window.setFlags(
+        //    WindowManager.LayoutParams.FLAG_FULLSCREEN,
+        //    WindowManager.LayoutParams.FLAG_FULLSCREEN
+        //)
         setContentView(R.layout.activity_preview)
         // get view window from GLES3JNIView
         mView = GLES3JNIView(application, viewModel)
 
         // grab ui element for preview page
         val layout: LinearLayout = findViewById<LinearLayout>(R.id.render_layout)
-        val distanceSeekBar: SeekBar = findViewById<SeekBar>(R.id.distance_seekbar)
-        val fieldOfViewSeekBar: SeekBar = findViewById<SeekBar>(R.id.field_of_view_seekbar)
-        val gravitySeekBar: SeekBar = findViewById<SeekBar>(R.id.gravity_seekbar)
-        val linearAccelerationSeekBar: SeekBar =
-            findViewById<SeekBar>(R.id.linear_acceleration_seekbar)
-        val efficiencySeekBar: SeekBar = findViewById<SeekBar>(R.id.efficiency_seekbar)
-        val visualizationSelectorSpinner: Spinner =
-            findViewById<Spinner>(R.id.visualization_type_spinner)
-        val environmentMapSelectorSpinner: Spinner =
-            findViewById<Spinner>(R.id.image_selection_spinner)
-        val graphSelectorSpinner: Spinner =
-            findViewById<Spinner>(R.id.graph_selection_spinner)
-        val colorButton: Button = findViewById<Button>(R.id.b_color_picker)
-        val hideUIButton: Button = findViewById<Button>(R.id.hide_ui_button)
-        val saveButton: Button = findViewById<Button>(R.id.save_button)
-        val syncButton: Button = findViewById<Button>(R.id.sync_button)
-        val equationEditor: EditText = findViewById<EditText>(R.id.et_equation)
-        val flipsNormalsCheckBox: CheckBox = findViewById<CheckBox>(R.id.flip_normals_checkbox)
-        val linearLayout: LinearLayout = findViewById<LinearLayout>(R.id.settings_linearlayout)
-        val doneButton: Button = findViewById<Button>(R.id.done_button)
-        val backgroundRadioButton: RadioGroup =
-            findViewById<RadioGroup>(R.id.background_radio_group)
-        val solidColorRadioButton: RadioButton =
-            findViewById<RadioButton>(R.id.solid_color_radio_button)
-        val imageRadioButton: RadioButton = findViewById<RadioButton>(R.id.image_radio_button)
-        val previewImageView: ImageView = findViewById<ImageView>(R.id.imageView)
-
+    //    val distanceSeekBar: SeekBar = findViewById<SeekBar>(R.id.distance_seekbar)
+    //    val fieldOfViewSeekBar: SeekBar = findViewById<SeekBar>(R.id.field_of_view_seekbar)
+    //    val gravitySeekBar: SeekBar = findViewById<SeekBar>(R.id.gravity_seekbar)
+    //    val linearAccelerationSeekBar: SeekBar = findViewById<SeekBar>(R.id.linear_acceleration_seekbar)
+    //    val efficiencySeekBar: SeekBar = findViewById<SeekBar>(R.id.efficiency_seekbar)
+    //    val visualizationSelectorSpinner: Spinner = findViewById<Spinner>(R.id.visualization_type_spinner)
+    //    val environmentMapSelectorSpinner: Spinner = findViewById<Spinner>(R.id.image_selection_spinner)
+    //    val graphSelectorSpinner: Spinner = findViewById<Spinner>(R.id.graph_selection_spinner)
+    //    val colorButton: Button = findViewById<Button>(R.id.b_color_picker)
+    //    val hideUIButton: Button = findViewById<Button>(R.id.hide_ui_button)
+    //    val saveButton: Button = findViewById<Button>(R.id.save_button)
+    //    val syncButton: Button = findViewById<Button>(R.id.sync_button)
+    //    val equationEditor: EditText = findViewById<EditText>(R.id.et_equation)
+    //    val flipsNormalsCheckBox: CheckBox = findViewById<CheckBox>(R.id.flip_normals_checkbox)
+    //    val linearLayout: LinearLayout = findViewById<LinearLayout>(R.id.settings_linearlayout)
+    //    val doneButton: Button = findViewById<Button>(R.id.done_button)
+    //    val backgroundRadioButton: RadioGroup = findViewById<RadioGroup>(R.id.background_radio_group)
+    //    val solidColorRadioButton: RadioButton = findViewById<RadioButton>(R.id.solid_color_radio_button)
+    //    val imageRadioButton: RadioButton = findViewById<RadioButton>(R.id.image_radio_button)
+    //    val previewImageView: ImageView = findViewById<ImageView>(R.id.imageView)
+    //
     //    // fill visualization selector box with wallpaper options from native-lib.cpp
     //    val visualizationSelectorAdapter = ArrayAdapter.createFromResource(
     //        this,
@@ -128,7 +122,7 @@ class PreviewActivity : AppCompatActivity() {
         // add gl engine view to viewport
         layout.addView(mView)
 
-        suspend fun loadOrUnloadUIElements() {
+        fun loadOrUnloadUIElements() {
     //        // if repo.visualization is not initialized wait until it is
     //        val textViewIds: List<Int> = listOf(
     //            R.id.distance_label,

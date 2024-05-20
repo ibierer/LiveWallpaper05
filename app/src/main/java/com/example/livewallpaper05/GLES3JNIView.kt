@@ -5,10 +5,10 @@ import android.hardware.SensorManager
 import android.opengl.GLSurfaceView
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.example.livewallpaper05.activewallpaperdata.NBodyVisualization
-import com.example.livewallpaper05.activewallpaperdata.NaiveFluidVisualization
-import com.example.livewallpaper05.activewallpaperdata.PicFlipVisualization
-import com.example.livewallpaper05.activewallpaperdata.TriangleVisualization
-import com.example.livewallpaper05.activewallpaperdata.GraphVisualization
+//import com.example.livewallpaper05.activewallpaperdata.NaiveFluidVisualization
+//import com.example.livewallpaper05.activewallpaperdata.PicFlipVisualization
+//import com.example.livewallpaper05.activewallpaperdata.TriangleVisualization
+//import com.example.livewallpaper05.activewallpaperdata.GraphVisualization
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
@@ -50,9 +50,7 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
 
         override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {
             mViewModel.registerSensorEvents(context.getSystemService(Context.SENSOR_SERVICE) as SensorManager)
-            //PreviewActivity.resize(width, height, 0)
-            val orientation = mViewModel.getOrientation()
-            PreviewActivity.resize(width, height, orientation)
+            PreviewActivity.resize(width, height, mViewModel.getOrientation())
         }
 
         override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {

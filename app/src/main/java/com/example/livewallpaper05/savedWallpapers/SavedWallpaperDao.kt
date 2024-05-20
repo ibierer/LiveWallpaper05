@@ -1,11 +1,11 @@
 package com.example.livewallpaper05.savedWallpapers
 
-import androidx.lifecycle.LiveData
+//import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
-import androidx.room.Query
+//import androidx.room.Query
 import androidx.room.OnConflictStrategy
-import com.example.livewallpaper05.activewallpaperdata.Tuple
+//import com.example.livewallpaper05.activewallpaperdata.Tuple
 
 @Dao
 interface SavedWallpaperDao {
