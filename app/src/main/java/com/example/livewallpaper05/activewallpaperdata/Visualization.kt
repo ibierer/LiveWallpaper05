@@ -29,9 +29,6 @@ abstract class Visualization {
         return Color.valueOf(r / 255, g / 255, b / 255, a / 255)
     }
 
-    // set unique values for each visualization type
-    abstract fun updateValues()
-
     companion object {
         fun createColorFromInts(r: Int, g: Int, b: Int, a: Int): Color {
             val rf = r.toFloat() / 255.0f

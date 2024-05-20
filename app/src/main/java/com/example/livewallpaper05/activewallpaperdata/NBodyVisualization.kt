@@ -31,17 +31,6 @@ data class NBodyVisualization (
         R.id.field_of_view_label
     )
 
-    override fun updateValues() {
-        if (viewModel == null) {
-            return
-        }
-        // change this to observe the live data from the repo
-        distance = viewModel!!.getDistanceFromOrigin()
-        fieldOfView = viewModel!!.getFieldOfView()
-        backgroundColor = viewModel!!.getColor()
-
-    }
-
     override val relevantSeekBarIds : List<Int> = listOf(
         R.id.distance_seekbar,
         R.id.field_of_view_seekbar

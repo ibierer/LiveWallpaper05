@@ -83,17 +83,4 @@ data class NaiveFluidVisualization (
         jsonObject.put("background_texture", backgroundTexture)
         return jsonObject
     }
-
-    override fun updateValues() {
-        if (viewModel == null) {
-            return
-        }
-        // get values from repo
-        distance = viewModel!!.getDistanceFromOrigin()
-        fieldOfView = viewModel!!.getFieldOfView()
-        backgroundColor = viewModel!!.getColor()
-        gravity = viewModel!!.getGravity()
-        linearAcceleration = viewModel!!.getLinearAcceleration()
-        efficiency = viewModel!!.getEfficiency()
-    }
 }

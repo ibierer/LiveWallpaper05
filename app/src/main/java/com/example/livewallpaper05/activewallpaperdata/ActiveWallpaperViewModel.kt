@@ -5,7 +5,7 @@ package com.example.livewallpaper05.activewallpaperdata
 //import android.graphics.Bitmap
 //import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.hardware.SensorManager
+//import android.hardware.SensorManager
 //import android.util.Log
 import androidx.lifecycle.*
 //import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo.WallpaperRef

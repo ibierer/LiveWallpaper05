@@ -64,16 +64,4 @@ data class GraphVisualization (
         jsonObject.put("equation", equation)
         return jsonObject
     }
-
-    override fun updateValues() {
-        if (viewModel == null) {
-            return
-        }
-        // get values from repo
-        distance = viewModel!!.getDistanceFromOrigin()
-        fieldOfView = viewModel!!.getFieldOfView()
-        backgroundColor = viewModel!!.getColor()
-        equation = viewModel!!.getEquation()
-    }
-
 }
