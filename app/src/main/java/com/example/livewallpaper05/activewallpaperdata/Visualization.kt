@@ -4,8 +4,6 @@ import android.graphics.Color
 import org.json.JSONObject
 
 abstract class Visualization {
-    var viewModel: ActiveWallpaperViewModel? = null
-
     abstract val relevantTextViewIds: List<Int>
     abstract val relevantSeekBarIds: List<Int>
     abstract val relevantEditTextIds: List<Int>

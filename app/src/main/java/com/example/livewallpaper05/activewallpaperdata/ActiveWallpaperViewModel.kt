@@ -4,7 +4,7 @@ package com.example.livewallpaper05.activewallpaperdata
 //import android.content.res.Resources
 //import android.graphics.Bitmap
 //import android.graphics.BitmapFactory
-import android.graphics.Color
+//import android.graphics.Color
 //import android.hardware.SensorManager
 //import android.util.Log
 import androidx.lifecycle.*
@@ -124,9 +124,9 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
     }
 
     // return color from repo
-    fun getColor(): Color {
-        return repo.color.value!!
-    }
+    //fun getColor(): Color {
+    //    return repo.color.value!!
+    //}
 
     // return fps from repo
     fun getFPS(): MutableLiveData<Float> {
@@ -221,9 +221,9 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
     //}
 
     // get equation string from repo
-    fun getEquation(): String {
-        return repo.userDefinedEquation
-    }
+    //fun getEquation(): String {
+    //    return repo.userDefinedEquation
+    //}
 
     // get efficiency value from repo
     fun getEfficiency(): Float {
