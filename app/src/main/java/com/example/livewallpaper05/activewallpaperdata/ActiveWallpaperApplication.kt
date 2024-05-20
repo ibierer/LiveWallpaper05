@@ -12,9 +12,6 @@ import kotlinx.coroutines.SupervisorJob
 
 class ActiveWallpaperApplication : Application() {
 
-    // set lifecycle scope for coroutines
-    val applicationScope : CoroutineScope = CoroutineScope(SupervisorJob())
-
     // wallpaper repo
     val wallpaperRepo : ActiveWallpaperRepo by lazy { ActiveWallpaperRepo.getInstance(this, applicationScope)}
 
@@ -24,6 +21,8 @@ class ActiveWallpaperApplication : Application() {
     }
 
     companion object {
+        // set lifecycle scope for coroutines
+        val applicationScope : CoroutineScope = CoroutineScope(SupervisorJob())
         init {
             // Used to load the 'livewallpaper05' library on application startup.
             System.loadLibrary("livewallpaper05")

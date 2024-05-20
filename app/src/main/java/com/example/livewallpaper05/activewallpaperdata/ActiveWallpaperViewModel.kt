@@ -373,12 +373,7 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
     //}
 
     // OTHER - other helper methods ----------------------------------------------------------
-    // register sensor events to repo sensor manager
-    fun registerSensorEvents(manager: SensorManager) {
-        repo.registerSensors(manager)
-    }
-
-    //// load config table into repo
+    // load config table into repo
     //fun loadConfig(table: SavedWallpaperRow) {
     //    // prevent reloading same config
     //    if (repo.wid == table.wid && repo.savedConfig == table.config) {

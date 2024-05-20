@@ -14,7 +14,7 @@ import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 class GLWallpaperService : WallpaperService() {
 
     val viewModel: ActiveWallpaperViewModel by lazy {
-        ActiveWallpaperViewModel(ActiveWallpaperRepo.getInstance(application, (application as ActiveWallpaperApplication).applicationScope))
+        ActiveWallpaperViewModel(ActiveWallpaperRepo.getInstance(application, ActiveWallpaperApplication.applicationScope))
     }
 
     override fun onCreateEngine(): Engine {
@@ -33,7 +33,7 @@ class GLWallpaperService : WallpaperService() {
     }
 
     inner class GLEngine : Engine() {
-        private val glSurfaceView by lazy { WallpaperGLSurfaceView(this@GLWallpaperService) }
+        private val glSurfaceView by lazy { WallpaperGLSurfaceView(application) }
         private var rendererSet = false
 
         override fun onCreate(surfaceHolder: SurfaceHolder) {
