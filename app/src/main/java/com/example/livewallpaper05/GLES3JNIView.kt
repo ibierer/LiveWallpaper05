@@ -1,7 +1,6 @@
 package com.example.livewallpaper05
 
 import android.content.Context
-import android.hardware.SensorManager
 import android.opengl.GLSurfaceView
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.example.livewallpaper05.activewallpaperdata.NBodyVisualization
