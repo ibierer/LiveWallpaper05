@@ -5,10 +5,11 @@ import android.hardware.SensorManager
 import android.opengl.GLSurfaceView
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.example.livewallpaper05.activewallpaperdata.NBodyVisualization
-//import com.example.livewallpaper05.activewallpaperdata.NaiveFluidVisualization
-//import com.example.livewallpaper05.activewallpaperdata.PicFlipVisualization
-//import com.example.livewallpaper05.activewallpaperdata.TriangleVisualization
-//import com.example.livewallpaper05.activewallpaperdata.GraphVisualization
+import com.example.livewallpaper05.activewallpaperdata.NaiveFluidVisualization
+import com.example.livewallpaper05.activewallpaperdata.PicFlipVisualization
+import com.example.livewallpaper05.activewallpaperdata.TriangleVisualization
+import com.example.livewallpaper05.activewallpaperdata.GraphVisualization
+import com.example.livewallpaper05.activewallpaperdata.Visualization
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
@@ -54,11 +55,15 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
         }
 
         override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
-            PreviewActivity.init(NBodyVisualization().toJsonObject().toString())
-            //PreviewActivity.init(NaiveFluidVisualization().toJsonObject().toString())
-            //PreviewActivity.init(PicFlipVisualization().toJsonObject().toString())
-            //PreviewActivity.init(TriangleVisualization().toJsonObject().toString())
-            //PreviewActivity.init(GraphVisualization().toJsonObject().toString())
+            val visualization : Visualization = when (mViewModel.getVisualization()) {
+                0 -> NBodyVisualization()
+                1 -> NaiveFluidVisualization()
+                2 -> PicFlipVisualization()
+                3 -> TriangleVisualization()
+                4 -> GraphVisualization()
+                else -> throw IllegalArgumentException("Invalid visualization type")
+            }
+            PreviewActivity.init(visualization.toJsonObject().toString())
         }
     }
 }

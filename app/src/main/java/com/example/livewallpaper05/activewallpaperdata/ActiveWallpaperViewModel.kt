@@ -109,11 +109,11 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
         return repo.linearAccelerationData
     }
 
-    //// return simulation type from repo
-    //fun getVisualization(): Int {
-    //    return repo.visualizationSelection
-    //}
-    //
+    // return simulation type from repo
+    fun getVisualization(): Int {
+        return repo.visualizationSelection
+    }
+
     //fun getGraph(): Int {
     //    return repo.graphSelection
     //}
@@ -251,11 +251,11 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
     //}
     //
     //// SETTERS - here are all the methods for updating data in the repo -------------------------
-    //
-    //// update visualization type in repo
-    //fun updateSimulationType(type: String) {
-    //    repo.visualizationName.postValue(type)
-    //}
+
+    // update visualization type in repo
+    fun updateVisualizationType(type: String) {
+        repo.visualizationName.postValue(type)
+    }
 
     // update orientation in repo
     fun updateOrientation(orient: Int) {
@@ -271,16 +271,16 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
     //fun updateFieldOfView(angle: Float) {
     //    repo.fieldOfView.value = angle
     //}
-    //
-    //// update simulation type in repo, return true if value changed
-    //fun updateVisualizationSelection(selection: Int): Boolean {
-    //    if (selection != repo.visualizationSelection) {
-    //        repo.visualizationSelection = selection
-    //        return true
-    //    }
-    //    return false
-    //}
-    //
+
+    // update simulation type in repo, return true if value changed
+    fun updateVisualizationSelection(selection: Int): Boolean {
+        if (selection != repo.visualizationSelection) {
+            repo.visualizationSelection = selection
+            return true
+        }
+        return false
+    }
+
     //fun updateGraphSelection(selection: Int): Boolean {
     //    if (selection != repo.graphSelection) {
     //        repo.graphSelection = selection

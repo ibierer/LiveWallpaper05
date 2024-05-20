@@ -55,9 +55,9 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
     var rotationData: Array<Float> = arrayOf(0.0f, 0.0f, 0.0f, 0.0f)
     var accelerationData: Array<Float> = arrayOf(0.0f, 0.0f, 0.0f)
     var linearAccelerationData: Array<Float> = arrayOf(0.0f, 0.0f, 0.0f)
-    //var visualizationSelection: Int = 0
+    var visualizationSelection: Int = 0
     //var graphSelection: Int = 0
-    //var visualizationName = MutableLiveData<String>("")
+    var visualizationName = MutableLiveData<String>("")
     //var preview: Bitmap? = null
     //var savedConfig: String = ""
     //var savedWids: List<Int> = listOf(0)

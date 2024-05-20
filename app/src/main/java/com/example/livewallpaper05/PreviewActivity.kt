@@ -4,13 +4,12 @@ package com.example.livewallpaper05
 import android.os.Build
 import android.os.Bundle
 //import android.text.TextWatcher
-import android.util.Log
-//import android.view.View
+import android.view.View
 //import android.view.WindowManager
 //import android.view.animation.Animation
 //import android.view.animation.TranslateAnimation
 //import android.view.inputmethod.EditorInfo
-//import android.widget.AdapterView
+import android.widget.AdapterView
 //import android.widget.ArrayAdapter
 //import android.widget.Button
 //import android.widget.CheckBox
@@ -21,7 +20,7 @@ import android.widget.LinearLayout
 //import android.widget.RadioGroup
 //import android.widget.ScrollView
 //import android.widget.SeekBar
-//import android.widget.Spinner
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
@@ -74,7 +73,7 @@ class PreviewActivity : AppCompatActivity() {
     //    val gravitySeekBar: SeekBar = findViewById<SeekBar>(R.id.gravity_seekbar)
     //    val linearAccelerationSeekBar: SeekBar = findViewById<SeekBar>(R.id.linear_acceleration_seekbar)
     //    val efficiencySeekBar: SeekBar = findViewById<SeekBar>(R.id.efficiency_seekbar)
-    //    val visualizationSelectorSpinner: Spinner = findViewById<Spinner>(R.id.visualization_type_spinner)
+        val visualizationSelectorSpinner: Spinner = findViewById<Spinner>(R.id.visualization_type_spinner)
     //    val environmentMapSelectorSpinner: Spinner = findViewById<Spinner>(R.id.image_selection_spinner)
     //    val graphSelectorSpinner: Spinner = findViewById<Spinner>(R.id.graph_selection_spinner)
     //    val colorButton: Button = findViewById<Button>(R.id.b_color_picker)
@@ -206,15 +205,15 @@ class PreviewActivity : AppCompatActivity() {
     //        }
         }
 
-        // update orientation in repo
-        try {
+    //    // update orientation in repo
+    //    try {
             viewModel.updateOrientation(this.display!!.rotation)
             CoroutineScope(Dispatchers.Main).launch {
                 loadOrUnloadUIElements()
             }
-        } catch (e: Exception) {
-            Log.d("Livewallpaper", "api level too low!")
-        }
+    //    } catch (e: Exception) {
+    //        Log.d("Livewallpaper", "api level too low!")
+    //    }
 
     //    // register seekbar actions to update distance in repo
     //    distanceSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -318,23 +317,23 @@ class PreviewActivity : AppCompatActivity() {
     //    viewModel.repo.efficiency.observe(this) { float ->
     //        efficiencySeekBar.progress = (float * 4000.0f).toInt()
     //    }
-    //
-    //    // register spinner actions to update visualization type in repo
-    //    visualizationSelectorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-    //        override fun onItemSelected(
-    //            parent: AdapterView<*>,
-    //            view: View?,
-    //            pos: Int,
-    //            id: Long
-    //        ) {
-    //            val changed = viewModel.updateVisualizationSelection(pos)
-    //            if (changed) {
-    //                // update visualization in repo
-    //                viewModel.updateSimulationType(parent.getItemAtPosition(pos).toString())
-    //                // tell view it needs to be reloaded
-    //                mView!!.onPause()
-    //                mView!!.onResume()
-    //            }
+
+        // register spinner actions to update visualization type in repo
+        visualizationSelectorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>,
+                view: View?,
+                pos: Int,
+                id: Long
+            ) {
+                val changed = viewModel.updateVisualizationSelection(pos)
+                if (changed) {
+                    // update visualization in repo
+                    viewModel.updateVisualizationType(parent.getItemAtPosition(pos).toString())
+                    // tell view it needs to be reloaded
+                    mView!!.onPause()
+                    mView!!.onResume()
+                }
     //            // Dynamically load or remove UI components
     //            CoroutineScope(Dispatchers.Main).launch {
     //                // Wait until viewModel.visualization is not null
@@ -344,13 +343,13 @@ class PreviewActivity : AppCompatActivity() {
     //                }
     //                loadOrUnloadUIElements()
     //            }
-    //        }
-    //
-    //        override fun onNothingSelected(parent: AdapterView<*>) {
-    //            // Do nothing
-    //        }
-    //    }
-    //
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+
+            }
+        }
+
     //    graphSelectorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
     //        override fun onItemSelected(
     //            parent: AdapterView<*>,
