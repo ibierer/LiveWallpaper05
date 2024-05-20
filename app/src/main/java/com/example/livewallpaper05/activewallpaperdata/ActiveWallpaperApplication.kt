@@ -1,6 +1,8 @@
 package com.example.livewallpaper05.activewallpaperdata
 
 import android.app.Application
+import android.content.Context
+import android.hardware.SensorManager
 //import com.example.livewallpaper05.GLES3JNIView
 //import android.util.Log
 //import com.example.livewallpaper05.profiledata.ProfileRoomDatabase
@@ -15,6 +17,11 @@ class ActiveWallpaperApplication : Application() {
 
     // wallpaper repo
     val wallpaperRepo : ActiveWallpaperRepo by lazy { ActiveWallpaperRepo.getInstance(this, applicationScope)}
+
+    override fun onCreate() {
+        super.onCreate()
+        wallpaperRepo.registerSensors(getSystemService(Context.SENSOR_SERVICE) as SensorManager)
+    }
 
     companion object {
         init {

@@ -10,15 +10,11 @@ import android.view.WindowManager
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
-//import com.example.livewallpaper05.profiledata.ProfileRoomDatabase
-//import com.example.livewallpaper05.savedWallpapers.SavedWallpaperRoomDatabase
 
 class GLWallpaperService : WallpaperService() {
 
-    //private val savedWallpaperDatabase by lazy { SavedWallpaperRoomDatabase.getDatabase(this)}
-    //private val profileDatabase by lazy { ProfileRoomDatabase.getDatabase(this, (application as ActiveWallpaperApplication).applicationScope)}
     val viewModel: ActiveWallpaperViewModel by lazy {
-        ActiveWallpaperViewModel(ActiveWallpaperRepo.getInstance(application/*, savedWallpaperDatabase.wallpaperDao(), profileDatabase.profileDao()*/, (application as ActiveWallpaperApplication).applicationScope))
+        ActiveWallpaperViewModel(ActiveWallpaperRepo.getInstance(application, (application as ActiveWallpaperApplication).applicationScope))
     }
 
     override fun onCreateEngine(): Engine {
@@ -43,7 +39,7 @@ class GLWallpaperService : WallpaperService() {
         override fun onCreate(surfaceHolder: SurfaceHolder) {
             super.onCreate(surfaceHolder)
             glSurfaceView.setEGLContextClientVersion(3)
-            glSurfaceView.setRenderer(GLES3JNIView.Renderer(glSurfaceView.context, viewModel))
+            glSurfaceView.setRenderer(Renderer(viewModel))
             rendererSet = true
         }
 
