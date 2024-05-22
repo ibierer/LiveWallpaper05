@@ -12,7 +12,7 @@ import androidx.lifecycle.*
 //import com.example.livewallpaper05.savedWallpapers.SavedWallpaperRow
 //import org.json.JSONObject
 //import java.io.ByteArrayOutputStream
-//import java.math.RoundingMode
+import java.math.RoundingMode
 //import java.sql.ResultSet
 //import java.util.Random
 
@@ -133,11 +133,11 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
         return repo.fps
     }
 
-    //// return last frame time value from repo
-    //fun getLastFrame(): Long {
-    //    return repo.lastFrame
-    //}
-    //
+    // return last frame time value from repo
+    fun getLastFrame(): Long {
+        return repo.lastFrame
+    }
+
     //// return config string from repo
     //// [TODO] fix to use dynamic config generation
     //fun getConfig(): String {
@@ -305,19 +305,19 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
     //        repo.updateColor(r, g, b, a)
     //    }
     //}
-    //
-    //// update fps in repo (scale float to 2 decimal places)
-    //fun updateFPS(fps: Float) {
-    //    // update fps in repo
-    //    val rounded = fps.toBigDecimal().setScale(2, RoundingMode.UP).toDouble()
-    //    repo.fps.postValue(rounded.toFloat())
-    //}
-    //
-    //// update last frame time value in repo
-    //fun updateLastFrame(new: Long){
-    //    repo.lastFrame = new
-    //}
-    //
+
+    // update fps in repo (scale float to 2 decimal places)
+    fun updateFPS(fps: Float) {
+        // update fps in repo
+        val rounded = fps.toBigDecimal().setScale(2, RoundingMode.UP).toDouble()
+        repo.fps.postValue(rounded.toFloat())
+    }
+
+    // update last frame time value in repo
+    fun updateLastFrame(new: Long){
+        repo.lastFrame = new
+    }
+
     //// update wallpaper id in repo
     //fun setWid(wid: Int) {
     //    repo.wid = wid

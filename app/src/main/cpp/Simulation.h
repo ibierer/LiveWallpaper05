@@ -21,15 +21,23 @@ public:
         vec4 centerOfGravity;
         vec3 center;
         float size;
-        // Destructor to delete children recursively
-        ~Node() {
-            for (int i = 0; i < 8; ++i) {
-                if (children[i] != nullptr) {
-                    delete children[i]; // Recursively delete child nodes
-                }
-            }
-        }
+        // Destructor to delete children recursively (not needed due to stack allocation).
+        //~Node() {
+        //    for (int i = 0; i < 8; ++i) {
+        //        if (children[i] != nullptr) {
+        //            delete children[i]; // Recursively delete child nodes
+        //        }
+        //    }
+        //}
     };
+
+    static constexpr int MAX_NODES = 10000;
+
+    Node nodes[MAX_NODES];
+
+    int nextFreeNode = 0; // Index to keep track of the next free node
+
+    Node* allocateNode();
 
     struct Star : Particle {
         float mass;

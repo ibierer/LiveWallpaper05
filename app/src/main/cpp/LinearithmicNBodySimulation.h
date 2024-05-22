@@ -11,7 +11,7 @@ using std::to_string;
 class LinearithmicNBodySimulation : public Simulation {
 public:
 
-    static const int NUM_CACHE_CHUNKS = 50;
+    static const int NUM_CACHE_CHUNKS = 60;
 
     static const int PARTICLES_PER_CHUNK = 16;
 

@@ -44,7 +44,7 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
     var color: MutableLiveData<Color> = MutableLiveData<Color>(Color.valueOf(0.0f, 0.0f, 0.0f, 0.0f))
     var orientation: Int = 0
     var fps: MutableLiveData<Float> = MutableLiveData<Float>(0.0f)
-    //var lastFrame: Long = 0
+    var lastFrame: Long = 0
     var distanceFromOrigin: MutableLiveData<Float> = MutableLiveData<Float>(0.5f)
     var fieldOfView: MutableLiveData<Float> = MutableLiveData<Float>(60.0f)
     var gravity: MutableLiveData<Float> = MutableLiveData<Float>(0.0f)

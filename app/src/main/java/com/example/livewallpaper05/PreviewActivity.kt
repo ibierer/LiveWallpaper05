@@ -68,6 +68,7 @@ class PreviewActivity : AppCompatActivity() {
 
         // grab ui element for preview page
         val layout: LinearLayout = findViewById<LinearLayout>(R.id.render_layout)
+        val fpsMeter: TextView = findViewById<TextView>(R.id.tv_fps_meter)
     //    val distanceSeekBar: SeekBar = findViewById<SeekBar>(R.id.distance_seekbar)
     //    val fieldOfViewSeekBar: SeekBar = findViewById<SeekBar>(R.id.field_of_view_seekbar)
     //    val gravitySeekBar: SeekBar = findViewById<SeekBar>(R.id.gravity_seekbar)
@@ -531,7 +532,6 @@ class PreviewActivity : AppCompatActivity() {
     //    }
 
         // connect fps data to ui fps meter
-        val fpsMeter = findViewById<TextView>(R.id.tv_fps_meter)
         viewModel.getFPS().observe(this) {
             fpsMeter.text = String.format("fps: %.2f", it)
         }

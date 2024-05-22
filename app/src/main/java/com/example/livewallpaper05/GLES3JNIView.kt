@@ -2,6 +2,7 @@ package com.example.livewallpaper05
 
 import android.content.Context
 import android.opengl.GLSurfaceView
+import android.os.SystemClock
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.example.livewallpaper05.activewallpaperdata.NBodyVisualization
 import com.example.livewallpaper05.activewallpaperdata.NaiveFluidVisualization
@@ -46,6 +47,16 @@ class Renderer(private var mViewModel: ActiveWallpaperViewModel) : GLSurfaceView
             mViewModel.getEfficiency(),
             mViewModel.getVectorDirection()
         )
+
+        // get time after frame
+        val currentFrame = SystemClock.elapsedRealtimeNanos()
+        // calculate time elapsed
+        var timeElapsed = (currentFrame - mViewModel.getLastFrame()) / 1000000000.0f
+        timeElapsed = 1.0f / timeElapsed.toFloat()
+        // update fps in view model with fps from spf
+        mViewModel.updateFPS(timeElapsed)
+        // update last frame in view model
+        mViewModel.updateLastFrame(currentFrame)
     }
 
     override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {

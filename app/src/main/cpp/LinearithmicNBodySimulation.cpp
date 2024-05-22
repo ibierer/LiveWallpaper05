@@ -61,7 +61,8 @@ vec4 LinearithmicNBodySimulation::conquerVolume(const vector<int> &ids, Node *no
     for (int i = 0; i < 8; i++) {
         if (childIDs[i].size() > 0) {
             std::tuple<bool, bool, bool> inverseCombo = getInverseCombo(i);
-            node->children[i] = new Node{
+            node->children[i] = allocateNode();
+            *node->children[i] = Node{
                     childIDs[i].size() == 1,
                     node,
                     {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr},
@@ -112,7 +113,8 @@ vec4 LinearithmicNBodySimulation::conquerOnceMore(const vector<int> &ids, Node *
     for (int i = 0; i < 8; i++) {
         if (childIDs[i].size() > 0) {
             std::tuple<bool, bool, bool> inverseCombo = getInverseCombo(i);
-            node->children[i] = new Node{
+            node->children[i] = allocateNode();
+            *node->children[i] = Node{
                     childIDs[i].size() == 1,
                     node,
                     {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr},
@@ -182,10 +184,9 @@ vec3 LinearithmicNBodySimulation::addForcesFinal(Node *node, int index) {
 }
 
 void LinearithmicNBodySimulation::computeForcesOnCPULinearithmic() {
-    // Delete the octree if it already exists
-    if (root != nullptr) {
-        delete root;
-    }
+    // Reset the node allocator
+    nextFreeNode = 0;
+
     // Compute size of root node
     float radius = 0.5f;
     for (int j = 0; j < COUNT; j++) {
@@ -195,8 +196,10 @@ void LinearithmicNBodySimulation::computeForcesOnCPULinearithmic() {
             radius *= 2.0f;
         }
     }
+
     // Initialize root
-    root = new Node{
+    root = allocateNode();
+    *root = Node{
             false,
             nullptr,
             {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr},
@@ -204,9 +207,11 @@ void LinearithmicNBodySimulation::computeForcesOnCPULinearithmic() {
             vec3(0.0f),
             2.0f * radius
     };
-    if (!ids.empty()){
+
+    if (!ids.empty()) {
         ids.clear();
     }
+
     // Pack ids into a vector
     for (int j = 0; j < COUNT; j++) {
         ids.push_back(j);
@@ -214,6 +219,7 @@ void LinearithmicNBodySimulation::computeForcesOnCPULinearithmic() {
 
     // Use conquerVolume to recursively define octree
     root->centerOfGravity = conquerVolume(ids, root);
+
     // Sum the forces for each particle
     for (int i = 0; i < COUNT; i++) {
         data->stars[i].initialForce = addForces(root, i);
@@ -221,10 +227,9 @@ void LinearithmicNBodySimulation::computeForcesOnCPULinearithmic() {
 }
 
 void LinearithmicNBodySimulation::computeForcesOnCPULinearithmicFinal() {
-    // Delete the octree if it already exists
-    if (root != nullptr) {
-        delete root;
-    }
+    // Reset the node allocator
+    nextFreeNode = 0;
+
     // Compute size of root node
     float radius = 0.5f;
     for (int j = 0; j < COUNT; j++) {
@@ -234,8 +239,10 @@ void LinearithmicNBodySimulation::computeForcesOnCPULinearithmicFinal() {
             radius *= 2.0f;
         }
     }
+
     // Initialize root
-    root = new Node{
+    root = allocateNode();
+    *root = Node{
             false,
             nullptr,
             {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr},
@@ -244,8 +251,9 @@ void LinearithmicNBodySimulation::computeForcesOnCPULinearithmicFinal() {
             2.0f * radius
     };
 
-    // Use conquerVolume to recursively define octree
+    // Use conquerOnceMore to recursively define octree
     root->centerOfGravity = conquerOnceMore(ids, root);
+
     // Sum the forces for each particle
     for (int i = 0; i < COUNT; i++) {
         data->stars[i].finalForce = addForcesFinal(root, i);
