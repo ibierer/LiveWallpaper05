@@ -25,7 +25,6 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
 class Renderer(private var mViewModel: ActiveWallpaperViewModel) : GLSurfaceView.Renderer {
 
     override fun onDrawFrame(gl: GL10) {
-        //PreviewActivity.step(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, false)
         val accelData = mViewModel.getAccelerationData()
         val rotData = mViewModel.getRotationData()
         val linearAccelData = mViewModel.getLinearAccelerationData()
