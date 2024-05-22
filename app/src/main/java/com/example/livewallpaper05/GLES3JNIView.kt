@@ -54,7 +54,7 @@ class Renderer(private var mViewModel: ActiveWallpaperViewModel) : GLSurfaceView
 
     override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
         //val visualization : Visualization = when (mViewModel.getVisualization()) {
-        val visualization : Visualization = when (2) {
+        val visualization : Visualization = when (0) {
             0 -> NBodyVisualization() // Broken when service->activity
             1 -> NaiveFluidVisualization() // Broken when service->activity
             2 -> PicFlipVisualization()
