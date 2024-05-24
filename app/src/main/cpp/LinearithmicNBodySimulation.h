@@ -95,8 +95,7 @@ public:
 
     void initialize(const ComputationOptions &computationOption);
 
-    void simulate(const int &iterations, bool pushDataToGPU,
-                  bool retrieveDataFromGPU);
+    void simulate(const int &iterations, bool pushDataToGPU, bool retrieveDataFromGPU);
 
     ComputationOptions getComputationOption();
 
@@ -106,8 +105,7 @@ private:
 
     float dt;
 
-    void simulateOnGPU(const int &iterations, bool pushDataToGPU,
-                       bool retrieveDataFromGPU);
+    void simulateOnGPU(const int &iterations, bool pushDataToGPU, bool retrieveDataFromGPU);
 
     float getRandomFloat(float x);
 

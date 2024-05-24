@@ -31,9 +31,7 @@ public:
         //}
     };
 
-    static constexpr int MAX_NODES = 10000;
-
-    Node nodes[MAX_NODES];
+    Node* nodes = nullptr;
 
     int nextFreeNode = 0; // Index to keep track of the next free node
 

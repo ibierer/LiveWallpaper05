@@ -184,9 +184,6 @@ vec3 LinearithmicNBodySimulation::addForcesFinal(Node *node, int index) {
 }
 
 void LinearithmicNBodySimulation::computeForcesOnCPULinearithmic() {
-    // Reset the node allocator
-    nextFreeNode = 0;
-
     // Compute size of root node
     float radius = 0.5f;
     for (int j = 0; j < COUNT; j++) {
@@ -196,6 +193,9 @@ void LinearithmicNBodySimulation::computeForcesOnCPULinearithmic() {
             radius *= 2.0f;
         }
     }
+
+    // Reset the node allocator
+    nextFreeNode = 0;
 
     // Initialize root
     root = allocateNode();
@@ -227,9 +227,6 @@ void LinearithmicNBodySimulation::computeForcesOnCPULinearithmic() {
 }
 
 void LinearithmicNBodySimulation::computeForcesOnCPULinearithmicFinal() {
-    // Reset the node allocator
-    nextFreeNode = 0;
-
     // Compute size of root node
     float radius = 0.5f;
     for (int j = 0; j < COUNT; j++) {
@@ -239,6 +236,9 @@ void LinearithmicNBodySimulation::computeForcesOnCPULinearithmicFinal() {
             radius *= 2.0f;
         }
     }
+
+    // Reset the node allocator
+    nextFreeNode = 0;
 
     // Initialize root
     root = allocateNode();
@@ -264,6 +264,7 @@ void LinearithmicNBodySimulation::simulate(const int &iterations, bool pushDataT
                                            bool retrieveDataFromGPU) {
     switch (computationOption) {
         case CPU:
+            nodes = (Node*)alloca(2 * COUNT * sizeof(Node));
             for (int i = 0; i < iterations; i++) {
                 computeForcesOnCPULinearithmic();
                 integrate();
