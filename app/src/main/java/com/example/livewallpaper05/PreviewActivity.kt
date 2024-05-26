@@ -63,10 +63,8 @@ class PreviewActivity : AppCompatActivity() {
         @Suppress("DEPRECATION")
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(R.layout.activity_preview)
-        // get view window from GLES3JNIView
         mView = GLES3JNIView(application, viewModel)
 
-        // grab ui element for preview page
         val layout: LinearLayout = findViewById<LinearLayout>(R.id.render_layout)
         val fpsMeter: TextView = findViewById<TextView>(R.id.tv_fps_meter)
     //    val distanceSeekBar: SeekBar = findViewById<SeekBar>(R.id.distance_seekbar)
