@@ -5,7 +5,8 @@ import android.os.Build
 import android.os.Bundle
 //import android.text.TextWatcher
 import android.view.View
-//import android.view.WindowManager
+import android.view.WindowInsets
+import android.view.WindowManager
 //import android.view.animation.Animation
 //import android.view.animation.TranslateAnimation
 //import android.view.inputmethod.EditorInfo
@@ -58,10 +59,9 @@ class PreviewActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(icicle: Bundle?) {
         super.onCreate(icicle)
-        //window.setFlags(
-        //    WindowManager.LayoutParams.FLAG_FULLSCREEN,
-        //    WindowManager.LayoutParams.FLAG_FULLSCREEN
-        //)
+
+        @Suppress("DEPRECATION")
+        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(R.layout.activity_preview)
         // get view window from GLES3JNIView
         mView = GLES3JNIView(application, viewModel)
