@@ -19,11 +19,11 @@ class GLES3JNIView(context: Context, vm: ActiveWallpaperViewModel) : GLSurfaceVi
         // supporting OpenGL ES 2.0 or later backwards-compatible versions.
         setEGLConfigChooser(8, 8, 8, 0, 16, 0)
         setEGLContextClientVersion(3)
-        setRenderer(Renderer(vm))
+        setRenderer(Renderer(vm, 0))
     }
 }
 
-class Renderer(private var mViewModel: ActiveWallpaperViewModel) : GLSurfaceView.Renderer {
+class Renderer(private var mViewModel: ActiveWallpaperViewModel, private val mode: Int) : GLSurfaceView.Renderer {
 
     override fun onDrawFrame(gl: GL10) {
         val accelData = mViewModel.getAccelerationData()
@@ -45,7 +45,8 @@ class Renderer(private var mViewModel: ActiveWallpaperViewModel) : GLSurfaceView
             mViewModel.getFieldOfView(),
             mViewModel.getGravity(),
             mViewModel.getEfficiency(),
-            mViewModel.getVectorDirection()
+            mViewModel.getVectorDirection(),
+            mode
         )
 
         // get time after frame
@@ -60,19 +61,18 @@ class Renderer(private var mViewModel: ActiveWallpaperViewModel) : GLSurfaceView
     }
 
     override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {
-        PreviewActivity.resize(width, height, mViewModel.getOrientation())
+        PreviewActivity.resize(width, height, mViewModel.getOrientation(), mode)
     }
 
     override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
-        //val visualization : Visualization = when (mViewModel.getVisualization()) {
-        val visualization : Visualization = when (0) {
-            0 -> NBodyVisualization() // Broken when service->activity
-            1 -> NaiveFluidVisualization() // Broken when service->activity
+        val visualization : Visualization = when (mViewModel.getVisualization()) {
+            0 -> NBodyVisualization()
+            1 -> NaiveFluidVisualization()
             2 -> PicFlipVisualization()
             3 -> TriangleVisualization()
-            4 -> GraphVisualization() // Broken when service->activity
+            4 -> GraphVisualization()
             else -> throw IllegalArgumentException("Invalid visualization type")
         }
-        PreviewActivity.init(visualization.toJsonObject().toString())
+        PreviewActivity.init(visualization.toJsonObject().toString(), mode)
     }
 }

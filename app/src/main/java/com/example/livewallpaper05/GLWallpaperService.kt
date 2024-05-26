@@ -39,7 +39,7 @@ class GLWallpaperService : WallpaperService() {
         override fun onCreate(surfaceHolder: SurfaceHolder) {
             super.onCreate(surfaceHolder)
             glSurfaceView.setEGLContextClientVersion(3)
-            glSurfaceView.setRenderer(Renderer(viewModel))
+            glSurfaceView.setRenderer(Renderer(viewModel, 1))
             rendererSet = true
         }
 

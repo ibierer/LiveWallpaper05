@@ -695,8 +695,8 @@ class PreviewActivity : AppCompatActivity() {
         }
 
         // register simulation functions as external and belonging to the livewallpaper05 library
-        external fun init(visualization: String)
-        external fun resize(width: Int, height: Int, orientation: Int)
+        external fun init(visualization: String, mode: Int)
+        external fun resize(width: Int, height: Int, orientation: Int, mode: Int)
         external fun step(
             acc_x: Float,
             acc_y: Float,
@@ -712,9 +712,10 @@ class PreviewActivity : AppCompatActivity() {
             field_of_view: Float,
             gravity: Float,
             efficiency: Float,
-            flip_normals: Boolean
+            flip_normals: Boolean,
+            mode: Int
         )
 
-        //external fun getScreenBuffer(): ByteArray
+        //external fun getScreenBuffer(mode: Int): ByteArray
     }
 }
