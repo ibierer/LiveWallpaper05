@@ -58,10 +58,7 @@ class PreviewActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(icicle: Bundle?) {
         super.onCreate(icicle)
-        //window.setFlags(
-        //    WindowManager.LayoutParams.FLAG_FULLSCREEN,
-        //    WindowManager.LayoutParams.FLAG_FULLSCREEN
-        //)
+        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(R.layout.activity_preview)
         // get view window from GLES3JNIView
         mView = GLES3JNIView(application, viewModel)
