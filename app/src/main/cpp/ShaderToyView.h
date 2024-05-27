@@ -250,6 +250,12 @@ public:
             "       outColor = mix(refractedColor, reflectedColor, fresnel(dotNI));\n"
             "   }\n"
             "}\n";
+    //"    vec3 normalizedDirection = normalize(direction);\n"
+    //"    vec3 normalizedNormal = normalize(vNormal);\n"
+    //"    float dotNI = dot(normalizedDirection, normalizedNormal);\n"
+    //"    vec4 reflectedColor = Texture(environmentTexture, reflect2(normalizedDirection, normalizedNormal, dotNI));\n"
+    //"    vec4 refractedColor = Texture(environmentTexture, doubleRefract2(normalizedDirection, normalizedNormal, 0.75, dotNI));\n"
+    //"    outColor = mix(refractedColor, reflectedColor, fresnel(dotNI));\n"
 
     ShaderToyView();
 
