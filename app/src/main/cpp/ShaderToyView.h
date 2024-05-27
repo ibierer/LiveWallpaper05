@@ -220,10 +220,10 @@ public:
             ES_VERSION +
             "precision highp float;\n"
             "uniform sampler2D environmentTexture;\n"
-            "uniform vec2 iResolution;     // Pass the resolution of your rendering surface\n"
-            "uniform float iTime;          // Pass the elapsed time since the start of the application\n"
-            "uniform vec2 iMouse;          // Pass the current mouse position\n"
-            "uniform vec3 p;               // Pass the current camera position\n"
+            "uniform vec2 iResolution; // Pass the resolution of your rendering surface\n"
+            "uniform float iTime;      // Pass the elapsed time since the start of the application\n"
+            "uniform vec2 iMouse;      // Pass the current mouse position\n"
+            "uniform vec3 p;           // Pass the current camera position\n"
             "in vec3 direction;\n"
             "out vec4 outColor;\n" +
             SPHERE_MAP_TEXTURE_FUNCTION +
