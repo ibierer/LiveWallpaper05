@@ -250,6 +250,7 @@ public:
             "   }\n"
             "}\n";*/
 
+    // Below is a cube (a better cube can be found here: https://www.shadertoy.com/view/4tyXDR)
     const string SPHERE_MAP_FRAGMENT_SHADER =
             ES_VERSION +
             "precision highp float;\n"

@@ -115,8 +115,8 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
                 //view[mode] = new SphereWithReflectionView();
                 //view[mode] = new SphereWithFresnelEffectView();
                 //view[mode] = new SimpleNBodySimulationView();
-                view[mode] = new ShaderToyView();
-                //view[mode] = new LinearithmicNBodySimulationView();
+                //view[mode] = new ShaderToyView();
+                view[mode] = new LinearithmicNBodySimulationView();
             }else if(simulation == "naive"){
                 int particleCount = visualizationJSON["particle_count"];
                 bool fluidSurface = visualizationJSON["fluid_surface"];
