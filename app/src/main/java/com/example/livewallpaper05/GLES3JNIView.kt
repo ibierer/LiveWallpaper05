@@ -4,12 +4,6 @@ import android.content.Context
 import android.opengl.GLSurfaceView
 import android.os.SystemClock
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
-import com.example.livewallpaper05.activewallpaperdata.NBodyVisualization
-import com.example.livewallpaper05.activewallpaperdata.NaiveFluidVisualization
-import com.example.livewallpaper05.activewallpaperdata.PicFlipVisualization
-import com.example.livewallpaper05.activewallpaperdata.TriangleVisualization
-import com.example.livewallpaper05.activewallpaperdata.GraphVisualization
-import com.example.livewallpaper05.activewallpaperdata.Visualization
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
