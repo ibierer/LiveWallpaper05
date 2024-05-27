@@ -215,8 +215,7 @@ public:
             "    }\n"
             "}\n";*/
 
-    // Found at https://www.shadertoy.com/view/XsfXDr
-    const string SPHERE_MAP_FRAGMENT_SHADER =
+    /*const string SPHERE_MAP_FRAGMENT_SHADER =
             ES_VERSION +
             "precision highp float;\n"
             "uniform sampler2D environmentTexture;\n"
@@ -249,7 +248,56 @@ public:
             "       vec4 refractedColor = Texture(environmentTexture, doubleRefract2(d, normalizedNormal, 0.75, dotNI));\n"
             "       outColor = mix(refractedColor, reflectedColor, fresnel(dotNI));\n"
             "   }\n"
+            "}\n";*/
+
+    const string SPHERE_MAP_FRAGMENT_SHADER =
+            ES_VERSION +
+            "precision highp float;\n"
+            "uniform sampler2D environmentTexture;\n"
+            "uniform vec2 iResolution; // Pass the resolution of your rendering surface\n"
+            "uniform float iTime;      // Pass the elapsed time since the start of the application\n"
+            "uniform vec2 iMouse;      // Pass the current mouse position\n"
+            "uniform vec3 p;           // Pass the current camera position\n"
+            "in vec3 direction;\n"
+            "out vec4 outColor;\n" +
+            SPHERE_MAP_TEXTURE_FUNCTION +
+            REFLECT2_FUNCTION +
+            REFRACT2_FUNCTION +
+            FRESNEL_EFFECT_FUNCTION +
+            "float intersectCube(vec3 rayOrigin, vec3 rayDir, vec3 boxMin, vec3 boxMax, out vec3 hitNormal) {\n"
+            "   vec3 invDir = 1.0 / rayDir;\n"
+            "   vec3 tMin = (boxMin - rayOrigin) * invDir;\n"
+            "   vec3 tMax = (boxMax - rayOrigin) * invDir;\n"
+            "   vec3 t1 = min(tMin, tMax);\n"
+            "   vec3 t2 = max(tMin, tMax);\n"
+            "   float tNear = max(max(t1.x, t1.y), t1.z);\n"
+            "   float tFar = min(min(t2.x, t2.y), t2.z);\n"
+            "   if (tNear > tFar || tFar < 0.0) return -1.0;\n"
+            "   hitNormal = vec3(0.0);\n"
+            "   if (tNear == t1.x) hitNormal.x = -sign(rayDir.x);\n"
+            "   else if (tNear == t1.y) hitNormal.y = -sign(rayDir.y);\n"
+            "   else if (tNear == t1.z) hitNormal.z = -sign(rayDir.z);\n"
+            "   return tNear;\n"
+            "}\n" +
+            "void main() {\n"
+            "   vec3 d = normalize(direction);\n"
+            "   vec3 boxMin = vec3(-1.0, -1.0, -1.0);\n"
+            "   vec3 boxMax = vec3( 1.0,  1.0,  1.0);\n"
+            "   vec3 C = vec3(0.0, 0.0, 0.0);\n"
+            "   vec3 hitNormal;\n"
+            "   float t = intersectCube(p, d, C + boxMin, C + boxMax, hitNormal);\n"
+            "   if (t < 0.0) {\n"
+            "       outColor = Texture(environmentTexture, d);\n"
+            "   } else {\n"
+            "       vec3 normalizedNormal = normalize(hitNormal);\n"
+            "       float dotNI = dot(d, normalizedNormal);\n"
+            "       vec4 reflectedColor = Texture(environmentTexture, reflect2(d, normalizedNormal, dotNI));\n"
+            "       vec4 refractedColor = Texture(environmentTexture, refract2(d, normalizedNormal, 0.75, dotNI));\n"
+            "       outColor = mix(refractedColor, reflectedColor, fresnel(dotNI));\n"
+            "   }\n"
             "}\n";
+
+
 
     ShaderToyView();
 
