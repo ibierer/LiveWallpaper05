@@ -276,6 +276,7 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
     fun updateVisualizationSelection(selection: Int): Boolean {
         if (selection != repo.visualizationSelection) {
             repo.visualizationSelection = selection
+            repo.visualization = repo.visualizationIntToVisualizationObject(selection)
             return true
         }
         return false

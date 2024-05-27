@@ -75,9 +75,9 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
 
     private lateinit var mSensorManager: SensorManager
 
-    //// ViewModel state
-    //lateinit var visualization: Visualization
-    //
+    // ViewModel state
+    var visualization: Visualization = visualizationIntToVisualizationObject(visualizationSelection)
+
     //fun isVisualizationInitialized(): Boolean {
     //    return this::visualization.isInitialized
     //}
@@ -87,7 +87,7 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
     //private var mBitmap: Bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888) as Bitmap
     //var liveDataBitmap: MutableLiveData<Bitmap> = MutableLiveData<Bitmap>(mBitmap)
     //var getScreenBuffer: Int = 0
-    //var isCollapsed = false
+    var isCollapsed = false
     //// initialize local variables for saved wallpapers
     ////val savedWallpapers: LiveData<List<SavedWallpaperRow>> = repo.wallpapers
     //
@@ -682,6 +682,17 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
     // update orientation value
     fun updateOrientation(orient: Int) {
         this.orientation = orient
+    }
+
+    fun visualizationIntToVisualizationObject(selection: Int): Visualization {
+        return when (selection) {
+            0 -> NBodyVisualization()
+            1 -> NaiveFluidVisualization()
+            2 -> PicFlipVisualization()
+            3 -> TriangleVisualization()
+            4 -> GraphVisualization()
+            else -> throw IllegalArgumentException("Invalid visualization type")
+        }
     }
 
     //// update saved wids after they're extracted from memory

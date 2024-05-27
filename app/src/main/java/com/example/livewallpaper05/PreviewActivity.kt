@@ -3,21 +3,22 @@ package com.example.livewallpaper05
 //import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 //import android.text.TextWatcher
 import android.view.View
 import android.view.WindowManager
-//import android.view.animation.Animation
-//import android.view.animation.TranslateAnimation
+import android.view.animation.Animation
+import android.view.animation.TranslateAnimation
 //import android.view.inputmethod.EditorInfo
 import android.widget.AdapterView
 //import android.widget.ArrayAdapter
-//import android.widget.Button
-//import android.widget.CheckBox
-//import android.widget.EditText
+import android.widget.Button
+import android.widget.CheckBox
+import android.widget.EditText
 //import android.widget.ImageView
 import android.widget.LinearLayout
-//import android.widget.RadioButton
-//import android.widget.RadioGroup
+import android.widget.RadioButton
+import android.widget.RadioGroup
 //import android.widget.ScrollView
 import android.widget.SeekBar
 import android.widget.Spinner
@@ -31,7 +32,7 @@ import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModelFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-//import kotlinx.coroutines.delay
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 //import yuku.ambilwarna.AmbilWarnaDialog
 
@@ -74,19 +75,19 @@ class PreviewActivity : AppCompatActivity() {
         val linearAccelerationSeekBar: SeekBar = findViewById<SeekBar>(R.id.linear_acceleration_seekbar)
         val efficiencySeekBar: SeekBar = findViewById<SeekBar>(R.id.efficiency_seekbar)
         val visualizationSelectorSpinner: Spinner = findViewById<Spinner>(R.id.visualization_type_spinner)
-    //    val environmentMapSelectorSpinner: Spinner = findViewById<Spinner>(R.id.image_selection_spinner)
+        val environmentMapSelectorSpinner: Spinner = findViewById<Spinner>(R.id.image_selection_spinner)
     //    val graphSelectorSpinner: Spinner = findViewById<Spinner>(R.id.graph_selection_spinner)
-    //    val colorButton: Button = findViewById<Button>(R.id.b_color_picker)
-    //    val hideUIButton: Button = findViewById<Button>(R.id.hide_ui_button)
+        val colorButton: Button = findViewById<Button>(R.id.b_color_picker)
+        val hideUIButton: Button = findViewById<Button>(R.id.hide_ui_button)
     //    val saveButton: Button = findViewById<Button>(R.id.save_button)
     //    val syncButton: Button = findViewById<Button>(R.id.sync_button)
     //    val equationEditor: EditText = findViewById<EditText>(R.id.et_equation)
     //    val flipsNormalsCheckBox: CheckBox = findViewById<CheckBox>(R.id.flip_normals_checkbox)
-    //    val linearLayout: LinearLayout = findViewById<LinearLayout>(R.id.settings_linearlayout)
+        val linearLayout: LinearLayout = findViewById<LinearLayout>(R.id.settings_linearlayout)
     //    val doneButton: Button = findViewById<Button>(R.id.done_button)
-    //    val backgroundRadioButton: RadioGroup = findViewById<RadioGroup>(R.id.background_radio_group)
-    //    val solidColorRadioButton: RadioButton = findViewById<RadioButton>(R.id.solid_color_radio_button)
-    //    val imageRadioButton: RadioButton = findViewById<RadioButton>(R.id.image_radio_button)
+        val backgroundRadioButton: RadioGroup = findViewById<RadioGroup>(R.id.background_radio_group)
+        val solidColorRadioButton: RadioButton = findViewById<RadioButton>(R.id.solid_color_radio_button)
+        val imageRadioButton: RadioButton = findViewById<RadioButton>(R.id.image_radio_button)
     //    val previewImageView: ImageView = findViewById<ImageView>(R.id.imageView)
     //
     //    // fill visualization selector box with wallpaper options from native-lib.cpp
@@ -122,87 +123,87 @@ class PreviewActivity : AppCompatActivity() {
         layout.addView(mView)
 
         fun loadOrUnloadUIElements() {
-    //        // if repo.visualization is not initialized wait until it is
-    //        val textViewIds: List<Int> = listOf(
-    //            R.id.distance_label,
-    //            R.id.field_of_view_label,
-    //            R.id.gravity_label,
-    //            R.id.linear_acceleration_label,
-    //            R.id.efficiency_label,
-    //            R.id.tv_equation,
-    //            R.id.tv_syntax_check
-    //        )
-    //        val seekBarIds: List<Int> = listOf(
-    //            R.id.distance_seekbar,
-    //            R.id.field_of_view_seekbar,
-    //            R.id.gravity_seekbar,
-    //            R.id.linear_acceleration_seekbar,
-    //            R.id.efficiency_seekbar
-    //        )
-    //        val editTextIds: List<Int> = listOf(
-    //            R.id.et_equation
-    //        )
-    //        val checkBoxIds: List<Int> = listOf(
-    //            R.id.flip_normals_checkbox
-    //        )
-    //        val buttonIds: List<Int> = listOf(
-    //            R.id.done_button
-    //        )
-    //        val spinnerIds: List<Int> = listOf(
-    //            R.id.graph_selection_spinner
-    //        )
-    //        for (id in textViewIds) {
-    //            if (viewModel.repo.visualization.relevantTextViewIds.contains(id) && !viewModel.repo.isCollapsed) {
-    //                findViewById<TextView>(id).visibility = View.VISIBLE
-    //            } else {
-    //                findViewById<TextView>(id).visibility = View.GONE
-    //            }
-    //        }
-    //        for (id in seekBarIds) {
-    //            if (viewModel.repo.visualization.relevantSeekBarIds.contains(id) && !viewModel.repo.isCollapsed) {
-    //                findViewById<SeekBar>(id).visibility = View.VISIBLE
-    //                findViewById<SeekBar>(id).isEnabled = true
-    //            } else {
-    //                findViewById<SeekBar>(id).visibility = View.GONE
-    //                findViewById<SeekBar>(id).isEnabled = false
-    //            }
-    //        }
-    //        for (id in editTextIds) {
-    //            if (viewModel.repo.visualization.relevantEditTextIds.contains(id) && !viewModel.repo.isCollapsed) {
-    //                findViewById<EditText>(id).visibility = View.VISIBLE
-    //                findViewById<EditText>(id).isEnabled = true
-    //            } else {
-    //                findViewById<EditText>(id).visibility = View.GONE
-    //                findViewById<EditText>(id).isEnabled = false
-    //            }
-    //        }
-    //        for (id in checkBoxIds) {
-    //            if (viewModel.repo.visualization.relevantCheckBoxIds.contains(id) && !viewModel.repo.isCollapsed) {
-    //                findViewById<CheckBox>(id).visibility = View.VISIBLE
-    //                findViewById<CheckBox>(id).isEnabled = true
-    //            } else {
-    //                findViewById<CheckBox>(id).visibility = View.GONE
-    //                findViewById<CheckBox>(id).isEnabled = false
-    //            }
-    //        }
-    //        for (id in buttonIds) {
-    //            if (viewModel.repo.visualization.relevantButtonIds.contains(id) && !viewModel.repo.isCollapsed) {
-    //                findViewById<Button>(id).visibility = View.VISIBLE
-    //                findViewById<Button>(id).isEnabled = true
-    //            } else {
-    //                findViewById<Button>(id).visibility = View.GONE
-    //                findViewById<Button>(id).isEnabled = false
-    //            }
-    //        }
-    //        for (id in spinnerIds) {
-    //            if (viewModel.repo.visualization.relevantSpinnerIds.contains(id) && !viewModel.repo.isCollapsed) {
-    //                findViewById<Spinner>(id).visibility = View.VISIBLE
-    //                findViewById<Spinner>(id).isEnabled = true
-    //            } else {
-    //                findViewById<Spinner>(id).visibility = View.GONE
-    //                findViewById<Spinner>(id).isEnabled = false
-    //            }
-    //        }
+            val textViewIds: List<Int> = listOf(
+                R.id.distance_label,
+                R.id.field_of_view_label,
+                R.id.gravity_label,
+                R.id.linear_acceleration_label,
+                R.id.efficiency_label,
+                R.id.tv_equation,
+                R.id.tv_syntax_check
+            )
+            val seekBarIds: List<Int> = listOf(
+                R.id.distance_seekbar,
+                R.id.field_of_view_seekbar,
+                R.id.gravity_seekbar,
+                R.id.linear_acceleration_seekbar,
+                R.id.efficiency_seekbar
+            )
+            val editTextIds: List<Int> = listOf(
+                R.id.et_equation
+            )
+            val checkBoxIds: List<Int> = listOf(
+                R.id.flip_normals_checkbox
+            )
+            val buttonIds: List<Int> = listOf(
+                R.id.done_button
+            )
+            val spinnerIds: List<Int> = listOf(
+                R.id.graph_selection_spinner
+            )
+            Log.d("PreviewActivity", "!viewModel.repo.isCollapsed")
+            for (id in textViewIds) {
+                if (viewModel.repo.visualization.relevantTextViewIds.contains(id) && !viewModel.repo.isCollapsed) {
+                    findViewById<TextView>(id).visibility = View.VISIBLE
+                } else {
+                    findViewById<TextView>(id).visibility = View.GONE
+                }
+            }
+            for (id in seekBarIds) {
+                if (viewModel.repo.visualization.relevantSeekBarIds.contains(id) && !viewModel.repo.isCollapsed) {
+                    findViewById<SeekBar>(id).visibility = View.VISIBLE
+                    findViewById<SeekBar>(id).isEnabled = true
+                } else {
+                    findViewById<SeekBar>(id).visibility = View.GONE
+                    findViewById<SeekBar>(id).isEnabled = false
+                }
+            }
+            for (id in editTextIds) {
+                if (viewModel.repo.visualization.relevantEditTextIds.contains(id) && !viewModel.repo.isCollapsed) {
+                    findViewById<EditText>(id).visibility = View.VISIBLE
+                    findViewById<EditText>(id).isEnabled = true
+                } else {
+                    findViewById<EditText>(id).visibility = View.GONE
+                    findViewById<EditText>(id).isEnabled = false
+                }
+            }
+            for (id in checkBoxIds) {
+                if (viewModel.repo.visualization.relevantCheckBoxIds.contains(id) && !viewModel.repo.isCollapsed) {
+                    findViewById<CheckBox>(id).visibility = View.VISIBLE
+                    findViewById<CheckBox>(id).isEnabled = true
+                } else {
+                    findViewById<CheckBox>(id).visibility = View.GONE
+                    findViewById<CheckBox>(id).isEnabled = false
+                }
+            }
+            for (id in buttonIds) {
+                if (viewModel.repo.visualization.relevantButtonIds.contains(id) && !viewModel.repo.isCollapsed) {
+                    findViewById<Button>(id).visibility = View.VISIBLE
+                    findViewById<Button>(id).isEnabled = true
+                } else {
+                    findViewById<Button>(id).visibility = View.GONE
+                    findViewById<Button>(id).isEnabled = false
+                }
+            }
+            for (id in spinnerIds) {
+                if (viewModel.repo.visualization.relevantSpinnerIds.contains(id) && !viewModel.repo.isCollapsed) {
+                    findViewById<Spinner>(id).visibility = View.VISIBLE
+                    findViewById<Spinner>(id).isEnabled = true
+                } else {
+                    findViewById<Spinner>(id).visibility = View.GONE
+                    findViewById<Spinner>(id).isEnabled = false
+                }
+            }
         }
 
     //    // update orientation in repo
@@ -334,15 +335,15 @@ class PreviewActivity : AppCompatActivity() {
                     mView!!.onPause()
                     mView!!.onResume()
                 }
-    //            // Dynamically load or remove UI components
-    //            CoroutineScope(Dispatchers.Main).launch {
-    //                // Wait until viewModel.visualization is not null
-    //                while (viewModel.repo.visualization == null) {
-    //                    // Suspend the coroutine for a short duration to avoid blocking the main thread
-    //                    delay(10)
-    //                }
-    //                loadOrUnloadUIElements()
-    //            }
+                // Dynamically load or remove UI components
+                CoroutineScope(Dispatchers.Main).launch {
+                    // Wait until viewModel.visualization is not null
+                    while (viewModel.repo.visualization == null) {
+                        // Suspend the coroutine for a short duration to avoid blocking the main thread
+                        delay(10)
+                    }
+                    loadOrUnloadUIElements()
+                }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {
@@ -536,92 +537,92 @@ class PreviewActivity : AppCompatActivity() {
         }
 
     //    updateSyntaxResult()
-    //
-    //    fun showUIComponents() {
-    //        hideUIButton.text = resources.getString(R.string.hideUIButtonText)
-    //        colorButton.visibility = View.VISIBLE
-    //        backgroundRadioButton.visibility = View.VISIBLE
-    //        solidColorRadioButton.visibility = View.VISIBLE
-    //        imageRadioButton.visibility = View.VISIBLE
-    //        findViewById<TextView>(R.id.background_label).visibility = View.VISIBLE
-    //        environmentMapSelectorSpinner.visibility = View.VISIBLE
-    //        syncButton.visibility = View.VISIBLE
-    //        saveButton.visibility = View.VISIBLE
-    //        previewImageView.visibility = View.VISIBLE
-    //        colorButton.isEnabled = true
-    //        linearLayout.isEnabled = true
-    //        backgroundRadioButton.isEnabled = true
-    //        solidColorRadioButton.isEnabled = true
-    //        imageRadioButton.isEnabled = true
-    //        environmentMapSelectorSpinner.isEnabled = true
-    //        syncButton.isEnabled = true
-    //        saveButton.isEnabled = true
-    //        CoroutineScope(Dispatchers.Main).launch {
-    //            loadOrUnloadUIElements()
-    //        }
-    //    }
-    //
-    //    fun hideUIComponents() {
-    //        hideUIButton.text = resources.getString(R.string.showUIButtonText)
-    //        colorButton.visibility = View.GONE
-    //        solidColorRadioButton.visibility = View.GONE
-    //        imageRadioButton.visibility = View.GONE
-    //        backgroundRadioButton.visibility = View.GONE
-    //        findViewById<TextView>(R.id.background_label).visibility = View.GONE
-    //        environmentMapSelectorSpinner.visibility = View.GONE
-    //        syncButton.visibility = View.GONE
-    //        saveButton.visibility = View.GONE
-    //        previewImageView.visibility = View.GONE
-    //        colorButton.isEnabled = false
-    //        linearLayout.isEnabled = false
-    //        solidColorRadioButton.isEnabled = false
-    //        imageRadioButton.isEnabled = false
-    //        backgroundRadioButton.isEnabled = false
-    //        environmentMapSelectorSpinner.isEnabled = false
-    //        syncButton.isEnabled = false
-    //        saveButton.isEnabled = false
-    //        CoroutineScope(Dispatchers.Main).launch {
-    //            loadOrUnloadUIElements()
-    //        }
-    //    }
-    //
-    //    val animationListener = object : Animation.AnimationListener {
-    //        override fun onAnimationStart(animation: Animation?) {
-    //            // Enable the UI elements before restoring the layout
-    //            if (!viewModel.repo.isCollapsed) {
-    //                showUIComponents()
-    //            }
-    //        }
-    //
-    //        override fun onAnimationEnd(animation: Animation?) {
-    //            // Disable the UI elements after collapsing the layout
-    //            if (viewModel.repo.isCollapsed) {
-    //                hideUIComponents()
-    //            }
-    //        }
-    //
-    //        override fun onAnimationRepeat(animation: Animation?) {
-    //            // Not needed, but required to override
-    //        }
-    //    }
-    //
-    //    fun setDefaultAnimationParametersAndAnimate(animation: Animation) {
-    //        animation.duration = 500
-    //        animation.fillAfter = true
-    //        animation.setAnimationListener(animationListener)
-    //        linearLayout.startAnimation(animation)
-    //        viewModel.repo.isCollapsed = !viewModel.repo.isCollapsed
-    //    }
-    //
-    //    hideUIButton.setOnClickListener {
-    //        val animation: Animation = if (!viewModel.repo.isCollapsed) {
-    //            TranslateAnimation(0f, linearLayout.width.toFloat(), 0f, 0f)
-    //        } else {
-    //            TranslateAnimation(linearLayout.width.toFloat(), 0f, 0f, 0f)
-    //        }
-    //        setDefaultAnimationParametersAndAnimate(animation)
-    //    }
-    //
+
+        fun showUIComponents() {
+            hideUIButton.text = resources.getString(R.string.hideUIButtonText)
+            colorButton.visibility = View.VISIBLE
+            backgroundRadioButton.visibility = View.VISIBLE
+            solidColorRadioButton.visibility = View.VISIBLE
+            imageRadioButton.visibility = View.VISIBLE
+            findViewById<TextView>(R.id.background_label).visibility = View.VISIBLE
+            environmentMapSelectorSpinner.visibility = View.VISIBLE
+            //syncButton.visibility = View.VISIBLE
+            //saveButton.visibility = View.VISIBLE
+            //previewImageView.visibility = View.VISIBLE
+            colorButton.isEnabled = true
+            linearLayout.isEnabled = true
+            backgroundRadioButton.isEnabled = true
+            solidColorRadioButton.isEnabled = true
+            imageRadioButton.isEnabled = true
+            environmentMapSelectorSpinner.isEnabled = true
+            //syncButton.isEnabled = true
+            //saveButton.isEnabled = true
+            CoroutineScope(Dispatchers.Main).launch {
+                loadOrUnloadUIElements()
+            }
+        }
+
+        fun hideUIComponents() {
+            hideUIButton.text = resources.getString(R.string.showUIButtonText)
+            colorButton.visibility = View.GONE
+            solidColorRadioButton.visibility = View.GONE
+            imageRadioButton.visibility = View.GONE
+            backgroundRadioButton.visibility = View.GONE
+            findViewById<TextView>(R.id.background_label).visibility = View.GONE
+            environmentMapSelectorSpinner.visibility = View.GONE
+            //syncButton.visibility = View.GONE
+            //saveButton.visibility = View.GONE
+            //previewImageView.visibility = View.GONE
+            colorButton.isEnabled = false
+            linearLayout.isEnabled = false
+            solidColorRadioButton.isEnabled = false
+            imageRadioButton.isEnabled = false
+            backgroundRadioButton.isEnabled = false
+            environmentMapSelectorSpinner.isEnabled = false
+            //syncButton.isEnabled = false
+            //saveButton.isEnabled = false
+            CoroutineScope(Dispatchers.Main).launch {
+                loadOrUnloadUIElements()
+            }
+        }
+
+        val animationListener = object : Animation.AnimationListener {
+            override fun onAnimationStart(animation: Animation?) {
+                // Enable the UI elements before restoring the layout
+                if (!viewModel.repo.isCollapsed) {
+                    showUIComponents()
+                }
+            }
+
+            override fun onAnimationEnd(animation: Animation?) {
+                // Disable the UI elements after collapsing the layout
+                if (viewModel.repo.isCollapsed) {
+                    hideUIComponents()
+                }
+            }
+
+            override fun onAnimationRepeat(animation: Animation?) {
+                // Not needed, but required to override
+            }
+        }
+
+        fun setDefaultAnimationParametersAndAnimate(animation: Animation) {
+            animation.duration = 500
+            animation.fillAfter = true
+            animation.setAnimationListener(animationListener)
+            linearLayout.startAnimation(animation)
+            viewModel.repo.isCollapsed = !viewModel.repo.isCollapsed
+        }
+
+        hideUIButton.setOnClickListener {
+            val animation: Animation = if (!viewModel.repo.isCollapsed) {
+                TranslateAnimation(0f, linearLayout.width.toFloat(), 0f, 0f)
+            } else {
+                TranslateAnimation(linearLayout.width.toFloat(), 0f, 0f, 0f)
+            }
+            setDefaultAnimationParametersAndAnimate(animation)
+        }
+
     //    // Scroll the ScrollView to the bottom when the layout changes (e.g., keyboard shown/hidden)
     //    findViewById<ScrollView>(R.id.settings_scrollview).viewTreeObserver.addOnGlobalLayoutListener {
     //        findViewById<ScrollView>(R.id.settings_scrollview).post {
@@ -641,12 +642,18 @@ class PreviewActivity : AppCompatActivity() {
     //    flipsNormalsCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
     //        viewModel.repo.flipNormals.value = isChecked
     //    }
-    //
-    //    if (viewModel.repo.isCollapsed) {
-    //        hideUIComponents()
-    //    } else {
-    //        showUIComponents()
-    //    }
+
+        //if (viewModel.repo.isCollapsed) {
+        //    hideUIComponents()
+        //} else {
+        //    showUIComponents()
+        //}
+
+        hideUIButton.text = if(viewModel.repo.isCollapsed) {
+            resources.getString(R.string.showUIButtonText)
+        } else {
+            resources.getString(R.string.hideUIButtonText)
+        }
     }
 
     /* this is run when the app is 'paused'

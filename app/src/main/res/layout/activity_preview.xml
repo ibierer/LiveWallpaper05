@@ -166,7 +166,7 @@
                 android:max="4040"
                 android:min="3960" />
 
-            <ImageView
+            <!--<ImageView
                 android:id="@+id/imageView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -187,7 +187,7 @@
                     android:background="@drawable/slightly_opaque_border_background"
                     android:text="@string/update_preview_button_text" />
 
-            </LinearLayout>
+            </LinearLayout>-->
 
             <TextView
                 android:id="@+id/background_label"
@@ -306,12 +306,12 @@
                 android:layout_height="wrap_content"
                 android:text="Flip Normals" />
 
-            <Button
+            <!--<Button
                 android:id="@+id/sync_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="#3C3868AF"
-                android:text="SYNC" />
+                android:text="SYNC" />-->
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

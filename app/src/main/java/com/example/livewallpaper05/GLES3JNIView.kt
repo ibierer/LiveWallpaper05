@@ -65,14 +65,6 @@ class Renderer(private var mViewModel: ActiveWallpaperViewModel, private val mod
     }
 
     override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
-        val visualization : Visualization = when (mViewModel.getVisualization()) {
-            0 -> NBodyVisualization()
-            1 -> NaiveFluidVisualization()
-            2 -> PicFlipVisualization()
-            3 -> TriangleVisualization()
-            4 -> GraphVisualization()
-            else -> throw IllegalArgumentException("Invalid visualization type")
-        }
-        PreviewActivity.init(visualization.toJsonObject().toString(), mode)
+        PreviewActivity.init(mViewModel.repo.visualization.toJsonObject().toString(), mode)
     }
 }
