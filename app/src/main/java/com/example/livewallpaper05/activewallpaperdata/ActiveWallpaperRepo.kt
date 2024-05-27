@@ -61,8 +61,8 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
     //var preview: Bitmap? = null
     //var savedConfig: String = ""
     //var savedWids: List<Int> = listOf(0)
-    //var rememberColorPickerValue: Int = 0
-    //
+    var rememberColorPickerValue: Int = 0
+
     //// initialize values for saved wallpaper info
     //val activeWallpaper: MutableLiveData<SavedWallpaperRow> = MutableLiveData<SavedWallpaperRow>()
     //val wallpapers = MutableLiveData<List<SavedWallpaperRow>>()
@@ -725,12 +725,12 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
     //        mProfileDao.updateProfileData(profileTable)
     //    }
     //}
-    //
-    //fun updateColor(r: Float, g: Float, b: Float, a: Float) {
-    //    color.value = Color.valueOf(r, g, b, a)
-    //    //color.postValue(Color.valueOf(r, g, b, a))
-    //}
-    //
+
+    fun updateColor(r: Float, g: Float, b: Float, a: Float) {
+        color.value = Color.valueOf(r, g, b, a)
+        //color.postValue(Color.valueOf(r, g, b, a))
+    }
+
     //fun setTransitionNewId(newId: Int) {
     //    if (newId < 0){
     //        this.wid = this.transitionNewId

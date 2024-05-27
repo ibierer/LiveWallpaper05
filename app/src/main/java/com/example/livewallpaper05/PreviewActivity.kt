@@ -1,6 +1,6 @@
 package com.example.livewallpaper05
 
-//import android.graphics.Color
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -34,7 +34,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-//import yuku.ambilwarna.AmbilWarnaDialog
+import yuku.ambilwarna.AmbilWarnaDialog
 
 class PreviewActivity : AppCompatActivity() {
     private var mView: GLES3JNIView? = null
@@ -446,29 +446,29 @@ class PreviewActivity : AppCompatActivity() {
     //        findViewById<ImageView>(R.id.imageView).setImageBitmap(bitmap)
     //        viewModel.updatePreviewImg(bitmap)
     //    })
-    //
-    //    // setup color selection dialog
-    //    colorButton.setOnClickListener {
-    //        val colorPickerDialog = AmbilWarnaDialog(
-    //            this,
-    //            viewModel.repo.rememberColorPickerValue,
-    //            object : AmbilWarnaDialog.OnAmbilWarnaListener {
-    //                override fun onCancel(dialog: AmbilWarnaDialog?) {
-    //                    dialog?.dialog?.dismiss()
-    //                }
-    //
-    //                override fun onOk(dialog: AmbilWarnaDialog?, color: Int) {
-    //                    viewModel.repo.rememberColorPickerValue = color
-    //                    viewModel.updateColor(Color.valueOf(color))
-    //                    dialog?.dialog?.dismiss()
-    //                    mView!!.onPause()
-    //                    mView!!.onResume()
-    //                }
-    //            }
-    //        )
-    //        colorPickerDialog.show()
-    //    }
-    //
+
+        // setup color selection dialog
+        colorButton.setOnClickListener {
+            val colorPickerDialog = AmbilWarnaDialog(
+                this,
+                viewModel.repo.rememberColorPickerValue,
+                object : AmbilWarnaDialog.OnAmbilWarnaListener {
+                    override fun onCancel(dialog: AmbilWarnaDialog?) {
+                        dialog?.dialog?.dismiss()
+                    }
+
+                    override fun onOk(dialog: AmbilWarnaDialog?, color: Int) {
+                        viewModel.repo.rememberColorPickerValue = color
+                        viewModel.updateColor(Color.valueOf(color))
+                        dialog?.dialog?.dismiss()
+                        mView!!.onPause()
+                        mView!!.onResume()
+                    }
+                }
+            )
+            colorPickerDialog.show()
+        }
+
     //    saveButton.setOnClickListener {
     //        // Screen buffer capture
     //        viewModel.repo.getScreenBuffer = 1

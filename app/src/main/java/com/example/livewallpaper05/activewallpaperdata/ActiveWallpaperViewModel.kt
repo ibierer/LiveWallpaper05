@@ -4,7 +4,7 @@ package com.example.livewallpaper05.activewallpaperdata
 //import android.content.res.Resources
 //import android.graphics.Bitmap
 //import android.graphics.BitmapFactory
-//import android.graphics.Color
+import android.graphics.Color
 //import android.hardware.SensorManager
 //import android.util.Log
 import androidx.lifecycle.*
@@ -289,23 +289,23 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
     //    }
     //    return false
     //}
-    //
-    //// update color in repo
-    //fun updateColor(color: Color, back: Boolean = false) {
-    //    // scale values to 0-1 range
-    //    // if any value is greater than 1
-    //    val r = if (color.red() > 1) color.red() / 255.0f else color.red()
-    //    val g = if (color.green() > 1) color.green() / 255.0f else color.green()
-    //    val b = if (color.blue() > 1) color.blue() / 255.0f else color.blue()
-    //    val a = if (color.alpha() > 1) color.alpha() / 255.0f else color.alpha()
-    //
-    //    // update color in repo
-    //    if (back){
-    //        repo.color.postValue(Color.valueOf(r, g, b, a))
-    //    } else {
-    //        repo.updateColor(r, g, b, a)
-    //    }
-    //}
+
+    // update color in repo
+    fun updateColor(color: Color, back: Boolean = false) {
+        // scale values to 0-1 range
+        // if any value is greater than 1
+        val r = if (color.red() > 1) color.red() / 255.0f else color.red()
+        val g = if (color.green() > 1) color.green() / 255.0f else color.green()
+        val b = if (color.blue() > 1) color.blue() / 255.0f else color.blue()
+        val a = if (color.alpha() > 1) color.alpha() / 255.0f else color.alpha()
+
+        // update color in repo
+        if (back){
+            repo.color.postValue(Color.valueOf(r, g, b, a))
+        } else {
+            repo.updateColor(r, g, b, a)
+        }
+    }
 
     // update fps in repo (scale float to 2 decimal places)
     fun updateFPS(fps: Float) {
