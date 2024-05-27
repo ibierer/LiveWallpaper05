@@ -49,16 +49,6 @@ public:
             "   outColor = vec4(color, 1.0f);\n"
             "}\n";*/
 
-    //ES_VERSION +
-    //"precision mediump float;\n"
-    //"uniform sampler2D environmentTexture;\n"
-    //"in vec3 direction;\n"
-    //"out vec4 outColor;\n" +
-    //SPHERE_MAP_TEXTURE_FUNCTION +
-    //"void main() {\n"
-    //"    outColor = Texture(environmentTexture, direction);\n"
-    //"}\n";
-
     // Found at https://www.shadertoy.com/view/tsBXW3
     /*const string SPHERE_MAP_FRAGMENT_SHADER =
             ES_VERSION +
@@ -233,7 +223,6 @@ public:
             "uniform vec2 iResolution;     // Pass the resolution of your rendering surface\n"
             "uniform float iTime;          // Pass the elapsed time since the start of the application\n"
             "uniform vec2 iMouse;          // Pass the current mouse position\n"
-            "uniform mat3 uRotationMatrix; // 3x3 matrix representing the device's rotation vector\n"
             "in vec3 direction;\n"
             "out vec4 outColor;\n" +
             SPHERE_MAP_TEXTURE_FUNCTION +
