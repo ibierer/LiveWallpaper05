@@ -218,16 +218,28 @@ public:
     // Found at https://www.shadertoy.com/view/XsfXDr
     const string SPHERE_MAP_FRAGMENT_SHADER =
             ES_VERSION +
-            "precision mediump float;\n"
+            "precision highp float;\n"
             "uniform sampler2D environmentTexture;\n"
             "uniform vec2 iResolution;     // Pass the resolution of your rendering surface\n"
             "uniform float iTime;          // Pass the elapsed time since the start of the application\n"
             "uniform vec2 iMouse;          // Pass the current mouse position\n"
+            "uniform vec3 p;               // Pass the current camera position\n"
             "in vec3 direction;\n"
             "out vec4 outColor;\n" +
             SPHERE_MAP_TEXTURE_FUNCTION +
             "void main(){\n"
-            "   outColor = Texture(environmentTexture, direction);\n"
+            "   vec3 d = direction;\n"
+            "   vec3 C = vec3(0.0f);\n"
+            "   float r = 1.0f;\n"
+            "   float a = dot(d, d);\n"
+            "   float b = 2.0f * dot(d, p - C);\n"
+            "   float c = dot(p - C, p - C) - r * r;\n"
+            "   float discriminant = b * b - 4.0f * a * c;\n"
+            "   if(discriminant < 0.0f){\n"
+            "       outColor = Texture(environmentTexture, direction);\n"
+            "   }else{\n"
+            "       outColor = vec4(vec3(0.0f), 1.0f);\n"
+            "   }\n"
             "}\n";
 
     ShaderToyView();
