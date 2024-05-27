@@ -227,8 +227,11 @@ public:
             "in vec3 direction;\n"
             "out vec4 outColor;\n" +
             SPHERE_MAP_TEXTURE_FUNCTION +
+            REFLECT2_FUNCTION +
+            DOUBLE_REFRACT2_FUNCTION +
+            FRESNEL_EFFECT_FUNCTION +
             "void main(){\n"
-            "   vec3 d = direction;\n"
+            "   vec3 d = normalize(direction);\n"
             "   vec3 C = vec3(0.0f);\n"
             "   float r = 1.0f;\n"
             "   float a = dot(d, d);\n"
@@ -236,9 +239,15 @@ public:
             "   float c = dot(p - C, p - C) - r * r;\n"
             "   float discriminant = b * b - 4.0f * a * c;\n"
             "   if(discriminant < 0.0f){\n"
-            "       outColor = Texture(environmentTexture, direction);\n"
+            "       outColor = Texture(environmentTexture, d);\n"
             "   }else{\n"
-            "       outColor = vec4(vec3(0.0f), 1.0f);\n"
+            "       float t = (-b - sqrt(discriminant)) / (2.0f * a);\n"
+            "       vec3 x = p + t * d;\n"
+            "       vec3 normalizedNormal = normalize(x);\n"
+            "       float dotNI = dot(d, normalizedNormal);\n"
+            "       vec4 reflectedColor = Texture(environmentTexture, reflect2(d, normalizedNormal, dotNI));\n"
+            "       vec4 refractedColor = Texture(environmentTexture, doubleRefract2(d, normalizedNormal, 0.75, dotNI));\n"
+            "       outColor = mix(refractedColor, reflectedColor, fresnel(dotNI));\n"
             "   }\n"
             "}\n";
 

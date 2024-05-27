@@ -23,7 +23,7 @@ void ShaderToyView::render(){
     calculatePerspectiveSetViewport(maxViewAngle, zNear, zFar);
     Matrix4<float> rotation = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
     Matrix4<float> inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();
-    vec3 position = vec3(0.0f, 0.0f, -6.0f * distanceToOrigin);
+    vec3 position = vec3(0.0f, 0.0f, 20.0f * distanceToOrigin);
     vec3 transpose = quaternionTo3x3(vec4(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)) * position;
 
     glUseProgram(sphereMapProgram);
