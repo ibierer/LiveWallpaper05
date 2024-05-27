@@ -262,15 +262,15 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
         repo.updateOrientation(orient)
     }
 
-    //// update distance from origin in repo
-    //fun updateDistanceFromCenter(distance: Float) {
-    //    repo.distanceFromOrigin.value = distance
-    //}
-    //
-    //// update field of view in repo
-    //fun updateFieldOfView(angle: Float) {
-    //    repo.fieldOfView.value = angle
-    //}
+    // update distance from origin in repo
+    fun updateDistanceFromCenter(distance: Float) {
+        repo.distanceFromOrigin.value = distance
+    }
+
+    // update field of view in repo
+    fun updateFieldOfView(angle: Float) {
+        repo.fieldOfView.value = angle
+    }
 
     // update simulation type in repo, return true if value changed
     fun updateVisualizationSelection(selection: Int): Boolean {
@@ -333,27 +333,27 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
     //fun updateEquation(toString: String) {
     //    repo.userDefinedEquation = toString
     //}
-    //
-    //// update gravity value in repo
-    //fun updateGravity(value: Float) {
-    //    repo.gravity.value = value
-    //}
-    //
-    //// update efficiency value in repo
-    //fun updateEfficiency(value: Float) {
-    //    repo.efficiency.value = value
-    //}
-    //
+
+    // update gravity value in repo
+    fun updateGravity(value: Float) {
+        repo.gravity.value = value
+    }
+
+    // update efficiency value in repo
+    fun updateEfficiency(value: Float) {
+        repo.efficiency.value = value
+    }
+
     //// update particle count value in repo
     //fun updateParticleCount(value: Int) {
     //    repo.particleCount.value = value
     //}
-    //
-    //// update linear acceleration value in repo
-    //fun updateLinearAcceleration(value: Float) {
-    //    repo.linearAcceleration.value = value
-    //}
-    //
+
+    // update linear acceleration value in repo
+    fun updateLinearAcceleration(value: Float) {
+        repo.linearAcceleration.value = value
+    }
+
     //// update wallpaper preview fragments list in repo
     //fun updateWallpaperFragIds(wallpaperRef: WallpaperRef) {
     //    // if wallpaperRef is already in list ignore
