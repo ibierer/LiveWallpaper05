@@ -60,7 +60,7 @@ public:
     //"}\n";
 
     // Found at https://www.shadertoy.com/view/tsBXW3
-    const string SPHERE_MAP_FRAGMENT_SHADER =
+    /*const string SPHERE_MAP_FRAGMENT_SHADER =
             ES_VERSION +
             "precision mediump float;\n"
             "const int AA = 2;               //change to 1 to increase performance\n"
@@ -223,6 +223,30 @@ public:
             "            outColor += col / float(AA * AA);\n"
             "        }\n"
             "    }\n"
+            "}\n";*/
+
+    // Found at https://www.shadertoy.com/view/XsfXDr
+    const string SPHERE_MAP_FRAGMENT_SHADER =
+            ES_VERSION +
+            "precision mediump float;\n"
+            "uniform sampler2D environmentTexture;\n"
+            "uniform vec2 iResolution;     // Pass the resolution of your rendering surface\n"
+            "uniform float iTime;          // Pass the elapsed time since the start of the application\n"
+            "uniform vec2 iMouse;          // Pass the current mouse position\n"
+            "uniform mat3 uRotationMatrix; // 3x3 matrix representing the device's rotation vector\n"
+            //"in vec3 direction;\n"
+            "out vec4 outColor;\n" +
+            SPHERE_MAP_TEXTURE_FUNCTION +
+            "void main(){\n"
+            "   float ratio = iResolution.x / iResolution.y;\n"
+            "   vec2 uv = vec2(ratio, 1.0f) * (2.0f * vec2(\n"
+            "           gl_FragCoord.x / iResolution.x,\n"
+            "           gl_FragCoord.y / iResolution.y\n"
+            "       ) - 1.0f\n"
+            "   );\n"
+            "   vec3 direction = normalize(vec3(uv, -1.0));\n"
+            "   vec3 rotatedDirection = normalize(uRotationMatrix * direction);\n"
+            "   outColor = Texture(environmentTexture, rotatedDirection);\n"
             "}\n";
 
     ShaderToyView();
