@@ -234,19 +234,11 @@ public:
             "uniform float iTime;          // Pass the elapsed time since the start of the application\n"
             "uniform vec2 iMouse;          // Pass the current mouse position\n"
             "uniform mat3 uRotationMatrix; // 3x3 matrix representing the device's rotation vector\n"
-            //"in vec3 direction;\n"
+            "in vec3 direction;\n"
             "out vec4 outColor;\n" +
             SPHERE_MAP_TEXTURE_FUNCTION +
             "void main(){\n"
-            "   float ratio = iResolution.x / iResolution.y;\n"
-            "   vec2 uv = vec2(ratio, 1.0f) * (2.0f * vec2(\n"
-            "           gl_FragCoord.x / iResolution.x,\n"
-            "           gl_FragCoord.y / iResolution.y\n"
-            "       ) - 1.0f\n"
-            "   );\n"
-            "   vec3 direction = normalize(vec3(uv, -1.0));\n"
-            "   vec3 rotatedDirection = normalize(uRotationMatrix * direction);\n"
-            "   outColor = Texture(environmentTexture, rotatedDirection);\n"
+            "   outColor = Texture(environmentTexture, direction);\n"
             "}\n";
 
     ShaderToyView();
