@@ -111,7 +111,7 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
 
     // return simulation type from repo
     fun getVisualization(): Int {
-        return repo.visualizationSelection
+        return repo.getVisualizationSelection()
     }
 
     //fun getGraph(): Int {
@@ -253,9 +253,9 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
     //// SETTERS - here are all the methods for updating data in the repo -------------------------
 
     // update visualization type in repo
-    fun updateVisualizationType(type: String) {
-        repo.visualizationName.postValue(type)
-    }
+    //fun updateVisualizationType(type: String) {
+    //    repo.visualizationName.postValue(type)
+    //}
 
     // update orientation in repo
     fun updateOrientation(orient: Int) {
@@ -274,8 +274,7 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
 
     // update simulation type in repo, return true if value changed
     fun updateVisualizationSelection(selection: Int): Boolean {
-        if (selection != repo.visualizationSelection) {
-            repo.visualizationSelection = selection
+        if (selection != repo.getVisualizationSelection()) {
             repo.visualization = repo.visualizationIntToVisualizationObject(selection)
             return true
         }
@@ -353,6 +352,10 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
     // update linear acceleration value in repo
     fun updateLinearAcceleration(value: Float) {
         repo.linearAcceleration.value = value
+    }
+
+    fun saveVisualizationState() {
+        repo.saveVisualizationState()
     }
 
     //// update wallpaper preview fragments list in repo

@@ -2,12 +2,14 @@ package com.example.livewallpaper05.activewallpaperdata
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.SharedPreferences
 //import android.graphics.Bitmap
 import android.graphics.Color
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.util.Log
 //import android.util.Log
 import androidx.lifecycle.MutableLiveData
 //import com.example.livewallpaper05.ExplorerActivity
@@ -19,6 +21,8 @@ import androidx.lifecycle.MutableLiveData
 //import com.example.livewallpaper05.savedWallpapers.SavedWallpaperDao
 //import com.example.livewallpaper05.savedWallpapers.SavedWallpaperRow
 import kotlinx.coroutines.CoroutineScope
+import org.json.JSONObject
+
 //import kotlinx.coroutines.DelicateCoroutinesApi
 //import kotlinx.coroutines.Dispatchers
 //import kotlinx.coroutines.launch
@@ -55,9 +59,9 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
     var rotationData: Array<Float> = arrayOf(0.0f, 0.0f, 0.0f, 0.0f)
     var accelerationData: Array<Float> = arrayOf(0.0f, 0.0f, 0.0f)
     var linearAccelerationData: Array<Float> = arrayOf(0.0f, 0.0f, 0.0f)
-    var visualizationSelection: Int = 0
+
     //var graphSelection: Int = 0
-    var visualizationName = MutableLiveData<String>("")
+    //var visualizationName = MutableLiveData<String>("")
     //var preview: Bitmap? = null
     //var savedConfig: String = ""
     //var savedWids: List<Int> = listOf(0)
@@ -75,8 +79,11 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
 
     private lateinit var mSensorManager: SensorManager
 
+    // Saved app data
+    private val sharedPreferences: SharedPreferences = getPreferences()
+    private val sharedPreferencesEditor: SharedPreferences.Editor = sharedPreferences.edit()
     // ViewModel state
-    var visualization: Visualization = visualizationIntToVisualizationObject(visualizationSelection)
+    var visualization: Visualization = visualizationIntToVisualizationObject(getVisualizationSelection())
 
     //fun isVisualizationInitialized(): Boolean {
     //    return this::visualization.isInitialized
@@ -684,13 +691,36 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
         this.orientation = orient
     }
 
+    private fun getPreferences(): SharedPreferences {
+        val preferences: SharedPreferences = context.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+        if(preferences.getBoolean("firstTimeStartup", true)){
+            val sharedPreferencesEditor = preferences.edit()
+            sharedPreferencesEditor.putInt("preferredVisualization", 0)
+            sharedPreferencesEditor.putString("0", NBodyVisualization().toJsonObject().toString())
+            sharedPreferencesEditor.putString("1", NaiveFluidVisualization().toJsonObject().toString())
+            sharedPreferencesEditor.putString("2", PicFlipVisualization().toJsonObject().toString())
+            sharedPreferencesEditor.putString("3", TriangleVisualization().toJsonObject().toString())
+            sharedPreferencesEditor.putString("4", GraphVisualization().toJsonObject().toString())
+            sharedPreferencesEditor.putBoolean("firstTimeStartup", false)
+            sharedPreferencesEditor.apply()
+        }
+        return preferences
+    }
+
+    fun getVisualizationSelection(): Int {
+        return sharedPreferences.getInt("preferredVisualization", 0)
+    }
+
     fun visualizationIntToVisualizationObject(selection: Int): Visualization {
-        return when (selection) {
-            0 -> NBodyVisualization()
-            1 -> NaiveFluidVisualization()
-            2 -> PicFlipVisualization()
-            3 -> TriangleVisualization()
-            4 -> GraphVisualization()
+        sharedPreferencesEditor.putInt("preferredVisualization", selection)
+        sharedPreferencesEditor.apply()
+        val config: JSONObject = sharedPreferences.getString(selection.toString(), "")?.let { JSONObject(it) }!!
+        return when (selection){
+            0 -> NBodyVisualization(config)
+            1 -> NaiveFluidVisualization(config)
+            2 -> PicFlipVisualization(config)
+            3 -> TriangleVisualization(config)
+            4 -> GraphVisualization(config)
             else -> throw IllegalArgumentException("Invalid visualization type")
         }
     }
@@ -729,6 +759,15 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
     fun updateColor(r: Float, g: Float, b: Float, a: Float) {
         color.value = Color.valueOf(r, g, b, a)
         //color.postValue(Color.valueOf(r, g, b, a))
+    }
+
+    fun saveVisualizationState() {
+        TODO("Not yet implemented")
+        /*sharedPreferencesEditor.putString(
+            getVisualizationSelection().toString(),
+            visualization.toJsonObject().toString()
+        )
+        sharedPreferencesEditor.apply()*/
     }
 
     //fun setTransitionNewId(newId: Int) {

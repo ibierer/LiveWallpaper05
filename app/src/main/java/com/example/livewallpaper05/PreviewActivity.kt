@@ -97,9 +97,9 @@ class PreviewActivity : AppCompatActivity() {
     //        android.R.layout.simple_spinner_item
     //    )
     //    visualizationSelectorSpinner.adapter = visualizationSelectorAdapter
-    //    // set default to viewmodel visualization type
-    //    visualizationSelectorSpinner.setSelection(viewModel.getVisualization())
-    //
+        // set default to viewmodel visualization type
+        visualizationSelectorSpinner.setSelection(viewModel.getVisualization())
+
     //    // fill image selector box with image options from native-lib.cpp
     //    val environmentMapSelectorAdapter = ArrayAdapter.createFromResource(
     //        this,
@@ -209,9 +209,7 @@ class PreviewActivity : AppCompatActivity() {
     //    // update orientation in repo
     //    try {
             viewModel.updateOrientation(this.display!!.rotation)
-            CoroutineScope(Dispatchers.Main).launch {
-                loadOrUnloadUIElements()
-            }
+            loadOrUnloadUIElements()
     //    } catch (e: Exception) {
     //        Log.d("Livewallpaper", "api level too low!")
     //    }
@@ -230,6 +228,7 @@ class PreviewActivity : AppCompatActivity() {
             override fun onStopTrackingTouch(seekBar: SeekBar) {
                 //mRepo!!.distanceFromCenter = seekBar.progress.toFloat() / 100.0f
                 viewModel.updateDistanceFromCenter(seekBar.progress.toFloat() / 100.0f)
+                viewModel.saveVisualizationState()
             }
         })
 
@@ -251,6 +250,7 @@ class PreviewActivity : AppCompatActivity() {
             override fun onStopTrackingTouch(seekBar: SeekBar) {
                 //mRepo!!.fieldOfView = seekBar.progress.toFloat() / 100.0f
                 viewModel.updateFieldOfView(seekBar.progress.toFloat() / 100.0f)
+                viewModel.saveVisualizationState()
             }
         })
 
@@ -271,6 +271,7 @@ class PreviewActivity : AppCompatActivity() {
 
             override fun onStopTrackingTouch(seekBar: SeekBar) {
                 viewModel.updateGravity(seekBar.progress.toFloat() / 100.0f)
+                viewModel.saveVisualizationState()
             }
         })
 
@@ -292,6 +293,7 @@ class PreviewActivity : AppCompatActivity() {
 
             override fun onStopTrackingTouch(seekBar: SeekBar) {
                 viewModel.updateLinearAcceleration(seekBar.progress.toFloat() / 100.0f)
+                viewModel.saveVisualizationState()
             }
         })
 
@@ -312,6 +314,7 @@ class PreviewActivity : AppCompatActivity() {
 
             override fun onStopTrackingTouch(seekBar: SeekBar) {
                 viewModel.updateEfficiency(seekBar.progress.toFloat() / 4000.0f)
+                viewModel.saveVisualizationState()
             }
         })
 
@@ -330,18 +333,10 @@ class PreviewActivity : AppCompatActivity() {
                 val changed = viewModel.updateVisualizationSelection(pos)
                 if (changed) {
                     // update visualization in repo
-                    viewModel.updateVisualizationType(parent.getItemAtPosition(pos).toString())
+                    //viewModel.updateVisualizationType(parent.getItemAtPosition(pos).toString())
                     // tell view it needs to be reloaded
                     mView!!.onPause()
                     mView!!.onResume()
-                }
-                // Dynamically load or remove UI components
-                CoroutineScope(Dispatchers.Main).launch {
-                    // Wait until viewModel.visualization is not null
-                    while (viewModel.repo.visualization == null) {
-                        // Suspend the coroutine for a short duration to avoid blocking the main thread
-                        delay(10)
-                    }
                     loadOrUnloadUIElements()
                 }
             }
