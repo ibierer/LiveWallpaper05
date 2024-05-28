@@ -54,7 +54,7 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
     //var uid: Int = 11
     //var username: String = "Default User"
     var userDefinedEquation: MutableLiveData<String> = MutableLiveData<String>(context.resources.getString(R.string.default_equation))
-    //var currentEquation: String = "1/((sqrt(x^2 + y^2) - 1.5 + sin(t))^2 + (z + cos(t))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 2π/3))^2 + (z + cos(t + 2π/3))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 4π/3))^2 + (z + cos(t + 4π/3))^2) = 5"
+    var currentEquation: String = "1/((sqrt(x^2 + y^2) - 1.5 + sin(t))^2 + (z + cos(t))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 2π/3))^2 + (z + cos(t + 2π/3))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 4π/3))^2 + (z + cos(t + 4π/3))^2) = 5"
     var color: MutableLiveData<Color> = MutableLiveData<Color>(Color.valueOf(0.0f, 0.0f, 0.0f, 0.0f))
     var orientation: Int = 0
     var fps: MutableLiveData<Float> = MutableLiveData<Float>(0.0f)

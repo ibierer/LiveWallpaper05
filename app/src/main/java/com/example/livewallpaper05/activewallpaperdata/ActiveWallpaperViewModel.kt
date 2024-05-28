@@ -114,9 +114,9 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
         return repo.getVisualizationSelection()
     }
 
-    //fun getGraph(): Int {
-    //    return repo.graphSelection
-    //}
+    fun getGraph(): Int {
+        return repo.graphSelection
+    }
 
     // return orientation from repo
     fun getOrientation(): Int {
@@ -281,13 +281,13 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
         return false
     }
 
-    //fun updateGraphSelection(selection: Int): Boolean {
-    //    if (selection != repo.graphSelection) {
-    //        repo.graphSelection = selection
-    //        return true
-    //    }
-    //    return false
-    //}
+    fun updateGraphSelection(selection: Int): Boolean {
+        if (selection != repo.graphSelection) {
+            repo.graphSelection = selection
+            return true
+        }
+        return false
+    }
 
     // update color in repo
     fun updateColor(color: Color, back: Boolean = false) {
@@ -328,11 +328,11 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
     //    if (preview != null)
     //        repo.preview = preview
     //}
-    //
-    //// update equation string in repo
-    //fun updateEquation(toString: String) {
-    //    repo.userDefinedEquation = toString
-    //}
+
+    // update equation string in repo
+    fun updateEquation(string: String) {
+        repo.userDefinedEquation.value = string
+    }
 
     // update gravity value in repo
     fun updateGravity(value: Float) {

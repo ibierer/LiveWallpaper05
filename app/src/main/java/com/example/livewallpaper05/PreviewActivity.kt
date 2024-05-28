@@ -9,7 +9,7 @@ import android.view.View
 import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.TranslateAnimation
-//import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.EditorInfo
 import android.widget.AdapterView
 //import android.widget.ArrayAdapter
 import android.widget.Button
@@ -43,18 +43,18 @@ class PreviewActivity : AppCompatActivity() {
         ActiveWallpaperViewModelFactory((application as ActiveWallpaperApplication).wallpaperRepo)
     }
 
-    //private fun updateSyntaxResult() {
-    //    // update syntax check message
-    //    val equationChecker = EquationChecker()
-    //    val result: String =
-    //        equationChecker.checkEquationSyntax(findViewById<EditText>(R.id.et_equation).text.toString())
-    //    val message: String = if (result == "") {
-    //        "No syntax errors."
-    //    } else {
-    //        result
-    //    }
-    //    findViewById<TextView>(R.id.tv_syntax_check).text = message
-    //}
+    private fun updateSyntaxResult() {
+        // update syntax check message
+        val equationChecker = EquationChecker()
+        val result: String =
+            equationChecker.checkEquationSyntax(findViewById<EditText>(R.id.et_equation).text.toString())
+        val message: String = if (result == "") {
+            "No syntax errors."
+        } else {
+            result
+        }
+        findViewById<TextView>(R.id.tv_syntax_check).text = message
+    }
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(icicle: Bundle?) {
@@ -76,15 +76,15 @@ class PreviewActivity : AppCompatActivity() {
         val efficiencySeekBar: SeekBar = findViewById<SeekBar>(R.id.efficiency_seekbar)
         val visualizationSelectorSpinner: Spinner = findViewById<Spinner>(R.id.visualization_type_spinner)
         val environmentMapSelectorSpinner: Spinner = findViewById<Spinner>(R.id.image_selection_spinner)
-    //    val graphSelectorSpinner: Spinner = findViewById<Spinner>(R.id.graph_selection_spinner)
+        val graphSelectorSpinner: Spinner = findViewById<Spinner>(R.id.graph_selection_spinner)
         val colorButton: Button = findViewById<Button>(R.id.b_color_picker)
         val hideUIButton: Button = findViewById<Button>(R.id.hide_ui_button)
     //    val saveButton: Button = findViewById<Button>(R.id.save_button)
     //    val syncButton: Button = findViewById<Button>(R.id.sync_button)
-    //    val equationEditor: EditText = findViewById<EditText>(R.id.et_equation)
+        val equationEditor: EditText = findViewById<EditText>(R.id.et_equation)
         val flipsNormalsCheckBox: CheckBox = findViewById<CheckBox>(R.id.flip_normals_checkbox)
         val linearLayout: LinearLayout = findViewById<LinearLayout>(R.id.settings_linearlayout)
-    //    val doneButton: Button = findViewById<Button>(R.id.done_button)
+        val doneButton: Button = findViewById<Button>(R.id.done_button)
         val backgroundRadioGroup: RadioGroup = findViewById<RadioGroup>(R.id.background_radio_group)
         val solidColorRadioButton: RadioButton = findViewById<RadioButton>(R.id.solid_color_radio_button)
         val imageRadioButton: RadioButton = findViewById<RadioButton>(R.id.image_radio_button)
@@ -117,7 +117,7 @@ class PreviewActivity : AppCompatActivity() {
     //        android.R.layout.simple_spinner_item
     //    )
     //    graphSelectorSpinner.adapter = graphSelectorAdapter
-    //    graphSelectorSpinner.setSelection(viewModel.getGraph())
+        graphSelectorSpinner.setSelection(viewModel.getGraph())
 
         // add gl engine view to viewport
         layout.addView(mView)
@@ -357,38 +357,38 @@ class PreviewActivity : AppCompatActivity() {
             }
         }
 
-    //    graphSelectorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-    //        override fun onItemSelected(
-    //            parent: AdapterView<*>,
-    //            view: View?,
-    //            position: Int,
-    //            id: Long
-    //        ) {
-    //            val changed = viewModel.updateGraphSelection(position)
-    //            if (changed) {
-    //                if (position == 0){
-    //                    viewModel.repo.currentEquation = viewModel.repo.userDefinedEquation
-    //                    // enable the edit text
-    //                    equationEditor.isEnabled = true
-    //                }
-    //                else{
-    //                    viewModel.repo.currentEquation = resources.getStringArray(R.array.graph_options)[position]
-    //                    // disable the edit text
-    //                    equationEditor.isEnabled = false
-    //                }
-    //                // set text of equation editor
-    //                equationEditor.setText(viewModel.repo.currentEquation)
-    //            }
-    //            // tell view it needs to be reloaded
-    //            mView!!.onPause()
-    //            mView!!.onResume()
-    //        }
-    //
-    //        override fun onNothingSelected(parent: AdapterView<*>?) {
-    //            TODO("Not yet implemented")
-    //        }
-    //
-    //    }
+        graphSelectorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                val changed = viewModel.updateGraphSelection(position)
+                if (changed) {
+                    if (position == 0){
+                        viewModel.repo.currentEquation = viewModel.repo.userDefinedEquation.value!!
+                        // enable the edit text
+                        equationEditor.isEnabled = true
+                    }
+                    else{
+                        viewModel.repo.currentEquation = resources.getStringArray(R.array.graph_options)[position]
+                        // disable the edit text
+                        equationEditor.isEnabled = false
+                    }
+                    // set text of equation editor
+                    equationEditor.setText(viewModel.repo.currentEquation)
+                }
+                // tell view it needs to be reloaded
+                mView!!.onPause()
+                mView!!.onResume()
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                TODO("Not yet implemented")
+            }
+
+        }
 
         solidColorRadioButton.setOnClickListener {
             viewModel.repo.backgroundIsSolidColor.value = true
@@ -516,47 +516,47 @@ class PreviewActivity : AppCompatActivity() {
     //            // Do nothing
     //        }
     //    })
-    //
-    //    fun doneButton() {
-    //        //val currentFocusView = currentFocus
-    //        //if (currentFocusView != null) {
-    //        //    (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(currentFocusView.windowToken, 0)
-    //        //}
-    //        // update equation in repo if valid
-    //        val equationChecker: EquationChecker = EquationChecker()
-    //        val result: String = equationChecker.checkEquationSyntax(equationEditor.text.toString())
-    //        Log.d("LiveWallpaper05", "result is: $result")
-    //        //Log.d("LiveWallpaper05", "result2 is: " + result2)
-    //        if (result == "") {
-    //            viewModel.updateEquation(equationEditor.text.toString())
-    //            Log.d("LiveWallpaper05", "Syntax check passed.")
-    //        } else {
-    //            viewModel.updateEquation(getString(R.string.default_equation))
-    //            Log.d("LiveWallpaper05", "Syntax check failed.")
-    //        }
-    //        mView!!.onPause()
-    //        mView!!.onResume()
-    //    }
-    //
-    //    // setup listener for the Done button
-    //    equationEditor.setOnEditorActionListener { v, actionId, event ->
-    //        if (actionId == EditorInfo.IME_ACTION_DONE) {
-    //            doneButton()
-    //            return@setOnEditorActionListener true // Return true to consume the event
-    //        }
-    //        return@setOnEditorActionListener false // Return false if you want to allow further handling of the event
-    //    }
-    //
-    //    doneButton.setOnClickListener {
-    //        doneButton()
-    //    }
+
+        fun doneButton() {
+            //val currentFocusView = currentFocus
+            //if (currentFocusView != null) {
+            //    (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(currentFocusView.windowToken, 0)
+            //}
+            // update equation in repo if valid
+            val equationChecker: EquationChecker = EquationChecker()
+            val result: String = equationChecker.checkEquationSyntax(equationEditor.text.toString())
+            Log.d("LiveWallpaper05", "result is: $result")
+            //Log.d("LiveWallpaper05", "result2 is: " + result2)
+            if (result == "") {
+                viewModel.updateEquation(equationEditor.text.toString())
+                Log.d("LiveWallpaper05", "Syntax check passed.")
+            } else {
+                viewModel.updateEquation(getString(R.string.default_equation))
+                Log.d("LiveWallpaper05", "Syntax check failed.")
+            }
+            mView!!.onPause()
+            mView!!.onResume()
+        }
+
+        // setup listener for the Done button
+        equationEditor.setOnEditorActionListener { v, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                doneButton()
+                return@setOnEditorActionListener true // Return true to consume the event
+            }
+            return@setOnEditorActionListener false // Return false if you want to allow further handling of the event
+        }
+
+        doneButton.setOnClickListener {
+            doneButton()
+        }
 
         // connect fps data to ui fps meter
         viewModel.getFPS().observe(this) {
             fpsMeter.text = String.format("fps: %.2f", it)
         }
 
-    //    updateSyntaxResult()
+        updateSyntaxResult()
 
         fun showUIComponents() {
             hideUIButton.text = resources.getString(R.string.hideUIButtonText)
