@@ -157,7 +157,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_livewallpaper05_PreviewActivity_00024Companion_resize(JNIEnv *env, jobject thiz, jint width, jint height, jint orientation, jint mode) {
+Java_com_example_livewallpaper05_PreviewActivity_00024Companion_resize(JNIEnv *env, jobject thiz, jint width, jint height, jint mode) {
     if (view[mode]) {
         if (view[mode]->initialWidth == 0 || view[mode]->initialHeight == 0) {
             view[mode]->initialWidth = width;
@@ -165,13 +165,12 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_resize(JNIEnv *e
         }
         view[mode]->width = width;
         view[mode]->height = height;
-        view[mode]->orientation = orientation;
     }
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_livewallpaper05_PreviewActivity_00024Companion_step(JNIEnv *env, jobject thiz, jfloat acc_x, jfloat acc_y, jfloat acc_z, jfloat rot_x, jfloat rot_y, jfloat rot_z, jfloat rot_w, jfloat linear_acc_x, jfloat linear_acc_y, jfloat linear_acc_z, jfloat distance, jfloat field_of_view, jfloat gravity, jfloat efficiency, jboolean flip_normals, jint mode) {
+Java_com_example_livewallpaper05_PreviewActivity_00024Companion_step(JNIEnv *env, jobject thiz, jfloat acc_x, jfloat acc_y, jfloat acc_z, jfloat rot_x, jfloat rot_y, jfloat rot_z, jfloat rot_w, jfloat linear_acc_x, jfloat linear_acc_y, jfloat linear_acc_z, jfloat distance, jfloat field_of_view, jfloat gravity, jfloat efficiency, jboolean flip_normals, jint orientation, jint mode) {
     if (view[mode]) {
         view[mode]->accelerometerVector = vec3(acc_x, acc_y, acc_z);
         view[mode]->linearAccelerationVector = vec3(linear_acc_x, linear_acc_y, linear_acc_z);
@@ -195,6 +194,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_step(JNIEnv *env
         view[mode]->gravity = gravity;
         view[mode]->efficiency = efficiency;
         ImplicitGrapher::vectorPointsPositive = flip_normals;
+        view[mode]->orientation = orientation;
         //ALOGI("field_of_view = %s\n", to_string(field_of_view).c_str());
         view[mode]->calculatePerspectiveSetViewport(view[mode]->maxViewAngle, view[mode]->zNear, view[mode]->zFar);
         view[mode]->render();

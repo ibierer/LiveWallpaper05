@@ -1,7 +1,6 @@
 package com.example.livewallpaper05
 
 import android.content.Context
-import android.content.res.Configuration
 import android.opengl.GLSurfaceView
 import android.service.wallpaper.WallpaperService
 import android.util.Log
@@ -21,26 +20,29 @@ class GLWallpaperService : WallpaperService() {
         return GLEngine()
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        
-        @Suppress("DEPRECATION")
-        val display = (getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay
-        Log.d("GLWallpaperService", "Rotation changed to ${display.rotation}")
-
-        // update view model with new orientation
-        viewModel.repo.updateOrientation(display.rotation)
-    }
-
-    inner class GLEngine : Engine() {
+    inner class GLEngine : Engine(), SurfaceHolder.Callback {
         private val glSurfaceView by lazy { WallpaperGLSurfaceView(application) }
         private var rendererSet = false
 
         override fun onCreate(surfaceHolder: SurfaceHolder) {
             super.onCreate(surfaceHolder)
+            surfaceHolder.addCallback(this)
             glSurfaceView.setEGLContextClientVersion(3)
             glSurfaceView.setRenderer(Renderer(application, viewModel, 1))
             rendererSet = true
+        }
+
+        override fun onDestroy() {
+            super.onDestroy()
+            surfaceHolder.removeCallback(this)
+        }
+
+        override fun onSurfaceRedrawNeeded(holder: SurfaceHolder?) {
+            super.onSurfaceRedrawNeeded(holder)
+            val display = (getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay
+            val rotation = display.rotation
+            Log.d("MyWallpaperService", "Rotation changed to $rotation")
+            viewModel.repo.updateOrientation(rotation)
         }
 
         internal inner class WallpaperGLSurfaceView(context: Context?) : GLSurfaceView(context) {
@@ -64,9 +66,21 @@ class GLWallpaperService : WallpaperService() {
             }
         }
 
+        override fun surfaceCreated(holder: SurfaceHolder) {
+
+        }
+
+        override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
+
+        }
+
         /*override fun onDestroy() {
             super.onDestroy()
             glSurfaceView.onWallpaperDestroy()
         }*/
+
+        override fun surfaceDestroyed(holder: SurfaceHolder) {
+
+        }
     }
 }

@@ -41,6 +41,7 @@ class Renderer(private val context: Context, private var mViewModel: ActiveWallp
             mViewModel.getGravity(),
             mViewModel.getEfficiency(),
             mViewModel.getVectorDirection(),
+            mViewModel.getOrientation(),
             mode
         )
 
@@ -56,7 +57,10 @@ class Renderer(private val context: Context, private var mViewModel: ActiveWallp
     }
 
     override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {
-        PreviewActivity.resize(width, height, mViewModel.getOrientation(), mode)
+        if(mode == 0){
+            mViewModel.updateOrientation(context.display!!.rotation)
+        }
+        PreviewActivity.resize(width, height, mode)
     }
 
     override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
