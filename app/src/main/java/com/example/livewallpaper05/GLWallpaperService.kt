@@ -41,7 +41,13 @@ class GLWallpaperService : WallpaperService() {
             super.onSurfaceRedrawNeeded(holder)
             val display = (getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay
             val rotation = display.rotation
+            // Detect whether orientation has switched from portrait to landscape or vice versa
+            val needsRefactored: Boolean = viewModel.repo.orientation % 2 != rotation % 2
             viewModel.repo.updateOrientation(rotation)
+            if(needsRefactored) {
+                glSurfaceView.onPause()
+                glSurfaceView.onResume()
+            }
         }
 
         internal inner class WallpaperGLSurfaceView(context: Context?) : GLSurfaceView(context) {
