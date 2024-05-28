@@ -3,6 +3,7 @@ package com.example.livewallpaper05
 import android.content.Context
 import android.opengl.GLSurfaceView
 import android.os.SystemClock
+import android.util.Log
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import org.json.JSONObject
 import javax.microedition.khronos.egl.EGLConfig
@@ -84,7 +85,9 @@ class Renderer(private val context: Context, private var mViewModel: ActiveWallp
                 // Do nothing
             }
             4 -> {
-                if (mViewModel.repo.graphSelection != 0){
+                if (mViewModel.repo.graphSelection == 0){
+                    jsonConfig.put("equation", mViewModel.repo.userDefinedEquation.value)
+                }else{
                     jsonConfig.put("equation", context.resources.getStringArray(R.array.graph_options)[mViewModel.repo.graphSelection])
                 }
                 mViewModel.repo.referenceFrameRotates.postValue(jsonConfig.getBoolean("reference_frame_rotates"))
@@ -95,6 +98,8 @@ class Renderer(private val context: Context, private var mViewModel: ActiveWallp
         mViewModel.repo.backgroundIsSolidColor.postValue(jsonConfig.getBoolean("background_is_solid_color"))
         mViewModel.repo.backgroundTexture.postValue(jsonConfig.getString("background_texture"))
         mViewModel.updateColor(mViewModel.repo.visualization.jsonObjectToColor(jsonConfig.getJSONObject("background_color")), true)
+        Log.d("GLES3JNIView", jsonConfig.toString())
+        Log.d("GLES3JNIView", "graphSelection = " + mViewModel.repo.graphSelection.toString())
         PreviewActivity.init(jsonConfig.toString(), mode)
     }
 }
