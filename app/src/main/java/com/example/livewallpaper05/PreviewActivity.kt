@@ -476,7 +476,7 @@ class PreviewActivity : AppCompatActivity() {
                     }
 
                     override fun onOk(dialog: AmbilWarnaDialog?, color: Int) {
-                        if(color != viewModel.repo.rememberColorPickerValue) {
+                        if(Color.valueOf(color) != viewModel.repo.color.value) {
                             viewModel.repo.rememberColorPickerValue = color
                             viewModel.repo.color.value = Color.valueOf(color)
                             viewModel.saveVisualizationState()
@@ -684,40 +684,40 @@ class PreviewActivity : AppCompatActivity() {
     /* this is run when the app is 'paused'
      * this includes leaving the app, rotating the screen, etc.
      */
-    override fun onPause() {
+    /*override fun onPause() {
     //    // save current wallpaper
     //    val activeConfig = viewModel.getConfig()
     //    viewModel.saveWallpaper(activeConfig)
     //    // pause activity
         super.onPause()
         mView!!.onPause()
-    }
+    }*/
 
     // this is run when the activity is 'stopped', like when the app is closed or restarted
-    override fun onStop() {
+    /*override fun onStop() {
     //    // save current wallpaper
     //    val activeConfig = viewModel.getConfig()
     //    viewModel.saveWallpaper(activeConfig)
     //
         super.onStop()
-    }
+    }*/
 
     // this is run when the activity is 'destroyed', like when the app is shut down or device is restarted
-    override fun onDestroy() {
+    /*override fun onDestroy() {
     //    // save current wallpaper
     //    val activeConfig = viewModel.getConfig()
     //    viewModel.saveWallpaper(activeConfig)
     //
         super.onDestroy()
-    }
+    }*/
 
     /* this is run when the app is 'resumed'
      * this includes returning to the app, rotating the screen, etc.
      */
-    override fun onResume() {
+    /*override fun onResume() {
         super.onResume()
         mView!!.onResume()
-    }
+    }*/
 
     companion object {
         // Used to load the 'livewallpaper05' library on application startup.
