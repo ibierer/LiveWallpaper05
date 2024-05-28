@@ -243,6 +243,7 @@
                     style="@style/Widget.AppCompat.Spinner"
                     android:layout_width="133dp"
                     android:layout_height="wrap_content"
+                    android:entries="@array/environment_map_options"
                     app:layout_constraintBottom_toBottomOf="@+id/background_radio_group"
                     app:layout_constraintStart_toEndOf="@+id/b_color_picker"
                     app:layout_constraintTop_toTopOf="@+id/background_radio_group" />

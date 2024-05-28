@@ -108,7 +108,7 @@ class PreviewActivity : AppCompatActivity() {
     //    )
     //    environmentMapSelectorSpinner.adapter = environmentMapSelectorAdapter
     //    // set default to viewmodel visualization type
-    //    //environmentMapSelectorSpinner.setSelection(viewModel.getEnvironmentMap())
+    environmentMapSelectorSpinner.setSelection(viewModel.repo.getEnvironmentMapSelection())
     //    val graphNames = arrayOf("")
     //    // fill image selector box with image options from native-lib.cpp
     //    val graphSelectorAdapter = ArrayAdapter.createFromResource(
@@ -412,6 +412,10 @@ class PreviewActivity : AppCompatActivity() {
             }
         }
 
+        viewModel.repo.backgroundTexture.observe(this) {
+            environmentMapSelectorSpinner.setSelection(viewModel.repo.getEnvironmentMapSelection())
+        }
+
         //    environmentMapSelectorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
     //        override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
     //            // get array from arrays
@@ -429,33 +433,31 @@ class PreviewActivity : AppCompatActivity() {
     //            // Do nothing
     //        }
     //    }
-    //
-    //    // register spinner actions to update image selection in repo
-    //    /*environmentMapSelectorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-    //        override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
-    //            val changed = viewModel.updateEnvironmentMapSelection(pos)
-    //            if (changed) {
-    //                // tell view it needs to be reloaded
-    //                mView!!.onPause()
-    //                mView!!.onResume()
-    //            }
-    //
-    //            // Dynamically load or remove UI components
-    //            CoroutineScope(Dispatchers.Main).launch {
-    //                // Wait until viewModel.visualization is not null
-    //                while (viewModel.visualization == null) {
-    //                    // Suspend the coroutine for a short duration to avoid blocking the main thread
-    //                    delay(10)
-    //                }
-    //                loadOrUnloadUIElements()
-    //            }
-    //        }
-    //
-    //        override fun onNothingSelected(parent: AdapterView<*>) {
-    //            // Do nothing
-    //        }
-    //    }*/
-    //
+
+        // register spinner actions to update image selection in repo
+        environmentMapSelectorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
+                val currentValue: Int = viewModel.repo.getEnvironmentMapSelection()
+                if(pos != currentValue){
+                    viewModel.repo.backgroundTexture.value = when(pos) {
+                        0 -> "ms_paint_colors"
+                        1 -> "mandelbrot"
+                        else -> throw IllegalArgumentException("Invalid environment map")
+                    }
+                    viewModel.saveVisualizationState()
+                    mView!!.onPause()
+                    mView!!.onResume()
+
+                    // Dynamically load or remove UI components
+                    //loadOrUnloadUIElements()
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                // Do nothing
+            }
+        }
+
     //    // Observe changes to liveDataBitmap in the ViewModel
     //    viewModel.repo.liveDataBitmap.observe(this, Observer { bitmap ->
     //        // This code will be executed on the main (UI) thread whenever liveDataBitmap changes

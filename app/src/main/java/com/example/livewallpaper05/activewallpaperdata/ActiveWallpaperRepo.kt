@@ -35,8 +35,15 @@ import org.json.JSONObject
 //import java.util.Properties
 
 class ActiveWallpaperRepo private constructor(val context: Context/*, private val wallpaperDao: SavedWallpaperDao, profileDao: ProfileDao*/) : SensorEventListener {
+
+    // Saved app data
+    private val sharedPreferences: SharedPreferences = getPreferences()
+    private val sharedPreferencesEditor: SharedPreferences.Editor = sharedPreferences.edit()
+    // ViewModel state
+    var visualization: Visualization = visualizationIntToVisualizationObject(getVisualizationSelection())
+
+    val backgroundTexture: MutableLiveData<String> = MutableLiveData<String>(visualization.toJsonObject().getString("background_texture"))
     val fluidSurface: MutableLiveData<Boolean> = MutableLiveData(true)
-    val backgroundTexture: MutableLiveData<String> = MutableLiveData<String>("mandelbrot")
     var backgroundIsSolidColor: MutableLiveData<Boolean> = MutableLiveData<Boolean>(false)
     var referenceFrameRotates: MutableLiveData<Boolean> = MutableLiveData<Boolean>(false)
     var smoothSphereSurface: MutableLiveData<Boolean> = MutableLiveData<Boolean>(true)
@@ -81,12 +88,6 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
     //private var transitionNewId: Int = 0
 
     private lateinit var mSensorManager: SensorManager
-
-    // Saved app data
-    private val sharedPreferences: SharedPreferences = getPreferences()
-    private val sharedPreferencesEditor: SharedPreferences.Editor = sharedPreferences.edit()
-    // ViewModel state
-    var visualization: Visualization = visualizationIntToVisualizationObject(getVisualizationSelection())
 
     //fun isVisualizationInitialized(): Boolean {
     //    return this::visualization.isInitialized
@@ -712,6 +713,16 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
 
     fun getVisualizationSelection(): Int {
         return sharedPreferences.getInt("preferredVisualization", 0)
+    }
+
+    fun getEnvironmentMapSelection(): Int {
+        return if (backgroundTexture.value!! == "ms_paint_colors") {
+            0
+        } else if(backgroundTexture.value!! == "mandelbrot") {
+            1
+        } else {
+            0
+        }
     }
 
     fun visualizationIntToVisualizationObject(selection: Int): Visualization {
