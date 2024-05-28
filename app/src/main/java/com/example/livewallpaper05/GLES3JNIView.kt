@@ -97,9 +97,7 @@ class Renderer(private val context: Context, private var mViewModel: ActiveWallp
         mViewModel.repo.fieldOfView.postValue(jsonConfig.getDouble("field_of_view").toFloat())
         mViewModel.repo.backgroundIsSolidColor.postValue(jsonConfig.getBoolean("background_is_solid_color"))
         mViewModel.repo.backgroundTexture.postValue(jsonConfig.getString("background_texture"))
-        mViewModel.updateColor(mViewModel.repo.visualization.jsonObjectToColor(jsonConfig.getJSONObject("background_color")), true)
-        Log.d("GLES3JNIView", jsonConfig.toString())
-        Log.d("GLES3JNIView", "graphSelection = " + mViewModel.repo.graphSelection.toString())
+        mViewModel.repo.color.postValue(mViewModel.repo.visualization.jsonObjectToColor(jsonConfig.getJSONObject("background_color")))
         PreviewActivity.init(jsonConfig.toString(), mode)
     }
 }

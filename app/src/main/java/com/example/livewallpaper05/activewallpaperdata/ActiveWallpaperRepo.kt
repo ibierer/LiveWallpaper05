@@ -68,7 +68,7 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
     //var preview: Bitmap? = null
     //var savedConfig: String = ""
     //var savedWids: List<Int> = listOf(0)
-    var rememberColorPickerValue: Int = 0
+    var rememberColorPickerValue: Int = Color.RED
 
     //// initialize values for saved wallpaper info
     //val activeWallpaper: MutableLiveData<SavedWallpaperRow> = MutableLiveData<SavedWallpaperRow>()
