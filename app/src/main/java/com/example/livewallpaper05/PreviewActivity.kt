@@ -4,7 +4,7 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-//import android.text.TextWatcher
+import android.text.TextWatcher
 import android.view.View
 import android.view.WindowManager
 import android.view.animation.Animation
@@ -26,7 +26,7 @@ import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
+//import androidx.lifecycle.Observer
 //import androidx.lifecycle.Observer
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
@@ -500,22 +500,22 @@ class PreviewActivity : AppCompatActivity() {
     //            viewModel.repo.synchronizeWithServer(viewModel.repo.uid)
     //        }
     //    }
-    //
-    //    // setup equation editor
-    //    viewModel.updateEquation(equationEditor.text.toString())
-    //    equationEditor.addTextChangedListener(object : TextWatcher {
-    //        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-    //            // Do nothing
-    //        }
-    //
-    //        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-    //            updateSyntaxResult()
-    //        }
-    //
-    //        override fun afterTextChanged(s: android.text.Editable?) {
-    //            // Do nothing
-    //        }
-    //    })
+
+        // setup equation editor
+        viewModel.updateEquation(equationEditor.text.toString())
+        equationEditor.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // Do nothing
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                updateSyntaxResult()
+            }
+
+            override fun afterTextChanged(s: android.text.Editable?) {
+                // Do nothing
+            }
+        })
 
         fun doneButton() {
             //val currentFocusView = currentFocus
