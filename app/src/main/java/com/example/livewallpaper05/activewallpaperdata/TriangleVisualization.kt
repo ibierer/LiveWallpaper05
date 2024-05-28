@@ -51,6 +51,9 @@ data class TriangleVisualization (
     override val relevantSpinnerIds: List<Int> = listOf(
 
     )
+    override val relevantRadioGroupIds: List<Int> = listOf(
+        R.id.background_radio_group
+    )
 
     override fun toJsonObject() : JSONObject {
         val jsonObject = JSONObject()

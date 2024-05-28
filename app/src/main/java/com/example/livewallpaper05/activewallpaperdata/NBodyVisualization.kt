@@ -57,6 +57,9 @@ data class NBodyVisualization (
     override val relevantSpinnerIds: List<Int> = listOf(
 
     )
+    override val relevantRadioGroupIds: List<Int> = listOf(
+
+    )
 
     override fun toJsonObject() : JSONObject {
         val jsonObject = JSONObject()

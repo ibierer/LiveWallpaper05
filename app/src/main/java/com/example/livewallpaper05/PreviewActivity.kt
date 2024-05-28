@@ -26,13 +26,13 @@ import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 //import androidx.lifecycle.Observer
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModelFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import yuku.ambilwarna.AmbilWarnaDialog
 
@@ -85,7 +85,7 @@ class PreviewActivity : AppCompatActivity() {
     //    val flipsNormalsCheckBox: CheckBox = findViewById<CheckBox>(R.id.flip_normals_checkbox)
         val linearLayout: LinearLayout = findViewById<LinearLayout>(R.id.settings_linearlayout)
     //    val doneButton: Button = findViewById<Button>(R.id.done_button)
-        val backgroundRadioButton: RadioGroup = findViewById<RadioGroup>(R.id.background_radio_group)
+        val backgroundRadioGroup: RadioGroup = findViewById<RadioGroup>(R.id.background_radio_group)
         val solidColorRadioButton: RadioButton = findViewById<RadioButton>(R.id.solid_color_radio_button)
         val imageRadioButton: RadioButton = findViewById<RadioButton>(R.id.image_radio_button)
     //    val previewImageView: ImageView = findViewById<ImageView>(R.id.imageView)
@@ -151,7 +151,9 @@ class PreviewActivity : AppCompatActivity() {
             val spinnerIds: List<Int> = listOf(
                 R.id.graph_selection_spinner
             )
-            Log.d("PreviewActivity", "!viewModel.repo.isCollapsed")
+            val radioGroupIds: List<Int> = listOf(
+                R.id.background_radio_group
+            )
             for (id in textViewIds) {
                 if (viewModel.repo.visualization.relevantTextViewIds.contains(id) && !viewModel.repo.isCollapsed) {
                     findViewById<TextView>(id).visibility = View.VISIBLE
@@ -202,6 +204,15 @@ class PreviewActivity : AppCompatActivity() {
                 } else {
                     findViewById<Spinner>(id).visibility = View.GONE
                     findViewById<Spinner>(id).isEnabled = false
+                }
+            }
+            for (id in radioGroupIds) {
+                if (viewModel.repo.visualization.relevantRadioGroupIds.contains(id) && !viewModel.repo.isCollapsed) {
+                    findViewById<RadioGroup>(id).visibility = View.VISIBLE
+                    findViewById<RadioGroup>(id).isEnabled = true
+                } else {
+                    findViewById<RadioGroup>(id).visibility = View.GONE
+                    findViewById<RadioGroup>(id).isEnabled = false
                 }
             }
         }
@@ -378,20 +389,30 @@ class PreviewActivity : AppCompatActivity() {
     //        }
     //
     //    }
-    //
-    //    solidColorRadioButton.setOnClickListener {
-    //        viewModel.repo.backgroundIsSolidColor.postValue(true)
-    //        mView!!.onPause()
-    //        mView!!.onResume()
-    //    }
-    //
-    //    imageRadioButton.setOnClickListener {
-    //        viewModel.repo.backgroundIsSolidColor.postValue(false)
-    //        mView!!.onPause()
-    //        mView!!.onResume()
-    //    }
-    //
-    //    environmentMapSelectorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+
+        solidColorRadioButton.setOnClickListener {
+            viewModel.repo.backgroundIsSolidColor.value = true
+            viewModel.saveVisualizationState()
+            mView!!.onPause()
+            mView!!.onResume()
+        }
+
+        imageRadioButton.setOnClickListener {
+            viewModel.repo.backgroundIsSolidColor.value = false
+            viewModel.saveVisualizationState()
+            mView!!.onPause()
+            mView!!.onResume()
+        }
+
+        viewModel.repo.backgroundIsSolidColor.observe(this) { isSolidColor ->
+            if (isSolidColor) {
+                backgroundRadioGroup.check(solidColorRadioButton.id)
+            } else {
+                backgroundRadioGroup.check(imageRadioButton.id)
+            }
+        }
+
+        //    environmentMapSelectorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
     //        override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
     //            // get array from arrays
     //            val environmentMapOptions = resources.getStringArray(R.array.environment_map_options)
@@ -536,7 +557,7 @@ class PreviewActivity : AppCompatActivity() {
         fun showUIComponents() {
             hideUIButton.text = resources.getString(R.string.hideUIButtonText)
             colorButton.visibility = View.VISIBLE
-            backgroundRadioButton.visibility = View.VISIBLE
+            backgroundRadioGroup.visibility = View.VISIBLE
             solidColorRadioButton.visibility = View.VISIBLE
             imageRadioButton.visibility = View.VISIBLE
             findViewById<TextView>(R.id.background_label).visibility = View.VISIBLE
@@ -546,7 +567,7 @@ class PreviewActivity : AppCompatActivity() {
             //previewImageView.visibility = View.VISIBLE
             colorButton.isEnabled = true
             linearLayout.isEnabled = true
-            backgroundRadioButton.isEnabled = true
+            backgroundRadioGroup.isEnabled = true
             solidColorRadioButton.isEnabled = true
             imageRadioButton.isEnabled = true
             environmentMapSelectorSpinner.isEnabled = true
@@ -562,7 +583,7 @@ class PreviewActivity : AppCompatActivity() {
             colorButton.visibility = View.GONE
             solidColorRadioButton.visibility = View.GONE
             imageRadioButton.visibility = View.GONE
-            backgroundRadioButton.visibility = View.GONE
+            backgroundRadioGroup.visibility = View.GONE
             findViewById<TextView>(R.id.background_label).visibility = View.GONE
             environmentMapSelectorSpinner.visibility = View.GONE
             //syncButton.visibility = View.GONE
@@ -572,7 +593,7 @@ class PreviewActivity : AppCompatActivity() {
             linearLayout.isEnabled = false
             solidColorRadioButton.isEnabled = false
             imageRadioButton.isEnabled = false
-            backgroundRadioButton.isEnabled = false
+            backgroundRadioGroup.isEnabled = false
             environmentMapSelectorSpinner.isEnabled = false
             //syncButton.isEnabled = false
             //saveButton.isEnabled = false

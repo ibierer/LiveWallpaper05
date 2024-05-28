@@ -92,6 +92,7 @@ class Renderer(private val context: Context, private var mViewModel: ActiveWallp
         }
         mViewModel.repo.distanceFromOrigin.postValue(jsonConfig.getDouble("distance").toFloat())
         mViewModel.repo.fieldOfView.postValue(jsonConfig.getDouble("field_of_view").toFloat())
+        mViewModel.repo.backgroundIsSolidColor.postValue(jsonConfig.getBoolean("background_is_solid_color"))
         mViewModel.repo.backgroundTexture.postValue(jsonConfig.getString("background_texture"))
         mViewModel.updateColor(mViewModel.repo.visualization.jsonObjectToColor(jsonConfig.getJSONObject("background_color")), true)
         PreviewActivity.init(jsonConfig.toString(), mode)

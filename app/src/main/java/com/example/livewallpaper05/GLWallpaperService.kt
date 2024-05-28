@@ -41,7 +41,6 @@ class GLWallpaperService : WallpaperService() {
             super.onSurfaceRedrawNeeded(holder)
             val display = (getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay
             val rotation = display.rotation
-            Log.d("MyWallpaperService", "Rotation changed to $rotation")
             viewModel.repo.updateOrientation(rotation)
         }
 
