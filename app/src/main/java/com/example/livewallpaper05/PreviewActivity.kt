@@ -470,15 +470,17 @@ class PreviewActivity : AppCompatActivity() {
                 viewModel.repo.rememberColorPickerValue,
                 object : AmbilWarnaDialog.OnAmbilWarnaListener {
                     override fun onCancel(dialog: AmbilWarnaDialog?) {
-                        dialog?.dialog?.dismiss()
+
                     }
 
                     override fun onOk(dialog: AmbilWarnaDialog?, color: Int) {
-                        viewModel.repo.rememberColorPickerValue = color
-                        viewModel.updateColor(Color.valueOf(color))
-                        dialog?.dialog?.dismiss()
-                        mView!!.onPause()
-                        mView!!.onResume()
+                        if(color != viewModel.repo.rememberColorPickerValue) {
+                            viewModel.repo.rememberColorPickerValue = color
+                            viewModel.repo.color.value = Color.valueOf(color)
+                            viewModel.saveVisualizationState()
+                            mView!!.onPause()
+                            mView!!.onResume()
+                        }
                     }
                 }
             )
