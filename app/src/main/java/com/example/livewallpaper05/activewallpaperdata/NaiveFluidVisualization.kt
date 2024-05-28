@@ -38,6 +38,23 @@ data class NaiveFluidVisualization (
         backgroundTexture = jsonObject.optString("background_texture", "ms_paint_colors")
     )
 
+    constructor(repo: ActiveWallpaperRepo) : this(
+        visualizationType = "simulation",
+        simulationType = "naive",
+        distance = repo.distanceFromOrigin.value!!,
+        fieldOfView = repo.fieldOfView.value!!,
+        backgroundColor = repo.color.value!!,
+        fluidSurface = repo.fluidSurface.value!!,
+        particleCount = repo.particleCount.value!!,
+        smoothSphereSurface = repo.smoothSphereSurface.value!!,
+        gravity = repo.gravity.value!!,
+        linearAcceleration = repo.linearAcceleration.value!!,
+        efficiency = repo.efficiency.value!!,
+        referenceFrameRotates = repo.referenceFrameRotates.value!!,
+        backgroundIsSolidColor = repo.backgroundIsSolidColor.value!!,
+        backgroundTexture = repo.backgroundTexture.value!!
+    )
+
     override val relevantTextViewIds : List<Int> = listOf(
         R.id.distance_label,
         R.id.field_of_view_label,

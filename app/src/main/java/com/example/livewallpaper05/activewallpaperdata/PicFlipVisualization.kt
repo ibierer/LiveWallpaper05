@@ -16,6 +16,7 @@ data class PicFlipVisualization (
     var backgroundIsSolidColor: Boolean = false,
     var backgroundTexture: String = "ms_paint_colors"
 ) : Visualization() {
+
     constructor(jsonObject: JSONObject) : this(
         visualizationType = jsonObject.optString("visualization_type", "simulation"),
         simulationType = jsonObject.optString("simulation_type", "picflip"),
@@ -27,6 +28,19 @@ data class PicFlipVisualization (
         referenceFrameRotates = jsonObject.optBoolean("reference_frame_rotates", true),
         backgroundIsSolidColor = jsonObject.optBoolean("background_is_solid_color", false),
         backgroundTexture = jsonObject.optString("background_texture", "ms_paint_colors")
+    )
+
+    constructor(repo: ActiveWallpaperRepo) : this(
+        visualizationType = "simulation",
+        simulationType = "picflip",
+        distance = repo.distanceFromOrigin.value!!,
+        fieldOfView = repo.fieldOfView.value!!,
+        gravity = repo.gravity.value!!,
+        linearAcceleration = repo.linearAcceleration.value!!,
+        backgroundColor = repo.color.value!!,
+        referenceFrameRotates = repo.referenceFrameRotates.value!!,
+        backgroundIsSolidColor = repo.backgroundIsSolidColor.value!!,
+        backgroundTexture = repo.backgroundTexture.value!!
     )
 
     override val relevantTextViewIds : List<Int> = listOf(

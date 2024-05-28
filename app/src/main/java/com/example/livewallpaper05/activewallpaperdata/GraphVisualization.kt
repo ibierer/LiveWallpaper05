@@ -28,6 +28,18 @@ data class GraphVisualization (
         equation = jsonObject.optString("equation", "1/((sqrt(x^2 + y^2) - 1.5 + sin(t))^2 + (z + cos(t))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 2π/3))^2 + (z + cos(t + 2π/3))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 4π/3))^2 + (z + cos(t + 4π/3))^2) = 5")
     )
 
+    constructor(repo: ActiveWallpaperRepo) : this(
+        visualizationType = "graph",
+        distance = repo.distanceFromOrigin.value!!,
+        fieldOfView = repo.fieldOfView.value!!,
+        backgroundColor = repo.color.value!!,
+        referenceFrameRotates = repo.referenceFrameRotates.value!!,
+        backgroundIsSolidColor = repo.backgroundIsSolidColor.value!!,
+        backgroundTexture = repo.backgroundTexture.value!!,
+        vectorPointsPositive = repo.flipNormals.value!!,
+        equation = repo.userDefinedEquation.value!!
+    )
+
     override val relevantTextViewIds : List<Int> = listOf(
         R.id.distance_label,
         R.id.field_of_view_label,

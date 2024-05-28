@@ -22,6 +22,15 @@ data class TriangleVisualization (
         backgroundTexture = jsonObject.optString("background_texture", "mandelbrot")
     )
 
+    constructor(repo: ActiveWallpaperRepo) : this(
+        visualizationType = "other",
+        distance = repo.distanceFromOrigin.value!!,
+        fieldOfView = repo.fieldOfView.value!!,
+        backgroundColor = repo.color.value!!,
+        backgroundIsSolidColor = repo.backgroundIsSolidColor.value!!,
+        backgroundTexture = repo.backgroundTexture.value!!
+    )
+
     override val relevantTextViewIds : List<Int> = listOf(
         R.id.distance_label,
         R.id.field_of_view_label

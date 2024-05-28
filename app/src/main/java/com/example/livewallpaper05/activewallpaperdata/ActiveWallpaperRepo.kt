@@ -34,16 +34,18 @@ import org.json.JSONObject
 //import java.util.Properties
 
 class ActiveWallpaperRepo private constructor(val context: Context/*, private val wallpaperDao: SavedWallpaperDao, profileDao: ProfileDao*/) : SensorEventListener {
-    //val fluidSurface: MutableLiveData<Boolean> = MutableLiveData(true)
-    //val backgroundTexture: MutableLiveData<String> = MutableLiveData<String>("mandelbrot")
-    //var backgroundIsSolidColor: MutableLiveData<Boolean> = MutableLiveData<Boolean>(false)
+    val fluidSurface: MutableLiveData<Boolean> = MutableLiveData(true)
+    val backgroundTexture: MutableLiveData<String> = MutableLiveData<String>("mandelbrot")
+    var backgroundIsSolidColor: MutableLiveData<Boolean> = MutableLiveData<Boolean>(false)
+    var referenceFrameRotates: MutableLiveData<Boolean> = MutableLiveData<Boolean>(false)
+    var smoothSphereSurface: MutableLiveData<Boolean> = MutableLiveData<Boolean>(true)
     //
     //// initialize default values for active wallpaper
     //var wid: Int = 0
     //val lastModified: Long = 0
     //var uid: Int = 11
     //var username: String = "Default User"
-    var userDefinedEquation: String = ""
+    var userDefinedEquation: MutableLiveData<String> = MutableLiveData<String>("")
     //var currentEquation: String = "1/((sqrt(x^2 + y^2) - 1.5 + sin(t))^2 + (z + cos(t))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 2π/3))^2 + (z + cos(t + 2π/3))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 4π/3))^2 + (z + cos(t + 4π/3))^2) = 5"
     var color: MutableLiveData<Color> = MutableLiveData<Color>(Color.valueOf(0.0f, 0.0f, 0.0f, 0.0f))
     var orientation: Int = 0
@@ -54,13 +56,13 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
     var gravity: MutableLiveData<Float> = MutableLiveData<Float>(0.0f)
     var linearAcceleration: MutableLiveData<Float> = MutableLiveData<Float>(1.0f)
     var efficiency: MutableLiveData<Float> = MutableLiveData<Float>(1.0f)
-    //var particleCount: MutableLiveData<Int> = MutableLiveData<Int>(1000)
+    var particleCount: MutableLiveData<Int> = MutableLiveData<Int>(1000)
     val flipNormals: MutableLiveData<Boolean> = MutableLiveData<Boolean>(false)
     var rotationData: Array<Float> = arrayOf(0.0f, 0.0f, 0.0f, 0.0f)
     var accelerationData: Array<Float> = arrayOf(0.0f, 0.0f, 0.0f)
     var linearAccelerationData: Array<Float> = arrayOf(0.0f, 0.0f, 0.0f)
 
-    //var graphSelection: Int = 0
+    var graphSelection: Int = 0
     //var visualizationName = MutableLiveData<String>("")
     //var preview: Bitmap? = null
     //var savedConfig: String = ""
@@ -762,12 +764,20 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
     }
 
     fun saveVisualizationState() {
-        TODO("Not yet implemented")
-        /*sharedPreferencesEditor.putString(
-            getVisualizationSelection().toString(),
+        val selection: Int = getVisualizationSelection()
+        visualization = when (selection) {
+            0 -> NBodyVisualization(this)
+            1 -> NaiveFluidVisualization(this)
+            2 -> PicFlipVisualization(this)
+            3 -> TriangleVisualization(this)
+            4 -> GraphVisualization(this)
+            else -> throw IllegalArgumentException("Invalid visualization type")
+        }
+        sharedPreferencesEditor.putString(
+            selection.toString(),
             visualization.toJsonObject().toString()
         )
-        sharedPreferencesEditor.apply()*/
+        sharedPreferencesEditor.apply()
     }
 
     //fun setTransitionNewId(newId: Int) {
