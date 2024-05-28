@@ -109,7 +109,7 @@ public:
 
     const string SPHERE_MAP_FRAGMENT_SHADER =
             ES_VERSION +
-            "precision mediump float;\n"
+            "precision highp float;\n"
             "uniform sampler2D environmentTexture;\n"
             "in vec3 direction;\n"
             "out vec4 outColor;\n" +

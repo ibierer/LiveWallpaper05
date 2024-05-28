@@ -65,7 +65,7 @@ public:
 
     const string SPHERE_MAP_DOUBLE_REFRACTION_FRAGMENT_SHADER =
             ES_VERSION +
-            "precision mediump float;\n"
+            "precision highp float;\n"
             "uniform sampler2D environmentTexture;\n"
             "in vec3 direction;\n"
             "in vec3 vNormal;\n"
@@ -96,7 +96,7 @@ public:
 
     const string SPHERE_MAP_BACKGROUND_FRAGMENT_SHADER =
             ES_VERSION +
-            "precision mediump float;\n"
+            "precision highp float;\n"
             "uniform sampler2D environmentTexture;\n"
             "in vec3 direction;\n"
             "out vec4 outColor;\n" +

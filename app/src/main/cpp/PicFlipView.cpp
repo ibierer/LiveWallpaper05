@@ -117,7 +117,7 @@ void PicFlipView::render() {
     Matrix4<float> rotation = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
     Matrix4<float> view = referenceFrameRotates ? translation : translation * rotation;
     Matrix4<float> projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
-    Matrix4<float> inverseViewProjection = (projection * rotation).GetInverse();
+    Matrix4<float> inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();
     for (int i = 0; i < fluid->numParticles; i++) {
         translation2 = translation2.Translation(10.0f * Vec3<float>(fluid->particlePos[i].x, fluid->particlePos[i].y, fluid->particlePos[i].z) - Vec3<float>(15.0f));
         Matrix4<float> model = translation2;
