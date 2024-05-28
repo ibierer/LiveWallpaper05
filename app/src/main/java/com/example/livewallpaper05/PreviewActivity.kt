@@ -668,16 +668,10 @@ class PreviewActivity : AppCompatActivity() {
             flipsNormalsCheckBox.isChecked = flip
         }
 
-        //if (viewModel.repo.isCollapsed) {
-        //    hideUIComponents()
-        //} else {
-        //    showUIComponents()
-        //}
-
-        hideUIButton.text = if(viewModel.repo.isCollapsed) {
-            resources.getString(R.string.showUIButtonText)
+        if (viewModel.repo.isCollapsed) {
+            hideUIComponents()
         } else {
-            resources.getString(R.string.hideUIButtonText)
+            showUIComponents()
         }
     }
 
