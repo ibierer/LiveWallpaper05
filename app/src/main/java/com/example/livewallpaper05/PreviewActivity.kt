@@ -82,7 +82,7 @@ class PreviewActivity : AppCompatActivity() {
     //    val saveButton: Button = findViewById<Button>(R.id.save_button)
     //    val syncButton: Button = findViewById<Button>(R.id.sync_button)
     //    val equationEditor: EditText = findViewById<EditText>(R.id.et_equation)
-    //    val flipsNormalsCheckBox: CheckBox = findViewById<CheckBox>(R.id.flip_normals_checkbox)
+        val flipsNormalsCheckBox: CheckBox = findViewById<CheckBox>(R.id.flip_normals_checkbox)
         val linearLayout: LinearLayout = findViewById<LinearLayout>(R.id.settings_linearlayout)
     //    val doneButton: Button = findViewById<Button>(R.id.done_button)
         val backgroundRadioGroup: RadioGroup = findViewById<RadioGroup>(R.id.background_radio_group)
@@ -658,10 +658,15 @@ class PreviewActivity : AppCompatActivity() {
     //            }
     //        }
     //    }
-    //
-    //    flipsNormalsCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
-    //        viewModel.repo.flipNormals.value = isChecked
-    //    }
+
+        flipsNormalsCheckBox.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.repo.flipNormals.value = isChecked
+            viewModel.saveVisualizationState()
+        }
+
+        viewModel.repo.flipNormals.observe(this){ flip ->
+            flipsNormalsCheckBox.isChecked = flip
+        }
 
         //if (viewModel.repo.isCollapsed) {
         //    hideUIComponents()

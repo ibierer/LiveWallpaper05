@@ -91,6 +91,7 @@ class Renderer(private val context: Context, private var mViewModel: ActiveWallp
                     jsonConfig.put("equation", context.resources.getStringArray(R.array.graph_options)[mViewModel.repo.graphSelection])
                 }
                 mViewModel.repo.referenceFrameRotates.postValue(jsonConfig.getBoolean("reference_frame_rotates"))
+                mViewModel.repo.flipNormals.postValue(jsonConfig.getBoolean("vector_points_positive"))
             }
         }
         mViewModel.repo.distanceFromOrigin.postValue(jsonConfig.getDouble("distance").toFloat())
