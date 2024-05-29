@@ -149,7 +149,8 @@ class PreviewActivity : AppCompatActivity() {
                 R.id.done_button
             )
             val spinnerIds: List<Int> = listOf(
-                R.id.graph_selection_spinner
+                R.id.graph_selection_spinner,
+                R.id.image_selection_spinner
             )
             val radioGroupIds: List<Int> = listOf(
                 R.id.background_radio_group
