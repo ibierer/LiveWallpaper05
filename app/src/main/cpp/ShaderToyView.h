@@ -524,22 +524,22 @@ public:
             "   }else{\n" // Entering cube
             "       vec3 intersection = p + t * d;\n"
             "       float dotNI = dot(hitNormal, d);\n"
-            "       vec3 reflectedRay = reflect2(d, hitNormal, dotNI);\n"
-            "       vec3 refractedRay = refract2(d, hitNormal, 0.75f, dotNI);\n"
+            "       vec3 refractedRay = normalize(refract2(d, hitNormal, 0.75f, dotNI));\n"
             "       \n" // Exiting or bouncing off inside of cube
             "       t = intersectCube(intersection, refractedRay, vec3(-1.0f), vec3(1.0f), hitNormal);\n"
             "       hitNormal = -hitNormal;\n"
             "       intersection = intersection + t * refractedRay;\n"
             "       float dotNI2 = dot(hitNormal, refractedRay);\n"
-            "       refractedRay = refract2(refractedRay, hitNormal, 1.0f / 0.75f, dotNI2);\n"
+            "       refractedRay = normalize(refract2(refractedRay, hitNormal, 1.0f / 0.75f, dotNI2));\n"
             "       \n" // Exiting or already exited cube
             "       t = intersectCube(intersection, refractedRay, vec3(-1.0f), vec3(1.0f), hitNormal);\n"
             "       if(t > 0.0f){\n"
             "           \n" // Exiting cube
             "           hitNormal = -hitNormal;\n"
             "           float dotNI3 = dot(hitNormal, refractedRay);\n"
-            "           refractedRay = refract2(refractedRay, hitNormal, 1.0f / 0.75f, dotNI3);\n"
+            "           refractedRay = normalize(refract2(refractedRay, hitNormal, 1.0f / 0.75f, dotNI3));\n"
             "       }\n"
+            "       vec3 reflectedRay = reflect2(d, hitNormal, dotNI);\n"
             "       vec4 reflectedColor = Texture(environmentTexture, reflectedRay);\n"
             "       vec4 refractedColor = Texture(environmentTexture, refractedRay);\n"
             "       outColor = mix(refractedColor, reflectedColor, fresnel(dotNI));\n"
