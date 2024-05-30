@@ -329,7 +329,7 @@ public:
             "}\n";*/
 
     // Cube with up to 3 refractions
-    const string SPHERE_MAP_FRAGMENT_SHADER =
+    /*const string SPHERE_MAP_FRAGMENT_SHADER =
             ES_VERSION +
             "precision highp float;\n"
             "uniform sampler2D environmentTexture;\n"
@@ -351,20 +351,20 @@ public:
             "    vec3 t2 = max(tMin, tMax);\n"
             "    float tNear = max(max(t1.x, t1.y), t1.z);\n"
             "    float tFar = min(min(t2.x, t2.y), t2.z);\n"
-            "\n"
+            "    \n"
             "    if (tNear > tFar || tFar < 0.0) return -1.0;\n"
-            "\n"
+            "    \n"
             "    // Determine entry and exit normals\n"
             "    hitNormal = vec3(0.0);\n"
             "    if (tNear == t1.x) hitNormal.x = -sign(rayDir.x);\n"
             "    else if (tNear == t1.y) hitNormal.y = -sign(rayDir.y);\n"
             "    else if (tNear == t1.z) hitNormal.z = -sign(rayDir.z);\n"
-            "\n"
+            "    \n"
             "    exitNormal = vec3(0.0);\n"
             "    if (tFar == t2.x) exitNormal.x = sign(rayDir.x);\n"
             "    else if (tFar == t2.y) exitNormal.y = sign(rayDir.y);\n"
             "    else if (tFar == t2.z) exitNormal.z = sign(rayDir.z);\n"
-            "\n"
+            "    \n"
             "    return tNear < 0.0 ? tFar : tNear;  // Return tFar if inside the box, otherwise tNear\n"
             "}\n"
             "void main() {\n"
@@ -375,20 +375,20 @@ public:
             "    vec3 hitNormal;\n"
             "    vec3 exitNormal;\n"
             "    float t = intersectCube(p, d, C + boxMin, C + boxMax, hitNormal, exitNormal);\n"
-            "\n"
+            "    \n"
             "    if (t < 0.0) {\n"
             "        outColor = Texture(environmentTexture, d);\n"
             "    } else {\n"
             "        vec3 hitPoint = p + t * d;\n"
             "        vec3 normalizedHitNormal = normalize(hitNormal);\n"
             "        float dotNI = dot(d, normalizedHitNormal);\n"
-            "\n"
+            "        \n"
             "        // First refraction (entry)\n"
             "        vec3 refractDir = refract2(d, normalizedHitNormal, 0.75, dotNI);\n"
             "        vec3 hitNormalExit;\n"
             "        vec3 exitNormalExit;\n"
             "        float tExit = intersectCube(hitPoint, refractDir, C + boxMin, C + boxMax, hitNormalExit, exitNormalExit);\n"
-            "\n"
+            "        \n"
             "        vec4 reflectedColor = Texture(environmentTexture, reflect2(d, normalizedHitNormal, dotNI));\n"
             "        \n"
             "        if (tExit < 0.0) {\n"
@@ -397,13 +397,13 @@ public:
             "            vec3 exitPoint = hitPoint + tExit * refractDir;\n"
             "            vec3 normalizedExitNormal = normalize(exitNormalExit);\n"
             "            float dotNE = dot(refractDir, normalizedExitNormal);\n"
-            "\n"
+            "            \n"
             "            // Second refraction (exit)\n"
             "            vec3 refractExitDir = refract2(refractDir, normalizedExitNormal, 1.0 / 0.75, dotNE);\n"
             "            vec3 hitNormalSecondExit;\n"
             "            vec3 exitNormalSecondExit;\n"
             "            float tSecondExit = intersectCube(exitPoint, refractExitDir, C + boxMin, C + boxMax, hitNormalSecondExit, exitNormalSecondExit);\n"
-            "\n"
+            "            \n"
             "            if (tSecondExit < 0.0) {\n"
             "                vec4 refractedColor = Texture(environmentTexture, refractExitDir);\n"
             "                outColor = mix(refractedColor, reflectedColor, fresnel(dotNI));\n"
@@ -411,7 +411,7 @@ public:
             "                vec3 secondExitPoint = exitPoint + tSecondExit * refractExitDir;\n"
             "                vec3 normalizedSecondExitNormal = normalize(exitNormalSecondExit);\n"
             "                float dotNSecondE = dot(refractExitDir, normalizedSecondExitNormal);\n"
-            "\n"
+            "                \n"
             "                // Third refraction (exit)\n"
             "                vec3 refractSecondExitDir = refract2(refractExitDir, normalizedSecondExitNormal, 1.0 / 0.75, dotNSecondE);\n"
             "                vec4 finalRefractedColor = Texture(environmentTexture, refractSecondExitDir);\n"
@@ -421,6 +421,129 @@ public:
             "            }\n"
             "        }\n"
             "    }\n"
+            "}\n";*/
+
+    // My attempt at raytracing a cube
+    const string SPHERE_MAP_FRAGMENT_SHADER =
+            ES_VERSION +
+            "precision highp float;\n"
+            "uniform sampler2D environmentTexture;\n"
+            "uniform vec2 iResolution; // Pass the resolution of your rendering surface\n"
+            "uniform float iTime;      // Pass the elapsed time since the start of the application\n"
+            "uniform vec2 iMouse;      // Pass the current mouse position\n"
+            "uniform vec3 p;           // Pass the current camera position\n"
+            "in vec3 direction;\n"
+            "out vec4 outColor;\n" +
+            SPHERE_MAP_TEXTURE_FUNCTION +
+            REFLECT2_FUNCTION +
+            REFRACT2_FUNCTION +
+            FRESNEL_EFFECT_FUNCTION +
+            "float intersectCube(vec3 rayOrigin, vec3 rayDirection, vec3 box_lower, vec3 box_upper, out vec3 hitNormal) {\n"
+            "   rayOrigin = rayOrigin + 0.001f * rayDirection;\n" // Apply a bias
+            "   float tx_min;\n" // t-value of min value of x within cube
+            "   float tx_max;\n" // t-value of max value of x within cube
+            "   float ty_min;\n" // t-value of min value of y within cube
+            "   float ty_max;\n" // t-value of max value of y within cube
+            "   float tz_min;\n" // t-value of min value of z within cube
+            "   float tz_max;\n" // t-value of max value of z within cube
+            "   float min_tx;\n" // min t-value where x is within cube
+            "   float max_tx;\n" // max t-value where x is within cube
+            "   float min_ty;\n" // min t-value where y is within cube
+            "   float max_ty;\n" // max t-value where y is within cube
+            "   float min_tz;\n" // min t-value where z is within cube
+            "   float max_tz;\n" // max t-value where z is within cube
+            "   if(rayDirection.x == 0.0f){\n"
+            "       if(rayOrigin.x < box_lower.x || box_upper.x < rayOrigin.x){\n"
+            "           return -1.0f;\n"
+            "       }\n"
+            "       tx_min = -1000000000000.0f;\n"
+            "       tx_max =  1000000000000.0f;\n"
+            "   }else{\n"
+            "       tx_min = (box_lower.x - rayOrigin.x) / rayDirection.x;\n"
+            "       tx_max = (box_upper.x - rayOrigin.x) / rayDirection.x;\n"
+            "   }\n"
+            "   if(rayDirection.y == 0.0f){\n"
+            "       if(rayOrigin.y < box_lower.y || box_upper.y < rayOrigin.y){\n"
+            "           return -1.0f;\n"
+            "       }\n"
+            "       ty_min = -1000000000000.0f;\n"
+            "       ty_max =  1000000000000.0f;\n"
+            "   }else{\n"
+            "       ty_min = (box_lower.y - rayOrigin.y) / rayDirection.y;\n"
+            "       ty_max = (box_upper.y - rayOrigin.y) / rayDirection.y;\n"
+            "   }\n"
+            "   if(rayDirection.z == 0.0f){\n"
+            "       if(rayOrigin.z < box_lower.z || box_upper.z < rayOrigin.z){\n"
+            "           return -1.0f;\n"
+            "       }\n"
+            "       tz_min = -1000000000000.0f;\n"
+            "       tz_max =  1000000000000.0f;\n"
+            "   }else{\n"
+            "       tz_min = (box_lower.z - rayOrigin.z) / rayDirection.z;\n"
+            "       tz_max = (box_upper.z - rayOrigin.z) / rayDirection.z;\n"
+            "   }\n"
+            "   min_tx = min(tx_min, tx_max);\n"
+            "   max_tx = max(tx_min, tx_max);\n"
+            "   min_ty = min(ty_min, ty_max);\n"
+            "   max_ty = max(ty_min, ty_max);\n"
+            "   min_tz = min(tz_min, tz_max);\n"
+            "   max_tz = max(tz_min, tz_max);\n"
+            "   float tMin = max(max(min_tx, min_ty), min_tz);\n"
+            "   float tMax = min(min(max_tx, max_ty), max_tz);\n"
+            "   if(tMin < tMax){\n"
+            "       hitNormal = vec3(0.0f);\n"
+            "       if(tMin < 0.0f){\n" // rayOrigin is inside cube
+            "           if(tMax == max_tx){\n"
+            "               if(max_tx == tx_max) hitNormal.x = 1.0f; else hitNormal.x = -1.0f;\n"
+            "           }else if(tMax == max_ty){\n"
+            "               if(max_ty == ty_max) hitNormal.y = 1.0f; else hitNormal.y = -1.0f;\n"
+            "           }else{\n"// if(tMax == max_tz){
+            "               if(max_tz == tz_max) hitNormal.z = 1.0f; else hitNormal.z = -1.0f;\n"
+            "           }\n"
+            "           return tMax;\n"
+            "       }else{\n" // rayOrigin is outside cube
+            "           if(tMin == min_tx){\n"
+            "               if(min_tx == tx_min) hitNormal.x = -1.0f; else hitNormal.x = 1.0f;\n"
+            "           }else if(tMin == min_ty){\n"
+            "               if(min_ty == ty_min) hitNormal.y = -1.0f; else hitNormal.y = 1.0f;\n"
+            "           }else{\n"// if(tMin == min_tz){
+            "               if(min_tz == tz_min) hitNormal.z = -1.0f; else hitNormal.z = 1.0f;\n"
+            "           }\n"
+            "           return tMin;\n"
+            "       }\n"
+            "   }else{\n"
+            "       return -1.0f;\n"
+            "   }\n"
+            "}\n"
+            "void main() {\n"
+            "   vec3 hitNormal;\n"
+            "   vec3 d = normalize(direction);\n"
+            "   float t = intersectCube(p, d, vec3(-1.0f), vec3(1.0f), hitNormal);\n"
+            "   if(t < 0.0f){\n" // No intersection with cube
+            "       outColor = Texture(environmentTexture, d);\n"
+            "   }else{\n" // Entering cube
+            "       vec3 intersection = p + t * d;\n"
+            "       float dotNI = dot(hitNormal, d);\n"
+            "       vec3 reflectedRay = reflect2(d, hitNormal, dotNI);\n"
+            "       vec3 refractedRay = refract2(d, hitNormal, 0.75f, dotNI);\n"
+            "       \n" // Exiting or bouncing off inside of cube
+            "       t = intersectCube(intersection, refractedRay, vec3(-1.0f), vec3(1.0f), hitNormal);\n"
+            "       hitNormal = -hitNormal;\n"
+            "       intersection = intersection + t * refractedRay;\n"
+            "       float dotNI2 = dot(hitNormal, refractedRay);\n"
+            "       refractedRay = refract2(refractedRay, hitNormal, 1.0f / 0.75f, dotNI2);\n"
+            "       \n" // Exiting or already exited cube
+            "       t = intersectCube(intersection, refractedRay, vec3(-1.0f), vec3(1.0f), hitNormal);\n"
+            "       if(t > 0.0f){\n"
+            "           \n" // Exiting cube
+            "           hitNormal = -hitNormal;\n"
+            "           float dotNI3 = dot(hitNormal, refractedRay);\n"
+            "           refractedRay = refract2(refractedRay, hitNormal, 1.0f / 0.75f, dotNI3);\n"
+            "       }\n"
+            "       vec4 reflectedColor = Texture(environmentTexture, reflectedRay);\n"
+            "       vec4 refractedColor = Texture(environmentTexture, refractedRay);\n"
+            "       outColor = mix(refractedColor, reflectedColor, fresnel(dotNI));\n"
+            "   }\n"
             "}\n";
 
     ShaderToyView();
