@@ -19,14 +19,13 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.RadioGroup
-//import android.widget.ScrollView
+import android.widget.ScrollView
 import android.widget.SeekBar
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-//import androidx.lifecycle.Observer
 //import androidx.lifecycle.Observer
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
@@ -644,13 +643,13 @@ class PreviewActivity : AppCompatActivity() {
             setDefaultAnimationParametersAndAnimate(animation)
         }
 
-    //    // Scroll the ScrollView to the bottom when the layout changes (e.g., keyboard shown/hidden)
-    //    findViewById<ScrollView>(R.id.settings_scrollview).viewTreeObserver.addOnGlobalLayoutListener {
-    //        findViewById<ScrollView>(R.id.settings_scrollview).post {
-    //            findViewById<ScrollView>(R.id.settings_scrollview).fullScroll(View.FOCUS_DOWN)
-    //        }
-    //    }
-    //
+        // Scroll the ScrollView to the bottom when the layout changes (e.g., keyboard shown/hidden)
+        findViewById<ScrollView>(R.id.settings_scrollview).viewTreeObserver.addOnGlobalLayoutListener {
+            findViewById<ScrollView>(R.id.settings_scrollview).post {
+                findViewById<ScrollView>(R.id.settings_scrollview).fullScroll(View.FOCUS_DOWN)
+            }
+        }
+
     //    // Scroll the ScrollView to the bottom when the EditText gains focus
     //    equationEditor.setOnFocusChangeListener { _, hasFocus ->
     //        if (hasFocus) {
