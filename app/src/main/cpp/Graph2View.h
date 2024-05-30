@@ -23,6 +23,8 @@ public:
 
     ImplicitGrapher implicitGrapher;
 
+    bool vectorPointsPositive;
+
     bool referenceFrameRotates;
 
     const string GRAPH_VERTEX_SHADER =
@@ -80,19 +82,35 @@ public:
             "    if(reflectivity == 1.0f){\n"
             "        outColor = reflectedColor;\n"
             "    }else{\n"
-            "        float mixRatio = reflectivity < 0.0f ? fresnel(dotNI) : reflectivity;\n"
-            "        vec3 refractedRay = normalize(refract2(normalizedDirection, normalizedNormal, inverseIOR, dotNI));\n"
-            "        vec4 refractedColor;\n"
-            "        if(twoSidedRefraction == 1){\n"
-            "            vec4 bufferColor = texture(image, gl_FragCoord.xy/vec2(screenWidth, screenHeight));\n"
-            "            vec3 normalizedSecondaryNormal = normalize(vec3(0.5f) - bufferColor.rgb);\n"
-            "            float secondaryDotNI = dot(refractedRay, normalizedSecondaryNormal);\n"
-            "            vec3 secondaryRefractedRay = normalize(refract2(refractedRay, normalizedSecondaryNormal, indexOfRefraction, secondaryDotNI));\n"
-            "            refractedColor = Texture(environmentTexture, secondaryRefractedRay);\n"
+            "        if(dotNI > 0.0f){\n"
+            "            float mixRatio = reflectivity < 0.0f ? fresnel(dotNI) : reflectivity;\n"
+            "            vec3 refractedRay = normalize(refract2(normalizedDirection, normalizedNormal, inverseIOR, dotNI));\n"
+            "            vec4 refractedColor;\n"
+            "            if(twoSidedRefraction == 1){\n"
+            "                vec4 bufferColor = texture(image, gl_FragCoord.xy/vec2(screenWidth, screenHeight));\n"
+            "                vec3 normalizedSecondaryNormal = normalize(vec3(0.5f) - bufferColor.rgb);\n"
+            "                float secondaryDotNI = dot(refractedRay, normalizedSecondaryNormal);\n"
+            "                vec3 secondaryRefractedRay = normalize(refract2(refractedRay, normalizedSecondaryNormal, indexOfRefraction, secondaryDotNI));\n"
+            "                refractedColor = Texture(environmentTexture, secondaryRefractedRay);\n"
+            "            }else{\n"
+            "                refractedColor = Texture(environmentTexture, refractedRay);\n"
+            "            }\n"
+            "            outColor = mix(refractedColor, reflectedColor, mixRatio);\n"
             "        }else{\n"
-            "            refractedColor = Texture(environmentTexture, refractedRay);\n"
+            "            float mixRatio = reflectivity < 0.0f ? fresnel(dotNI) : reflectivity;\n"
+            "            vec3 refractedRay = normalize(refract2(normalizedDirection, normalizedNormal, indexOfRefraction, dotNI));\n"
+            "            vec4 refractedColor;\n"
+            "            if(twoSidedRefraction == 1){\n"
+            "                vec4 bufferColor = texture(image, gl_FragCoord.xy/vec2(screenWidth, screenHeight));\n"
+            "                vec3 normalizedSecondaryNormal = normalize(vec3(0.5f) - bufferColor.rgb);\n"
+            "                float secondaryDotNI = dot(refractedRay, normalizedSecondaryNormal);\n"
+            "                vec3 secondaryRefractedRay = normalize(refract2(refractedRay, normalizedSecondaryNormal, inverseIOR, secondaryDotNI));\n"
+            "                refractedColor = Texture(environmentTexture, secondaryRefractedRay);\n"
+            "            }else{\n"
+            "                refractedColor = Texture(environmentTexture, refractedRay);\n"
+            "            }\n"
+            "            outColor = mix(refractedColor, reflectedColor, mixRatio);\n"
             "        }\n"
-            "        outColor = mix(refractedColor, reflectedColor, mixRatio);\n"
             "    }\n"
             "}\n";
 

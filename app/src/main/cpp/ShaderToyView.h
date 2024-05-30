@@ -250,7 +250,7 @@ public:
             "   }\n"
             "}\n";*/
 
-    // Below is a cube (a better cube can be found here: https://www.shadertoy.com/view/4tyXDR)
+    // Below is a cube with up to 2 refractions (a better cube can be found here: https://www.shadertoy.com/view/4tyXDR)
     /*const string SPHERE_MAP_FRAGMENT_SHADER =
             ES_VERSION +
             "precision highp float;\n"
@@ -328,6 +328,7 @@ public:
             "    }\n"
             "}\n";*/
 
+    // Cube with up to 3 refractions
     const string SPHERE_MAP_FRAGMENT_SHADER =
             ES_VERSION +
             "precision highp float;\n"
