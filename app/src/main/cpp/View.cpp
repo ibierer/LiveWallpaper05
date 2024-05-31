@@ -58,13 +58,11 @@ const string View::REFLECT2_FUNCTION =
 
 const string View::REFRACT2_FUNCTION =
         "vec3 refract2(vec3 I, vec3 N, float eta, float dotNI) {\n"
-        "    vec3 R;\n"
         "    float k = 1.0 - eta * eta * (1.0 - dotNI * dotNI);\n"
         "    if (k < 0.0)\n"
-        "        R = reflect2(I, N, dotNI);\n"
+        "        return reflect2(I, N, dotNI);\n"
         "    else\n"
-        "        R = eta * I - (eta * dotNI + sqrt(k)) * N;\n"
-        "    return R;\n"
+        "        return eta * I - (eta * dotNI + sqrt(k)) * N;\n"
         "}\n";
 
 const string View::DOUBLE_REFRACT_FUNCTION =
