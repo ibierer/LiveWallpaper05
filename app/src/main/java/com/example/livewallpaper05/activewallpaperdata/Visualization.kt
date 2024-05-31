@@ -8,7 +8,6 @@ abstract class Visualization {
     abstract val relevantSeekBarIds: List<Int>
     abstract val relevantEditTextIds: List<Int>
     abstract val relevantCheckBoxIds: List<Int>
-    abstract val relevantButtonIds: List<Int>
     abstract val relevantSpinnerIds: List<Int>
     abstract val relevantRadioGroupIds: List<Int>
     abstract fun toJsonObject(): JSONObject

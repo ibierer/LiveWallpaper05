@@ -1,15 +1,20 @@
 package com.example.livewallpaper05
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.text.TextWatcher
+import android.view.KeyEvent
 import android.view.View
+import android.view.ViewTreeObserver
 import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.TranslateAnimation
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 //import android.widget.ArrayAdapter
 import android.widget.Button
@@ -83,7 +88,6 @@ class PreviewActivity : AppCompatActivity() {
         val equationEditor: EditText = findViewById<EditText>(R.id.et_equation)
         val flipsNormalsCheckBox: CheckBox = findViewById<CheckBox>(R.id.flip_normals_checkbox)
         val linearLayout: LinearLayout = findViewById<LinearLayout>(R.id.settings_linearlayout)
-        val doneButton: Button = findViewById<Button>(R.id.done_button)
         val backgroundRadioGroup: RadioGroup = findViewById<RadioGroup>(R.id.background_radio_group)
         val solidColorRadioButton: RadioButton = findViewById<RadioButton>(R.id.solid_color_radio_button)
         val imageRadioButton: RadioButton = findViewById<RadioButton>(R.id.image_radio_button)
@@ -144,9 +148,6 @@ class PreviewActivity : AppCompatActivity() {
             val checkBoxIds: List<Int> = listOf(
                 R.id.flip_normals_checkbox
             )
-            val buttonIds: List<Int> = listOf(
-                R.id.done_button
-            )
             val spinnerIds: List<Int> = listOf(
                 R.id.graph_selection_spinner,
                 R.id.image_selection_spinner
@@ -186,15 +187,6 @@ class PreviewActivity : AppCompatActivity() {
                 } else {
                     findViewById<CheckBox>(id).visibility = View.GONE
                     findViewById<CheckBox>(id).isEnabled = false
-                }
-            }
-            for (id in buttonIds) {
-                if (viewModel.repo.visualization.relevantButtonIds.contains(id) && !viewModel.repo.isCollapsed) {
-                    findViewById<Button>(id).visibility = View.VISIBLE
-                    findViewById<Button>(id).isEnabled = true
-                } else {
-                    findViewById<Button>(id).visibility = View.GONE
-                    findViewById<Button>(id).isEnabled = false
                 }
             }
             for (id in spinnerIds) {
@@ -517,38 +509,52 @@ class PreviewActivity : AppCompatActivity() {
             }
         })
 
-        fun doneButton() {
-            //val currentFocusView = currentFocus
-            //if (currentFocusView != null) {
-            //    (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(currentFocusView.windowToken, 0)
-            //}
-            // update equation in repo if valid
-            val equationChecker: EquationChecker = EquationChecker()
-            val result: String = equationChecker.checkEquationSyntax(equationEditor.text.toString())
-            Log.d("LiveWallpaper05", "result is: $result")
-            //Log.d("LiveWallpaper05", "result2 is: " + result2)
-            if (result == "") {
-                viewModel.updateEquation(equationEditor.text.toString())
-                Log.d("LiveWallpaper05", "Syntax check passed.")
-            } else {
-                viewModel.updateEquation(getString(R.string.default_equation))
-                Log.d("LiveWallpaper05", "Syntax check failed.")
+        fun doneButton(): Runnable {
+            return Runnable {
+                // update equation in repo if valid
+                val equationChecker: EquationChecker = EquationChecker()
+                val result: String =
+                    equationChecker.checkEquationSyntax(equationEditor.text.toString())
+                Log.d("LiveWallpaper05", "result is: $result")
+                //Log.d("LiveWallpaper05", "result2 is: " + result2)
+                if (result == "") {
+                    viewModel.updateEquation(equationEditor.text.toString())
+                    Log.d("LiveWallpaper05", "Syntax check passed.")
+                } else {
+                    viewModel.updateEquation(getString(R.string.default_equation))
+                    Log.d("LiveWallpaper05", "Syntax check failed.")
+                }
+                mView!!.onPause()
+                mView!!.onResume()
             }
-            mView!!.onPause()
-            mView!!.onResume()
         }
 
-        // setup listener for the Done button
+        // Setup listener for the Return button
         equationEditor.setOnEditorActionListener { v, actionId, event ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                doneButton()
-                return@setOnEditorActionListener true // Return true to consume the event
-            }
-            return@setOnEditorActionListener false // Return false if you want to allow further handling of the event
-        }
+            if (actionId == EditorInfo.IME_ACTION_DONE || (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
+                val view = currentFocus
+                if (view != null) {
+                    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(view.windowToken, 0)
 
-        doneButton.setOnClickListener {
-            doneButton()
+                    // Add a global layout listener to wait until the keyboard is hidden
+                    view.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+                        override fun onGlobalLayout() {
+                            if (findViewById<View>(android.R.id.content).rootView.height - findViewById<View>(android.R.id.content).height <= 200) {
+                                // Keyboard is hidden, run the action
+                                view.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                                Handler().post(doneButton())
+                            }
+                        }
+                    })
+                } else {
+                    // If no view is focused, run the action immediately
+                    Handler().post(doneButton())
+                }
+                return@setOnEditorActionListener true
+            } else {
+                return@setOnEditorActionListener false
+            }
         }
 
         // connect fps data to ui fps meter

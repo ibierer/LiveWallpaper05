@@ -61,9 +61,6 @@ data class PicFlipVisualization (
     override val relevantCheckBoxIds: List<Int> = listOf(
 
     )
-    override val relevantButtonIds: List<Int> = listOf(
-
-    )
     override val relevantSpinnerIds: List<Int> = listOf(
         R.id.image_selection_spinner
     )

@@ -56,9 +56,6 @@ data class GraphVisualization (
     override val relevantCheckBoxIds: List<Int> = listOf(
         R.id.flip_normals_checkbox
     )
-    override val relevantButtonIds: List<Int> = listOf(
-        R.id.done_button
-    )
     override val relevantSpinnerIds: List<Int> = listOf(
         R.id.graph_selection_spinner,
         R.id.image_selection_spinner
