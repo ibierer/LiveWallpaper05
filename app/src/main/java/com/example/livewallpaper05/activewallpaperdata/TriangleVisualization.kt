@@ -6,8 +6,8 @@ import org.json.JSONObject
 
 data class TriangleVisualization (
     val visualizationType: String = "other",
-    var distance: Float = 0.5f,
-    var fieldOfView: Float = 60.0f,
+    var distance: Float = 0.08f,
+    var fieldOfView: Float = 120.0f,
     var backgroundColor: Color = createColorFromInts(0, 0, 0, 0),
     var backgroundIsSolidColor: Boolean = false,
     var backgroundTexture: String = "mandelbrot"
@@ -15,8 +15,8 @@ data class TriangleVisualization (
 
     constructor(jsonObject: JSONObject) : this(
         visualizationType = jsonObject.optString("visualization_type", "other"),
-        distance = jsonObject.optDouble("distance", 0.5).toFloat(),
-        fieldOfView = jsonObject.optDouble("field_of_view", 60.0).toFloat(),
+        distance = jsonObject.optDouble("distance", 0.08).toFloat(),
+        fieldOfView = jsonObject.optDouble("field_of_view", 120.0).toFloat(),
         backgroundColor = jsonObject.optJSONObject("background_color")?.let { Visualization.jsonObjectToColor(it) }?: createColorFromInts(0, 0, 0, 0),
         backgroundIsSolidColor = jsonObject.optBoolean("background_is_solid_color", false),
         backgroundTexture = jsonObject.optString("background_texture", "mandelbrot")
