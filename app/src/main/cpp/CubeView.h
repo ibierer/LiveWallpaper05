@@ -11,7 +11,7 @@
 class CubeView : public View {
 public:
 
-    VertexArrayObject cubeVAO;
+    //VertexArrayObject cubeVAO;
 
     const string VERTEX_SHADER =
             ES_VERSION +
