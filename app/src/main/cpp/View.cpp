@@ -52,12 +52,12 @@ const string View::SPHERE_MAP_TEXTURE_FUNCTION =
         "}\n";
 
 const string View::REFLECT2_FUNCTION =
-        "vec3 reflect2(vec3 I, vec3 N, float dotNI) {\n"
+        "vec3 reflect2(const vec3 I, const vec3 N, const float dotNI) {\n"
         "    return I - 2.0 * dotNI * N;\n"
         "}\n";
 
 const string View::REFRACT2_FUNCTION =
-        "vec3 refract2(vec3 I, vec3 N, float eta, float dotNI) {\n"
+        "vec3 refract2(const vec3 I, const vec3 N, const float eta, const float dotNI) {\n"
         "    float k = 1.0 - eta * eta * (1.0 - dotNI * dotNI);\n"
         "    if (k < 0.0)\n"
         "        return reflect2(I, N, dotNI);\n"
