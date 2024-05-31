@@ -492,16 +492,7 @@ public:
             "   float tMax = min(min(max_tx, max_ty), max_tz);\n"
             "   if(tMin < tMax){\n"
             "       hitNormal = vec3(0.0f);\n"
-            "       if(tMin < 0.0f){\n" // rayOrigin is inside cube
-            "           if(tMax == max_tx){\n"
-            "               if(max_tx == tx_max) hitNormal.x = 1.0f; else hitNormal.x = -1.0f;\n"
-            "           }else if(tMax == max_ty){\n"
-            "               if(max_ty == ty_max) hitNormal.y = 1.0f; else hitNormal.y = -1.0f;\n"
-            "           }else{\n"// if(tMax == max_tz){
-            "               if(max_tz == tz_max) hitNormal.z = 1.0f; else hitNormal.z = -1.0f;\n"
-            "           }\n"
-            "           return tMax;\n"
-            "       }else{\n" // rayOrigin is outside cube
+            "       if(tMin > 0.0f){\n" // rayOrigin is outside cube
             "           if(tMin == min_tx){\n"
             "               if(min_tx == tx_min) hitNormal.x = -1.0f; else hitNormal.x = 1.0f;\n"
             "           }else if(tMin == min_ty){\n"
@@ -510,6 +501,15 @@ public:
             "               if(min_tz == tz_min) hitNormal.z = -1.0f; else hitNormal.z = 1.0f;\n"
             "           }\n"
             "           return tMin;\n"
+            "       }else{\n" // rayOrigin is inside cube
+            "           if(tMax == max_tx){\n"
+            "               if(max_tx == tx_max) hitNormal.x = 1.0f; else hitNormal.x = -1.0f;\n"
+            "           }else if(tMax == max_ty){\n"
+            "               if(max_ty == ty_max) hitNormal.y = 1.0f; else hitNormal.y = -1.0f;\n"
+            "           }else{\n"// if(tMax == max_tz){
+            "               if(max_tz == tz_max) hitNormal.z = 1.0f; else hitNormal.z = -1.0f;\n"
+            "           }\n"
+            "           return tMax;\n"
             "       }\n"
             "   }else{\n"
             "       return -1.0f;\n"
@@ -528,8 +528,7 @@ public:
             "       float dotNI = dot(hitNormal, d);\n"
             "       float fresnelFactor = fresnel(dotNI);\n"
             "       vec3 reflectedRay = reflect2(d, hitNormal, dotNI);\n"
-            "       vec3 refractedRay;\n"
-            "       refractedRay = normalize(refract2(d, hitNormal, IOR, dotNI));\n"
+            "       vec3 refractedRay = normalize(refract2(d, hitNormal, IOR, dotNI));\n"
             "       for(int i = 0; i < 3; i++){\n"
             "           t = intersectCube(intersection, refractedRay, box_lower, box_upper, hitNormal);\n"
             "           if(t > 0.0f){\n"
