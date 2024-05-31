@@ -212,7 +212,7 @@
                     <RadioButton
                         android:id="@+id/solid_color_radio_button"
                         android:layout_width="0dp"
-                        android:layout_height="50dp"
+                        android:layout_height="wrap_content"
                         android:checked="true"
                         android:text="Solid Color"
                         android:layout_weight="1"
@@ -221,7 +221,7 @@
                     <RadioButton
                         android:id="@+id/image_radio_button"
                         android:layout_width="0dp"
-                        android:layout_height="50dp"
+                        android:layout_height="wrap_content"
                         android:text="Image"
                         android:layout_weight="1"
                         android:layout_margin="@dimen/preview_ui_margin" />
@@ -283,7 +283,6 @@
                 android:inputType="textCapSentences|textMultiLine"
                 android:paddingBottom="20dp"
                 android:scrollHorizontally="false"
-                android:imeOptions="actionDone"
                 android:text="@string/default_equation" />
 
             <Button
