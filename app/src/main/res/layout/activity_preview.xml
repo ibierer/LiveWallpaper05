@@ -197,92 +197,81 @@
                 android:background="@drawable/slightly_opaque_border_background"
                 android:text="@string/background_label" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <RadioGroup
-                    android:id="@+id/background_radio_group"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/b_color_picker"
-                    app:layout_constraintHorizontal_chainStyle="packed">
-
-                    <RadioButton
-                        android:id="@+id/solid_color_radio_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Solid Color"
-                        android:checked="true" />
-
-                    <RadioButton
-                        android:id="@+id/image_radio_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Image" />
-                </RadioGroup>
-
-                <Button
-                    android:id="@+id/b_color_picker"
-                    android:layout_width="55dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/preview_ui_margin"
-                    android:background="@drawable/slightly_opaque_border_background"
-                    android:text="Select Color"
-                    app:layout_constraintBottom_toBottomOf="@+id/background_radio_group"
-                    app:layout_constraintStart_toEndOf="@+id/background_radio_group"
-                    app:layout_constraintTop_toTopOf="@+id/background_radio_group" />
-
-                <Spinner
-                    android:id="@+id/image_selection_spinner"
-                    style="@style/Widget.AppCompat.Spinner"
-                    android:layout_width="133dp"
-                    android:layout_height="wrap_content"
-                    android:entries="@array/environment_map_options"
-                    android:background="@drawable/slightly_opaque_border_background"
-                    app:layout_constraintBottom_toBottomOf="@+id/background_radio_group"
-                    app:layout_constraintStart_toEndOf="@+id/b_color_picker"
-                    app:layout_constraintTop_toTopOf="@+id/background_radio_group" />
-
-                <Spinner
-                    android:id="@+id/graph_selection_spinner"
-                    style="@style/Widget.AppCompat.Spinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:entries="@array/graph_names"
-                    android:background="@drawable/slightly_opaque_border_background"
-                    app:layout_constraintBottom_toBottomOf="@+id/background_radio_group"
-                    app:layout_constraintStart_toEndOf="@+id/image_selection_spinner"
-                    app:layout_constraintTop_toTopOf="@+id/background_radio_group" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/tv_equation"
-                    android:layout_width="wrap_content"
+                <RadioGroup
+                    android:id="@+id/background_radio_group"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/preview_ui_margin"
-                    android:background="@drawable/slightly_opaque_border_background"
-                    android:text="Input Equation:" />
+                    android:orientation="horizontal"
+                    android:background="@drawable/slightly_opaque_border_background">
 
-                <Button
-                    android:id="@+id/done_button"
-                    android:layout_width="wrap_content"
+                    <RadioButton
+                        android:id="@+id/solid_color_radio_button"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:checked="true"
+                        android:text="Solid Color"
+                        android:layout_weight="1"
+                        android:layout_margin="@dimen/preview_ui_margin" />
+
+                    <RadioButton
+                        android:id="@+id/image_radio_button"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:text="Image"
+                        android:layout_weight="1"
+                        android:layout_margin="@dimen/preview_ui_margin" />
+                </RadioGroup>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@drawable/slightly_opaque_border_background"
-                    android:text="Done" />
+                    android:orientation="horizontal"
+                    android:background="@drawable/slightly_opaque_border_background">
+
+                    <Button
+                        android:id="@+id/b_color_picker"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:text="Change Color"
+                        android:layout_weight="1"
+                        android:layout_margin="@dimen/preview_ui_margin" />
+
+                    <Spinner
+                        android:id="@+id/image_selection_spinner"
+                        style="?android:attr/spinnerItemStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:entries="@array/environment_map_options"
+                        android:layout_weight="1"
+                        android:layout_margin="@dimen/preview_ui_margin" />
+                </LinearLayout>
+
+
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_equation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/slightly_opaque_border_background"
+                android:text="Equation:" />
+
+            <Spinner
+                android:id="@+id/graph_selection_spinner"
+                style="@style/Widget.AppCompat.Spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:entries="@array/graph_names"
+                android:background="@drawable/slightly_opaque_border_background"
+                app:layout_constraintBottom_toBottomOf="@+id/background_radio_group"
+                app:layout_constraintStart_toEndOf="@+id/image_selection_spinner"
+                app:layout_constraintTop_toTopOf="@+id/background_radio_group" />
 
             <EditText
                 android:id="@+id/et_equation"
@@ -294,7 +283,16 @@
                 android:inputType="textCapSentences|textMultiLine"
                 android:paddingBottom="20dp"
                 android:scrollHorizontally="false"
+                android:imeOptions="actionDone"
                 android:text="@string/default_equation" />
+
+            <Button
+                android:id="@+id/done_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/slightly_opaque_border_background"
+                android:text="Done" />
 
             <TextView
                 android:id="@+id/tv_syntax_check"
