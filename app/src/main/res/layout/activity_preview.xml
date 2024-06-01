@@ -200,57 +200,54 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:orientation="horizontal">
 
                 <RadioGroup
                     android:id="@+id/background_radio_group"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
+                    android:layout_weight="2"
                     android:background="@drawable/slightly_opaque_border_background">
 
                     <RadioButton
                         android:id="@+id/solid_color_radio_button"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
                         android:checked="true"
                         android:text="Solid Color"
-                        android:layout_weight="1"
                         android:layout_margin="@dimen/preview_ui_margin" />
 
                     <RadioButton
                         android:id="@+id/image_radio_button"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
                         android:text="Image"
-                        android:layout_weight="1"
                         android:layout_margin="@dimen/preview_ui_margin" />
                 </RadioGroup>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
+                    android:layout_weight="1"
                     android:background="@drawable/slightly_opaque_border_background">
 
                     <Button
                         android:id="@+id/b_color_picker"
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="50dp"
                         android:text="Change Color"
-                        android:layout_weight="1"
                         android:layout_margin="@dimen/preview_ui_margin" />
 
                     <Spinner
                         android:id="@+id/image_selection_spinner"
                         style="?android:attr/spinnerItemStyle"
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="50dp"
                         android:entries="@array/environment_map_options"
-                        android:layout_weight="1"
                         android:layout_margin="@dimen/preview_ui_margin" />
                 </LinearLayout>
-
 
             </LinearLayout>
 
@@ -262,16 +259,72 @@
                 android:background="@drawable/slightly_opaque_border_background"
                 android:text="Equation:" />
 
-            <Spinner
-                android:id="@+id/graph_selection_spinner"
-                style="@style/Widget.AppCompat.Spinner"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <RadioGroup
+                    android:id="@+id/equation_radio_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:background="@drawable/slightly_opaque_border_background">
+
+                    <RadioButton
+                        android:id="@+id/default_equations_radio_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:checked="true"
+                        android:text="Default Equations"
+                        android:layout_margin="@dimen/preview_ui_margin" />
+
+                    <RadioButton
+                        android:id="@+id/user_defined_equations_radio_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:text="Saved Equations"
+                        android:layout_margin="@dimen/preview_ui_margin" />
+                </RadioGroup>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:background="@drawable/slightly_opaque_border_background">
+
+                    <Spinner
+                        android:id="@+id/default_graph_selection_spinner"
+                        style="?android:attr/spinnerItemStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:entries="@array/graph_names"
+                        android:layout_margin="@dimen/preview_ui_margin" />
+
+                    <Spinner
+                        android:id="@+id/user_defined_graph_selection_spinner"
+                        style="?android:attr/spinnerItemStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:entries="@array/graph_names"
+                        android:layout_margin="@dimen/preview_ui_margin" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/et_equation_name"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:entries="@array/graph_names"
+                android:layout_margin="@dimen/preview_ui_margin"
                 android:background="@drawable/slightly_opaque_border_background"
-                app:layout_constraintBottom_toBottomOf="@+id/background_radio_group"
-                app:layout_constraintStart_toEndOf="@+id/image_selection_spinner"
-                app:layout_constraintTop_toTopOf="@+id/background_radio_group" />
+                android:hint="Enter equation name here"
+                android:paddingBottom="20dp"
+                android:text="Name goes here" />
 
             <EditText
                 android:id="@+id/et_equation"

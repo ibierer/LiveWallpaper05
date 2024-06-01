@@ -80,7 +80,7 @@ class PreviewActivity : AppCompatActivity() {
         val efficiencySeekBar: SeekBar = findViewById<SeekBar>(R.id.efficiency_seekbar)
         val visualizationSelectorSpinner: Spinner = findViewById<Spinner>(R.id.visualization_type_spinner)
         val environmentMapSelectorSpinner: Spinner = findViewById<Spinner>(R.id.image_selection_spinner)
-        val graphSelectorSpinner: Spinner = findViewById<Spinner>(R.id.graph_selection_spinner)
+        val graphSelectorSpinner: Spinner = findViewById<Spinner>(R.id.default_graph_selection_spinner)
         val colorButton: Button = findViewById<Button>(R.id.b_color_picker)
         val hideUIButton: Button = findViewById<Button>(R.id.hide_ui_button)
     //    val saveButton: Button = findViewById<Button>(R.id.save_button)
@@ -149,7 +149,8 @@ class PreviewActivity : AppCompatActivity() {
                 R.id.flip_normals_checkbox
             )
             val spinnerIds: List<Int> = listOf(
-                R.id.graph_selection_spinner,
+                R.id.default_graph_selection_spinner,
+                R.id.user_defined_graph_selection_spinner,
                 R.id.image_selection_spinner
             )
             val radioGroupIds: List<Int> = listOf(
