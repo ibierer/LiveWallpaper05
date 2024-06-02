@@ -38,7 +38,7 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
 
     // Saved app data
     private val sharedPreferences: SharedPreferences = getPreferences()
-    private val sharedPreferencesEditor: SharedPreferences.Editor = sharedPreferences.edit()
+    val sharedPreferencesEditor: SharedPreferences.Editor = sharedPreferences.edit()
     // ViewModel state
     var visualization: Visualization = visualizationIntToVisualizationObject(getVisualizationSelection())
     var graphList: Int = getPreferredGraphList()

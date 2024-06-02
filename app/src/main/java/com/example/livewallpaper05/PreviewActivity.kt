@@ -37,6 +37,7 @@ import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModelFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import yuku.ambilwarna.AmbilWarnaDialog
 
@@ -46,6 +47,34 @@ class PreviewActivity : AppCompatActivity() {
     private val viewModel: ActiveWallpaperViewModel by viewModels {
         ActiveWallpaperViewModelFactory((application as ActiveWallpaperApplication).wallpaperRepo)
     }
+
+    // grab ui element for preview page
+    private lateinit var layout: LinearLayout
+    private lateinit var fpsMeter: TextView
+    private lateinit var distanceSeekBar: SeekBar
+    private lateinit var fieldOfViewSeekBar: SeekBar
+    private lateinit var gravitySeekBar: SeekBar
+    private lateinit var linearAccelerationSeekBar: SeekBar
+    private lateinit var efficiencySeekBar: SeekBar
+    private lateinit var visualizationSelectorSpinner: Spinner
+    private lateinit var environmentMapSelectorSpinner: Spinner
+    private lateinit var graphSelectorSpinner: Spinner
+    private lateinit var colorButton: Button
+    private lateinit var hideUIButton: Button
+    //private lateinit var saveButton: Button
+    //private lateinit var syncButton: Button
+    private lateinit var equationEditor: EditText
+    private lateinit var flipsNormalsCheckBox: CheckBox
+    private lateinit var linearLayout: LinearLayout
+    private lateinit var backgroundRadioGroup: RadioGroup
+    private lateinit var preferredGraphListRadioGroup: RadioGroup
+    private lateinit var solidColorRadioButton: RadioButton
+    private lateinit var imageRadioButton: RadioButton
+    private lateinit var defaultEquationsRadioButton: RadioButton
+    private lateinit var userDefinedEquationsRadioButton: RadioButton
+    private lateinit var defaultGraphSelectionSpinner: Spinner
+    private lateinit var userDefinedGraphSelectionSpinner: Spinner
+    //private lateinit var previewImageView: ImageView
 
     private fun updateSyntaxResult() {
         // update syntax check message
@@ -70,33 +99,33 @@ class PreviewActivity : AppCompatActivity() {
         // get view window from GLES3JNIView
         mView = GLES3JNIView(this@PreviewActivity, viewModel)
 
-        // grab ui element for preview page
-        val layout: LinearLayout = findViewById<LinearLayout>(R.id.render_layout)
-        val fpsMeter: TextView = findViewById<TextView>(R.id.tv_fps_meter)
-        val distanceSeekBar: SeekBar = findViewById<SeekBar>(R.id.distance_seekbar)
-        val fieldOfViewSeekBar: SeekBar = findViewById<SeekBar>(R.id.field_of_view_seekbar)
-        val gravitySeekBar: SeekBar = findViewById<SeekBar>(R.id.gravity_seekbar)
-        val linearAccelerationSeekBar: SeekBar = findViewById<SeekBar>(R.id.linear_acceleration_seekbar)
-        val efficiencySeekBar: SeekBar = findViewById<SeekBar>(R.id.efficiency_seekbar)
-        val visualizationSelectorSpinner: Spinner = findViewById<Spinner>(R.id.visualization_type_spinner)
-        val environmentMapSelectorSpinner: Spinner = findViewById<Spinner>(R.id.image_selection_spinner)
-        val graphSelectorSpinner: Spinner = findViewById<Spinner>(R.id.default_graph_selection_spinner)
-        val colorButton: Button = findViewById<Button>(R.id.b_color_picker)
-        val hideUIButton: Button = findViewById<Button>(R.id.hide_ui_button)
-    //    val saveButton: Button = findViewById<Button>(R.id.save_button)
-    //    val syncButton: Button = findViewById<Button>(R.id.sync_button)
-        val equationEditor: EditText = findViewById<EditText>(R.id.et_equation)
-        val flipsNormalsCheckBox: CheckBox = findViewById<CheckBox>(R.id.flip_normals_checkbox)
-        val linearLayout: LinearLayout = findViewById<LinearLayout>(R.id.settings_linearlayout)
-        val backgroundRadioGroup: RadioGroup = findViewById<RadioGroup>(R.id.background_radio_group)
-        val preferredGraphListRadioGroup: RadioGroup = findViewById<RadioGroup>(R.id.equation_radio_group)
-        val solidColorRadioButton: RadioButton = findViewById<RadioButton>(R.id.solid_color_radio_button)
-        val imageRadioButton: RadioButton = findViewById<RadioButton>(R.id.image_radio_button)
-        val defaultEquationsRadioButton: RadioButton = findViewById<RadioButton>(R.id.default_equations_radio_button)
-        val userDefinedEquationsRadioButton: RadioButton = findViewById<RadioButton>(R.id.user_defined_equations_radio_button)
-        val defaultGraphSelectionSpinner: Spinner = findViewById<Spinner>(R.id.default_graph_selection_spinner)
-        val userDefinedGraphSelectionSpinner: Spinner = findViewById<Spinner>(R.id.user_defined_graph_selection_spinner)
-    //    val previewImageView: ImageView = findViewById<ImageView>(R.id.imageView)
+        layout = findViewById<LinearLayout>(R.id.render_layout)
+        fpsMeter = findViewById<TextView>(R.id.tv_fps_meter)
+        distanceSeekBar = findViewById<SeekBar>(R.id.distance_seekbar)
+        fieldOfViewSeekBar = findViewById<SeekBar>(R.id.field_of_view_seekbar)
+        gravitySeekBar = findViewById<SeekBar>(R.id.gravity_seekbar)
+        linearAccelerationSeekBar = findViewById<SeekBar>(R.id.linear_acceleration_seekbar)
+        efficiencySeekBar = findViewById<SeekBar>(R.id.efficiency_seekbar)
+        visualizationSelectorSpinner = findViewById<Spinner>(R.id.visualization_type_spinner)
+        environmentMapSelectorSpinner = findViewById<Spinner>(R.id.image_selection_spinner)
+        graphSelectorSpinner = findViewById<Spinner>(R.id.default_graph_selection_spinner)
+        colorButton = findViewById<Button>(R.id.b_color_picker)
+        hideUIButton = findViewById<Button>(R.id.hide_ui_button)
+        //saveButton = findViewById<Button>(R.id.save_button)
+        //syncButton = findViewById<Button>(R.id.sync_button)
+        equationEditor = findViewById<EditText>(R.id.et_equation)
+        flipsNormalsCheckBox = findViewById<CheckBox>(R.id.flip_normals_checkbox)
+        linearLayout = findViewById<LinearLayout>(R.id.settings_linearlayout)
+        backgroundRadioGroup = findViewById<RadioGroup>(R.id.background_radio_group)
+        preferredGraphListRadioGroup = findViewById<RadioGroup>(R.id.equation_radio_group)
+        solidColorRadioButton = findViewById<RadioButton>(R.id.solid_color_radio_button)
+        imageRadioButton = findViewById<RadioButton>(R.id.image_radio_button)
+        defaultEquationsRadioButton = findViewById<RadioButton>(R.id.default_equations_radio_button)
+        userDefinedEquationsRadioButton = findViewById<RadioButton>(R.id.user_defined_equations_radio_button)
+        defaultGraphSelectionSpinner = findViewById<Spinner>(R.id.default_graph_selection_spinner)
+        userDefinedGraphSelectionSpinner = findViewById<Spinner>(R.id.user_defined_graph_selection_spinner)
+        //previewImageView = findViewById<ImageView>(R.id.imageView)
+
     //
     //    // fill visualization selector box with wallpaper options from native-lib.cpp
     //    val visualizationSelectorAdapter = ArrayAdapter.createFromResource(
@@ -116,7 +145,7 @@ class PreviewActivity : AppCompatActivity() {
     //    )
     //    environmentMapSelectorSpinner.adapter = environmentMapSelectorAdapter
     //    // set default to viewmodel visualization type
-    environmentMapSelectorSpinner.setSelection(viewModel.repo.getEnvironmentMapSelection())
+        environmentMapSelectorSpinner.setSelection(viewModel.repo.getEnvironmentMapSelection())
     //    val graphNames = arrayOf("")
     //    // fill image selector box with image options from native-lib.cpp
     //    val graphSelectorAdapter = ArrayAdapter.createFromResource(
@@ -215,13 +244,8 @@ class PreviewActivity : AppCompatActivity() {
             }
         }
 
-    //    // update orientation in repo
-    //    try {
-            viewModel.updateOrientation(this.display!!.rotation)
-            loadOrUnloadUIElements()
-    //    } catch (e: Exception) {
-    //        Log.d("Livewallpaper", "api level too low!")
-    //    }
+        viewModel.updateOrientation(this.display!!.rotation)
+        loadOrUnloadUIElements()
 
         // register seekbar actions to update distance in repo
         distanceSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -503,29 +527,16 @@ class PreviewActivity : AppCompatActivity() {
         defaultEquationsRadioButton.setOnClickListener {
             defaultGraphSelectionSpinner.isEnabled = true
             userDefinedGraphSelectionSpinner.isEnabled = false
+            viewModel.repo.sharedPreferencesEditor.putInt("preferredGraphList", 0)
+            viewModel.saveVisualizationState()
         }
 
         userDefinedEquationsRadioButton.setOnClickListener {
             userDefinedGraphSelectionSpinner.isEnabled = true
             defaultGraphSelectionSpinner.isEnabled = false
+            viewModel.repo.sharedPreferencesEditor.putInt("preferredGraphList", 1)
+            viewModel.saveVisualizationState()
         }
-
-        /*when(viewModel.repo.getPreferredGraphList()){
-            0 -> {
-                preferredGraphListRadioGroup.check(defaultEquationsRadioButton.id)
-                //defaultEquationsRadioButton.isChecked = true
-                //userDefinedEquationsRadioButton.isChecked = false
-                defaultGraphSelectionSpinner.isEnabled = true
-                userDefinedGraphSelectionSpinner.isEnabled = false
-            }
-            1 -> {
-                preferredGraphListRadioGroup.check(userDefinedEquationsRadioButton.id)
-                //userDefinedEquationsRadioButton.isChecked = true
-                //defaultEquationsRadioButton.isChecked = false
-                userDefinedGraphSelectionSpinner.isEnabled = true
-                defaultGraphSelectionSpinner.isEnabled = false
-            }
-        }*/
 
         // setup equation editor
         viewModel.updateEquation(equationEditor.text.toString())
@@ -725,16 +736,24 @@ class PreviewActivity : AppCompatActivity() {
 
     //override fun onStart() {
     //    super.onStart()
-    //
-    //    val preferredGraphListRadioGroup: RadioGroup = findViewById<RadioGroup>(R.id.equation_radio_group)
-    //    val defaultEquationsRadioButton: RadioButton = findViewById<RadioButton>(R.id.default_equations_radio_button)
-    //    val userDefinedEquationsRadioButton: RadioButton = findViewById<RadioButton>(R.id.user_defined_equations_radio_button)
-    //    val defaultGraphSelectionSpinner: Spinner = findViewById<Spinner>(R.id.default_graph_selection_spinner)
-    //    val userDefinedGraphSelectionSpinner: Spinner = findViewById<Spinner>(R.id.user_defined_graph_selection_spinner)
-    //
-    //    userDefinedGraphSelectionSpinner.isEnabled = false
-    //    preferredGraphListRadioGroup.check(defaultEquationsRadioButton.id)
     //}
+
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+
+        when(viewModel.repo.getPreferredGraphList()){
+            0 -> {
+                preferredGraphListRadioGroup.check(defaultEquationsRadioButton.id)
+                defaultGraphSelectionSpinner.isEnabled = true
+                userDefinedGraphSelectionSpinner.isEnabled = false
+            }
+            1 -> {
+                preferredGraphListRadioGroup.check(userDefinedEquationsRadioButton.id)
+                userDefinedGraphSelectionSpinner.isEnabled = true
+                defaultGraphSelectionSpinner.isEnabled = false
+            }
+        }
+    }
 
     // this is run when the activity is 'stopped', like when the app is closed or restarted
     /*override fun onStop() {
