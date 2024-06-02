@@ -376,10 +376,11 @@ class PreviewActivity : AppCompatActivity() {
                     }
                     // set text of equation editor
                     equationEditor.setText(viewModel.repo.currentEquation)
+
+                    // tell view it needs to be reloaded
+                    mView!!.onPause()
+                    mView!!.onResume()
                 }
-                // tell view it needs to be reloaded
-                mView!!.onPause()
-                mView!!.onResume()
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
