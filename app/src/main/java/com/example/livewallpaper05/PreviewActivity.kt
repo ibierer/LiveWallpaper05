@@ -617,9 +617,7 @@ class PreviewActivity : AppCompatActivity() {
             environmentMapSelectorSpinner.isEnabled = true
             //syncButton.isEnabled = true
             //saveButton.isEnabled = true
-            CoroutineScope(Dispatchers.Main).launch {
-                loadOrUnloadUIElements()
-            }
+            loadOrUnloadUIElements()
         }
 
         fun hideUIComponents() {
@@ -641,9 +639,7 @@ class PreviewActivity : AppCompatActivity() {
             environmentMapSelectorSpinner.isEnabled = false
             //syncButton.isEnabled = false
             //saveButton.isEnabled = false
-            CoroutineScope(Dispatchers.Main).launch {
-                loadOrUnloadUIElements()
-            }
+            loadOrUnloadUIElements()
         }
 
         val animationListener = object : Animation.AnimationListener {
