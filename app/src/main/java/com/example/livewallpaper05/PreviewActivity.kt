@@ -49,32 +49,32 @@ class PreviewActivity : AppCompatActivity() {
     }
 
     // grab ui element for preview page
-    private lateinit var layout: LinearLayout
-    private lateinit var fpsMeter: TextView
-    private lateinit var distanceSeekBar: SeekBar
-    private lateinit var fieldOfViewSeekBar: SeekBar
-    private lateinit var gravitySeekBar: SeekBar
-    private lateinit var linearAccelerationSeekBar: SeekBar
-    private lateinit var efficiencySeekBar: SeekBar
-    private lateinit var visualizationSelectorSpinner: Spinner
-    private lateinit var environmentMapSelectorSpinner: Spinner
-    private lateinit var graphSelectorSpinner: Spinner
-    private lateinit var colorButton: Button
-    private lateinit var hideUIButton: Button
-    //private lateinit var saveButton: Button
-    //private lateinit var syncButton: Button
-    private lateinit var equationEditor: EditText
-    private lateinit var flipsNormalsCheckBox: CheckBox
-    private lateinit var linearLayout: LinearLayout
-    private lateinit var backgroundRadioGroup: RadioGroup
-    private lateinit var preferredGraphListRadioGroup: RadioGroup
-    private lateinit var solidColorRadioButton: RadioButton
-    private lateinit var imageRadioButton: RadioButton
-    private lateinit var defaultEquationsRadioButton: RadioButton
-    private lateinit var userDefinedEquationsRadioButton: RadioButton
-    private lateinit var defaultGraphSelectionSpinner: Spinner
-    private lateinit var userDefinedGraphSelectionSpinner: Spinner
-    //private lateinit var previewImageView: ImageView
+    private val layout: LinearLayout by lazy { findViewById<LinearLayout>(R.id.render_layout) }
+    private val fpsMeter: TextView by lazy { findViewById<TextView>(R.id.tv_fps_meter) }
+    private val distanceSeekBar: SeekBar by lazy { findViewById<SeekBar>(R.id.distance_seekbar) }
+    private val fieldOfViewSeekBar: SeekBar by lazy { findViewById<SeekBar>(R.id.field_of_view_seekbar) }
+    private val gravitySeekBar: SeekBar by lazy { findViewById<SeekBar>(R.id.gravity_seekbar) }
+    private val linearAccelerationSeekBar: SeekBar by lazy { findViewById<SeekBar>(R.id.linear_acceleration_seekbar) }
+    private val efficiencySeekBar: SeekBar by lazy { findViewById<SeekBar>(R.id.efficiency_seekbar) }
+    private val visualizationSelectorSpinner: Spinner by lazy { findViewById<Spinner>(R.id.visualization_type_spinner) }
+    private val environmentMapSelectorSpinner: Spinner by lazy { findViewById<Spinner>(R.id.image_selection_spinner) }
+    private val graphSelectorSpinner: Spinner by lazy { findViewById<Spinner>(R.id.default_graph_selection_spinner) }
+    private val colorButton: Button by lazy { findViewById<Button>(R.id.b_color_picker) }
+    private val hideUIButton: Button by lazy { findViewById<Button>(R.id.hide_ui_button) }
+    //private val saveButton: Button = by lazy { findViewById<Button>(R.id.save_button) }
+    //private val syncButton: Button = by lazy { findViewById<Button>(R.id.sync_button) }
+    private val equationEditor: EditText by lazy { findViewById<EditText>(R.id.et_equation) }
+    private val flipsNormalsCheckBox: CheckBox by lazy { findViewById<CheckBox>(R.id.flip_normals_checkbox) }
+    private val linearLayout: LinearLayout by lazy { findViewById<LinearLayout>(R.id.settings_linearlayout) }
+    private val backgroundRadioGroup: RadioGroup by lazy { findViewById<RadioGroup>(R.id.background_radio_group) }
+    private val preferredGraphListRadioGroup: RadioGroup by lazy { findViewById<RadioGroup>(R.id.equation_radio_group) }
+    private val solidColorRadioButton: RadioButton by lazy { findViewById<RadioButton>(R.id.solid_color_radio_button) }
+    private val imageRadioButton: RadioButton by lazy { findViewById<RadioButton>(R.id.image_radio_button) }
+    private val defaultEquationsRadioButton: RadioButton by lazy { findViewById<RadioButton>(R.id.default_equations_radio_button) }
+    private val userDefinedEquationsRadioButton: RadioButton by lazy { findViewById<RadioButton>(R.id.user_defined_equations_radio_button) }
+    private val defaultGraphSelectionSpinner: Spinner by lazy { findViewById<Spinner>(R.id.default_graph_selection_spinner) }
+    private val userDefinedGraphSelectionSpinner: Spinner by lazy { findViewById<Spinner>(R.id.user_defined_graph_selection_spinner) }
+    //private val previewImageView: ImageView by lazy { findViewById<ImageView>(R.id.imageView) }
 
     private fun updateSyntaxResult() {
         // update syntax check message
@@ -98,34 +98,6 @@ class PreviewActivity : AppCompatActivity() {
         setContentView(R.layout.activity_preview)
         // get view window from GLES3JNIView
         mView = GLES3JNIView(this@PreviewActivity, viewModel)
-
-        layout = findViewById<LinearLayout>(R.id.render_layout)
-        fpsMeter = findViewById<TextView>(R.id.tv_fps_meter)
-        distanceSeekBar = findViewById<SeekBar>(R.id.distance_seekbar)
-        fieldOfViewSeekBar = findViewById<SeekBar>(R.id.field_of_view_seekbar)
-        gravitySeekBar = findViewById<SeekBar>(R.id.gravity_seekbar)
-        linearAccelerationSeekBar = findViewById<SeekBar>(R.id.linear_acceleration_seekbar)
-        efficiencySeekBar = findViewById<SeekBar>(R.id.efficiency_seekbar)
-        visualizationSelectorSpinner = findViewById<Spinner>(R.id.visualization_type_spinner)
-        environmentMapSelectorSpinner = findViewById<Spinner>(R.id.image_selection_spinner)
-        graphSelectorSpinner = findViewById<Spinner>(R.id.default_graph_selection_spinner)
-        colorButton = findViewById<Button>(R.id.b_color_picker)
-        hideUIButton = findViewById<Button>(R.id.hide_ui_button)
-        //saveButton = findViewById<Button>(R.id.save_button)
-        //syncButton = findViewById<Button>(R.id.sync_button)
-        equationEditor = findViewById<EditText>(R.id.et_equation)
-        flipsNormalsCheckBox = findViewById<CheckBox>(R.id.flip_normals_checkbox)
-        linearLayout = findViewById<LinearLayout>(R.id.settings_linearlayout)
-        backgroundRadioGroup = findViewById<RadioGroup>(R.id.background_radio_group)
-        preferredGraphListRadioGroup = findViewById<RadioGroup>(R.id.equation_radio_group)
-        solidColorRadioButton = findViewById<RadioButton>(R.id.solid_color_radio_button)
-        imageRadioButton = findViewById<RadioButton>(R.id.image_radio_button)
-        defaultEquationsRadioButton = findViewById<RadioButton>(R.id.default_equations_radio_button)
-        userDefinedEquationsRadioButton = findViewById<RadioButton>(R.id.user_defined_equations_radio_button)
-        defaultGraphSelectionSpinner = findViewById<Spinner>(R.id.default_graph_selection_spinner)
-        userDefinedGraphSelectionSpinner = findViewById<Spinner>(R.id.user_defined_graph_selection_spinner)
-        //previewImageView = findViewById<ImageView>(R.id.imageView)
-
     //
     //    // fill visualization selector box with wallpaper options from native-lib.cpp
     //    val visualizationSelectorAdapter = ArrayAdapter.createFromResource(
