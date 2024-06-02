@@ -41,6 +41,7 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
     private val sharedPreferencesEditor: SharedPreferences.Editor = sharedPreferences.edit()
     // ViewModel state
     var visualization: Visualization = visualizationIntToVisualizationObject(getVisualizationSelection())
+    var graphList: Int = getPreferredGraphList()
 
     val backgroundTexture: MutableLiveData<String> = MutableLiveData<String>(visualization.toJsonObject().getString("background_texture"))
     val fluidSurface: MutableLiveData<Boolean> = MutableLiveData(true)
@@ -700,6 +701,7 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
         if(preferences.getBoolean("firstTimeStartup", true)){
             val sharedPreferencesEditor = preferences.edit()
             sharedPreferencesEditor.putInt("preferredVisualization", 0)
+            sharedPreferencesEditor.putInt("preferredGraphList", 0)
             sharedPreferencesEditor.putString("0", NBodyVisualization().toJsonObject().toString())
             sharedPreferencesEditor.putString("1", NaiveFluidVisualization().toJsonObject().toString())
             sharedPreferencesEditor.putString("2", PicFlipVisualization().toJsonObject().toString())
@@ -713,6 +715,10 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
 
     fun getVisualizationSelection(): Int {
         return sharedPreferences.getInt("preferredVisualization", 0)
+    }
+
+    fun getPreferredGraphList(): Int {
+        return sharedPreferences.getInt("preferredGraphList", 0)
     }
 
     fun getEnvironmentMapSelection(): Int {

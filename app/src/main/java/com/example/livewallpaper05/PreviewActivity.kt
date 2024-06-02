@@ -89,8 +89,13 @@ class PreviewActivity : AppCompatActivity() {
         val flipsNormalsCheckBox: CheckBox = findViewById<CheckBox>(R.id.flip_normals_checkbox)
         val linearLayout: LinearLayout = findViewById<LinearLayout>(R.id.settings_linearlayout)
         val backgroundRadioGroup: RadioGroup = findViewById<RadioGroup>(R.id.background_radio_group)
+        val preferredGraphListRadioGroup: RadioGroup = findViewById<RadioGroup>(R.id.equation_radio_group)
         val solidColorRadioButton: RadioButton = findViewById<RadioButton>(R.id.solid_color_radio_button)
         val imageRadioButton: RadioButton = findViewById<RadioButton>(R.id.image_radio_button)
+        val defaultEquationsRadioButton: RadioButton = findViewById<RadioButton>(R.id.default_equations_radio_button)
+        val userDefinedEquationsRadioButton: RadioButton = findViewById<RadioButton>(R.id.user_defined_equations_radio_button)
+        val defaultGraphSelectionSpinner: Spinner = findViewById<Spinner>(R.id.default_graph_selection_spinner)
+        val userDefinedGraphSelectionSpinner: Spinner = findViewById<Spinner>(R.id.user_defined_graph_selection_spinner)
     //    val previewImageView: ImageView = findViewById<ImageView>(R.id.imageView)
     //
     //    // fill visualization selector box with wallpaper options from native-lib.cpp
@@ -378,7 +383,7 @@ class PreviewActivity : AppCompatActivity() {
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                TODO("Not yet implemented")
+
             }
 
         }
@@ -493,6 +498,33 @@ class PreviewActivity : AppCompatActivity() {
     //            viewModel.repo.synchronizeWithServer(viewModel.repo.uid)
     //        }
     //    }
+
+        defaultEquationsRadioButton.setOnClickListener {
+            defaultGraphSelectionSpinner.isEnabled = true
+            userDefinedGraphSelectionSpinner.isEnabled = false
+        }
+
+        userDefinedEquationsRadioButton.setOnClickListener {
+            userDefinedGraphSelectionSpinner.isEnabled = true
+            defaultGraphSelectionSpinner.isEnabled = false
+        }
+
+        /*when(viewModel.repo.getPreferredGraphList()){
+            0 -> {
+                preferredGraphListRadioGroup.check(defaultEquationsRadioButton.id)
+                //defaultEquationsRadioButton.isChecked = true
+                //userDefinedEquationsRadioButton.isChecked = false
+                defaultGraphSelectionSpinner.isEnabled = true
+                userDefinedGraphSelectionSpinner.isEnabled = false
+            }
+            1 -> {
+                preferredGraphListRadioGroup.check(userDefinedEquationsRadioButton.id)
+                //userDefinedEquationsRadioButton.isChecked = true
+                //defaultEquationsRadioButton.isChecked = false
+                userDefinedGraphSelectionSpinner.isEnabled = true
+                defaultGraphSelectionSpinner.isEnabled = false
+            }
+        }*/
 
         // setup equation editor
         viewModel.updateEquation(equationEditor.text.toString())
@@ -694,6 +726,19 @@ class PreviewActivity : AppCompatActivity() {
         mView!!.onPause()
     }*/
 
+    //override fun onStart() {
+    //    super.onStart()
+    //
+    //    val preferredGraphListRadioGroup: RadioGroup = findViewById<RadioGroup>(R.id.equation_radio_group)
+    //    val defaultEquationsRadioButton: RadioButton = findViewById<RadioButton>(R.id.default_equations_radio_button)
+    //    val userDefinedEquationsRadioButton: RadioButton = findViewById<RadioButton>(R.id.user_defined_equations_radio_button)
+    //    val defaultGraphSelectionSpinner: Spinner = findViewById<Spinner>(R.id.default_graph_selection_spinner)
+    //    val userDefinedGraphSelectionSpinner: Spinner = findViewById<Spinner>(R.id.user_defined_graph_selection_spinner)
+    //
+    //    userDefinedGraphSelectionSpinner.isEnabled = false
+    //    preferredGraphListRadioGroup.check(defaultEquationsRadioButton.id)
+    //}
+
     // this is run when the activity is 'stopped', like when the app is closed or restarted
     /*override fun onStop() {
     //    // save current wallpaper
@@ -715,10 +760,10 @@ class PreviewActivity : AppCompatActivity() {
     /* this is run when the app is 'resumed'
      * this includes returning to the app, rotating the screen, etc.
      */
-    /*override fun onResume() {
+    override fun onResume() {
         super.onResume()
-        mView!!.onResume()
-    }*/
+        //mView!!.onResume()
+    }
 
     companion object {
         // Used to load the 'livewallpaper05' library on application startup.
