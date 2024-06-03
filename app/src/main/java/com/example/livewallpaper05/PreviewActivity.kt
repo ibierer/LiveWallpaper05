@@ -330,12 +330,7 @@ class PreviewActivity : AppCompatActivity() {
 
         // register spinner actions to update visualization type in repo
         visualizationSelectorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>,
-                view: View?,
-                pos: Int,
-                id: Long
-            ) {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
                 val changed = viewModel.updateVisualizationSelection(pos)
                 if (changed) {
                     // update visualization in repo
@@ -353,28 +348,13 @@ class PreviewActivity : AppCompatActivity() {
         }
 
         defaultGraphsSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val changed = viewModel.updateDefaultGraphSelection(position)
                 if (changed) {
-                    //if (position == 0){
-                    //    viewModel.repo.currentEquation.value = viewModel.repo.userDefinedEquation.value!!
-                    //    // enable the edit text
-                    //    equationEditor.isEnabled = true
-                    //}
-                    //else{
-                    //    viewModel.repo.currentEquation.value = resources.getStringArray(R.array.graph_options)[position]
-                    //    // disable the edit text
-                    //    equationEditor.isEnabled = false
-                    //}
-                    //viewModel.repo.currentEquation.value = resources.getStringArray(R.array.graph_options)[viewModel.repo.defaultEquationSelection]
+                    // disable the edit text
+                    equationEditor.isEnabled = false
                     // set text of equation editor
                     equationEditor.setText(viewModel.repo.currentEquation)
-
                     // tell view it needs to be reloaded
                     mView!!.onPause()
                     mView!!.onResume()
@@ -388,29 +368,13 @@ class PreviewActivity : AppCompatActivity() {
         }
 
         savedGraphsSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val changed = viewModel.updateSavedGraphSelection(position)
                 if (changed) {
-                    //if (position == 0){
-                    //    viewModel.repo.currentEquation.value = viewModel.repo.userDefinedEquation.value!!
-                    //    // enable the edit text
-                    //    equationEditor.isEnabled = true
-                    //}
-                    //else{
-                    //    viewModel.repo.currentEquation.value = resources.getStringArray(R.array.graph_options)[position]
-                    //    // disable the edit text
-                    //    equationEditor.isEnabled = false
-                    //}
-                    //viewModel.repo.currentEquation.value = resources.getStringArray(R.array.graph_options)[viewModel.repo.defaultEquationSelection]
+                    // disable the edit text
+                    equationEditor.isEnabled = true
                     // set text of equation editor
-                    //equationEditor.setText(viewModel.repo.currentEquation.value)
                     equationEditor.setText(viewModel.repo.currentEquation)
-
                     // tell view it needs to be reloaded
                     mView!!.onPause()
                     mView!!.onResume()
@@ -535,17 +499,23 @@ class PreviewActivity : AppCompatActivity() {
     //    }
 
         defaultEquationsRadioButton.setOnClickListener {
-            defaultGraphsSpinner.isEnabled = true
-            savedGraphsSpinner.isEnabled = false
-            viewModel.repo.preferredGraphList = 0
-            //viewModel.saveVisualizationState()
+            if(viewModel.repo.preferredGraphList != 0) {
+                defaultGraphsSpinner.isEnabled = true
+                savedGraphsSpinner.isEnabled = false
+                viewModel.repo.preferredGraphList = 0
+                mView!!.onPause()
+                mView!!.onResume()
+            }
         }
 
         userDefinedEquationsRadioButton.setOnClickListener {
-            savedGraphsSpinner.isEnabled = true
-            defaultGraphsSpinner.isEnabled = false
-            viewModel.repo.preferredGraphList = 1
-            //viewModel.saveVisualizationState()
+            if(viewModel.repo.preferredGraphList != 1) {
+                savedGraphsSpinner.isEnabled = true
+                defaultGraphsSpinner.isEnabled = false
+                viewModel.repo.preferredGraphList = 1
+                mView!!.onPause()
+                mView!!.onResume()
+            }
         }
 
         // setup equation editor
@@ -585,7 +555,7 @@ class PreviewActivity : AppCompatActivity() {
         }
 
         // Setup listener for the Return button
-        equationEditor.setOnEditorActionListener { v, actionId, event ->
+        equationEditor.setOnEditorActionListener { _, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_DONE || (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
                 val view = currentFocus
                 if (view != null) {
@@ -742,59 +712,6 @@ class PreviewActivity : AppCompatActivity() {
             android.R.layout.simple_spinner_dropdown_item,
             equationNames
         )
-    }
-
-    class SavedEquationList(private val viewModel: ActiveWallpaperViewModel) {
-        data class Equation(var name: String, var value: String)
-        private var equationsJSONArray: JSONArray = JSONArray(getSavedEquations())
-        fun insertEquation(name: String, value: String) {
-            val row: Equation = Equation(name, value)
-
-            // Add equation to equationsJSONArray
-            val jsonObject = JSONObject()
-            jsonObject.put("name", row.name)
-            jsonObject.put("value", row.value)
-            equationsJSONArray.put(jsonObject)
-
-            // Push update to shared preferences
-            updateSavedEquations()
-        }
-
-        fun updateEquation(index: Int, name: String, value: String) {
-            val row: Equation = Equation(name, value)
-
-            // Update equation in equationJSONArray at given index
-            val jsonObject = equationsJSONArray.getJSONObject(index)
-            jsonObject.put("name", row.name)
-            jsonObject.put("value", row.value)
-
-            // Push update to shared preferences
-            updateSavedEquations()
-        }
-
-        fun getEquation(index: Int) : Equation {
-            // Return equation from equationJSONArray at given index
-            val jsonObject = equationsJSONArray.getJSONObject(index)
-            return Equation(
-                name = jsonObject.getString("name"),
-                value = jsonObject.getString("value")
-            )
-        }
-
-        fun deleteEquation(index: Int) {
-            // Delete equation from equationJSONArray at given index
-            equationsJSONArray.remove(index)
-
-            // Push update to shared preferences
-            updateSavedEquations()
-        }
-        private fun getSavedEquations() : String? {
-            return viewModel.repo.getPreferences().getString("savedEquations", "[{\"key\":\"value\"}]")
-        }
-        private fun updateSavedEquations() {
-            viewModel.repo.sharedPreferencesEditor.putString("savedEquations", equationsJSONArray.toString())
-            viewModel.repo.sharedPreferencesEditor.apply()
-        }
     }
 
     /* this is run when the app is 'paused'

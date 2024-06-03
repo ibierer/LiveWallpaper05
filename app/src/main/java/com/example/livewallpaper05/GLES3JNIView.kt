@@ -85,11 +85,6 @@ class Renderer(private val context: Context, private var mViewModel: ActiveWallp
                 // Do nothing
             }
             4 -> {
-                /*if (mViewModel.repo.preferredGraphList == 0){
-                    jsonConfig.put("equation", context.resources.getStringArray(R.array.graph_options)[mViewModel.repo.defaultEquationSelection])
-                }else{
-                    jsonConfig.put("equation", mViewModel.repo.getEquation(mViewModel.repo.savedEquationSelection))
-                }*/
                 jsonConfig.put("equation", mViewModel.repo.currentEquation)
                 mViewModel.repo.referenceFrameRotates.postValue(jsonConfig.getBoolean("reference_frame_rotates"))
                 mViewModel.repo.flipNormals.postValue(jsonConfig.getBoolean("vector_points_positive"))
