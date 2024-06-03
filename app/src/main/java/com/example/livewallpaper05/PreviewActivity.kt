@@ -25,7 +25,6 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.RadioGroup
-import android.widget.ScrollView
 import android.widget.SeekBar
 import android.widget.Spinner
 import android.widget.TextView
@@ -36,8 +35,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModelFactory
-import org.json.JSONArray
-import org.json.JSONObject
 import yuku.ambilwarna.AmbilWarnaDialog
 
 class PreviewActivity : AppCompatActivity() {
@@ -61,7 +58,8 @@ class PreviewActivity : AppCompatActivity() {
     private val hideUIButton: Button by lazy { findViewById<Button>(R.id.hide_ui_button) }
     //private val saveButton: Button by lazy { findViewById<Button>(R.id.save_button) }
     //private val syncButton: Button by lazy { findViewById<Button>(R.id.sync_button) }
-    private val equationEditor: EditText by lazy { findViewById<EditText>(R.id.et_equation) }
+    private val equationNameEditText: EditText by lazy { findViewById<EditText>(R.id.et_equation_name) }
+    private val equationValueEditText: EditText by lazy { findViewById<EditText>(R.id.et_equation_value) }
     private val flipsNormalsCheckBox: CheckBox by lazy { findViewById<CheckBox>(R.id.flip_normals_checkbox) }
     private val linearLayout: LinearLayout by lazy { findViewById<LinearLayout>(R.id.settings_linearlayout) }
     private val backgroundRadioGroup: RadioGroup by lazy { findViewById<RadioGroup>(R.id.background_radio_group) }
@@ -69,16 +67,16 @@ class PreviewActivity : AppCompatActivity() {
     private val solidColorRadioButton: RadioButton by lazy { findViewById<RadioButton>(R.id.solid_color_radio_button) }
     private val imageRadioButton: RadioButton by lazy { findViewById<RadioButton>(R.id.image_radio_button) }
     private val defaultEquationsRadioButton: RadioButton by lazy { findViewById<RadioButton>(R.id.default_equations_radio_button) }
-    private val userDefinedEquationsRadioButton: RadioButton by lazy { findViewById<RadioButton>(R.id.user_defined_equations_radio_button) }
+    private val savedEquationsRadioButton: RadioButton by lazy { findViewById<RadioButton>(R.id.saved_equations_radio_button) }
     private val defaultGraphsSpinner: Spinner by lazy { findViewById<Spinner>(R.id.default_graph_selection_spinner) }
-    private val savedGraphsSpinner: Spinner by lazy { findViewById<Spinner>(R.id.user_defined_graph_selection_spinner) }
+    private val savedGraphsSpinner: Spinner by lazy { findViewById<Spinner>(R.id.saved_graph_selection_spinner) }
     //private val previewImageView: ImageView by lazy { findViewById<ImageView>(R.id.imageView) }
 
     private fun updateSyntaxResult() {
         // update syntax check message
         val equationChecker = EquationChecker()
         val result: String =
-            equationChecker.checkEquationSyntax(findViewById<EditText>(R.id.et_equation).text.toString())
+            equationChecker.checkEquationSyntax(findViewById<EditText>(R.id.et_equation_value).text.toString())
         val message: String = if (result == "") {
             "No syntax errors."
         } else {
@@ -150,18 +148,26 @@ class PreviewActivity : AppCompatActivity() {
                 R.id.efficiency_seekbar
             )
             val editTextIds: List<Int> = listOf(
-                R.id.et_equation
+                R.id.et_equation_name,
+                R.id.et_equation_value
             )
             val checkBoxIds: List<Int> = listOf(
                 R.id.flip_normals_checkbox
             )
             val spinnerIds: List<Int> = listOf(
                 R.id.default_graph_selection_spinner,
-                R.id.user_defined_graph_selection_spinner,
+                R.id.saved_graph_selection_spinner,
                 R.id.image_selection_spinner
             )
+            val radioButtonIds: List<Int> = listOf(
+                R.id.solid_color_radio_button,
+                R.id.image_radio_button,
+                R.id.default_equations_radio_button,
+                R.id.saved_equations_radio_button
+            )
             val radioGroupIds: List<Int> = listOf(
-                R.id.background_radio_group
+                R.id.background_radio_group,
+                R.id.equation_radio_group
             )
             for (id in textViewIds) {
                 if (viewModel.repo.visualization.relevantTextViewIds.contains(id) && !viewModel.repo.isCollapsed) {
@@ -204,6 +210,15 @@ class PreviewActivity : AppCompatActivity() {
                 } else {
                     findViewById<Spinner>(id).visibility = View.GONE
                     findViewById<Spinner>(id).isEnabled = false
+                }
+            }
+            for (id in radioButtonIds) {
+                if (viewModel.repo.visualization.relevantRadioButtonIds.contains(id) && !viewModel.repo.isCollapsed) {
+                    findViewById<RadioButton>(id).visibility = View.VISIBLE
+                    findViewById<RadioButton>(id).isEnabled = true
+                } else {
+                    findViewById<RadioButton>(id).visibility = View.GONE
+                    findViewById<RadioButton>(id).isEnabled = false
                 }
             }
             for (id in radioGroupIds) {
@@ -333,8 +348,6 @@ class PreviewActivity : AppCompatActivity() {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
                 val changed = viewModel.updateVisualizationSelection(pos)
                 if (changed) {
-                    // update visualization in repo
-                    //viewModel.updateVisualizationType(parent.getItemAtPosition(pos).toString())
                     // tell view it needs to be reloaded
                     mView!!.onPause()
                     mView!!.onResume()
@@ -352,9 +365,11 @@ class PreviewActivity : AppCompatActivity() {
                 val changed = viewModel.updateDefaultGraphSelection(position)
                 if (changed) {
                     // disable the edit text
-                    equationEditor.isEnabled = false
+                    equationNameEditText.isEnabled = false
+                    equationValueEditText.isEnabled = false
                     // set text of equation editor
-                    equationEditor.setText(viewModel.repo.currentEquation)
+                    equationNameEditText.setText(viewModel.repo.currentEquation.name)
+                    equationValueEditText.setText(viewModel.repo.currentEquation.value)
                     // tell view it needs to be reloaded
                     mView!!.onPause()
                     mView!!.onResume()
@@ -372,9 +387,11 @@ class PreviewActivity : AppCompatActivity() {
                 val changed = viewModel.updateSavedGraphSelection(position)
                 if (changed) {
                     // disable the edit text
-                    equationEditor.isEnabled = true
+                    equationNameEditText.isEnabled = true
+                    equationValueEditText.isEnabled = true
                     // set text of equation editor
-                    equationEditor.setText(viewModel.repo.currentEquation)
+                    equationNameEditText.setText(viewModel.repo.currentEquation.name)
+                    equationValueEditText.setText(viewModel.repo.currentEquation.value)
                     // tell view it needs to be reloaded
                     mView!!.onPause()
                     mView!!.onResume()
@@ -503,24 +520,36 @@ class PreviewActivity : AppCompatActivity() {
                 defaultGraphsSpinner.isEnabled = true
                 savedGraphsSpinner.isEnabled = false
                 viewModel.repo.preferredGraphList = 0
+                // set text of equation editor
+                equationNameEditText.setText(viewModel.repo.currentEquation.name)
+                equationValueEditText.setText(viewModel.repo.currentEquation.value)
+                equationNameEditText.isEnabled = false
+                equationValueEditText.isEnabled = false
                 mView!!.onPause()
                 mView!!.onResume()
             }
         }
 
-        userDefinedEquationsRadioButton.setOnClickListener {
+        savedEquationsRadioButton.setOnClickListener {
             if(viewModel.repo.preferredGraphList != 1) {
                 savedGraphsSpinner.isEnabled = true
                 defaultGraphsSpinner.isEnabled = false
                 viewModel.repo.preferredGraphList = 1
+                // set text of equation editor
+                equationNameEditText.setText(viewModel.repo.currentEquation.name)
+                equationValueEditText.setText(viewModel.repo.currentEquation.value)
+                equationNameEditText.isEnabled = true
+                equationValueEditText.isEnabled = true
                 mView!!.onPause()
                 mView!!.onResume()
             }
         }
 
         // setup equation editor
-        viewModel.updateEquation(equationEditor.text.toString())
-        equationEditor.addTextChangedListener(object : TextWatcher {
+        //viewModel.updateEquation(equationValueEditText.text.toString())
+        equationNameEditText.setText(viewModel.repo.currentEquation.name)
+        equationValueEditText.setText(viewModel.repo.currentEquation.value)
+        equationValueEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
                 // Do nothing
             }
@@ -538,24 +567,23 @@ class PreviewActivity : AppCompatActivity() {
             return Runnable {
                 // update equation in repo if valid
                 val equationChecker: EquationChecker = EquationChecker()
-                val result: String =
-                    equationChecker.checkEquationSyntax(equationEditor.text.toString())
+                val result: String = equationChecker.checkEquationSyntax(equationValueEditText.text.toString())
                 Log.d("LiveWallpaper05", "result is: $result")
                 //Log.d("LiveWallpaper05", "result2 is: " + result2)
-                if (result == "") {
-                    viewModel.updateEquation(equationEditor.text.toString())
-                    Log.d("LiveWallpaper05", "Syntax check passed.")
-                } else {
-                    viewModel.updateEquation(getString(R.string.default_equation))
-                    Log.d("LiveWallpaper05", "Syntax check failed.")
-                }
+                //if (result == "") {
+                //    viewModel.updateEquation(equationValueEditText.text.toString())
+                //    Log.d("LiveWallpaper05", "Syntax check passed.")
+                //} else {
+                //    viewModel.updateEquation(getString(R.string.default_equation))
+                //    Log.d("LiveWallpaper05", "Syntax check failed.")
+                //}
                 mView!!.onPause()
                 mView!!.onResume()
             }
         }
 
         // Setup listener for the Return button
-        equationEditor.setOnEditorActionListener { _, actionId, event ->
+        equationValueEditText.setOnEditorActionListener { _, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_DONE || (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
                 val view = currentFocus
                 if (view != null) {
@@ -597,6 +625,9 @@ class PreviewActivity : AppCompatActivity() {
             imageRadioButton.visibility = View.VISIBLE
             findViewById<TextView>(R.id.background_label).visibility = View.VISIBLE
             environmentMapSelectorSpinner.visibility = View.VISIBLE
+            defaultEquationsRadioButton.visibility = View.VISIBLE
+            savedEquationsRadioButton.visibility = View.VISIBLE
+            preferredGraphListRadioGroup.visibility = View.VISIBLE
             //syncButton.visibility = View.VISIBLE
             //saveButton.visibility = View.VISIBLE
             //previewImageView.visibility = View.VISIBLE
@@ -606,6 +637,9 @@ class PreviewActivity : AppCompatActivity() {
             solidColorRadioButton.isEnabled = true
             imageRadioButton.isEnabled = true
             environmentMapSelectorSpinner.isEnabled = true
+            defaultEquationsRadioButton.isEnabled = true
+            savedEquationsRadioButton.isEnabled = true
+            preferredGraphListRadioGroup.isEnabled = true
             //syncButton.isEnabled = true
             //saveButton.isEnabled = true
             loadOrUnloadUIElements()
@@ -619,6 +653,9 @@ class PreviewActivity : AppCompatActivity() {
             backgroundRadioGroup.visibility = View.GONE
             findViewById<TextView>(R.id.background_label).visibility = View.GONE
             environmentMapSelectorSpinner.visibility = View.GONE
+            defaultEquationsRadioButton.visibility = View.GONE
+            savedEquationsRadioButton.visibility = View.GONE
+            preferredGraphListRadioGroup.visibility = View.GONE
             //syncButton.visibility = View.GONE
             //saveButton.visibility = View.GONE
             //previewImageView.visibility = View.GONE
@@ -628,6 +665,9 @@ class PreviewActivity : AppCompatActivity() {
             imageRadioButton.isEnabled = false
             backgroundRadioGroup.isEnabled = false
             environmentMapSelectorSpinner.isEnabled = false
+            defaultEquationsRadioButton.isEnabled = false
+            savedEquationsRadioButton.isEnabled = false
+            preferredGraphListRadioGroup.isEnabled = false
             //syncButton.isEnabled = false
             //saveButton.isEnabled = false
             loadOrUnloadUIElements()
@@ -670,12 +710,12 @@ class PreviewActivity : AppCompatActivity() {
             setDefaultAnimationParametersAndAnimate(animation)
         }
 
-        // Scroll the ScrollView to the bottom when the layout changes (e.g., keyboard shown/hidden)
-        findViewById<ScrollView>(R.id.settings_scrollview).viewTreeObserver.addOnGlobalLayoutListener {
-            findViewById<ScrollView>(R.id.settings_scrollview).post {
-                findViewById<ScrollView>(R.id.settings_scrollview).fullScroll(View.FOCUS_DOWN)
-            }
-        }
+    //    // Scroll the ScrollView to the bottom when the layout changes (e.g., keyboard shown/hidden)
+    //    findViewById<ScrollView>(R.id.settings_scrollview).viewTreeObserver.addOnGlobalLayoutListener {
+    //        findViewById<ScrollView>(R.id.settings_scrollview).post {
+    //            findViewById<ScrollView>(R.id.settings_scrollview).fullScroll(View.FOCUS_DOWN)
+    //        }
+    //    }
 
     //    // Scroll the ScrollView to the bottom when the EditText gains focus
     //    equationEditor.setOnFocusChangeListener { _, hasFocus ->
@@ -738,11 +778,15 @@ class PreviewActivity : AppCompatActivity() {
                 preferredGraphListRadioGroup.check(defaultEquationsRadioButton.id)
                 defaultGraphsSpinner.isEnabled = true
                 savedGraphsSpinner.isEnabled = false
+                equationNameEditText.isEnabled = false
+                equationValueEditText.isEnabled = false
             }
             1 -> {
-                preferredGraphListRadioGroup.check(userDefinedEquationsRadioButton.id)
+                preferredGraphListRadioGroup.check(savedEquationsRadioButton.id)
                 savedGraphsSpinner.isEnabled = true
                 defaultGraphsSpinner.isEnabled = false
+                equationNameEditText.isEnabled = true
+                equationValueEditText.isEnabled = true
             }
         }
     }

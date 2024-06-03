@@ -48,6 +48,10 @@ data class TriangleVisualization (
     override val relevantSpinnerIds: List<Int> = listOf(
         R.id.image_selection_spinner
     )
+    override val relevantRadioButtonIds: List<Int> = listOf(
+        R.id.solid_color_radio_button,
+        R.id.image_radio_button
+    )
     override val relevantRadioGroupIds: List<Int> = listOf(
         R.id.background_radio_group
     )

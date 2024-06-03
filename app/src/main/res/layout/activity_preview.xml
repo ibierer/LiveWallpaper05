@@ -279,7 +279,7 @@
                         android:layout_margin="@dimen/preview_ui_margin" />
 
                     <RadioButton
-                        android:id="@+id/user_defined_equations_radio_button"
+                        android:id="@+id/saved_equations_radio_button"
                         android:layout_width="wrap_content"
                         android:layout_height="50dp"
                         android:layout_weight="1"
@@ -303,7 +303,7 @@
                         android:layout_margin="@dimen/preview_ui_margin" />
 
                     <Spinner
-                        android:id="@+id/user_defined_graph_selection_spinner"
+                        android:id="@+id/saved_graph_selection_spinner"
                         style="?android:attr/spinnerItemStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="50dp"
@@ -324,7 +324,7 @@
                 android:text="Name goes here" />
 
             <EditText
-                android:id="@+id/et_equation"
+                android:id="@+id/et_equation_value"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"

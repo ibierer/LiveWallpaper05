@@ -38,7 +38,7 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
 
     // Saved app data
     private val sharedPreferences: SharedPreferences = getPreferences()
-    val sharedPreferencesEditor: SharedPreferences.Editor = sharedPreferences.edit()
+    private val sharedPreferencesEditor: SharedPreferences.Editor = sharedPreferences.edit()
     // ViewModel state
     var visualization: Visualization = visualizationIntToVisualizationObject(getVisualizationSelection())
 
@@ -67,7 +67,7 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
     var rotationData: Array<Float> = arrayOf(0.0f, 0.0f, 0.0f, 0.0f)
     var accelerationData: Array<Float> = arrayOf(0.0f, 0.0f, 0.0f)
     var linearAccelerationData: Array<Float> = arrayOf(0.0f, 0.0f, 0.0f)
-    var equationsJSONArray: JSONArray = JSONArray(getPreferences().getString(
+    var equationsJSONArray: JSONArray = JSONArray(sharedPreferences.getString(
             "savedEquations",
             JSONArray("""[{"name": "Sphere", "value": "x^2 + y^2 + z^2 = 1"},{"name": "Cube", "value": "x^100 + y^100 + z^100 = 1"}]""").toString()
     ))
@@ -80,13 +80,18 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
     var savedEquationSelection: Int
         get() { return sharedPreferences.getInt("preferredSavedEquation", 0) }
         set(value) { sharedPreferencesEditor.putInt("preferredSavedEquation", value); sharedPreferencesEditor.apply() }
-    var userDefinedEquation: MutableLiveData<String> = MutableLiveData<String>(context.resources.getString(R.string.default_equation))
-    //var currentEquation: MutableLiveData<String> = MutableLiveData<String>(context.resources.getString(R.string.default_equation))
-    var currentEquation: String
+    var currentEquation: Equation
         get() {
             return when (preferredGraphList) {
-                0 -> context.resources.getStringArray(R.array.graph_options)[defaultEquationSelection];
-                1 -> getEquation(savedEquationSelection).value
+                0 -> {
+                    Equation(
+                        context.resources.getStringArray(R.array.graph_names)[defaultEquationSelection],
+                        context.resources.getStringArray(R.array.graph_options)[defaultEquationSelection]
+                    )
+                }
+                1 -> {
+                    getEquation(savedEquationSelection)
+                }
                 else -> throw IllegalArgumentException("Invalid graph list")
             }
         }

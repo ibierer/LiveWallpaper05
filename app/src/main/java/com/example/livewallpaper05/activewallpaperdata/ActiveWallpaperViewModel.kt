@@ -333,10 +333,10 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
     //        repo.preview = preview
     //}
 
-    // update equation string in repo
-    fun updateEquation(string: String) {
-        repo.userDefinedEquation.value = string
-    }
+    //// update equation string in repo
+    //fun updateEquation(string: String) {
+    //    repo.userDefinedEquation.value = string
+    //}
 
     // update gravity value in repo
     fun updateGravity(value: Float) {

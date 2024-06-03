@@ -37,7 +37,7 @@ data class GraphVisualization (
         backgroundIsSolidColor = repo.backgroundIsSolidColor.value!!,
         backgroundTexture = repo.backgroundTexture.value!!,
         vectorPointsPositive = repo.flipNormals.value!!,
-        equation = repo.userDefinedEquation.value!!
+        equation = repo.currentEquation.value
     )
 
     override val relevantTextViewIds : List<Int> = listOf(
@@ -51,18 +51,26 @@ data class GraphVisualization (
         R.id.field_of_view_seekbar
     )
     override val relevantEditTextIds: List<Int> = listOf(
-        R.id.et_equation
+        R.id.et_equation_name,
+        R.id.et_equation_value
     )
     override val relevantCheckBoxIds: List<Int> = listOf(
         R.id.flip_normals_checkbox
     )
     override val relevantSpinnerIds: List<Int> = listOf(
         R.id.default_graph_selection_spinner,
-        R.id.user_defined_graph_selection_spinner,
+        R.id.saved_graph_selection_spinner,
         R.id.image_selection_spinner
     )
+    override val relevantRadioButtonIds: List<Int> = listOf(
+        R.id.solid_color_radio_button,
+        R.id.image_radio_button,
+        R.id.default_equations_radio_button,
+        R.id.saved_equations_radio_button
+    )
     override val relevantRadioGroupIds: List<Int> = listOf(
-        R.id.background_radio_group
+        R.id.background_radio_group,
+        R.id.equation_radio_group
     )
 
     override fun toJsonObject() : JSONObject {
