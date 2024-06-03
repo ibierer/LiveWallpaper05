@@ -9,7 +9,6 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.util.Log
 //import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.livewallpaper05.R
@@ -22,6 +21,7 @@ import com.example.livewallpaper05.R
 //import com.example.livewallpaper05.savedWallpapers.SavedWallpaperDao
 //import com.example.livewallpaper05.savedWallpapers.SavedWallpaperRow
 import kotlinx.coroutines.CoroutineScope
+import org.json.JSONArray
 import org.json.JSONObject
 
 //import kotlinx.coroutines.DelicateCoroutinesApi
@@ -41,7 +41,6 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
     val sharedPreferencesEditor: SharedPreferences.Editor = sharedPreferences.edit()
     // ViewModel state
     var visualization: Visualization = visualizationIntToVisualizationObject(getVisualizationSelection())
-    var graphList: Int = getPreferredGraphList()
 
     val backgroundTexture: MutableLiveData<String> = MutableLiveData<String>(visualization.toJsonObject().getString("background_texture"))
     val fluidSurface: MutableLiveData<Boolean> = MutableLiveData(true)
@@ -54,8 +53,6 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
     //val lastModified: Long = 0
     //var uid: Int = 11
     //var username: String = "Default User"
-    var userDefinedEquation: MutableLiveData<String> = MutableLiveData<String>(context.resources.getString(R.string.default_equation))
-    var currentEquation: String = "1/((sqrt(x^2 + y^2) - 1.5 + sin(t))^2 + (z + cos(t))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 2π/3))^2 + (z + cos(t + 2π/3))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 4π/3))^2 + (z + cos(t + 4π/3))^2) = 5"
     var color: MutableLiveData<Color> = MutableLiveData<Color>(Color.valueOf(0.0f, 0.0f, 0.0f, 0.0f))
     var orientation: Int = 0
     var fps: MutableLiveData<Float> = MutableLiveData<Float>(0.0f)
@@ -70,8 +67,31 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
     var rotationData: Array<Float> = arrayOf(0.0f, 0.0f, 0.0f, 0.0f)
     var accelerationData: Array<Float> = arrayOf(0.0f, 0.0f, 0.0f)
     var linearAccelerationData: Array<Float> = arrayOf(0.0f, 0.0f, 0.0f)
+    var equationsJSONArray: JSONArray = JSONArray(getPreferences().getString(
+            "savedEquations",
+            JSONArray("""[{"name": "Sphere", "value": "x^2 + y^2 + z^2 = 1"},{"name": "Cube", "value": "x^100 + y^100 + z^100 = 1"}]""").toString()
+    ))
+    var preferredGraphList: Int
+        get() { return sharedPreferences.getInt("preferredGraphList", 0) }
+        set(value) { sharedPreferencesEditor.putInt("preferredGraphList", value); sharedPreferencesEditor.apply() }
+    var defaultEquationSelection: Int
+        get() { return sharedPreferences.getInt("preferredDefaultEquation", 0) }
+        set(value) { sharedPreferencesEditor.putInt("preferredDefaultEquation", value); sharedPreferencesEditor.apply() }
+    var savedEquationSelection: Int
+        get() { return sharedPreferences.getInt("preferredSavedEquation", 0) }
+        set(value) { sharedPreferencesEditor.putInt("preferredSavedEquation", value); sharedPreferencesEditor.apply() }
+    var userDefinedEquation: MutableLiveData<String> = MutableLiveData<String>(context.resources.getString(R.string.default_equation))
+    //var currentEquation: MutableLiveData<String> = MutableLiveData<String>(context.resources.getString(R.string.default_equation))
+    var currentEquation: String
+        get() {
+            return when (preferredGraphList) {
+                0 -> context.resources.getStringArray(R.array.graph_options)[defaultEquationSelection];
+                1 -> getEquation(savedEquationSelection).value
+                else -> throw IllegalArgumentException("Invalid graph list")
+            }
+        }
+        set(value) {}
 
-    var graphSelection: Int = 0
     //var visualizationName = MutableLiveData<String>("")
     //var preview: Bitmap? = null
     //var savedConfig: String = ""
@@ -696,12 +716,15 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
         this.orientation = orient
     }
 
-    private fun getPreferences(): SharedPreferences {
+    fun getPreferences(): SharedPreferences {
         val preferences: SharedPreferences = context.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
         if(preferences.getBoolean("firstTimeStartup", true)){
             val sharedPreferencesEditor = preferences.edit()
             sharedPreferencesEditor.putInt("preferredVisualization", 0)
             sharedPreferencesEditor.putInt("preferredGraphList", 0)
+            sharedPreferencesEditor.putInt("preferredDefaultEquation", 0)
+            sharedPreferencesEditor.putInt("preferredSavedEquation", 0)
+            sharedPreferencesEditor.putString("savedEquations", JSONArray("""[{"name": "Sphere", "value": "x^2 + y^2 + z^2 = 1"},{"name": "Cube", "value": "x^100 + y^100 + z^100 = 1"}]""").toString())
             sharedPreferencesEditor.putString("0", NBodyVisualization().toJsonObject().toString())
             sharedPreferencesEditor.putString("1", NaiveFluidVisualization().toJsonObject().toString())
             sharedPreferencesEditor.putString("2", PicFlipVisualization().toJsonObject().toString())
@@ -715,10 +738,6 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
 
     fun getVisualizationSelection(): Int {
         return sharedPreferences.getInt("preferredVisualization", 0)
-    }
-
-    fun getPreferredGraphList(): Int {
-        return sharedPreferences.getInt("preferredGraphList", 0)
     }
 
     fun getEnvironmentMapSelection(): Int {
@@ -809,6 +828,53 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
     //fun getTransitionNewId(): Int {
     //    return this.transitionNewId
     //}
+
+    data class Equation(val name: String, val value: String)
+
+    fun insertEquation(name: String, value: String) {
+        val row: Equation = Equation(name, value)
+
+        // Add equation to equationsJSONArray
+        val jsonObject = JSONObject()
+        jsonObject.put("name", row.name)
+        jsonObject.put("value", row.value)
+        equationsJSONArray.put(jsonObject)
+
+        // Push update to shared preferences
+        updateSavedEquations()
+    }
+
+    fun updateEquation(index: Int, name: String, value: String) {
+        val row: Equation = Equation(name, value)
+
+        // Update equation in equationJSONArray at given index
+        val jsonObject = equationsJSONArray.getJSONObject(index)
+        jsonObject.put("name", row.name)
+        jsonObject.put("value", row.value)
+
+        // Push update to shared preferences
+        updateSavedEquations()
+    }
+
+    fun getEquation(index: Int) : Equation {
+        // Return equation from equationJSONArray at given index
+        val jsonObject = equationsJSONArray.getJSONObject(index)
+            return Equation(jsonObject.getString("name"), jsonObject.getString("value")
+        )
+    }
+
+    fun deleteEquation(index: Int) {
+        // Delete equation from equationJSONArray at given index
+        equationsJSONArray.remove(index)
+
+        // Push update to shared preferences
+        updateSavedEquations()
+    }
+
+    private fun updateSavedEquations() {
+        sharedPreferencesEditor.putString("savedEquations", equationsJSONArray.toString())
+        sharedPreferencesEditor.apply()
+    }
 }
 
 data class Tuple(val wid: Int, val lastModified: Long)

@@ -114,10 +114,6 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
         return repo.getVisualizationSelection()
     }
 
-    fun getGraph(): Int {
-        return repo.graphSelection
-    }
-
     // return orientation from repo
     fun getOrientation(): Int {
         return repo.orientation
@@ -281,9 +277,17 @@ class ActiveWallpaperViewModel(val repo: ActiveWallpaperRepo) : ViewModel() {
         return false
     }
 
-    fun updateGraphSelection(selection: Int): Boolean {
-        if (selection != repo.graphSelection) {
-            repo.graphSelection = selection
+    fun updateDefaultGraphSelection(selection: Int): Boolean {
+        if (selection != repo.defaultEquationSelection) {
+            repo.defaultEquationSelection = selection
+            return true
+        }
+        return false
+    }
+
+    fun updateSavedGraphSelection(selection: Int): Boolean {
+        if (selection != repo.savedEquationSelection) {
+            repo.savedEquationSelection = selection
             return true
         }
         return false

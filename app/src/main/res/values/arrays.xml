@@ -12,7 +12,6 @@
         <item>Mandelbrot</item>
     </string-array>
     <string-array name="graph_options">
-        <item name="User Defined">1/((sqrt(x^2 + y^2) - 1.5 + sin(t))^2 + (z + cos(t))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 2π/3))^2 + (z + cos(t + 2π/3))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 4π/3))^2 + (z + cos(t + 4π/3))^2) = 5</item>
         <item name="Saturn">1/(x^2 + y^2 + z^2) + 1/((1.2*sqrt(x^2 + y^2) - 2.7)^20 + (20z)^20) = 1</item>
         <item name="Pill">4 = x^2 + y^2 + ((abs(z - 1.15) - abs(z + 1.15))/2 + z)^2</item>
         <item name="Two Toroids">1/((sqrt(x^2 + y^2) - 2 + 1.25cos(t))^2 + (z - 1.5sin(t))^2) + 1/((sqrt(x^2 + y^2) - 2 - 1.25cos(t))^2 + (z + 1.5sin(t))^2) = 1.9</item>
@@ -58,7 +57,6 @@
         <item name="Miscellaneous 18">1/(x^2 + ((y^2)sin(y)) + z^2) + 0.89/((x - 3sin(t))^2+(y - 3cos(t))^2 + z^40) = 1</item>
     </string-array>
     <string-array name="graph_names">
-        <item>User Defined</item>
         <item>Saturn</item>
         <item>Pill</item>
         <item>Two Toroids</item>
