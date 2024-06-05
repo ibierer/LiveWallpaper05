@@ -25,6 +25,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.RadioGroup
+import android.widget.ScrollView
 import android.widget.SeekBar
 import android.widget.Spinner
 import android.widget.TextView
@@ -33,8 +34,13 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 //import androidx.lifecycle.Observer
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
+import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModelFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import yuku.ambilwarna.AmbilWarnaDialog
 
 class PreviewActivity : AppCompatActivity() {
@@ -47,6 +53,7 @@ class PreviewActivity : AppCompatActivity() {
     // grab ui element for preview page
     private val layout: LinearLayout by lazy { findViewById<LinearLayout>(R.id.render_layout) }
     private val fpsMeter: TextView by lazy { findViewById<TextView>(R.id.tv_fps_meter) }
+    private val syntaxCheck: TextView by lazy { findViewById<TextView>(R.id.tv_syntax_check) }
     private val distanceSeekBar: SeekBar by lazy { findViewById<SeekBar>(R.id.distance_seekbar) }
     private val fieldOfViewSeekBar: SeekBar by lazy { findViewById<SeekBar>(R.id.field_of_view_seekbar) }
     private val gravitySeekBar: SeekBar by lazy { findViewById<SeekBar>(R.id.gravity_seekbar) }
@@ -75,14 +82,13 @@ class PreviewActivity : AppCompatActivity() {
     private fun updateSyntaxResult() {
         // update syntax check message
         val equationChecker = EquationChecker()
-        val result: String =
-            equationChecker.checkEquationSyntax(findViewById<EditText>(R.id.et_equation_value).text.toString())
+        val result: String = equationChecker.checkEquationSyntax(equationValueEditText.text.toString())
         val message: String = if (result == "") {
             "No syntax errors."
         } else {
             result
         }
-        findViewById<TextView>(R.id.tv_syntax_check).text = message
+        syntaxCheck.text = message
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
@@ -125,7 +131,7 @@ class PreviewActivity : AppCompatActivity() {
         defaultGraphsSpinner.setSelection(viewModel.repo.defaultEquationSelection)
         savedGraphsSpinner.setSelection(viewModel.repo.savedEquationSelection)
 
-        populateSavedEquationSpinner()
+        populateSavedEquationNamesSpinner()
 
         // add gl engine view to viewport
         layout.addView(mView)
@@ -362,15 +368,12 @@ class PreviewActivity : AppCompatActivity() {
 
         defaultGraphsSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                val changed = viewModel.updateDefaultGraphSelection(position)
-                if (changed) {
-                    // disable the edit text
+                if(position != viewModel.repo.defaultEquationSelection){
+                    viewModel.repo.defaultEquationSelection = position
+                    equationNameEditText.setText(resources.getStringArray(R.array.graph_names)[position])
+                    equationValueEditText.setText(resources.getStringArray(R.array.graph_options)[position])
                     equationNameEditText.isEnabled = false
                     equationValueEditText.isEnabled = false
-                    // set text of equation editor
-                    equationNameEditText.setText(viewModel.repo.currentEquation.name)
-                    equationValueEditText.setText(viewModel.repo.currentEquation.value)
-                    // tell view it needs to be reloaded
                     mView!!.onPause()
                     mView!!.onResume()
                 }
@@ -384,15 +387,12 @@ class PreviewActivity : AppCompatActivity() {
 
         savedGraphsSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                val changed = viewModel.updateSavedGraphSelection(position)
-                if (changed) {
-                    // disable the edit text
+                if(position != viewModel.repo.savedEquationSelection){
+                    viewModel.repo.savedEquationSelection = position
+                    equationNameEditText.setText(viewModel.repo.getEquation(position).name)
+                    equationValueEditText.setText(viewModel.repo.getEquation(position).value)
                     equationNameEditText.isEnabled = true
                     equationValueEditText.isEnabled = true
-                    // set text of equation editor
-                    equationNameEditText.setText(viewModel.repo.currentEquation.name)
-                    equationValueEditText.setText(viewModel.repo.currentEquation.value)
-                    // tell view it needs to be reloaded
                     mView!!.onPause()
                     mView!!.onResume()
                 }
@@ -520,9 +520,8 @@ class PreviewActivity : AppCompatActivity() {
                 defaultGraphsSpinner.isEnabled = true
                 savedGraphsSpinner.isEnabled = false
                 viewModel.repo.preferredGraphList = 0
-                // set text of equation editor
-                equationNameEditText.setText(viewModel.repo.currentEquation.name)
-                equationValueEditText.setText(viewModel.repo.currentEquation.value)
+                equationNameEditText.setText(resources.getStringArray(R.array.graph_names)[viewModel.repo.defaultEquationSelection])
+                equationValueEditText.setText(resources.getStringArray(R.array.graph_options)[viewModel.repo.defaultEquationSelection])
                 equationNameEditText.isEnabled = false
                 equationValueEditText.isEnabled = false
                 mView!!.onPause()
@@ -535,9 +534,8 @@ class PreviewActivity : AppCompatActivity() {
                 savedGraphsSpinner.isEnabled = true
                 defaultGraphsSpinner.isEnabled = false
                 viewModel.repo.preferredGraphList = 1
-                // set text of equation editor
-                equationNameEditText.setText(viewModel.repo.currentEquation.name)
-                equationValueEditText.setText(viewModel.repo.currentEquation.value)
+                equationNameEditText.setText(viewModel.repo.getEquation(viewModel.repo.savedEquationSelection).name)
+                equationValueEditText.setText(viewModel.repo.getEquation(viewModel.repo.savedEquationSelection).value)
                 equationNameEditText.isEnabled = true
                 equationValueEditText.isEnabled = true
                 mView!!.onPause()
@@ -545,9 +543,25 @@ class PreviewActivity : AppCompatActivity() {
             }
         }
 
-        // setup equation editor
-        //viewModel.updateEquation(equationValueEditText.text.toString())
+        // setup name editor
         equationNameEditText.setText(viewModel.repo.currentEquation.name)
+        equationNameEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // Do nothing
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                //viewModel.repo.equationsJSONArray.getJSONObject(viewModel.repo.savedEquationSelection).put("name", equationNameEditText.text)
+                //viewModel.repo.updateSavedEquations()
+                //populateSavedEquationNamesSpinner()
+            }
+
+            override fun afterTextChanged(s: android.text.Editable?) {
+                // Do nothing
+            }
+        })
+
+        // setup equation editor
         equationValueEditText.setText(viewModel.repo.currentEquation.value)
         equationValueEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -568,15 +582,15 @@ class PreviewActivity : AppCompatActivity() {
                 // update equation in repo if valid
                 val equationChecker: EquationChecker = EquationChecker()
                 val result: String = equationChecker.checkEquationSyntax(equationValueEditText.text.toString())
-                Log.d("LiveWallpaper05", "result is: $result")
+                //Log.d("LiveWallpaper05", "result is: $result")
                 //Log.d("LiveWallpaper05", "result2 is: " + result2)
-                //if (result == "") {
+                if (result == "") {
                 //    viewModel.updateEquation(equationValueEditText.text.toString())
                 //    Log.d("LiveWallpaper05", "Syntax check passed.")
-                //} else {
+                } else {
                 //    viewModel.updateEquation(getString(R.string.default_equation))
                 //    Log.d("LiveWallpaper05", "Syntax check failed.")
-                //}
+                }
                 mView!!.onPause()
                 mView!!.onResume()
             }
@@ -718,7 +732,16 @@ class PreviewActivity : AppCompatActivity() {
     //    }
 
     //    // Scroll the ScrollView to the bottom when the EditText gains focus
-    //    equationEditor.setOnFocusChangeListener { _, hasFocus ->
+    //    equationNameEditText.setOnFocusChangeListener { _, hasFocus ->
+    //        if (hasFocus) {
+    //            findViewById<ScrollView>(R.id.settings_scrollview).post {
+    //                findViewById<ScrollView>(R.id.settings_scrollview).fullScroll(View.FOCUS_DOWN)
+    //            }
+    //        }
+    //    }
+
+    //    // Scroll the ScrollView to the bottom when the EditText gains focus
+    //    equationValueEditText.setOnFocusChangeListener { _, hasFocus ->
     //        if (hasFocus) {
     //            findViewById<ScrollView>(R.id.settings_scrollview).post {
     //                findViewById<ScrollView>(R.id.settings_scrollview).fullScroll(View.FOCUS_DOWN)
@@ -742,15 +765,25 @@ class PreviewActivity : AppCompatActivity() {
         }
     }
 
-    private fun populateSavedEquationSpinner() {
-        val equationNames: MutableList<String> = mutableListOf()
+    private fun populateSavedEquationNamesSpinner() {
+        /*val defaultEquationNames: MutableList<String> = mutableListOf()
+        for (i in resources.getStringArray(R.array.graph_options).indices) {
+            defaultEquationNames.add(resources.getStringArray(R.array.graph_names)[i])
+        }
+        defaultGraphsSpinner.adapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_dropdown_item,
+            defaultEquationNames
+        )*/
+
+        val savedEquationNames: MutableList<String> = mutableListOf()
         for (i in 0 until viewModel.repo.equationsJSONArray.length()) {
-            equationNames.add(viewModel.repo.getEquation(i).name)
+            savedEquationNames.add(viewModel.repo.getEquation(i).name)
         }
         savedGraphsSpinner.adapter = ArrayAdapter(
             this,
             android.R.layout.simple_spinner_dropdown_item,
-            equationNames
+            savedEquationNames
         )
     }
 

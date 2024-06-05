@@ -296,7 +296,7 @@
                     <Spinner
                         android:id="@+id/default_graph_selection_spinner"
                         style="?android:attr/spinnerItemStyle"
-                        android:layout_width="wrap_content"
+                        android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_weight="1"
                         android:entries="@array/graph_names"
@@ -305,7 +305,7 @@
                     <Spinner
                         android:id="@+id/saved_graph_selection_spinner"
                         style="?android:attr/spinnerItemStyle"
-                        android:layout_width="wrap_content"
+                        android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_weight="1"
                         android:layout_margin="@dimen/preview_ui_margin" />

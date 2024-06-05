@@ -69,17 +69,20 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
     var linearAccelerationData: Array<Float> = arrayOf(0.0f, 0.0f, 0.0f)
     var equationsJSONArray: JSONArray = JSONArray(sharedPreferences.getString(
             "savedEquations",
-            JSONArray("""[{"name": "Sphere", "value": "x^2 + y^2 + z^2 = 1"},{"name": "Cube", "value": "x^100 + y^100 + z^100 = 1"}]""").toString()
+            JSONArray("""[{"name": "Sphere", "value": "x^2 + y^2 + z^2 = 9"},{"name": "Cube", "value": "x^100 + y^100 + z^100 = 1"}]""").toString()
     ))
+    private var preferredGraphListValue: Int = -1
+    private var defaultEquationSelectionValue: Int = -1
+    private var savedEquationSelectionValue: Int = -1
     var preferredGraphList: Int
-        get() { return sharedPreferences.getInt("preferredGraphList", 0) }
-        set(value) { sharedPreferencesEditor.putInt("preferredGraphList", value); sharedPreferencesEditor.apply() }
+        get() { if(preferredGraphListValue == -1) preferredGraphListValue = sharedPreferences.getInt("preferredGraphList", 0); return preferredGraphListValue }
+        set(value) { preferredGraphListValue = value; sharedPreferencesEditor.putInt("preferredGraphList", value); sharedPreferencesEditor.apply() }
     var defaultEquationSelection: Int
-        get() { return sharedPreferences.getInt("preferredDefaultEquation", 0) }
-        set(value) { sharedPreferencesEditor.putInt("preferredDefaultEquation", value); sharedPreferencesEditor.apply() }
+        get() { if(defaultEquationSelectionValue == -1) defaultEquationSelectionValue = sharedPreferences.getInt("preferredDefaultEquation", 0); return defaultEquationSelectionValue }
+        set(value) { defaultEquationSelectionValue = value; sharedPreferencesEditor.putInt("preferredDefaultEquation", value); sharedPreferencesEditor.apply() }
     var savedEquationSelection: Int
-        get() { return sharedPreferences.getInt("preferredSavedEquation", 0) }
-        set(value) { sharedPreferencesEditor.putInt("preferredSavedEquation", value); sharedPreferencesEditor.apply() }
+        get() { if(savedEquationSelectionValue == -1) savedEquationSelectionValue = sharedPreferences.getInt("preferredSavedEquation", 0); return savedEquationSelectionValue }
+        set(value) { savedEquationSelectionValue = value; sharedPreferencesEditor.putInt("preferredSavedEquation", value); sharedPreferencesEditor.apply() }
     var currentEquation: Equation
         get() {
             return when (preferredGraphList) {
@@ -729,7 +732,7 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
             sharedPreferencesEditor.putInt("preferredGraphList", 0)
             sharedPreferencesEditor.putInt("preferredDefaultEquation", 0)
             sharedPreferencesEditor.putInt("preferredSavedEquation", 0)
-            sharedPreferencesEditor.putString("savedEquations", JSONArray("""[{"name": "Sphere", "value": "x^2 + y^2 + z^2 = 1"},{"name": "Cube", "value": "x^100 + y^100 + z^100 = 1"}]""").toString())
+            sharedPreferencesEditor.putString("savedEquations", JSONArray("""[{"name": "Sphere", "value": "x^2 + y^2 + z^2 = 1"},{"name": "Cube", "value": "x^100 + y^100 + z^100 = 9"}]""").toString())
             sharedPreferencesEditor.putString("0", NBodyVisualization().toJsonObject().toString())
             sharedPreferencesEditor.putString("1", NaiveFluidVisualization().toJsonObject().toString())
             sharedPreferencesEditor.putString("2", PicFlipVisualization().toJsonObject().toString())
@@ -876,7 +879,7 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
         updateSavedEquations()
     }
 
-    private fun updateSavedEquations() {
+    fun updateSavedEquations() {
         sharedPreferencesEditor.putString("savedEquations", equationsJSONArray.toString())
         sharedPreferencesEditor.apply()
     }
