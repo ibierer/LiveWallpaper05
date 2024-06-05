@@ -867,8 +867,7 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
     fun getEquation(index: Int) : Equation {
         // Return equation from equationJSONArray at given index
         val jsonObject = equationsJSONArray.getJSONObject(index)
-            return Equation(jsonObject.getString("name"), jsonObject.getString("value")
-        )
+        return Equation(jsonObject.getString("name"), jsonObject.getString("value"))
     }
 
     fun deleteEquation(index: Int) {

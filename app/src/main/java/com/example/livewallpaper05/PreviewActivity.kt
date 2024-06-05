@@ -128,8 +128,6 @@ class PreviewActivity : AppCompatActivity() {
     //        android.R.layout.simple_spinner_item
     //    )
     //    defaultGraphsSpinner.adapter = defaultGraphsAdapter
-        defaultGraphsSpinner.setSelection(viewModel.repo.defaultEquationSelection)
-        savedGraphsSpinner.setSelection(viewModel.repo.savedEquationSelection)
 
         populateSavedEquationNamesSpinner()
 
@@ -806,6 +804,8 @@ class PreviewActivity : AppCompatActivity() {
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
 
+        defaultGraphsSpinner.setSelection(viewModel.repo.defaultEquationSelection)
+        savedGraphsSpinner.setSelection(viewModel.repo.savedEquationSelection)
         when(viewModel.repo.preferredGraphList){
             0 -> {
                 preferredGraphListRadioGroup.check(defaultEquationsRadioButton.id)
