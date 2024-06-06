@@ -643,20 +643,12 @@ class PreviewActivity : AppCompatActivity() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                //viewModel.repo.equationsJSONArray.getJSONObject(viewModel.repo.savedEquationSelection).put("name", equationNameEditText.text)
-                //viewModel.repo.updateSavedEquations()
-                //populateSavedEquationNamesSpinner()
-
-                //val jsonObject = JSONObject()
-                //jsonObject.put("name", equationNameEditText.text)
-                //jsonObject.put("value", equationValueEditText.text)
-                //viewModel.repo.equationsJSONArray.put(viewModel.repo.savedEquationSelection, jsonObject)
-                //populateSavedEquationNamesSpinner()
-
-                val equation: ActiveWallpaperRepo.Equation = viewModel.repo.getEquation(viewModel.repo.savedEquationSelection)
-                viewModel.repo.updateEquation(viewModel.repo.savedEquationSelection, s.toString(), equation.value)
-                populateSavedEquationNamesSpinner()
-                savedGraphsSpinner.setSelection(viewModel.repo.savedEquationSelection)
+                if(viewModel.repo.preferredGraphList == 1) {
+                    val equation: ActiveWallpaperRepo.Equation = viewModel.repo.getEquation(viewModel.repo.savedEquationSelection)
+                    viewModel.repo.updateEquation(viewModel.repo.savedEquationSelection, s.toString(), equation.value)
+                    populateSavedEquationNamesSpinner()
+                    savedGraphsSpinner.setSelection(viewModel.repo.savedEquationSelection)
+                }
             }
 
             override fun afterTextChanged(s: android.text.Editable?) {

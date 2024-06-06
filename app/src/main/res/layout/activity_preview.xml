@@ -198,28 +198,29 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
                 <RadioGroup
                     android:id="@+id/background_radio_group"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_weight="2"
+                    android:orientation="horizontal"
                     android:background="@drawable/slightly_opaque_border_background">
 
                     <RadioButton
                         android:id="@+id/solid_color_radio_button"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="50dp"
+                        android:layout_weight="1"
                         android:checked="true"
                         android:text="Solid Color"
                         android:layout_margin="@dimen/preview_ui_margin" />
 
                     <RadioButton
                         android:id="@+id/image_radio_button"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="50dp"
+                        android:layout_weight="1"
                         android:text="Image"
                         android:layout_margin="@dimen/preview_ui_margin" />
                 </RadioGroup>
@@ -227,22 +228,23 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_weight="1"
+                    android:orientation="horizontal"
                     android:background="@drawable/slightly_opaque_border_background">
 
                     <Button
                         android:id="@+id/b_color_picker"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="50dp"
+                        android:layout_weight="1"
                         android:text="Change Color"
                         android:layout_margin="@dimen/preview_ui_margin" />
 
                     <Spinner
                         android:id="@+id/image_selection_spinner"
                         style="?android:attr/spinnerItemStyle"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="50dp"
+                        android:layout_weight="1"
                         android:entries="@array/environment_map_options"
                         android:layout_margin="@dimen/preview_ui_margin" />
                 </LinearLayout>
