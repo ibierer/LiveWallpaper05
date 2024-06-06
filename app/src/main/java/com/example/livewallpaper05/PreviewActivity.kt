@@ -201,12 +201,14 @@ class PreviewActivity : AppCompatActivity() {
             if (result == "") {
                 //    viewModel.updateEquation(equationValueEditText.text.toString())
                 //    Log.d("LiveWallpaper05", "Syntax check passed.")
+                viewModel.repo.updateEquation(viewModel.repo.savedEquationSelection, equationNameEditText.text.toString(), equationValueEditText.text.toString())
+                viewModel.repo.updateSavedEquations()
+                mView!!.onPause()
+                mView!!.onResume()
             } else {
                 //    viewModel.updateEquation(getString(R.string.default_equation))
                 //    Log.d("LiveWallpaper05", "Syntax check failed.")
             }
-            mView!!.onPause()
-            mView!!.onResume()
         }
     }
 
