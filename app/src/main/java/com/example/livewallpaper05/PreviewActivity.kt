@@ -312,18 +312,23 @@ class PreviewActivity : AppCompatActivity() {
         // get view window from GLES3JNIView
         mView = GLES3JNIView(this@PreviewActivity, viewModel)
 
+        // add gl engine view to viewport
+        layout.addView(mView)
+    }
+
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+
+        populateSavedEquationNamesSpinner()
+
+        loadOrUnloadUIElements()
+
         // set default to viewmodel visualization type
         visualizationSelectorSpinner.setSelection(viewModel.getVisualization())
 
         environmentMapSelectorSpinner.setSelection(viewModel.repo.getEnvironmentMapSelection())
 
-        populateSavedEquationNamesSpinner()
-
-        // add gl engine view to viewport
-        layout.addView(mView)
-
         viewModel.updateOrientation(this.display!!.rotation)
-        loadOrUnloadUIElements()
 
         // setup name editor
         equationNameEditText.setText(viewModel.repo.currentEquation.name)
@@ -357,10 +362,6 @@ class PreviewActivity : AppCompatActivity() {
                 equationValueEditText.isEnabled = true
             }
         }
-    }
-
-    override fun onPostCreate(savedInstanceState: Bundle?) {
-        super.onPostCreate(savedInstanceState)
 
         // register seekbar actions to update distance in repo
         distanceSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -643,9 +644,9 @@ class PreviewActivity : AppCompatActivity() {
                 //viewModel.repo.equationsJSONArray.put(viewModel.repo.savedEquationSelection, jsonObject)
                 //populateSavedEquationNamesSpinner()
 
-                val equation: ActiveWallpaperRepo.Equation = viewModel.repo.getEquation(viewModel.repo.savedEquationSelection)
-                viewModel.repo.updateEquation(viewModel.repo.savedEquationSelection, s.toString(), equation.value)
-                populateSavedEquationNamesSpinner()
+                //val equation: ActiveWallpaperRepo.Equation = viewModel.repo.getEquation(viewModel.repo.savedEquationSelection)
+                //viewModel.repo.updateEquation(viewModel.repo.savedEquationSelection, s.toString(), equation.value)
+                //populateSavedEquationNamesSpinner()
             }
 
             override fun afterTextChanged(s: android.text.Editable?) {
