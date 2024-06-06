@@ -235,6 +235,10 @@ class PreviewActivity : AppCompatActivity() {
         defaultEquationsRadioButton.isEnabled = true
         savedEquationsRadioButton.isEnabled = true
         preferredGraphListRadioGroup.isEnabled = true
+        when (viewModel.repo.preferredGraphList) {
+            0 -> defaultGraphsSpinner.isEnabled = true
+            1 -> savedGraphsSpinner.isEnabled = true
+        }
         //syncButton.isEnabled = true
         //saveButton.isEnabled = true
         loadOrUnloadUIElements()
