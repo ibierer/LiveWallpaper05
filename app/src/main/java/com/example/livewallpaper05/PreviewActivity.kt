@@ -319,8 +319,6 @@ class PreviewActivity : AppCompatActivity() {
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
 
-        populateSavedEquationNamesSpinner()
-
         loadOrUnloadUIElements()
 
         // set default to viewmodel visualization type
@@ -344,8 +342,12 @@ class PreviewActivity : AppCompatActivity() {
             showUIComponents()
         }
 
+        populateSavedEquationNamesSpinner()
+
         defaultGraphsSpinner.setSelection(viewModel.repo.defaultEquationSelection)
+
         savedGraphsSpinner.setSelection(viewModel.repo.savedEquationSelection)
+
         when(viewModel.repo.preferredGraphList){
             0 -> {
                 preferredGraphListRadioGroup.check(defaultEquationsRadioButton.id)
@@ -429,8 +431,7 @@ class PreviewActivity : AppCompatActivity() {
         }
 
         // register seekbar actions to update linear acceleration in repo
-        linearAccelerationSeekBar.setOnSeekBarChangeListener(object :
-            SeekBar.OnSeekBarChangeListener {
+        linearAccelerationSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 // Do nothing until changes are stopped for smooth ui updates
                 viewModel.updateLinearAcceleration(seekBar.progress.toFloat() / 100.0f)
@@ -644,9 +645,10 @@ class PreviewActivity : AppCompatActivity() {
                 //viewModel.repo.equationsJSONArray.put(viewModel.repo.savedEquationSelection, jsonObject)
                 //populateSavedEquationNamesSpinner()
 
-                //val equation: ActiveWallpaperRepo.Equation = viewModel.repo.getEquation(viewModel.repo.savedEquationSelection)
-                //viewModel.repo.updateEquation(viewModel.repo.savedEquationSelection, s.toString(), equation.value)
-                //populateSavedEquationNamesSpinner()
+                val equation: ActiveWallpaperRepo.Equation = viewModel.repo.getEquation(viewModel.repo.savedEquationSelection)
+                viewModel.repo.updateEquation(viewModel.repo.savedEquationSelection, s.toString(), equation.value)
+                populateSavedEquationNamesSpinner()
+                savedGraphsSpinner.setSelection(viewModel.repo.savedEquationSelection)
             }
 
             override fun afterTextChanged(s: android.text.Editable?) {
