@@ -159,7 +159,13 @@ class PreviewActivity : AppCompatActivity() {
         for (id in spinnerIds) {
             if (viewModel.repo.visualization.relevantSpinnerIds.contains(id) && !viewModel.repo.isCollapsed) {
                 findViewById<Spinner>(id).visibility = View.VISIBLE
-                findViewById<Spinner>(id).isEnabled = true
+                if(
+                    (id == R.id.default_graph_selection_spinner && viewModel.repo.preferredGraphList == 0) ||
+                    (id == R.id.saved_graph_selection_spinner && viewModel.repo.preferredGraphList == 1) ||
+                    id == R.id.default_graph_selection_spinner
+                ){
+                    findViewById<Spinner>(id).isEnabled = true
+                }
             } else {
                 findViewById<Spinner>(id).visibility = View.GONE
                 findViewById<Spinner>(id).isEnabled = false
