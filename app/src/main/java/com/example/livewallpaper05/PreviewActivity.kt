@@ -574,9 +574,6 @@ class PreviewActivity : AppCompatActivity() {
                     viewModel.saveVisualizationState()
                     mView!!.onPause()
                     mView!!.onResume()
-
-                    // Dynamically load or remove UI components
-                    //loadOrUnloadUIElements()
                 }
             }
 
