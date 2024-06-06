@@ -17,30 +17,22 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-//import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
-//import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.RadioGroup
-import android.widget.ScrollView
 import android.widget.SeekBar
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-//import androidx.lifecycle.Observer
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModelFactory
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import yuku.ambilwarna.AmbilWarnaDialog
 
 class PreviewActivity : AppCompatActivity() {
@@ -91,153 +83,284 @@ class PreviewActivity : AppCompatActivity() {
         syntaxCheck.text = message
     }
 
+    private fun loadOrUnloadUIElements() {
+        val textViewIds: List<Int> = listOf(
+            R.id.distance_label,
+            R.id.field_of_view_label,
+            R.id.gravity_label,
+            R.id.linear_acceleration_label,
+            R.id.efficiency_label,
+            R.id.tv_equation,
+            R.id.tv_syntax_check
+        )
+        val seekBarIds: List<Int> = listOf(
+            R.id.distance_seekbar,
+            R.id.field_of_view_seekbar,
+            R.id.gravity_seekbar,
+            R.id.linear_acceleration_seekbar,
+            R.id.efficiency_seekbar
+        )
+        val editTextIds: List<Int> = listOf(
+            R.id.et_equation_name,
+            R.id.et_equation_value
+        )
+        val checkBoxIds: List<Int> = listOf(
+            R.id.flip_normals_checkbox
+        )
+        val spinnerIds: List<Int> = listOf(
+            R.id.default_graph_selection_spinner,
+            R.id.saved_graph_selection_spinner,
+            R.id.image_selection_spinner
+        )
+        val radioButtonIds: List<Int> = listOf(
+            R.id.solid_color_radio_button,
+            R.id.image_radio_button,
+            R.id.default_equations_radio_button,
+            R.id.saved_equations_radio_button
+        )
+        val radioGroupIds: List<Int> = listOf(
+            R.id.background_radio_group,
+            R.id.equation_radio_group
+        )
+        for (id in textViewIds) {
+            if (viewModel.repo.visualization.relevantTextViewIds.contains(id) && !viewModel.repo.isCollapsed) {
+                findViewById<TextView>(id).visibility = View.VISIBLE
+            } else {
+                findViewById<TextView>(id).visibility = View.GONE
+            }
+        }
+        for (id in seekBarIds) {
+            if (viewModel.repo.visualization.relevantSeekBarIds.contains(id) && !viewModel.repo.isCollapsed) {
+                findViewById<SeekBar>(id).visibility = View.VISIBLE
+                findViewById<SeekBar>(id).isEnabled = true
+            } else {
+                findViewById<SeekBar>(id).visibility = View.GONE
+                findViewById<SeekBar>(id).isEnabled = false
+            }
+        }
+        for (id in editTextIds) {
+            if (viewModel.repo.visualization.relevantEditTextIds.contains(id) && !viewModel.repo.isCollapsed) {
+                findViewById<EditText>(id).visibility = View.VISIBLE
+                findViewById<EditText>(id).isEnabled = true
+            } else {
+                findViewById<EditText>(id).visibility = View.GONE
+                findViewById<EditText>(id).isEnabled = false
+            }
+        }
+        for (id in checkBoxIds) {
+            if (viewModel.repo.visualization.relevantCheckBoxIds.contains(id) && !viewModel.repo.isCollapsed) {
+                findViewById<CheckBox>(id).visibility = View.VISIBLE
+                findViewById<CheckBox>(id).isEnabled = true
+            } else {
+                findViewById<CheckBox>(id).visibility = View.GONE
+                findViewById<CheckBox>(id).isEnabled = false
+            }
+        }
+        for (id in spinnerIds) {
+            if (viewModel.repo.visualization.relevantSpinnerIds.contains(id) && !viewModel.repo.isCollapsed) {
+                findViewById<Spinner>(id).visibility = View.VISIBLE
+                findViewById<Spinner>(id).isEnabled = true
+            } else {
+                findViewById<Spinner>(id).visibility = View.GONE
+                findViewById<Spinner>(id).isEnabled = false
+            }
+        }
+        for (id in radioButtonIds) {
+            if (viewModel.repo.visualization.relevantRadioButtonIds.contains(id) && !viewModel.repo.isCollapsed) {
+                findViewById<RadioButton>(id).visibility = View.VISIBLE
+                findViewById<RadioButton>(id).isEnabled = true
+            } else {
+                findViewById<RadioButton>(id).visibility = View.GONE
+                findViewById<RadioButton>(id).isEnabled = false
+            }
+        }
+        for (id in radioGroupIds) {
+            if (viewModel.repo.visualization.relevantRadioGroupIds.contains(id) && !viewModel.repo.isCollapsed) {
+                findViewById<RadioGroup>(id).visibility = View.VISIBLE
+                findViewById<RadioGroup>(id).isEnabled = true
+            } else {
+                findViewById<RadioGroup>(id).visibility = View.GONE
+                findViewById<RadioGroup>(id).isEnabled = false
+            }
+        }
+    }
+
+    private fun doneButton(): Runnable {
+        return Runnable {
+            // update equation in repo if valid
+            val equationChecker: EquationChecker = EquationChecker()
+            val result: String = equationChecker.checkEquationSyntax(equationValueEditText.text.toString())
+            //Log.d("LiveWallpaper05", "result is: $result")
+            //Log.d("LiveWallpaper05", "result2 is: " + result2)
+            if (result == "") {
+                //    viewModel.updateEquation(equationValueEditText.text.toString())
+                //    Log.d("LiveWallpaper05", "Syntax check passed.")
+            } else {
+                //    viewModel.updateEquation(getString(R.string.default_equation))
+                //    Log.d("LiveWallpaper05", "Syntax check failed.")
+            }
+            mView!!.onPause()
+            mView!!.onResume()
+        }
+    }
+
+    private fun showUIComponents() {
+        hideUIButton.text = resources.getString(R.string.hideUIButtonText)
+        colorButton.visibility = View.VISIBLE
+        backgroundRadioGroup.visibility = View.VISIBLE
+        solidColorRadioButton.visibility = View.VISIBLE
+        imageRadioButton.visibility = View.VISIBLE
+        findViewById<TextView>(R.id.background_label).visibility = View.VISIBLE
+        environmentMapSelectorSpinner.visibility = View.VISIBLE
+        defaultEquationsRadioButton.visibility = View.VISIBLE
+        savedEquationsRadioButton.visibility = View.VISIBLE
+        preferredGraphListRadioGroup.visibility = View.VISIBLE
+        //syncButton.visibility = View.VISIBLE
+        //saveButton.visibility = View.VISIBLE
+        //previewImageView.visibility = View.VISIBLE
+        colorButton.isEnabled = true
+        linearLayout.isEnabled = true
+        backgroundRadioGroup.isEnabled = true
+        solidColorRadioButton.isEnabled = true
+        imageRadioButton.isEnabled = true
+        environmentMapSelectorSpinner.isEnabled = true
+        defaultEquationsRadioButton.isEnabled = true
+        savedEquationsRadioButton.isEnabled = true
+        preferredGraphListRadioGroup.isEnabled = true
+        //syncButton.isEnabled = true
+        //saveButton.isEnabled = true
+        loadOrUnloadUIElements()
+    }
+
+    private fun hideUIComponents() {
+        hideUIButton.text = resources.getString(R.string.showUIButtonText)
+        colorButton.visibility = View.GONE
+        solidColorRadioButton.visibility = View.GONE
+        imageRadioButton.visibility = View.GONE
+        backgroundRadioGroup.visibility = View.GONE
+        findViewById<TextView>(R.id.background_label).visibility = View.GONE
+        environmentMapSelectorSpinner.visibility = View.GONE
+        defaultEquationsRadioButton.visibility = View.GONE
+        savedEquationsRadioButton.visibility = View.GONE
+        preferredGraphListRadioGroup.visibility = View.GONE
+        //syncButton.visibility = View.GONE
+        //saveButton.visibility = View.GONE
+        //previewImageView.visibility = View.GONE
+        colorButton.isEnabled = false
+        linearLayout.isEnabled = false
+        solidColorRadioButton.isEnabled = false
+        imageRadioButton.isEnabled = false
+        backgroundRadioGroup.isEnabled = false
+        environmentMapSelectorSpinner.isEnabled = false
+        defaultEquationsRadioButton.isEnabled = false
+        savedEquationsRadioButton.isEnabled = false
+        preferredGraphListRadioGroup.isEnabled = false
+        //syncButton.isEnabled = false
+        //saveButton.isEnabled = false
+        loadOrUnloadUIElements()
+    }
+
+    private val animationListener = object : Animation.AnimationListener {
+        override fun onAnimationStart(animation: Animation?) {
+            // Enable the UI elements before restoring the layout
+            if (!viewModel.repo.isCollapsed) {
+                showUIComponents()
+            }
+        }
+
+        override fun onAnimationEnd(animation: Animation?) {
+            // Disable the UI elements after collapsing the layout
+            if (viewModel.repo.isCollapsed) {
+                hideUIComponents()
+            }
+        }
+
+        override fun onAnimationRepeat(animation: Animation?) {
+            // Not needed, but required to override
+        }
+    }
+
+    private fun setDefaultAnimationParametersAndAnimate(animation: Animation) {
+        animation.duration = 500
+        animation.fillAfter = true
+        animation.setAnimationListener(animationListener)
+        linearLayout.startAnimation(animation)
+        viewModel.repo.isCollapsed = !viewModel.repo.isCollapsed
+    }
+
+    private fun populateSavedEquationNamesSpinner() {
+        val savedEquationNames: MutableList<String> = mutableListOf()
+        for (i in 0 until viewModel.repo.equationsJSONArray.length()) {
+            savedEquationNames.add(viewModel.repo.getEquation(i).name)
+        }
+        savedGraphsSpinner.adapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_dropdown_item,
+            savedEquationNames
+        )
+    }
+
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(icicle: Bundle?) {
         super.onCreate(icicle)
 
         @Suppress("DEPRECATION")
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+
         setContentView(R.layout.activity_preview)
+
         // get view window from GLES3JNIView
         mView = GLES3JNIView(this@PreviewActivity, viewModel)
-    //
-    //    // fill visualization selector box with wallpaper options from native-lib.cpp
-    //    val visualizationSelectorAdapter = ArrayAdapter.createFromResource(
-    //        this,
-    //        R.array.visualization_types,
-    //        android.R.layout.simple_spinner_item
-    //    )
-    //    visualizationSelectorSpinner.adapter = visualizationSelectorAdapter
+
         // set default to viewmodel visualization type
         visualizationSelectorSpinner.setSelection(viewModel.getVisualization())
 
-    //    // fill image selector box with image options from native-lib.cpp
-    //    val environmentMapSelectorAdapter = ArrayAdapter.createFromResource(
-    //        this,
-    //        R.array.environment_map_options,
-    //        android.R.layout.simple_spinner_item
-    //    )
-    //    environmentMapSelectorSpinner.adapter = environmentMapSelectorAdapter
-    //    // set default to viewmodel visualization type
         environmentMapSelectorSpinner.setSelection(viewModel.repo.getEnvironmentMapSelection())
-    //    val graphNames = arrayOf("")
-    //    // fill image selector box with image options from native-lib.cpp
-    //    val defaultGraphsAdapter = ArrayAdapter.createFromResource(
-    //        this,
-    //        R.array.graph_names,
-    //        android.R.layout.simple_spinner_item
-    //    )
-    //    defaultGraphsSpinner.adapter = defaultGraphsAdapter
 
         populateSavedEquationNamesSpinner()
 
         // add gl engine view to viewport
         layout.addView(mView)
 
-        fun loadOrUnloadUIElements() {
-            val textViewIds: List<Int> = listOf(
-                R.id.distance_label,
-                R.id.field_of_view_label,
-                R.id.gravity_label,
-                R.id.linear_acceleration_label,
-                R.id.efficiency_label,
-                R.id.tv_equation,
-                R.id.tv_syntax_check
-            )
-            val seekBarIds: List<Int> = listOf(
-                R.id.distance_seekbar,
-                R.id.field_of_view_seekbar,
-                R.id.gravity_seekbar,
-                R.id.linear_acceleration_seekbar,
-                R.id.efficiency_seekbar
-            )
-            val editTextIds: List<Int> = listOf(
-                R.id.et_equation_name,
-                R.id.et_equation_value
-            )
-            val checkBoxIds: List<Int> = listOf(
-                R.id.flip_normals_checkbox
-            )
-            val spinnerIds: List<Int> = listOf(
-                R.id.default_graph_selection_spinner,
-                R.id.saved_graph_selection_spinner,
-                R.id.image_selection_spinner
-            )
-            val radioButtonIds: List<Int> = listOf(
-                R.id.solid_color_radio_button,
-                R.id.image_radio_button,
-                R.id.default_equations_radio_button,
-                R.id.saved_equations_radio_button
-            )
-            val radioGroupIds: List<Int> = listOf(
-                R.id.background_radio_group,
-                R.id.equation_radio_group
-            )
-            for (id in textViewIds) {
-                if (viewModel.repo.visualization.relevantTextViewIds.contains(id) && !viewModel.repo.isCollapsed) {
-                    findViewById<TextView>(id).visibility = View.VISIBLE
-                } else {
-                    findViewById<TextView>(id).visibility = View.GONE
-                }
-            }
-            for (id in seekBarIds) {
-                if (viewModel.repo.visualization.relevantSeekBarIds.contains(id) && !viewModel.repo.isCollapsed) {
-                    findViewById<SeekBar>(id).visibility = View.VISIBLE
-                    findViewById<SeekBar>(id).isEnabled = true
-                } else {
-                    findViewById<SeekBar>(id).visibility = View.GONE
-                    findViewById<SeekBar>(id).isEnabled = false
-                }
-            }
-            for (id in editTextIds) {
-                if (viewModel.repo.visualization.relevantEditTextIds.contains(id) && !viewModel.repo.isCollapsed) {
-                    findViewById<EditText>(id).visibility = View.VISIBLE
-                    findViewById<EditText>(id).isEnabled = true
-                } else {
-                    findViewById<EditText>(id).visibility = View.GONE
-                    findViewById<EditText>(id).isEnabled = false
-                }
-            }
-            for (id in checkBoxIds) {
-                if (viewModel.repo.visualization.relevantCheckBoxIds.contains(id) && !viewModel.repo.isCollapsed) {
-                    findViewById<CheckBox>(id).visibility = View.VISIBLE
-                    findViewById<CheckBox>(id).isEnabled = true
-                } else {
-                    findViewById<CheckBox>(id).visibility = View.GONE
-                    findViewById<CheckBox>(id).isEnabled = false
-                }
-            }
-            for (id in spinnerIds) {
-                if (viewModel.repo.visualization.relevantSpinnerIds.contains(id) && !viewModel.repo.isCollapsed) {
-                    findViewById<Spinner>(id).visibility = View.VISIBLE
-                    findViewById<Spinner>(id).isEnabled = true
-                } else {
-                    findViewById<Spinner>(id).visibility = View.GONE
-                    findViewById<Spinner>(id).isEnabled = false
-                }
-            }
-            for (id in radioButtonIds) {
-                if (viewModel.repo.visualization.relevantRadioButtonIds.contains(id) && !viewModel.repo.isCollapsed) {
-                    findViewById<RadioButton>(id).visibility = View.VISIBLE
-                    findViewById<RadioButton>(id).isEnabled = true
-                } else {
-                    findViewById<RadioButton>(id).visibility = View.GONE
-                    findViewById<RadioButton>(id).isEnabled = false
-                }
-            }
-            for (id in radioGroupIds) {
-                if (viewModel.repo.visualization.relevantRadioGroupIds.contains(id) && !viewModel.repo.isCollapsed) {
-                    findViewById<RadioGroup>(id).visibility = View.VISIBLE
-                    findViewById<RadioGroup>(id).isEnabled = true
-                } else {
-                    findViewById<RadioGroup>(id).visibility = View.GONE
-                    findViewById<RadioGroup>(id).isEnabled = false
-                }
-            }
-        }
-
         viewModel.updateOrientation(this.display!!.rotation)
         loadOrUnloadUIElements()
+
+        // setup name editor
+        equationNameEditText.setText(viewModel.repo.currentEquation.name)
+
+        // setup equation editor
+        equationValueEditText.setText(viewModel.repo.currentEquation.value)
+
+        updateSyntaxResult()
+
+        if (viewModel.repo.isCollapsed) {
+            hideUIComponents()
+        } else {
+            showUIComponents()
+        }
+
+        defaultGraphsSpinner.setSelection(viewModel.repo.defaultEquationSelection)
+        savedGraphsSpinner.setSelection(viewModel.repo.savedEquationSelection)
+        when(viewModel.repo.preferredGraphList){
+            0 -> {
+                preferredGraphListRadioGroup.check(defaultEquationsRadioButton.id)
+                defaultGraphsSpinner.isEnabled = true
+                savedGraphsSpinner.isEnabled = false
+                equationNameEditText.isEnabled = false
+                equationValueEditText.isEnabled = false
+            }
+            1 -> {
+                preferredGraphListRadioGroup.check(savedEquationsRadioButton.id)
+                savedGraphsSpinner.isEnabled = true
+                defaultGraphsSpinner.isEnabled = false
+                equationNameEditText.isEnabled = true
+                equationValueEditText.isEnabled = true
+            }
+        }
+    }
+
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
 
         // register seekbar actions to update distance in repo
         distanceSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -428,24 +551,6 @@ class PreviewActivity : AppCompatActivity() {
             environmentMapSelectorSpinner.setSelection(viewModel.repo.getEnvironmentMapSelection())
         }
 
-        //    environmentMapSelectorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-    //        override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
-    //            // get array from arrays
-    //            val environmentMapOptions = resources.getStringArray(R.array.environment_map_options)
-    //            // update environment map in repo
-    //            when (pos){
-    //                0 -> viewModel.repo.backgroundTexture.value = "ms_paint_colors"
-    //                1 -> viewModel.repo.backgroundTexture.value = "mandelbrot"
-    //            }
-    //            mView!!.onPause()
-    //            mView!!.onResume()
-    //        }
-    //
-    //        override fun onNothingSelected(parent: AdapterView<*>) {
-    //            // Do nothing
-    //        }
-    //    }
-
         // register spinner actions to update image selection in repo
         environmentMapSelectorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
@@ -470,13 +575,6 @@ class PreviewActivity : AppCompatActivity() {
             }
         }
 
-    //    // Observe changes to liveDataBitmap in the ViewModel
-    //    viewModel.repo.liveDataBitmap.observe(this, Observer { bitmap ->
-    //        // This code will be executed on the main (UI) thread whenever liveDataBitmap changes
-    //        findViewById<ImageView>(R.id.imageView).setImageBitmap(bitmap)
-    //        viewModel.updatePreviewImg(bitmap)
-    //    })
-
         // setup color selection dialog
         colorButton.setOnClickListener {
             val colorPickerDialog = AmbilWarnaDialog(
@@ -500,18 +598,6 @@ class PreviewActivity : AppCompatActivity() {
             )
             colorPickerDialog.show()
         }
-
-    //    saveButton.setOnClickListener {
-    //        // Screen buffer capture
-    //        viewModel.repo.getScreenBuffer = 1
-    //    }
-    //
-    //    syncButton.setOnClickListener {
-    //        CoroutineScope(Dispatchers.IO).launch {
-    //            viewModel.repo.synchronizeWithServer(viewModel.repo.uid)
-    //            viewModel.repo.synchronizeWithServer(viewModel.repo.uid)
-    //        }
-    //    }
 
         defaultEquationsRadioButton.setOnClickListener {
             if(viewModel.repo.preferredGraphList != 0) {
@@ -541,8 +627,6 @@ class PreviewActivity : AppCompatActivity() {
             }
         }
 
-        // setup name editor
-        equationNameEditText.setText(viewModel.repo.currentEquation.name)
         equationNameEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
                 // Do nothing
@@ -552,6 +636,16 @@ class PreviewActivity : AppCompatActivity() {
                 //viewModel.repo.equationsJSONArray.getJSONObject(viewModel.repo.savedEquationSelection).put("name", equationNameEditText.text)
                 //viewModel.repo.updateSavedEquations()
                 //populateSavedEquationNamesSpinner()
+
+                //val jsonObject = JSONObject()
+                //jsonObject.put("name", equationNameEditText.text)
+                //jsonObject.put("value", equationValueEditText.text)
+                //viewModel.repo.equationsJSONArray.put(viewModel.repo.savedEquationSelection, jsonObject)
+                //populateSavedEquationNamesSpinner()
+
+                val equation: ActiveWallpaperRepo.Equation = viewModel.repo.getEquation(viewModel.repo.savedEquationSelection)
+                viewModel.repo.updateEquation(viewModel.repo.savedEquationSelection, s.toString(), equation.value)
+                populateSavedEquationNamesSpinner()
             }
 
             override fun afterTextChanged(s: android.text.Editable?) {
@@ -559,8 +653,6 @@ class PreviewActivity : AppCompatActivity() {
             }
         })
 
-        // setup equation editor
-        equationValueEditText.setText(viewModel.repo.currentEquation.value)
         equationValueEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
                 // Do nothing
@@ -574,25 +666,6 @@ class PreviewActivity : AppCompatActivity() {
                 // Do nothing
             }
         })
-
-        fun doneButton(): Runnable {
-            return Runnable {
-                // update equation in repo if valid
-                val equationChecker: EquationChecker = EquationChecker()
-                val result: String = equationChecker.checkEquationSyntax(equationValueEditText.text.toString())
-                //Log.d("LiveWallpaper05", "result is: $result")
-                //Log.d("LiveWallpaper05", "result2 is: " + result2)
-                if (result == "") {
-                //    viewModel.updateEquation(equationValueEditText.text.toString())
-                //    Log.d("LiveWallpaper05", "Syntax check passed.")
-                } else {
-                //    viewModel.updateEquation(getString(R.string.default_equation))
-                //    Log.d("LiveWallpaper05", "Syntax check failed.")
-                }
-                mView!!.onPause()
-                mView!!.onResume()
-            }
-        }
 
         // Setup listener for the Return button
         equationValueEditText.setOnEditorActionListener { _, actionId, event ->
@@ -627,92 +700,6 @@ class PreviewActivity : AppCompatActivity() {
             fpsMeter.text = String.format("fps: %.2f", it)
         }
 
-        updateSyntaxResult()
-
-        fun showUIComponents() {
-            hideUIButton.text = resources.getString(R.string.hideUIButtonText)
-            colorButton.visibility = View.VISIBLE
-            backgroundRadioGroup.visibility = View.VISIBLE
-            solidColorRadioButton.visibility = View.VISIBLE
-            imageRadioButton.visibility = View.VISIBLE
-            findViewById<TextView>(R.id.background_label).visibility = View.VISIBLE
-            environmentMapSelectorSpinner.visibility = View.VISIBLE
-            defaultEquationsRadioButton.visibility = View.VISIBLE
-            savedEquationsRadioButton.visibility = View.VISIBLE
-            preferredGraphListRadioGroup.visibility = View.VISIBLE
-            //syncButton.visibility = View.VISIBLE
-            //saveButton.visibility = View.VISIBLE
-            //previewImageView.visibility = View.VISIBLE
-            colorButton.isEnabled = true
-            linearLayout.isEnabled = true
-            backgroundRadioGroup.isEnabled = true
-            solidColorRadioButton.isEnabled = true
-            imageRadioButton.isEnabled = true
-            environmentMapSelectorSpinner.isEnabled = true
-            defaultEquationsRadioButton.isEnabled = true
-            savedEquationsRadioButton.isEnabled = true
-            preferredGraphListRadioGroup.isEnabled = true
-            //syncButton.isEnabled = true
-            //saveButton.isEnabled = true
-            loadOrUnloadUIElements()
-        }
-
-        fun hideUIComponents() {
-            hideUIButton.text = resources.getString(R.string.showUIButtonText)
-            colorButton.visibility = View.GONE
-            solidColorRadioButton.visibility = View.GONE
-            imageRadioButton.visibility = View.GONE
-            backgroundRadioGroup.visibility = View.GONE
-            findViewById<TextView>(R.id.background_label).visibility = View.GONE
-            environmentMapSelectorSpinner.visibility = View.GONE
-            defaultEquationsRadioButton.visibility = View.GONE
-            savedEquationsRadioButton.visibility = View.GONE
-            preferredGraphListRadioGroup.visibility = View.GONE
-            //syncButton.visibility = View.GONE
-            //saveButton.visibility = View.GONE
-            //previewImageView.visibility = View.GONE
-            colorButton.isEnabled = false
-            linearLayout.isEnabled = false
-            solidColorRadioButton.isEnabled = false
-            imageRadioButton.isEnabled = false
-            backgroundRadioGroup.isEnabled = false
-            environmentMapSelectorSpinner.isEnabled = false
-            defaultEquationsRadioButton.isEnabled = false
-            savedEquationsRadioButton.isEnabled = false
-            preferredGraphListRadioGroup.isEnabled = false
-            //syncButton.isEnabled = false
-            //saveButton.isEnabled = false
-            loadOrUnloadUIElements()
-        }
-
-        val animationListener = object : Animation.AnimationListener {
-            override fun onAnimationStart(animation: Animation?) {
-                // Enable the UI elements before restoring the layout
-                if (!viewModel.repo.isCollapsed) {
-                    showUIComponents()
-                }
-            }
-
-            override fun onAnimationEnd(animation: Animation?) {
-                // Disable the UI elements after collapsing the layout
-                if (viewModel.repo.isCollapsed) {
-                    hideUIComponents()
-                }
-            }
-
-            override fun onAnimationRepeat(animation: Animation?) {
-                // Not needed, but required to override
-            }
-        }
-
-        fun setDefaultAnimationParametersAndAnimate(animation: Animation) {
-            animation.duration = 500
-            animation.fillAfter = true
-            animation.setAnimationListener(animationListener)
-            linearLayout.startAnimation(animation)
-            viewModel.repo.isCollapsed = !viewModel.repo.isCollapsed
-        }
-
         hideUIButton.setOnClickListener {
             val animation: Animation = if (!viewModel.repo.isCollapsed) {
                 TranslateAnimation(0f, linearLayout.width.toFloat(), 0f, 0f)
@@ -722,31 +709,6 @@ class PreviewActivity : AppCompatActivity() {
             setDefaultAnimationParametersAndAnimate(animation)
         }
 
-    //    // Scroll the ScrollView to the bottom when the layout changes (e.g., keyboard shown/hidden)
-    //    findViewById<ScrollView>(R.id.settings_scrollview).viewTreeObserver.addOnGlobalLayoutListener {
-    //        findViewById<ScrollView>(R.id.settings_scrollview).post {
-    //            findViewById<ScrollView>(R.id.settings_scrollview).fullScroll(View.FOCUS_DOWN)
-    //        }
-    //    }
-
-    //    // Scroll the ScrollView to the bottom when the EditText gains focus
-    //    equationNameEditText.setOnFocusChangeListener { _, hasFocus ->
-    //        if (hasFocus) {
-    //            findViewById<ScrollView>(R.id.settings_scrollview).post {
-    //                findViewById<ScrollView>(R.id.settings_scrollview).fullScroll(View.FOCUS_DOWN)
-    //            }
-    //        }
-    //    }
-
-    //    // Scroll the ScrollView to the bottom when the EditText gains focus
-    //    equationValueEditText.setOnFocusChangeListener { _, hasFocus ->
-    //        if (hasFocus) {
-    //            findViewById<ScrollView>(R.id.settings_scrollview).post {
-    //                findViewById<ScrollView>(R.id.settings_scrollview).fullScroll(View.FOCUS_DOWN)
-    //            }
-    //        }
-    //    }
-
         flipsNormalsCheckBox.setOnCheckedChangeListener { _, isChecked ->
             viewModel.repo.flipNormals.value = isChecked
             viewModel.saveVisualizationState()
@@ -755,99 +717,6 @@ class PreviewActivity : AppCompatActivity() {
         viewModel.repo.flipNormals.observe(this){ flip ->
             flipsNormalsCheckBox.isChecked = flip
         }
-
-        if (viewModel.repo.isCollapsed) {
-            hideUIComponents()
-        } else {
-            showUIComponents()
-        }
-    }
-
-    private fun populateSavedEquationNamesSpinner() {
-        /*val defaultEquationNames: MutableList<String> = mutableListOf()
-        for (i in resources.getStringArray(R.array.graph_options).indices) {
-            defaultEquationNames.add(resources.getStringArray(R.array.graph_names)[i])
-        }
-        defaultGraphsSpinner.adapter = ArrayAdapter(
-            this,
-            android.R.layout.simple_spinner_dropdown_item,
-            defaultEquationNames
-        )*/
-
-        val savedEquationNames: MutableList<String> = mutableListOf()
-        for (i in 0 until viewModel.repo.equationsJSONArray.length()) {
-            savedEquationNames.add(viewModel.repo.getEquation(i).name)
-        }
-        savedGraphsSpinner.adapter = ArrayAdapter(
-            this,
-            android.R.layout.simple_spinner_dropdown_item,
-            savedEquationNames
-        )
-    }
-
-    /* this is run when the app is 'paused'
-     * this includes leaving the app, rotating the screen, etc.
-     */
-    /*override fun onPause() {
-    //    // save current wallpaper
-    //    val activeConfig = viewModel.getConfig()
-    //    viewModel.saveWallpaper(activeConfig)
-    //    // pause activity
-        super.onPause()
-        mView!!.onPause()
-    }*/
-
-    //override fun onStart() {
-    //    super.onStart()
-    //}
-
-    override fun onPostCreate(savedInstanceState: Bundle?) {
-        super.onPostCreate(savedInstanceState)
-
-        defaultGraphsSpinner.setSelection(viewModel.repo.defaultEquationSelection)
-        savedGraphsSpinner.setSelection(viewModel.repo.savedEquationSelection)
-        when(viewModel.repo.preferredGraphList){
-            0 -> {
-                preferredGraphListRadioGroup.check(defaultEquationsRadioButton.id)
-                defaultGraphsSpinner.isEnabled = true
-                savedGraphsSpinner.isEnabled = false
-                equationNameEditText.isEnabled = false
-                equationValueEditText.isEnabled = false
-            }
-            1 -> {
-                preferredGraphListRadioGroup.check(savedEquationsRadioButton.id)
-                savedGraphsSpinner.isEnabled = true
-                defaultGraphsSpinner.isEnabled = false
-                equationNameEditText.isEnabled = true
-                equationValueEditText.isEnabled = true
-            }
-        }
-    }
-
-    // this is run when the activity is 'stopped', like when the app is closed or restarted
-    /*override fun onStop() {
-    //    // save current wallpaper
-    //    val activeConfig = viewModel.getConfig()
-    //    viewModel.saveWallpaper(activeConfig)
-    //
-        super.onStop()
-    }*/
-
-    // this is run when the activity is 'destroyed', like when the app is shut down or device is restarted
-    /*override fun onDestroy() {
-    //    // save current wallpaper
-    //    val activeConfig = viewModel.getConfig()
-    //    viewModel.saveWallpaper(activeConfig)
-    //
-        super.onDestroy()
-    }*/
-
-    /* this is run when the app is 'resumed'
-     * this includes returning to the app, rotating the screen, etc.
-     */
-    override fun onResume() {
-        super.onResume()
-        //mView!!.onResume()
     }
 
     companion object {
