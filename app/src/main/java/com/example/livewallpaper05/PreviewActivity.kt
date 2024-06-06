@@ -162,7 +162,7 @@ class PreviewActivity : AppCompatActivity() {
                 if(
                     (id == R.id.default_graph_selection_spinner && viewModel.repo.preferredGraphList == 0) ||
                     (id == R.id.saved_graph_selection_spinner && viewModel.repo.preferredGraphList == 1) ||
-                    id == R.id.default_graph_selection_spinner
+                    id == R.id.image_selection_spinner
                 ){
                     findViewById<Spinner>(id).isEnabled = true
                 }
@@ -235,10 +235,6 @@ class PreviewActivity : AppCompatActivity() {
         defaultEquationsRadioButton.isEnabled = true
         savedEquationsRadioButton.isEnabled = true
         preferredGraphListRadioGroup.isEnabled = true
-        when (viewModel.repo.preferredGraphList) {
-            0 -> defaultGraphsSpinner.isEnabled = true
-            1 -> savedGraphsSpinner.isEnabled = true
-        }
         //syncButton.isEnabled = true
         //saveButton.isEnabled = true
         loadOrUnloadUIElements()
