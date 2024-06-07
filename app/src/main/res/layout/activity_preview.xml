@@ -327,14 +327,61 @@
 
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/tv_equation_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/preview_ui_margin"
-                android:padding="@dimen/preview_ui_padding"
-                android:background="@drawable/slightly_opaque_border_background"
-                android:text="Title:" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/tv_equation_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/preview_ui_margin"
+                    android:background="@drawable/slightly_opaque_border_background"
+                    android:padding="@dimen/preview_ui_padding"
+                    android:text="Title:"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintVertical_bias="0" />
+
+                <Button
+                    android:id="@+id/new_button"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/preview_ui_margin"
+                    android:layout_marginEnd="@dimen/preview_ui_margin"
+                    android:text="New"
+                    app:layout_constraintEnd_toStartOf="@id/copy_button"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintVertical_bias="0" />
+
+                <Button
+                    android:id="@+id/copy_button"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/preview_ui_margin"
+                    android:layout_marginEnd="@dimen/preview_ui_margin"
+                    android:text="Copy"
+                    app:layout_constraintEnd_toStartOf="@id/delete_button"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintVertical_bias="0" />
+
+                <Button
+                    android:id="@+id/delete_button"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/preview_ui_margin"
+                    android:layout_marginEnd="@dimen/preview_ui_margin"
+                    android:text="Delete"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintVertical_bias="0" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
 
             <EditText
                 android:id="@+id/et_equation_name"
