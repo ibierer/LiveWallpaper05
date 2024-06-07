@@ -76,14 +76,15 @@
             android:id="@+id/settings_linearlayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="100dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="80dp">
 
             <TextView
                 android:id="@+id/distance_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
+                android:padding="@dimen/preview_ui_padding"
                 android:background="@drawable/slightly_opaque_border_background"
                 android:text="@string/distance_label" />
 
@@ -92,6 +93,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
+                android:padding="@dimen/preview_ui_padding"
                 android:background="@drawable/slightly_opaque_border_background"
                 android:max="100"
                 android:min="0" />
@@ -101,6 +103,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
+                android:padding="@dimen/preview_ui_padding"
                 android:background="@drawable/slightly_opaque_border_background"
                 android:text="@string/field_of_view_label" />
 
@@ -109,6 +112,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
+                android:padding="@dimen/preview_ui_padding"
                 android:background="@drawable/slightly_opaque_border_background"
                 android:max="17999"
                 android:min="1" />
@@ -118,6 +122,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
+                android:padding="@dimen/preview_ui_padding"
                 android:background="@drawable/slightly_opaque_border_background"
                 android:text="@string/gravity_label" />
 
@@ -126,6 +131,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
+                android:padding="@dimen/preview_ui_padding"
                 android:background="@drawable/slightly_opaque_border_background"
                 android:max="200"
                 android:min="0" />
@@ -135,6 +141,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
+                android:padding="@dimen/preview_ui_padding"
                 android:background="@drawable/slightly_opaque_border_background"
                 android:text="@string/linear_acceleration_label" />
 
@@ -143,6 +150,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
+                android:padding="@dimen/preview_ui_padding"
                 android:background="@drawable/slightly_opaque_border_background"
                 android:max="400"
                 android:min="0" />
@@ -152,6 +160,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
+                android:padding="@dimen/preview_ui_padding"
                 android:background="@drawable/slightly_opaque_border_background"
                 android:text="@string/efficiency_label" />
 
@@ -160,6 +169,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
+                android:padding="@dimen/preview_ui_padding"
                 android:background="@drawable/slightly_opaque_border_background"
                 android:max="4040"
                 android:min="3960" />
@@ -192,20 +202,22 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
+                android:padding="@dimen/preview_ui_padding"
                 android:background="@drawable/slightly_opaque_border_background"
                 android:text="@string/background_label" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/slightly_opaque_border_background">
 
                 <RadioGroup
                     android:id="@+id/background_radio_group"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:background="@drawable/slightly_opaque_border_background">
+                    android:orientation="horizontal">
 
                     <RadioButton
                         android:id="@+id/solid_color_radio_button"
@@ -228,8 +240,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:background="@drawable/slightly_opaque_border_background">
+                    android:orientation="horizontal">
 
                     <Button
                         android:id="@+id/b_color_picker"
@@ -255,20 +266,22 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
+                android:padding="@dimen/preview_ui_padding"
                 android:background="@drawable/slightly_opaque_border_background"
                 android:text="Equation Selection:" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/slightly_opaque_border_background">
 
                 <RadioGroup
                     android:id="@+id/equation_radio_group"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:background="@drawable/slightly_opaque_border_background">
+                    android:orientation="horizontal">
 
                     <RadioButton
                         android:id="@+id/default_equations_radio_button"
@@ -291,8 +304,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:background="@drawable/slightly_opaque_border_background">
+                    android:orientation="horizontal">
 
                     <Spinner
                         android:id="@+id/default_graph_selection_spinner"
@@ -318,6 +330,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
+                android:padding="@dimen/preview_ui_padding"
                 android:background="@drawable/slightly_opaque_border_background"
                 android:text="Title:" />
 
@@ -328,7 +341,7 @@
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:background="@drawable/slightly_opaque_border_background"
                 android:hint="Name your equation here"
-                android:paddingBottom="20dp"
+                android:padding="@dimen/preview_ui_padding"
                 android:singleLine="true" />
 
             <TextView
@@ -336,6 +349,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
+                android:padding="@dimen/preview_ui_padding"
                 android:background="@drawable/slightly_opaque_border_background"
                 android:text="Equation:" />
 
@@ -343,11 +357,11 @@
                 android:id="@+id/et_equation_value"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/preview_ui_margin"
                 android:background="@drawable/slightly_opaque_border_background"
                 android:hint="Define your equation here"
                 android:inputType="textCapSentences|textMultiLine"
-                android:paddingBottom="20dp"
+                android:padding="@dimen/preview_ui_padding"
+                android:layout_margin="@dimen/preview_ui_margin"
                 android:scrollHorizontally="false" />
 
             <TextView
@@ -355,6 +369,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
+                android:padding="@dimen/preview_ui_padding"
                 android:background="@drawable/slightly_opaque_border_background"
                 android:text="Syntax check result" />
 
