@@ -263,6 +263,7 @@
             </LinearLayout>
 
             <TextView
+                android:id="@+id/equation_selection_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
@@ -327,6 +328,7 @@
             </LinearLayout>
 
             <TextView
+                android:id="@+id/tv_equation_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
@@ -345,7 +347,7 @@
                 android:singleLine="true" />
 
             <TextView
-                android:id="@+id/tv_equation"
+                android:id="@+id/tv_equation_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"

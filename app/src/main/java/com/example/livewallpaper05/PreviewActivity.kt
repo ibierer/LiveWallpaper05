@@ -5,7 +5,6 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.text.TextWatcher
 import android.view.KeyEvent
 import android.view.View
@@ -90,7 +89,9 @@ class PreviewActivity : AppCompatActivity() {
             R.id.gravity_label,
             R.id.linear_acceleration_label,
             R.id.efficiency_label,
-            R.id.tv_equation,
+            R.id.equation_selection_label,
+            R.id.tv_equation_name,
+            R.id.tv_equation_value,
             R.id.tv_syntax_check
         )
         val seekBarIds: List<Int> = listOf(

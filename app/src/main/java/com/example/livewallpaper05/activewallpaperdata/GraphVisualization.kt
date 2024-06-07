@@ -43,7 +43,9 @@ data class GraphVisualization (
     override val relevantTextViewIds : List<Int> = listOf(
         R.id.distance_label,
         R.id.field_of_view_label,
-        R.id.tv_equation,
+        R.id.equation_selection_label,
+        R.id.tv_equation_name,
+        R.id.tv_equation_value,
         R.id.tv_syntax_check
     )
     override val relevantSeekBarIds : List<Int> = listOf(
