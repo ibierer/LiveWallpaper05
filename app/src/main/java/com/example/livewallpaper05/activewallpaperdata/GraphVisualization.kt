@@ -64,6 +64,11 @@ data class GraphVisualization (
         R.id.saved_graph_selection_spinner,
         R.id.image_selection_spinner
     )
+    override val relevantButtonIds: List<Int> = listOf(
+        R.id.new_button,
+        R.id.copy_button,
+        R.id.delete_button
+    )
     override val relevantRadioButtonIds: List<Int> = listOf(
         R.id.solid_color_radio_button,
         R.id.image_radio_button,

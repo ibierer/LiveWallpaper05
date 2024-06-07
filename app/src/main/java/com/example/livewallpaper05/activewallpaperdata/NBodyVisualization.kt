@@ -54,6 +54,9 @@ data class NBodyVisualization (
     override val relevantSpinnerIds: List<Int> = listOf(
 
     )
+    override val relevantButtonIds: List<Int> = listOf(
+
+    )
     override val relevantRadioButtonIds: List<Int> = listOf(
 
     )

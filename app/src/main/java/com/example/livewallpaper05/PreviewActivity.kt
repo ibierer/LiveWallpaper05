@@ -116,6 +116,11 @@ class PreviewActivity : AppCompatActivity() {
             R.id.saved_graph_selection_spinner,
             R.id.image_selection_spinner
         )
+        val buttonIds: List<Int> = listOf(
+            R.id.new_button,
+            R.id.copy_button,
+            R.id.delete_button
+        )
         val radioButtonIds: List<Int> = listOf(
             R.id.solid_color_radio_button,
             R.id.image_radio_button,
@@ -177,6 +182,15 @@ class PreviewActivity : AppCompatActivity() {
                 findViewById<Spinner>(id).isEnabled = false
             }
         }
+        for (id in buttonIds) {
+            if (viewModel.repo.visualization.relevantButtonIds.contains(id) && !viewModel.repo.isCollapsed) {
+                findViewById<Button>(id).visibility = View.VISIBLE
+                findViewById<Button>(id).isEnabled = true
+            } else {
+                findViewById<Button>(id).visibility = View.GONE
+                findViewById<Button>(id).isEnabled = false
+            }
+        }
         for (id in radioButtonIds) {
             if (viewModel.repo.visualization.relevantRadioButtonIds.contains(id) && !viewModel.repo.isCollapsed) {
                 findViewById<RadioButton>(id).visibility = View.VISIBLE
@@ -221,6 +235,9 @@ class PreviewActivity : AppCompatActivity() {
     private fun showUIComponents() {
         hideUIButton.text = resources.getString(R.string.hideUIButtonText)
         colorButton.visibility = View.VISIBLE
+        newButton.visibility = View.VISIBLE
+        copyButton.visibility = View.VISIBLE
+        deleteButton.visibility = View.VISIBLE
         backgroundRadioGroup.visibility = View.VISIBLE
         solidColorRadioButton.visibility = View.VISIBLE
         imageRadioButton.visibility = View.VISIBLE
@@ -233,6 +250,9 @@ class PreviewActivity : AppCompatActivity() {
         //saveButton.visibility = View.VISIBLE
         //previewImageView.visibility = View.VISIBLE
         colorButton.isEnabled = true
+        newButton.isEnabled = true
+        copyButton.isEnabled = true
+        deleteButton.isEnabled = true
         linearLayout.isEnabled = true
         backgroundRadioGroup.isEnabled = true
         solidColorRadioButton.isEnabled = true
@@ -249,6 +269,9 @@ class PreviewActivity : AppCompatActivity() {
     private fun hideUIComponents() {
         hideUIButton.text = resources.getString(R.string.showUIButtonText)
         colorButton.visibility = View.GONE
+        newButton.visibility = View.GONE
+        copyButton.visibility = View.GONE
+        deleteButton.visibility = View.GONE
         solidColorRadioButton.visibility = View.GONE
         imageRadioButton.visibility = View.GONE
         backgroundRadioGroup.visibility = View.GONE
@@ -261,6 +284,9 @@ class PreviewActivity : AppCompatActivity() {
         //saveButton.visibility = View.GONE
         //previewImageView.visibility = View.GONE
         colorButton.isEnabled = false
+        newButton.isEnabled = false
+        copyButton.isEnabled = false
+        deleteButton.isEnabled = false
         linearLayout.isEnabled = false
         solidColorRadioButton.isEnabled = false
         imageRadioButton.isEnabled = false
