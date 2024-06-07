@@ -141,7 +141,9 @@ class PreviewActivity : AppCompatActivity() {
         for (id in editTextIds) {
             if (viewModel.repo.visualization.relevantEditTextIds.contains(id) && !viewModel.repo.isCollapsed) {
                 findViewById<EditText>(id).visibility = View.VISIBLE
-                findViewById<EditText>(id).isEnabled = true
+                if((id != R.id.et_equation_name && id != R.id.et_equation_value) || viewModel.repo.preferredGraphList != 0) {
+                    findViewById<EditText>(id).isEnabled = true
+                }
             } else {
                 findViewById<EditText>(id).visibility = View.GONE
                 findViewById<EditText>(id).isEnabled = false
