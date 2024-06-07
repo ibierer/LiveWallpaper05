@@ -69,7 +69,7 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
     var linearAccelerationData: Array<Float> = arrayOf(0.0f, 0.0f, 0.0f)
     var equationsJSONArray: JSONArray = JSONArray(sharedPreferences.getString(
             "savedEquations",
-            JSONArray("""[{"name": "Sphere", "value": "x^2 + y^2 + z^2 = 9"},{"name": "Cube", "value": "x^100 + y^100 + z^100 = 1"}]""").toString()
+            JSONArray("""[{"name": "", "value": ""}]""").toString()
     ))
     private var preferredGraphListValue: Int = -1
     private var defaultEquationSelectionValue: Int = -1
@@ -732,7 +732,7 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
             sharedPreferencesEditor.putInt("preferredGraphList", 0)
             sharedPreferencesEditor.putInt("preferredDefaultEquation", 0)
             sharedPreferencesEditor.putInt("preferredSavedEquation", 0)
-            sharedPreferencesEditor.putString("savedEquations", JSONArray("""[{"name": "Sphere", "value": "x^2 + y^2 + z^2 = 9"},{"name": "Cube", "value": "x^100 + y^100 + z^100 = 1"}]""").toString())
+            sharedPreferencesEditor.putString("savedEquations", JSONArray("""[{"name": "", "value": ""}]""").toString())
             sharedPreferencesEditor.putString("0", NBodyVisualization().toJsonObject().toString())
             sharedPreferencesEditor.putString("1", NaiveFluidVisualization().toJsonObject().toString())
             sharedPreferencesEditor.putString("2", PicFlipVisualization().toJsonObject().toString())

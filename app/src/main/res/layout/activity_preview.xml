@@ -252,12 +252,11 @@
             </LinearLayout>
 
             <TextView
-                android:id="@+id/tv_equation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:background="@drawable/slightly_opaque_border_background"
-                android:text="Equation:" />
+                android:text="Equation Selection:" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -277,7 +276,7 @@
                         android:layout_height="50dp"
                         android:layout_weight="1"
                         android:checked="true"
-                        android:text="Default Equations"
+                        android:text="Examples"
                         android:layout_margin="@dimen/preview_ui_margin" />
 
                     <RadioButton
@@ -285,7 +284,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="50dp"
                         android:layout_weight="1"
-                        android:text="Saved Equations"
+                        android:text="User Defined"
                         android:layout_margin="@dimen/preview_ui_margin" />
                 </RadioGroup>
 
@@ -315,15 +314,30 @@
 
             </LinearLayout>
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/slightly_opaque_border_background"
+                android:text="Title:" />
+
             <EditText
                 android:id="@+id/et_equation_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:background="@drawable/slightly_opaque_border_background"
-                android:hint="Enter equation name here"
+                android:hint="Name your equation here"
                 android:paddingBottom="20dp"
-                android:text="Name goes here" />
+                android:singleLine="true" />
+
+            <TextView
+                android:id="@+id/tv_equation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/preview_ui_margin"
+                android:background="@drawable/slightly_opaque_border_background"
+                android:text="Equation:" />
 
             <EditText
                 android:id="@+id/et_equation_value"
@@ -331,11 +345,10 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:background="@drawable/slightly_opaque_border_background"
-                android:hint="Enter equation here"
+                android:hint="Define your equation here"
                 android:inputType="textCapSentences|textMultiLine"
                 android:paddingBottom="20dp"
-                android:scrollHorizontally="false"
-                android:text="@string/default_equation" />
+                android:scrollHorizontally="false" />
 
             <TextView
                 android:id="@+id/tv_syntax_check"

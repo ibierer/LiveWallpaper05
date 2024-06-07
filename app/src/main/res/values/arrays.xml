@@ -5,7 +5,7 @@
         <item name="naive_fluid">Naive Fluid</item>
         <item name="eulerian_fluid">Eulerian Fluid</item>
         <item name="sphere">Sphere</item>
-        <item name="graph">Graph</item>
+        <item name="implicit_graph">Implicit Graph</item>
     </string-array>
     <string-array name="environment_map_options">
         <item>Spectrum</item>
