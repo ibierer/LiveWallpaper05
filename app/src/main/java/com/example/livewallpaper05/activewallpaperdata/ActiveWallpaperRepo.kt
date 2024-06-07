@@ -23,6 +23,7 @@ import com.example.livewallpaper05.R
 import kotlinx.coroutines.CoroutineScope
 import org.json.JSONArray
 import org.json.JSONObject
+import kotlin.math.max
 
 //import kotlinx.coroutines.DelicateCoroutinesApi
 //import kotlinx.coroutines.Dispatchers

@@ -54,6 +54,9 @@ class PreviewActivity : AppCompatActivity() {
     private val environmentMapSelectorSpinner: Spinner by lazy { findViewById<Spinner>(R.id.image_selection_spinner) }
     private val colorButton: Button by lazy { findViewById<Button>(R.id.b_color_picker) }
     private val hideUIButton: Button by lazy { findViewById<Button>(R.id.hide_ui_button) }
+    private val newButton: Button by lazy { findViewById<Button>(R.id.new_button) }
+    private val copyButton: Button by lazy { findViewById<Button>(R.id.copy_button) }
+    private val deleteButton: Button by lazy { findViewById<Button>(R.id.delete_button) }
     //private val saveButton: Button by lazy { findViewById<Button>(R.id.save_button) }
     //private val syncButton: Button by lazy { findViewById<Button>(R.id.sync_button) }
     private val equationNameEditText: EditText by lazy { findViewById<EditText>(R.id.et_equation_name) }
@@ -388,7 +391,6 @@ class PreviewActivity : AppCompatActivity() {
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar) {
-                //mRepo!!.distanceFromCenter = seekBar.progress.toFloat() / 100.0f
                 viewModel.updateDistanceFromCenter(seekBar.progress.toFloat() / 100.0f)
                 viewModel.saveVisualizationState()
             }
@@ -410,7 +412,6 @@ class PreviewActivity : AppCompatActivity() {
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar) {
-                //mRepo!!.fieldOfView = seekBar.progress.toFloat() / 100.0f
                 viewModel.updateFieldOfView(seekBar.progress.toFloat() / 100.0f)
                 viewModel.saveVisualizationState()
             }
@@ -635,6 +636,28 @@ class PreviewActivity : AppCompatActivity() {
                 mView!!.onPause()
                 mView!!.onResume()
             }
+        }
+
+        newButton.setOnClickListener {
+            viewModel.repo.insertEquation("", "")
+            populateSavedEquationNamesSpinner()
+            savedGraphsSpinner.setSelection(viewModel.repo.equationsJSONArray.length() - 1)
+        }
+
+        copyButton.setOnClickListener {
+            val equation: ActiveWallpaperRepo.Equation = viewModel.repo.currentEquation
+            viewModel.repo.insertEquation(equation.name, equation.value)
+            populateSavedEquationNamesSpinner()
+            savedGraphsSpinner.setSelection(viewModel.repo.equationsJSONArray.length() - 1)
+        }
+
+        deleteButton.setOnClickListener {
+            if(viewModel.repo.equationsJSONArray.length() > 1) {
+                viewModel.repo.deleteEquation(viewModel.repo.savedEquationSelection)
+            } else {
+                viewModel.repo.updateEquation(viewModel.repo.savedEquationSelection, "", "")
+            }
+            populateSavedEquationNamesSpinner()
         }
 
         equationNameEditText.addTextChangedListener(object : TextWatcher {
