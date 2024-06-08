@@ -114,28 +114,6 @@ public:
             "    }\n"
             "}\n";
 
-    const string SPHERE_MAP_VERTEX_SHADER =
-            ES_VERSION +
-            "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"
-            "uniform mat4 inverseViewProjection;\n"
-            "out vec3 direction;\n"
-            "uniform mat4 mvp;\n"
-            "void main() {\n"
-            "    gl_Position = vec4(pos, 1.0);\n"
-            "    direction = (inverseViewProjection * vec4(pos, 1.0f)).xyz;\n"
-            "}\n";
-
-    const string SPHERE_MAP_FRAGMENT_SHADER =
-            ES_VERSION +
-            "precision highp float;\n"
-            "uniform sampler2D environmentTexture;\n"
-            "in vec3 direction;\n"
-            "out vec4 outColor;\n" +
-            SPHERE_MAP_TEXTURE_FUNCTION +
-            "void main() {\n"
-            "    outColor = Texture(environmentTexture, direction);\n"
-            "}\n";
-
     Graph2View(const string &equation, const int &graphSize, const bool &referenceFrameRotates, const bool &vectorPointsPositive);
 
     ~Graph2View();

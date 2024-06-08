@@ -10,15 +10,15 @@ SphereWithFresnelEffectView::SphereWithFresnelEffectView(Texture::DefaultImages 
     sphereMapDoubleRefractionProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(),
                                                                             SPHERE_MAP_DOUBLE_REFRACTION_FRAGMENT_SHADER.c_str());
     sphereMapBackgroundProgram = createVertexAndFragmentShaderProgram(
-            BACKGROUND_VERTEX_SHADER.c_str(),
-            SPHERE_MAP_BACKGROUND_FRAGMENT_SHADER.c_str());
+            ENVIRONMENT_MAP_VERTEX_SHADER.c_str(),
+            SPHERE_MAP_FRAGMENT_SHADER.c_str());
     cubeMapRefractionProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(),
                                                                     CUBE_MAP_REFRACTION_FRAGMENT_SHADER.c_str());
     cubeMapDoubleRefractionProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(),
                                                                           CUBE_MAP_DOUBLE_REFRACTION_FRAGMENT_SHADER.c_str());
     cubeMapBackgroundProgram = createVertexAndFragmentShaderProgram(
-            BACKGROUND_VERTEX_SHADER.c_str(),
-            CUBE_MAP_BACKGROUND_FRAGMENT_SHADER.c_str());
+            ENVIRONMENT_MAP_VERTEX_SHADER.c_str(),
+            CUBEMAP_FRAGMENT_SHADER.c_str());
     //environmentMap = CubeMap::createSimpleTextureCubemap();
     //environmentMap = SphereMap(option, resolution, resolution, this);
     if(backgroundTexture == Texture::DefaultImages::MS_PAINT_COLORS){

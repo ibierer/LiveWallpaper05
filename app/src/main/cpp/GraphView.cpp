@@ -37,7 +37,7 @@ GraphView::GraphView(const string& equation) : View() {
 
     cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
 
-    sphereMapProgram = createVertexAndFragmentShaderProgram(SPHERE_MAP_VERTEX_SHADER.c_str(), SPHERE_MAP_FRAGMENT_SHADER.c_str());
+    sphereMapProgram = createVertexAndFragmentShaderProgram(ENVIRONMENT_MAP_VERTEX_SHADER.c_str(), SPHERE_MAP_FRAGMENT_SHADER.c_str());
     if(backgroundTexture == Texture::DefaultImages::MS_PAINT_COLORS){
         sphereMap = SphereMap(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
     }else if(backgroundTexture == Texture::DefaultImages::MANDELBROT){

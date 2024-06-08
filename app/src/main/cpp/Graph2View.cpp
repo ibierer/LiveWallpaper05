@@ -11,7 +11,7 @@ Graph2View::Graph2View(const string &equation, const int &graphSize,
                        const bool &referenceFrameRotates, const bool& vectorPointsPositive) : View() {
     this->referenceFrameRotates = referenceFrameRotates;
 
-    sphereMapProgram = createVertexAndFragmentShaderProgram(SPHERE_MAP_VERTEX_SHADER.c_str(), SPHERE_MAP_FRAGMENT_SHADER.c_str());
+    sphereMapProgram = createVertexAndFragmentShaderProgram(ENVIRONMENT_MAP_VERTEX_SHADER.c_str(), SPHERE_MAP_FRAGMENT_SHADER.c_str());
     if(backgroundTexture == Texture::DefaultImages::MS_PAINT_COLORS){
         sphereMap = SphereMap(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
     }else if(backgroundTexture == Texture::DefaultImages::MANDELBROT){

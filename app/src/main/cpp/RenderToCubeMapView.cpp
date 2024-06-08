@@ -5,7 +5,7 @@
 #include "RenderToCubeMapView.h"
 
 RenderToCubeMapView::RenderToCubeMapView() : View() {
-    mProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
+    mProgram = createVertexAndFragmentShaderProgram(ENVIRONMENT_MAP_VERTEX_SHADER.c_str(), CUBEMAP_FRAGMENT_SHADER.c_str());
     mPlanesProgram = createVertexAndFragmentShaderProgram(PLANES_VERTEX_SHADER.c_str(),
                                                           PLANES_FRAGMENT_SHADER.c_str());
     tilesVAO = VertexArrayObject(tilesVertices, sizeof(tilesVertices) / sizeof(PositionXYZ));

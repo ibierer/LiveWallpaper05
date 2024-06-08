@@ -8,13 +8,13 @@ SphereWithReflectionView::SphereWithReflectionView() : View() {
     sphereMapReflectionProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(),
                                                                       SPHERE_MAP_REFLECTION_FRAGMENT_SHADER.c_str());
     sphereMapBackgroundProgram = createVertexAndFragmentShaderProgram(
-            BACKGROUND_VERTEX_SHADER.c_str(),
-            SPHERE_MAP_BACKGROUND_FRAGMENT_SHADER.c_str());
+            ENVIRONMENT_MAP_VERTEX_SHADER.c_str(),
+            SPHERE_MAP_FRAGMENT_SHADER.c_str());
     cubeMapReflectionProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(),
                                                                     CUBE_MAP_REFLECTION_FRAGMENT_SHADER.c_str());
     cubeMapBackgroundProgram = createVertexAndFragmentShaderProgram(
-            BACKGROUND_VERTEX_SHADER.c_str(),
-            CUBE_MAP_BACKGROUND_FRAGMENT_SHADER.c_str());
+            ENVIRONMENT_MAP_VERTEX_SHADER.c_str(),
+            CUBEMAP_FRAGMENT_SHADER.c_str());
     environmentMap = CubeMap::createSimpleTextureCubemap();
     //environmentMap = SphereMap(Texture::DefaultImages::MANDELBROT, 16384, 16384, this);
     sphereVAO = VertexArrayObject(Sphere(1.0f, 100));

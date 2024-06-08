@@ -75,7 +75,7 @@ NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView(const int &part
 
     simulation.seed(particleCount, sphereRadius);
 
-    sphereMapProgram = createVertexAndFragmentShaderProgram(SPHERE_MAP_VERTEX_SHADER.c_str(), SPHERE_MAP_FRAGMENT_SHADER.c_str());
+    sphereMapProgram = createVertexAndFragmentShaderProgram(ENVIRONMENT_MAP_VERTEX_SHADER.c_str(), SPHERE_MAP_FRAGMENT_SHADER.c_str());
     if(backgroundTexture == Texture::DefaultImages::MS_PAINT_COLORS){
         sphereMap = SphereMap(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
     }else if(backgroundTexture == Texture::DefaultImages::MANDELBROT){
