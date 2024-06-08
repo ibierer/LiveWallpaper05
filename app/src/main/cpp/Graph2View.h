@@ -72,7 +72,7 @@ public:
             SPHERE_MAP_TEXTURE_FUNCTION +
             REFLECT2_FUNCTION +
             REFRACT2_FUNCTION +
-            FRESNEL_EFFECT_FUNCTION + +
+            FRESNEL_EFFECT_FUNCTION +
             "void main() {\n"
             "    vec3 normalizedDirection = normalize(direction);\n"
             "    vec3 normalizedNormal = normalize(vNormal);\n"
