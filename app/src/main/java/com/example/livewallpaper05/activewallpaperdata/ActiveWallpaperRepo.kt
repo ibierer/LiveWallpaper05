@@ -875,6 +875,11 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
         // Delete equation from equationJSONArray at given index
         equationsJSONArray.remove(index)
 
+        // Ensure index stays within bounds
+        if(savedEquationSelection > equationsJSONArray.length() - 1) {
+            savedEquationSelection = equationsJSONArray.length() - 1
+        }
+
         // Push update to shared preferences
         updateSavedEquations()
     }

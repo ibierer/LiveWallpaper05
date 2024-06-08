@@ -185,7 +185,9 @@ class PreviewActivity : AppCompatActivity() {
         for (id in buttonIds) {
             if (viewModel.repo.visualization.relevantButtonIds.contains(id) && !viewModel.repo.isCollapsed) {
                 findViewById<Button>(id).visibility = View.VISIBLE
-                findViewById<Button>(id).isEnabled = true
+                if(id != R.id.delete_button || viewModel.repo.preferredGraphList != 0) {
+                    findViewById<Button>(id).isEnabled = true
+                }
             } else {
                 findViewById<Button>(id).visibility = View.GONE
                 findViewById<Button>(id).isEnabled = false
@@ -252,7 +254,9 @@ class PreviewActivity : AppCompatActivity() {
         colorButton.isEnabled = true
         newButton.isEnabled = true
         copyButton.isEnabled = true
-        deleteButton.isEnabled = true
+        if(viewModel.repo.preferredGraphList == 1) {
+            deleteButton.isEnabled = true
+        }
         linearLayout.isEnabled = true
         backgroundRadioGroup.isEnabled = true
         solidColorRadioButton.isEnabled = true
@@ -395,6 +399,7 @@ class PreviewActivity : AppCompatActivity() {
                 savedGraphsSpinner.isEnabled = false
                 equationNameEditText.isEnabled = false
                 equationValueEditText.isEnabled = false
+                deleteButton.isEnabled = false
             }
             1 -> {
                 preferredGraphListRadioGroup.check(savedEquationsRadioButton.id)
@@ -402,6 +407,7 @@ class PreviewActivity : AppCompatActivity() {
                 defaultGraphsSpinner.isEnabled = false
                 equationNameEditText.isEnabled = true
                 equationValueEditText.isEnabled = true
+                deleteButton.isEnabled = true
             }
         }
 
@@ -637,28 +643,30 @@ class PreviewActivity : AppCompatActivity() {
         }
 
         defaultEquationsRadioButton.setOnClickListener {
+            defaultGraphsSpinner.isEnabled = true
+            savedGraphsSpinner.isEnabled = false
+            equationNameEditText.setText(resources.getStringArray(R.array.graph_names)[viewModel.repo.defaultEquationSelection])
+            equationValueEditText.setText(resources.getStringArray(R.array.graph_options)[viewModel.repo.defaultEquationSelection])
+            equationNameEditText.isEnabled = false
+            equationValueEditText.isEnabled = false
+            deleteButton.isEnabled = false
             if(viewModel.repo.preferredGraphList != 0) {
-                defaultGraphsSpinner.isEnabled = true
-                savedGraphsSpinner.isEnabled = false
                 viewModel.repo.preferredGraphList = 0
-                equationNameEditText.setText(resources.getStringArray(R.array.graph_names)[viewModel.repo.defaultEquationSelection])
-                equationValueEditText.setText(resources.getStringArray(R.array.graph_options)[viewModel.repo.defaultEquationSelection])
-                equationNameEditText.isEnabled = false
-                equationValueEditText.isEnabled = false
                 mView!!.onPause()
                 mView!!.onResume()
             }
         }
 
         savedEquationsRadioButton.setOnClickListener {
+            savedGraphsSpinner.isEnabled = true
+            defaultGraphsSpinner.isEnabled = false
+            equationNameEditText.setText(viewModel.repo.getEquation(viewModel.repo.savedEquationSelection).name)
+            equationValueEditText.setText(viewModel.repo.getEquation(viewModel.repo.savedEquationSelection).value)
+            equationNameEditText.isEnabled = true
+            equationValueEditText.isEnabled = true
+            deleteButton.isEnabled = true
             if(viewModel.repo.preferredGraphList != 1) {
-                savedGraphsSpinner.isEnabled = true
-                defaultGraphsSpinner.isEnabled = false
                 viewModel.repo.preferredGraphList = 1
-                equationNameEditText.setText(viewModel.repo.getEquation(viewModel.repo.savedEquationSelection).name)
-                equationValueEditText.setText(viewModel.repo.getEquation(viewModel.repo.savedEquationSelection).value)
-                equationNameEditText.isEnabled = true
-                equationValueEditText.isEnabled = true
                 mView!!.onPause()
                 mView!!.onResume()
             }
@@ -666,6 +674,13 @@ class PreviewActivity : AppCompatActivity() {
 
         newButton.setOnClickListener {
             viewModel.repo.insertEquation("", "")
+            if(viewModel.repo.preferredGraphList == 0) {
+                viewModel.repo.preferredGraphList = 1
+                preferredGraphListRadioGroup.check(savedEquationsRadioButton.id)
+                savedGraphsSpinner.isEnabled = true
+                defaultGraphsSpinner.isEnabled = false
+                deleteButton.isEnabled = true
+            }
             populateSavedEquationNamesSpinner()
             savedGraphsSpinner.setSelection(viewModel.repo.equationsJSONArray.length() - 1)
         }
@@ -673,6 +688,13 @@ class PreviewActivity : AppCompatActivity() {
         copyButton.setOnClickListener {
             val equation: ActiveWallpaperRepo.Equation = viewModel.repo.currentEquation
             viewModel.repo.insertEquation(equation.name, equation.value)
+            if(viewModel.repo.preferredGraphList == 0) {
+                viewModel.repo.preferredGraphList = 1
+                preferredGraphListRadioGroup.check(savedEquationsRadioButton.id)
+                savedGraphsSpinner.isEnabled = true
+                defaultGraphsSpinner.isEnabled = false
+                deleteButton.isEnabled = true
+            }
             populateSavedEquationNamesSpinner()
             savedGraphsSpinner.setSelection(viewModel.repo.equationsJSONArray.length() - 1)
         }
@@ -684,6 +706,9 @@ class PreviewActivity : AppCompatActivity() {
                 viewModel.repo.updateEquation(viewModel.repo.savedEquationSelection, "", "")
             }
             populateSavedEquationNamesSpinner()
+            savedGraphsSpinner.setSelection(viewModel.repo.savedEquationSelection)
+            mView!!.onPause()
+            mView!!.onResume()
         }
 
         equationNameEditText.addTextChangedListener(object : TextWatcher {
