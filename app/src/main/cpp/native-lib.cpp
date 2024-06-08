@@ -129,7 +129,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
                 view[mode] = new PicFlipView(referenceFrameRotates);
             }
         }else if(visualizationType == "other"){
-            view[mode] = new SphereWithFresnelEffectView(Texture::MANDELBROT, 2048);
+            view[mode] = new SphereWithFresnelEffectView();
         }else if(visualizationType == "graph"){
             string equation = visualizationJSON["equation"];
             ImplicitGrapher::convertPiSymbol(equation);

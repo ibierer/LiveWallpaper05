@@ -4,7 +4,7 @@
 
 #include "SphereWithFresnelEffectView.h"
 
-SphereWithFresnelEffectView::SphereWithFresnelEffectView(Texture::DefaultImages option, const int &resolution) : View() {
+SphereWithFresnelEffectView::SphereWithFresnelEffectView() : View() {
     sphereMapRefractionProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(),
                                                                       SPHERE_MAP_REFRACTION_FRAGMENT_SHADER.c_str());
     sphereMapDoubleRefractionProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(),

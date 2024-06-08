@@ -121,8 +121,7 @@ public:
             "    outColor = mix(refractedColor, reflectedColor, fresnel(dotNI));\n"
             "}\n";
 
-    SphereWithFresnelEffectView(Texture::DefaultImages option,
-                                const int &resolution);
+    SphereWithFresnelEffectView();
 
     ~SphereWithFresnelEffectView();
 
