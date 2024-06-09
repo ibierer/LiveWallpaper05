@@ -6,7 +6,7 @@
 #define LIVEWALLPAPER05_GRAPH3VIEW_H
 
 
-class NaiveSimulationFluidSurfaceView2 : public View{
+class Graph3View : public View{
 public:
 
     GLuint graphNormalMapProgram;
@@ -335,14 +335,14 @@ public:
             "    outColor = vec4(0.5f * normalize(vNormal) + vec3(0.5f), 1.0f); \n"
             "}\n";
 
-    NaiveSimulationFluidSurfaceView2(const int &particleCount,
-                                    const bool &fluidSurface,
-                                    const int &graphSize,
-                                    const float &sphereRadius,
-                                    const bool &referenceFrameRotates,
-                                    const bool &smoothSphereSurface);
+    Graph3View(const int &particleCount,
+               const bool &fluidSurface,
+               const int &graphSize,
+               const float &sphereRadius,
+               const bool &referenceFrameRotates,
+               const bool &smoothSphereSurface);
 
-    ~NaiveSimulationFluidSurfaceView2();
+    ~Graph3View();
 
     void render() override;
 

@@ -85,7 +85,6 @@ void Graph2View::render(){
     float distanceToCenter = 100.0f * distanceToOrigin;
     translation = translation.Translation(Vec3<float>(0.0f, 0.0f, -distanceToCenter));
     normalMatrix = referenceFrameRotates ? rotation.GetSubMatrix3().GetInverse() : normalMatrix.Identity();
-    cameraTransformation = rotation.GetInverse() * translation * model.Translation(Vec3<float>(0.0f, 0.0f, 0.0f));
 
     if(getFrameCount() == 0 || ImplicitGrapher::hasTimeVariable[ImplicitGrapher::surfaceEquation] || vectorPointsPositive != ImplicitGrapher::vectorPointsPositive){
         ImplicitGrapher::calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, implicitGrapher.vectorPointsPositive, false, ImplicitGrapher::vertices, ImplicitGrapher::indices, ImplicitGrapher::numIndices);
@@ -151,7 +150,7 @@ void Graph2View::render(){
         view = referenceFrameRotates ? translation : translation * rotation;
         projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
         mvp = projection * view * model;
-        cameraTransformation = rotation.GetInverse() * translation * model;
+        cameraTransformation = rotation.GetInverse() * translation * rotation * model;
 
         // Render graph
         glUseProgram(graphFluidSurfaceProgram);

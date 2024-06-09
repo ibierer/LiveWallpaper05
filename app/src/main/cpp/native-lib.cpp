@@ -49,8 +49,7 @@
 #include "Texture.cpp"
 #include "NaiveSimulation.cpp"
 #include "NaiveSimulationView.cpp"
-//#include "NaiveSimulationFluidSurfaceView.cpp"
-#include "NaiveSimulationFluidSurfaceView2.cpp"
+#include "NaiveSimulationFluidSurfaceView.cpp"
 #include "FlipFluid.cpp"
 #include "PicFlipView.cpp"
 #include "CubeMapView.cpp"
@@ -124,8 +123,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
                 bool referenceFrameRotates = visualizationJSON["reference_frame_rotates"];
                 bool smoothSphereSurface = visualizationJSON["smooth_sphere_surface"];
                 //view[mode] = new NaiveSimulationView(particleCount, 15.0f, referenceFrameRotates, gravity);
-                //view[mode] = new NaiveSimulationFluidSurfaceView(particleCount, fluidSurface, 40, 20.0f, referenceFrameRotates, smoothSphereSurface);
-                view[mode] = new NaiveSimulationFluidSurfaceView2(particleCount, fluidSurface, 40, 20.0f, referenceFrameRotates, smoothSphereSurface);
+                view[mode] = new NaiveSimulationFluidSurfaceView(particleCount, fluidSurface, 40, 20.0f, referenceFrameRotates, smoothSphereSurface);
             }else if(simulation == "picflip"){
                 bool referenceFrameRotates = visualizationJSON["reference_frame_rotates"];
                 view[mode] = new PicFlipView(referenceFrameRotates);

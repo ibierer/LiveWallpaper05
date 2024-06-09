@@ -159,9 +159,6 @@ void NaiveSimulationFluidSurfaceView::render(){
         translation = translation.Translation(Vec3<float>(0.0f, 0.0f, -distanceToCenter));
         normalMatrix = referenceFrameRotates ? rotation.GetSubMatrix3().GetInverse()
                                              : normalMatrix.Identity();
-        cameraTransformation = rotation.GetInverse() * translation * model.Translation(
-                Vec3<float>(ImplicitGrapher::defaultOffset.x, ImplicitGrapher::defaultOffset.y,
-                            ImplicitGrapher::defaultOffset.z));
 
         ImplicitGrapher::calculateSurfaceOnCPU(fOfXYZFluidSurface, 0.1f * getFrameCount(), 10,
                                                ImplicitGrapher::defaultOffset, 3.0f / 7.0f, false,
@@ -364,7 +361,7 @@ void NaiveSimulationFluidSurfaceView::render(){
                         projection = referenceFrameRotates ? perspective
                                                            : orientationAdjustedPerspective;
                         mvp = projection * view * model;
-                        cameraTransformation = rotation.GetInverse() * translation * model;
+                        cameraTransformation = rotation.GetInverse() * translation * rotation * model;
 
                         // Render sphere map
                         glDisable(GL_DEPTH_TEST);
@@ -769,7 +766,7 @@ void NaiveSimulationFluidSurfaceView::render(){
                 view = referenceFrameRotates ? translation : translation * rotation;
                 projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
                 mvp = projection * view * model;
-                cameraTransformation = rotation.GetInverse() * translation * model;
+                cameraTransformation = rotation.GetInverse() * translation * rotation * model;
 
                 // Render graph
                 glUseProgram(graphFluidSurfaceProgram);
