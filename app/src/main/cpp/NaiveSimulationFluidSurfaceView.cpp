@@ -158,6 +158,7 @@ void NaiveSimulationFluidSurfaceView::render(){
 
         translation = translation.Translation(Vec3<float>(0.0f, 0.0f, -distanceToCenter));
         normalMatrix = referenceFrameRotates ? rotation.GetSubMatrix3().GetInverse() : normalMatrix.Identity();
+        cameraTransformation = rotation.GetInverse() * translation * rotation * model.Translation(Vec3<float>(0.0f, 0.0f, 0.0f));
 
         ImplicitGrapher::calculateSurfaceOnCPU(fOfXYZFluidSurface, 0.1f * getFrameCount(), 10, ImplicitGrapher::defaultOffset, 3.0f / 7.0f, false, false, ImplicitGrapher::vertices, ImplicitGrapher::indices, ImplicitGrapher::numIndices);
 
