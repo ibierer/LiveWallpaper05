@@ -7,10 +7,8 @@
 using std::min;
 using std::max;
 
-NaiveSimulation* sim;
 bool sphereClipsGraph;
-
-float fOfXYZFluidSurface(vec3 _) {
+float fOfXYZFluidSurface(vec3 _, NaiveSimulation& sim) {
     _ -= ImplicitGrapher::offset;
     //return 1.0f - dot(_, _);
     //return 48.0f - dot(_, _);
@@ -31,35 +29,35 @@ float fOfXYZFluidSurface(vec3 _) {
         }
     }
 
-    _ *= sim->sphereRadiusPlusPointFive / ImplicitGrapher::defaultOffset.x;
+    _ *= sim.sphereRadiusPlusPointFive / ImplicitGrapher::defaultOffset.x;
 
-    float px = _.x + sim->sphereRadiusPlusPointFive;
-    float py = _.y + sim->sphereRadiusPlusPointFive;
-    float pz = _.z + sim->sphereRadiusPlusPointFive;
+    float px = _.x + sim.sphereRadiusPlusPointFive;
+    float py = _.y + sim.sphereRadiusPlusPointFive;
+    float pz = _.z + sim.sphereRadiusPlusPointFive;
 
-    int pxi = floor(px * sim->pInvSpacing);
-    int pyi = floor(py * sim->pInvSpacing);
-    int pzi = floor(pz * sim->pInvSpacing);
+    int pxi = floor(px * sim.pInvSpacing);
+    int pyi = floor(py * sim.pInvSpacing);
+    int pzi = floor(pz * sim.pInvSpacing);
     int x0 = max(pxi - 1, 0);
     int y0 = max(pyi - 1, 0);
     int z0 = max(pzi - 1, 0);
-    int x1 = min(pxi + 1, sim->pNumX - 1);
-    int y1 = min(pyi + 1, sim->pNumY - 1);
-    int z1 = min(pzi + 1, sim->pNumZ - 1);
+    int x1 = min(pxi + 1, sim.pNumX - 1);
+    int y1 = min(pyi + 1, sim.pNumY - 1);
+    int z1 = min(pzi + 1, sim.pNumZ - 1);
 
     float sum = 0.0f;
 
     for (int xi = x0; xi <= x1; xi++) {
         for (int yi = y0; yi <= y1; yi++) {
             for (int zi = z0; zi <= z1; zi++) {
-                int cellNr = xi * sim->pNumY * sim->pNumZ + yi * sim->pNumZ + zi;
-                int first = sim->firstCellParticle[cellNr];
-                int last = sim->firstCellParticle[cellNr + 1];
+                int cellNr = xi * sim.pNumY * sim.pNumZ + yi * sim.pNumZ + zi;
+                int first = sim.firstCellParticle[cellNr];
+                int last = sim.firstCellParticle[cellNr + 1];
                 for (int j = first; j < last; j++) {
-                    int id = sim->cellParticleIds[j];
-                    vec3 difference = sim->particles[id].position - _;
+                    int id = sim.cellParticleIds[j];
+                    vec3 difference = sim.particles[id].position - _;
                     float distanceSquared = dot(difference, difference);
-                    if(distanceSquared < sim->maxForceDistanceSquared) {
+                    if(distanceSquared < sim.maxForceDistanceSquared) {
                         sum += 1.0f / distanceSquared;
                     }
                 }
@@ -98,7 +96,6 @@ NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView(const int &part
         sphere = Sphere(sphereRadius + 0.5f, 100);
         sphereVAO = VertexArrayObject(sphere);
 
-        sim = &simulation;
         sphereClipsGraph = smoothSphereSurface;
     } else {
         cubeProgram = createVertexAndFragmentShaderProgram(_VERTEX_SHADER.c_str(), _FRAGMENT_SHADER.c_str());
@@ -160,7 +157,7 @@ void NaiveSimulationFluidSurfaceView::render(){
         normalMatrix = referenceFrameRotates ? rotation.GetSubMatrix3().GetInverse() : normalMatrix.Identity();
         cameraTransformation = rotation.GetInverse() * translation * rotation * model.Translation(Vec3<float>(0.0f, 0.0f, 0.0f));
 
-        ImplicitGrapher::calculateSurfaceOnCPU(fOfXYZFluidSurface, 0.1f * getFrameCount(), 10, ImplicitGrapher::defaultOffset, 3.0f / 7.0f, false, false, ImplicitGrapher::vertices, ImplicitGrapher::indices, ImplicitGrapher::numIndices);
+        ImplicitGrapher::calculateSurfaceOnCPU(fOfXYZFluidSurface, 0.1f * getFrameCount(), 10, ImplicitGrapher::defaultOffset, 3.0f / 7.0f, false, false, ImplicitGrapher::vertices, ImplicitGrapher::indices, ImplicitGrapher::numIndices, simulation);
 
         if (sphereClipsGraph) {
             float distanceToTangent = (pow(distanceToCenter, 2.0f) - pow(sphere.getRadius(), 2.0f)) / distanceToCenter;
