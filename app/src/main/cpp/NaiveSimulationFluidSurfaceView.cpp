@@ -189,7 +189,7 @@ void NaiveSimulationFluidSurfaceView::render(){
             glBindFramebuffer(GL_FRAMEBUFFER, fbo.getFrameBuffer());
             glDrawBuffers(1, fbo.drawBuffers);
             glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-            glClearDepthf(0.0f);
+            glClearDepthf(1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             {
                 // Render far frustum
@@ -202,7 +202,7 @@ void NaiveSimulationFluidSurfaceView::render(){
                     mvp = projection * view * model;
 
                     // Render graph
-                    glDepthFunc(GL_GEQUAL);
+                    glDepthFunc(GL_LEQUAL);
                     glEnable(GL_DEPTH_TEST);
                     glEnable(GL_CULL_FACE);
                     glCullFace(GL_FRONT);
@@ -216,8 +216,6 @@ void NaiveSimulationFluidSurfaceView::render(){
                     glDrawElements(GL_TRIANGLES, ImplicitGrapher::numIndices, GL_UNSIGNED_INT, ImplicitGrapher::indices);
                     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
                     glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
-
-                    glDepthFunc(GL_LEQUAL);
 
                     // Prepare model-view-projection matrix
                     model = model.Translation(Vec3<float>(0.0f));
@@ -236,7 +234,6 @@ void NaiveSimulationFluidSurfaceView::render(){
                 // Render near frustum
                 calculatePerspectiveSetViewport(maxViewAngle, zNear, distanceToTangent);
                 {
-                    glClearDepthf(1.0f);
                     glClear(GL_DEPTH_BUFFER_BIT);
 
                     // Prepare model-view-projection matrix
@@ -283,13 +280,13 @@ void NaiveSimulationFluidSurfaceView::render(){
 
             // Render to default frame buffer
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            glClearDepthf(0.0f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
             {
                 // Render far frustum
                 calculatePerspectiveSetViewport(maxViewAngle, distanceToTangent, zFar);
                 {
-                    glClearDepthf(0.0f);
-                    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                     glEnable(GL_CULL_FACE);
 
                     if (!backgroundIsSolidColor) {
@@ -382,7 +379,6 @@ void NaiveSimulationFluidSurfaceView::render(){
                 // Render near frustum
                 calculatePerspectiveSetViewport(maxViewAngle, zNear, distanceToTangent);
                 {
-                    glClearDepthf(0.0f);
                     glClear(GL_DEPTH_BUFFER_BIT);
                     glEnable(GL_CULL_FACE);
 
