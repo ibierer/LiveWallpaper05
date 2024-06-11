@@ -174,12 +174,8 @@ void NaiveSimulationFluidSurfaceView::render(){
 
             struct sortingUtility {
                 static bool compareUvec3(const uvec3 &a, const uvec3 &b) {
-                    vec3 positionA = (1.0f / 3.0f) * (ImplicitGrapher::vertices[a.v[0]].p +
-                                                      ImplicitGrapher::vertices[a.v[1]].p +
-                                                      ImplicitGrapher::vertices[a.v[2]].p);
-                    vec3 positionB = (1.0f / 3.0f) * (ImplicitGrapher::vertices[b.v[0]].p +
-                                                      ImplicitGrapher::vertices[b.v[1]].p +
-                                                      ImplicitGrapher::vertices[b.v[2]].p);
+                    vec3 positionA = (1.0f / 3.0f) * (ImplicitGrapher::vertices[a.v[0]].p + ImplicitGrapher::vertices[a.v[1]].p + ImplicitGrapher::vertices[a.v[2]].p);
+                    vec3 positionB = (1.0f / 3.0f) * (ImplicitGrapher::vertices[b.v[0]].p + ImplicitGrapher::vertices[b.v[1]].p + ImplicitGrapher::vertices[b.v[2]].p);
                     vec3 differenceA = positionA - cameraPosition;
                     vec3 differenceB = positionB - cameraPosition;
                     float squaredDistanceA = dot(differenceA, differenceA);

@@ -73,6 +73,8 @@ class PreviewActivity : AppCompatActivity() {
     private val savedGraphsSpinner: Spinner by lazy { findViewById<Spinner>(R.id.saved_graph_selection_spinner) }
     //private val previewImageView: ImageView by lazy { findViewById<ImageView>(R.id.imageView) }
 
+    private var editTextsChangingViaKeyboard = true
+
     private fun updateSyntaxResult() {
         // update syntax check message
         val equationChecker = EquationChecker()
@@ -645,8 +647,10 @@ class PreviewActivity : AppCompatActivity() {
         defaultEquationsRadioButton.setOnClickListener {
             defaultGraphsSpinner.isEnabled = true
             savedGraphsSpinner.isEnabled = false
+            editTextsChangingViaKeyboard = false
             equationNameEditText.setText(resources.getStringArray(R.array.graph_names)[viewModel.repo.defaultEquationSelection])
             equationValueEditText.setText(resources.getStringArray(R.array.graph_options)[viewModel.repo.defaultEquationSelection])
+            editTextsChangingViaKeyboard = true
             equationNameEditText.isEnabled = false
             equationValueEditText.isEnabled = false
             deleteButton.isEnabled = false
@@ -660,8 +664,10 @@ class PreviewActivity : AppCompatActivity() {
         savedEquationsRadioButton.setOnClickListener {
             savedGraphsSpinner.isEnabled = true
             defaultGraphsSpinner.isEnabled = false
+            editTextsChangingViaKeyboard = false
             equationNameEditText.setText(viewModel.repo.getEquation(viewModel.repo.savedEquationSelection).name)
             equationValueEditText.setText(viewModel.repo.getEquation(viewModel.repo.savedEquationSelection).value)
+            editTextsChangingViaKeyboard = true
             equationNameEditText.isEnabled = true
             equationValueEditText.isEnabled = true
             deleteButton.isEnabled = true
@@ -717,7 +723,7 @@ class PreviewActivity : AppCompatActivity() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if(viewModel.repo.preferredGraphList == 1) {
+                if(viewModel.repo.preferredGraphList == 1 && editTextsChangingViaKeyboard) {
                     val equation: ActiveWallpaperRepo.Equation = viewModel.repo.getEquation(viewModel.repo.savedEquationSelection)
                     viewModel.repo.updateEquation(viewModel.repo.savedEquationSelection, s.toString(), equation.value)
                     populateSavedEquationNamesSpinner()
