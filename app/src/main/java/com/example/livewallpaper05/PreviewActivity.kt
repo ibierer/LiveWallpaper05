@@ -222,17 +222,17 @@ class PreviewActivity : AppCompatActivity() {
             val result: String = equationChecker.checkEquationSyntax(equationValueEditText.text.toString())
             //Log.d("LiveWallpaper05", "result is: $result")
             //Log.d("LiveWallpaper05", "result2 is: " + result2)
-            if (result == "") {
+            //if (result == "") {
                 //    viewModel.updateEquation(equationValueEditText.text.toString())
                 //    Log.d("LiveWallpaper05", "Syntax check passed.")
                 viewModel.repo.updateEquation(viewModel.repo.savedEquationSelection, equationNameEditText.text.toString(), equationValueEditText.text.toString())
                 viewModel.repo.updateSavedEquations()
                 mView!!.onPause()
                 mView!!.onResume()
-            } else {
+            //} else {
                 //    viewModel.updateEquation(getString(R.string.default_equation))
                 //    Log.d("LiveWallpaper05", "Syntax check failed.")
-            }
+            //}
         }
     }
 
@@ -710,6 +710,8 @@ class PreviewActivity : AppCompatActivity() {
                 viewModel.repo.deleteEquation(viewModel.repo.savedEquationSelection)
             } else {
                 viewModel.repo.updateEquation(viewModel.repo.savedEquationSelection, "", "")
+                equationNameEditText.setText("")
+                equationValueEditText.setText("")
             }
             populateSavedEquationNamesSpinner()
             savedGraphsSpinner.setSelection(viewModel.repo.savedEquationSelection)
