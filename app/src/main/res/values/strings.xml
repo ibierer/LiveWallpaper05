@@ -4,7 +4,7 @@
 <resources>
     <!-- Simple strings. -->
     <string name="gles3jni_activity">GLES3JNI</string>
-    <string name="app_name">Physics In Color</string>
+    <string name="app_name">Interactive Visuals</string>
     <string name="distance_label">Distance:</string>
     <string name="field_of_view_label">Field of View:</string>
     <string name="img_description">Profile Image</string>
