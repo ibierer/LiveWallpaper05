@@ -725,8 +725,8 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
         this.orientation = orient
     }
 
-    fun getPreferences(): SharedPreferences {
-        val preferences: SharedPreferences = context.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+    private fun getPreferences(): SharedPreferences {
+        val preferences: SharedPreferences = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
         if(preferences.getBoolean("firstTimeStartup", true)){
             val sharedPreferencesEditor = preferences.edit()
             sharedPreferencesEditor.putInt("preferredVisualization", 0)
