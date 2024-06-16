@@ -171,7 +171,7 @@
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:padding="@dimen/preview_ui_padding"
                 android:background="@drawable/slightly_opaque_border_background"
-                android:max="4040"
+                android:max="4000"
                 android:min="3960" />
 
             <!--<ImageView
