@@ -42,7 +42,7 @@
                 android:id="@+id/visualization_type_selection_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Visualization Type Selection:"
+                android:text="Visualization Selection:"
                 android:textStyle="bold" />
 
             <Spinner
