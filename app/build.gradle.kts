@@ -43,18 +43,32 @@ android {
     buildFeatures {
         viewBinding = true
     }
+    flavorDimensions += "version"
+    productFlavors {
+        create("free") {
+            dimension = "version"
+            applicationIdSuffix = ".free"
+            resValue("string", "appName", "LiveWallpaper Free")
+        }
+        create("paid") {
+            dimension = "version"
+            applicationIdSuffix = ".paid"
+            resValue("string", "appName", "LiveWallpaper Pro")
+        }
+    }
 }
 
 dependencies {
+
+    val roomVersion = "2.6.1"
+    val activityVersion = "1.7.0"
+    val ktxVersion = "2.8.2"
 
     implementation("com.github.yukuku:ambilwarna:2.0.1")
 
     implementation("com.google.firebase:firebase-auth:23.0.0")
     implementation("com.google.firebase:firebase-common-ktx:21.0.0")
     implementation("com.google.firebase:firebase-database-ktx:21.0.0")
-    val roomVersion = "2.6.1"
-    val activityVersion = "1.7.0"
-    val ktxVersion = "2.8.2"
 
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("org.postgresql:postgresql:42.7.1")
