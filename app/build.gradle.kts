@@ -71,11 +71,11 @@ dependencies {
     implementation("com.google.firebase:firebase-database-ktx:21.0.0")
 
     implementation("androidx.core:core-ktx:1.13.1")
-    implementation("org.postgresql:postgresql:42.7.1")
+    implementation("org.postgresql:postgresql:42.7.3")
 
     implementation("androidx.appcompat:appcompat:$activityVersion")
     implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
-    implementation("com.firebaseui:firebase-ui-auth:7.2.0")
+    implementation("com.firebaseui:firebase-ui-auth:8.0.2")
     implementation("androidx.activity:activity-ktx:1.9.0")
     implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
@@ -89,12 +89,12 @@ dependencies {
     kapt("androidx.room:room-compiler:$roomVersion")
     annotationProcessor("android.arch.persistence.room:compiler:1.1.1")
     //annotationProcessor("androidx.room:room-compiler:$room_version")
-    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("com.google.code.gson:gson:2.11.0")
 
     // postgreSQL JDBC dependencies
-    implementation("org.postgresql:postgresql:42.7.1")
-    implementation("mysql:mysql-connector-java:5.1.46")
-    implementation("com.firebase:firebase-client-android:2.5.0")
+    implementation("org.postgresql:postgresql:42.7.3")
+    implementation("mysql:mysql-connector-java:8.0.33")
+    implementation("com.firebase:firebase-client-android:2.5.2")
 
     // view model dependencies
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$ktxVersion")
@@ -102,6 +102,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
     implementation("androidx.fragment:fragment-ktx:1.8.0")
     kapt("androidx.lifecycle:lifecycle-compiler:$ktxVersion")
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
 }
