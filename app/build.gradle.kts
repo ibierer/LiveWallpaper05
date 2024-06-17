@@ -48,12 +48,12 @@ android {
         create("free") {
             dimension = "version"
             applicationIdSuffix = ".free"
-            resValue("string", "appName", "LiveWallpaper Free")
+            resValue("string", "app_name", "4D VizBox Free")
         }
         create("paid") {
             dimension = "version"
-            applicationIdSuffix = ".paid"
-            resValue("string", "appName", "LiveWallpaper Pro")
+            //applicationIdSuffix = ".paid"
+            resValue("string", "app_name", "4D VizBox")
         }
     }
 }

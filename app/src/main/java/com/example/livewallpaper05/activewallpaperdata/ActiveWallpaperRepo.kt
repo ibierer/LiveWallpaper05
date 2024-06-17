@@ -726,21 +726,23 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
     }
 
     private fun getPreferences(): SharedPreferences {
-        val preferences: SharedPreferences = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
+        val preferences: SharedPreferences = context.getSharedPreferences("com.example.livewallpaper05"/*context.packageName*/, Context.MODE_PRIVATE)
         if(preferences.getBoolean("firstTimeStartup", true)){
             val sharedPreferencesEditor = preferences.edit()
-            sharedPreferencesEditor.putInt("preferredVisualization", 0)
-            sharedPreferencesEditor.putInt("preferredGraphList", 0)
-            sharedPreferencesEditor.putInt("preferredDefaultEquation", 0)
-            sharedPreferencesEditor.putInt("preferredSavedEquation", 0)
-            sharedPreferencesEditor.putString("savedEquations", JSONArray("""[{"name": "", "value": ""}]""").toString())
-            sharedPreferencesEditor.putString("0", NBodyVisualization().toJsonObject().toString())
-            sharedPreferencesEditor.putString("1", NaiveFluidVisualization().toJsonObject().toString())
-            sharedPreferencesEditor.putString("2", PicFlipVisualization().toJsonObject().toString())
-            sharedPreferencesEditor.putString("3", TriangleVisualization().toJsonObject().toString())
-            sharedPreferencesEditor.putString("4", GraphVisualization().toJsonObject().toString())
-            sharedPreferencesEditor.putBoolean("firstTimeStartup", false)
-            sharedPreferencesEditor.apply()
+            with(sharedPreferencesEditor){
+                putInt("preferredVisualization", 0)
+                putInt("preferredGraphList", 0)
+                putInt("preferredDefaultEquation", 0)
+                putInt("preferredSavedEquation", 0)
+                putString("savedEquations", JSONArray("""[{"name": "", "value": ""}]""").toString())
+                putString("0", NBodyVisualization().toJsonObject().toString())
+                putString("1", NaiveFluidVisualization().toJsonObject().toString())
+                putString("2", PicFlipVisualization().toJsonObject().toString())
+                putString("3", TriangleVisualization().toJsonObject().toString())
+                putString("4", GraphVisualization().toJsonObject().toString())
+                putBoolean("firstTimeStartup", false)
+                apply()
+            }
         }
         return preferences
     }
