@@ -48,14 +48,26 @@ android {
         create("free") {
             dimension = "version"
             applicationIdSuffix = ".free"
-            resValue("string", "app_name", "4D VizBox Free")
+            resValue("string", "app_name", "VizBox 4D Free")
         }
         create("paid") {
             dimension = "version"
             //applicationIdSuffix = ".paid"
-            resValue("string", "app_name", "4D VizBox")
+            resValue("string", "app_name", "VizBox 4D")
         }
     }
+    /*buildscript {
+        repositories {
+            google()
+            mavenCentral()
+        }
+    }
+    allprojects {
+        repositories {
+            google()
+            mavenCentral()
+        }
+    }*/
 }
 
 dependencies {
@@ -104,4 +116,7 @@ dependencies {
     kapt("androidx.lifecycle:lifecycle-compiler:$ktxVersion")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+
+    // ad dependencies
+    //implementation("com.google.android.gms:play-services-ads:23.1.0")
 }

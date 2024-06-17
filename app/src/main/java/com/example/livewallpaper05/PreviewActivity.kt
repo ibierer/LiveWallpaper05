@@ -219,7 +219,7 @@ class PreviewActivity : AppCompatActivity() {
         return Runnable {
             // update equation in repo if valid
             val equationChecker: EquationChecker = EquationChecker()
-            val result: String = equationChecker.checkEquationSyntax(equationValueEditText.text.toString())
+            //val result: String = equationChecker.checkEquationSyntax(equationValueEditText.text.toString())
             //Log.d("LiveWallpaper05", "result is: $result")
             //Log.d("LiveWallpaper05", "result2 is: " + result2)
             //if (result == "") {
@@ -347,8 +347,8 @@ class PreviewActivity : AppCompatActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
-    override fun onCreate(icicle: Bundle?) {
-        super.onCreate(icicle)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
         @Suppress("DEPRECATION")
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
@@ -362,6 +362,7 @@ class PreviewActivity : AppCompatActivity() {
         layout.addView(mView)
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
 
