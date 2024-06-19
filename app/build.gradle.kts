@@ -1,3 +1,4 @@
+
 plugins {
     id("com.android.application")
     id("kotlin-kapt")
@@ -28,22 +29,27 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
     externalNativeBuild {
         cmake {
             path = file("src/main/cpp/CMakeLists.txt")
             version = "3.22.1"
         }
     }
+
     buildFeatures {
         viewBinding = true
     }
+
     flavorDimensions += "version"
     productFlavors {
         create("free") {
@@ -57,6 +63,7 @@ android {
             resValue("string", "app_name", "VizBox 4D")
         }
     }
+
     /*buildscript {
         repositories {
             google()
