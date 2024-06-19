@@ -1,4 +1,4 @@
-package com.example.livewallpaper05.savedWallpapers
+package com.vizbox4d.savedWallpapers
 
 //import androidx.lifecycle.LiveData
 import androidx.room.Dao

@@ -1,7 +1,7 @@
-package com.example.livewallpaper05.activewallpaperdata
+package com.vizbox4d.activewallpaperdata
 
 import android.graphics.Color
-import com.example.livewallpaper05.R
+import com.vizbox4d.R
 import org.json.JSONObject
 
 data class GraphVisualization (
@@ -20,7 +20,11 @@ data class GraphVisualization (
         visualizationType = jsonObject.optString("visualization_type", "graph"),
         distance = jsonObject.optDouble("distance", 0.5).toFloat(),
         fieldOfView = jsonObject.optDouble("field_of_view", 60.0).toFloat(),
-        backgroundColor = jsonObject.optJSONObject("background_color")?.let { Visualization.jsonObjectToColor(it) }?: createColorFromInts(0, 0, 0, 0),
+        backgroundColor = jsonObject.optJSONObject("background_color")?.let {
+            Companion.jsonObjectToColor(
+                it
+            )
+        }?: createColorFromInts(0, 0, 0, 0),
         referenceFrameRotates = jsonObject.optBoolean("reference_frame_rotates", false),
         backgroundIsSolidColor = jsonObject.optBoolean("background_is_solid_color", false),
         backgroundTexture = jsonObject.optString("background_texture", "ms_paint_colors"),

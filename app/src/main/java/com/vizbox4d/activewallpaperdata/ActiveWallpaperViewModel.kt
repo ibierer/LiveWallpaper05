@@ -1,4 +1,4 @@
-package com.example.livewallpaper05.activewallpaperdata
+package com.vizbox4d.activewallpaperdata
 
 //import android.app.Activity
 //import android.content.res.Resources

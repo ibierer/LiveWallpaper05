@@ -1,14 +1,13 @@
-package com.example.livewallpaper05
+package com.vizbox4d
 
 import android.content.Context
 import android.opengl.GLSurfaceView
 import android.service.wallpaper.WallpaperService
-import android.util.Log
 import android.view.SurfaceHolder
 import android.view.WindowManager
-import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
-import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo
-import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
+import com.vizbox4d.activewallpaperdata.ActiveWallpaperApplication
+import com.vizbox4d.activewallpaperdata.ActiveWallpaperRepo
+import com.vizbox4d.activewallpaperdata.ActiveWallpaperViewModel
 
 class GLWallpaperService : WallpaperService() {
 

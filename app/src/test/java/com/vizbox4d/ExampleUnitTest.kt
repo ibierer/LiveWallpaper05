@@ -1,4 +1,4 @@
-package com.example.livewallpaper05
+package com.vizbox4d
 
 import org.junit.Test
 

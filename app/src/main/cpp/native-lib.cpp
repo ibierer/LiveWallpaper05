@@ -75,7 +75,7 @@ Matrix3<float> rotationMatrix;
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env, jobject thiz, jstring JSON, jint mode) {
+Java_com_vizbox4d_PreviewActivity_00024Companion_init(JNIEnv *env, jobject thiz, jstring JSON, jint mode) {
     View::printGlString("Version", GL_VERSION);
     View::printGlString("Vendor", GL_VENDOR);
     View::printGlString("Renderer", GL_RENDERER);
@@ -156,7 +156,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_livewallpaper05_PreviewActivity_00024Companion_resize(JNIEnv *env, jobject thiz, jint width, jint height, jint mode) {
+Java_com_vizbox4d_PreviewActivity_00024Companion_resize(JNIEnv *env, jobject thiz, jint width, jint height, jint mode) {
     if (view[mode]) {
         if (view[mode]->initialWidth == 0 || view[mode]->initialHeight == 0) {
             view[mode]->initialWidth = width;
@@ -169,7 +169,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_resize(JNIEnv *e
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_livewallpaper05_PreviewActivity_00024Companion_step(JNIEnv *env, jobject thiz, jfloat acc_x, jfloat acc_y, jfloat acc_z, jfloat rot_x, jfloat rot_y, jfloat rot_z, jfloat rot_w, jfloat linear_acc_x, jfloat linear_acc_y, jfloat linear_acc_z, jfloat distance, jfloat field_of_view, jfloat gravity, jfloat efficiency, jboolean flip_normals, jint orientation, jint mode) {
+Java_com_vizbox4d_PreviewActivity_00024Companion_step(JNIEnv *env, jobject thiz, jfloat acc_x, jfloat acc_y, jfloat acc_z, jfloat rot_x, jfloat rot_y, jfloat rot_z, jfloat rot_w, jfloat linear_acc_x, jfloat linear_acc_y, jfloat linear_acc_z, jfloat distance, jfloat field_of_view, jfloat gravity, jfloat efficiency, jboolean flip_normals, jint orientation, jint mode) {
     if (view[mode]) {
         view[mode]->accelerometerVector = vec3(acc_x, acc_y, acc_z);
         view[mode]->linearAccelerationVector = vec3(linear_acc_x, linear_acc_y, linear_acc_z);
@@ -203,7 +203,7 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_step(JNIEnv *env
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_com_example_livewallpaper05_PreviewActivity_00024Companion_getScreenBuffer(JNIEnv *env, jobject thiz, jint mode) {
+Java_com_vizbox4d_PreviewActivity_00024Companion_getScreenBuffer(JNIEnv *env, jobject thiz, jint mode) {
     // Capture the screen buffer
     vector<unsigned char> pixels = vector<unsigned char>(view[mode]->width * view[mode]->height * 4);
     glReadPixels(0, 0, view[mode]->width, view[mode]->height, GL_RGBA, GL_UNSIGNED_BYTE, &pixels[0]);

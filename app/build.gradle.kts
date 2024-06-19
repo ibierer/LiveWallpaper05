@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.livewallpaper05"
+    namespace = "com.vizbox4d"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.livewallpaper05"
+        applicationId = "com.vizbox4d"
         minSdk = 26
         targetSdk = 33
         versionCode = 1

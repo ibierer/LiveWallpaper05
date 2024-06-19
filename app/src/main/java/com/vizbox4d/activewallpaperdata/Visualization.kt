@@ -1,4 +1,4 @@
-package com.example.livewallpaper05.activewallpaperdata
+package com.vizbox4d.activewallpaperdata
 
 import android.graphics.Color
 import org.json.JSONObject

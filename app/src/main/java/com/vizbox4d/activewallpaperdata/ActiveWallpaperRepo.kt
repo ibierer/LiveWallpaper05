@@ -1,4 +1,4 @@
-package com.example.livewallpaper05.activewallpaperdata
+package com.vizbox4d.activewallpaperdata
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -11,7 +11,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 //import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import com.example.livewallpaper05.R
+import com.vizbox4d.R
 //import com.example.livewallpaper05.ExplorerActivity
 //import com.example.livewallpaper05.R
 //import com.example.livewallpaper05.profiledata.ProfileDao
@@ -23,7 +23,6 @@ import com.example.livewallpaper05.R
 import kotlinx.coroutines.CoroutineScope
 import org.json.JSONArray
 import org.json.JSONObject
-import kotlin.math.max
 
 //import kotlinx.coroutines.DelicateCoroutinesApi
 //import kotlinx.coroutines.Dispatchers

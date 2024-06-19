@@ -1,4 +1,4 @@
-package com.example.livewallpaper05.savedWallpapers
+package com.vizbox4d.savedWallpapers
 
 //import android.content.Context
 import androidx.room.Database

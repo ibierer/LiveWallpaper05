@@ -1,4 +1,4 @@
-package com.example.livewallpaper05.profiledata
+package com.vizbox4d.profiledata
 
 import androidx.room.Dao
 import androidx.room.Delete

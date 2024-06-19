@@ -1,4 +1,4 @@
-package com.example.livewallpaper05
+package com.vizbox4d
 
 class EquationChecker {
     fun checkEquationSyntax(editable: String): String {

@@ -1,4 +1,4 @@
-package com.example.livewallpaper05.profiledata
+package com.vizbox4d.profiledata
 //import android.content.Context
 //import android.util.Log
 import androidx.room.Database

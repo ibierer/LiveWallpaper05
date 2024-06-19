@@ -1,4 +1,4 @@
-package com.example.livewallpaper05
+package com.vizbox4d
 
 import android.content.Context
 import android.graphics.Color
@@ -28,10 +28,11 @@ import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperApplication
-import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperRepo
-import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
-import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModelFactory
+import com.vizbox4d.R
+import com.vizbox4d.activewallpaperdata.ActiveWallpaperApplication
+import com.vizbox4d.activewallpaperdata.ActiveWallpaperRepo
+import com.vizbox4d.activewallpaperdata.ActiveWallpaperViewModel
+import com.vizbox4d.activewallpaperdata.ActiveWallpaperViewModelFactory
 import yuku.ambilwarna.AmbilWarnaDialog
 
 class PreviewActivity : AppCompatActivity() {

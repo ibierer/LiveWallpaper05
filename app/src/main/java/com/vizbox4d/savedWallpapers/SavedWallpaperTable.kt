@@ -1,4 +1,4 @@
-package com.example.livewallpaper05.savedWallpapers
+package com.vizbox4d.savedWallpapers
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
