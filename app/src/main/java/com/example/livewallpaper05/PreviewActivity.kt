@@ -218,7 +218,7 @@ class PreviewActivity : AppCompatActivity() {
     private fun doneButton(): Runnable {
         return Runnable {
             // update equation in repo if valid
-            val equationChecker: EquationChecker = EquationChecker()
+            //val equationChecker: EquationChecker = EquationChecker()
             //val result: String = equationChecker.checkEquationSyntax(equationValueEditText.text.toString())
             //Log.d("LiveWallpaper05", "result is: $result")
             //Log.d("LiveWallpaper05", "result2 is: " + result2)
