@@ -146,7 +146,6 @@ Java_com_example_livewallpaper05_PreviewActivity_00024Companion_init(JNIEnv *env
         view[mode]->backgroundIsSolidColor = visualizationJSON["background_is_solid_color"];
         json rgba = visualizationJSON["background_color"];
         view[mode]->backgroundColor = vec4((float)rgba["r"], (float)rgba["g"], (float)rgba["b"], 255.0f) / 255.0f;
-
         ALOGV("Using OpenGL ES 3.0 renderer");
     } else if (strstr(versionStr, "OpenGL ES 2.")) {
         //g_renderer = createES2Renderer();

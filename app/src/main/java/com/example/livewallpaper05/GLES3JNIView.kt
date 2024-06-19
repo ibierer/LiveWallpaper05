@@ -2,8 +2,10 @@ package com.example.livewallpaper05
 
 import android.content.Context
 import android.opengl.GLSurfaceView
+import android.os.Build
 import android.os.SystemClock
 import android.util.Log
+import androidx.annotation.RequiresApi
 import com.example.livewallpaper05.activewallpaperdata.ActiveWallpaperViewModel
 import org.json.JSONObject
 import javax.microedition.khronos.egl.EGLConfig
@@ -58,6 +60,7 @@ class Renderer(private val context: Context, private var mViewModel: ActiveWallp
         mViewModel.updateLastFrame(currentFrame)
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {
         if(mode == 0){
             mViewModel.updateOrientation(context.display!!.rotation)
@@ -96,6 +99,7 @@ class Renderer(private val context: Context, private var mViewModel: ActiveWallp
         mViewModel.repo.backgroundIsSolidColor.postValue(jsonConfig.getBoolean("background_is_solid_color"))
         mViewModel.repo.backgroundTexture.postValue(jsonConfig.getString("background_texture"))
         mViewModel.repo.color.postValue(mViewModel.repo.visualization.jsonObjectToColor(jsonConfig.getJSONObject("background_color")))
+        //Log.d("GLES3JNIView", jsonConfig.toString())
         PreviewActivity.init(jsonConfig.toString(), mode)
     }
 }

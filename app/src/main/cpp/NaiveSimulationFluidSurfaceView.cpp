@@ -188,8 +188,8 @@ void NaiveSimulationFluidSurfaceView::render(){
             // Render to texture
             glBindFramebuffer(GL_FRAMEBUFFER, fbo.getFrameBuffer());
             glDrawBuffers(1, fbo.drawBuffers);
-            glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
             glClearDepthf(1.0f);
+            glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             {
                 // Render far frustum
@@ -281,8 +281,8 @@ void NaiveSimulationFluidSurfaceView::render(){
             // Render to default frame buffer
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             glClearDepthf(0.0f);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             {
                 // Render far frustum
                 calculatePerspectiveSetViewport(maxViewAngle, distanceToTangent, zFar);
