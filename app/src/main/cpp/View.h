@@ -5,16 +5,6 @@
 #ifndef LIVEWALLPAPER05_VIEW_H
 #define LIVEWALLPAPER05_VIEW_H
 
-
-#include <jni.h>
-#include <android/log.h>
-#include <EGL/egl.h>
-#include <GLES3/gl32.h>
-#include <string>
-#include "PositionXYZ.h"
-#include "PositionXYZNormalXYZ.h"
-#include "cyCodeBase-master/cyMatrix.h"
-
 using std::string;
 using cy::Matrix4;
 using std::vector;

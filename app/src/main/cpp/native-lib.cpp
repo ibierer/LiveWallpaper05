@@ -18,13 +18,23 @@
 #define YES true
 #define NO false
 
+#include <jni.h>
+#include <android/log.h>
+#include <EGL/egl.h>
+#include <GLES3/gl32.h>
+#include <string>
 #include "nlohmann/json.hpp"
+#include "PositionXYZ.h"
+#include "PositionXYZNormalXYZ.h"
+#include "cyCodeBase-master/cyMatrix.h"
 #include "vectors.cpp"
 #include "VertexAttributesArray.cpp"
 #include "PositionXYZ.cpp"
 #include "PositionXYZNormalXYZ.cpp"
 #include "PositionXYZColorRGB.cpp"
 #include "View.cpp"
+#include "Texture.cpp"
+#include "FBO.cpp"
 #include "TriangleStripObject.cpp"
 #include "VertexArrayObject.cpp"
 #include "Sphere.cpp"
@@ -46,7 +56,6 @@
 #include "SphereMap.cpp"
 #include "ImplicitGrapher.cpp"
 #include "GraphView.cpp"
-#include "Texture.cpp"
 #include "NaiveSimulation.cpp"
 #include "NaiveSimulationView.cpp"
 #include "NaiveSimulationFluidSurfaceView.cpp"
@@ -58,7 +67,6 @@
 #include "TextureView.cpp"
 #include "RenderToTextureView.cpp"
 #include "RenderToCubeMapView.cpp"
-#include "FBO.cpp"
 #include "CubeMapFBO.cpp"
 #include "DrawWithFragmentShaderView.cpp"
 #include "SphereWithRefractionView.cpp"
