@@ -40,12 +40,12 @@ data class NBodyVisualization (
         backgroundTexture = repo.backgroundTexture.value!!
     )
 
-    override val relevantTextViewIds : List<Int> = listOf(
+    override val relevantTextViewIds: List<Int> = listOf(
         R.id.distance_label,
         R.id.field_of_view_label
     )
 
-    override val relevantSeekBarIds : List<Int> = listOf(
+    override val relevantSeekBarIds: List<Int> = listOf(
         R.id.distance_seekbar,
         R.id.field_of_view_seekbar
     )

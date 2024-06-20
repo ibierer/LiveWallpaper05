@@ -44,7 +44,7 @@ data class GraphVisualization (
         equation = repo.currentEquation.value
     )
 
-    override val relevantTextViewIds : List<Int> = listOf(
+    override val relevantTextViewIds: List<Int> = listOf(
         R.id.distance_label,
         R.id.field_of_view_label,
         R.id.equation_selection_label,
@@ -52,7 +52,7 @@ data class GraphVisualization (
         R.id.tv_equation_value,
         R.id.tv_syntax_check
     )
-    override val relevantSeekBarIds : List<Int> = listOf(
+    override val relevantSeekBarIds: List<Int> = listOf(
         R.id.distance_seekbar,
         R.id.field_of_view_seekbar
     )

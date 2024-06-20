@@ -59,14 +59,14 @@ data class NaiveFluidVisualization (
         backgroundTexture = repo.backgroundTexture.value!!
     )
 
-    override val relevantTextViewIds : List<Int> = listOf(
+    override val relevantTextViewIds: List<Int> = listOf(
         R.id.distance_label,
         R.id.field_of_view_label,
         R.id.gravity_label,
         R.id.linear_acceleration_label,
         R.id.efficiency_label
     )
-    override val relevantSeekBarIds : List<Int> = listOf(
+    override val relevantSeekBarIds: List<Int> = listOf(
         R.id.distance_seekbar,
         R.id.field_of_view_seekbar,
         R.id.gravity_seekbar,
