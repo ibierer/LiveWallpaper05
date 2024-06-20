@@ -7,8 +7,7 @@
 using std::min;
 using std::max;
 
-Graph2View::Graph2View(const string &equation, const int &graphSize,
-                       const bool &referenceFrameRotates, const bool& vectorPointsPositive) : View() {
+Graph2View::Graph2View(const string &equation, const int &graphSize, const bool &referenceFrameRotates, const bool& vectorPointsPositive) : View() {
     this->referenceFrameRotates = referenceFrameRotates;
 
     sphereMapProgram = createVertexAndFragmentShaderProgram(ENVIRONMENT_MAP_VERTEX_SHADER.c_str(), SPHERE_MAP_FRAGMENT_SHADER.c_str());
@@ -24,21 +23,10 @@ Graph2View::Graph2View(const string &equation, const int &graphSize,
 
     implicitGrapher = ImplicitGrapher(ivec3(graphSize));
     implicitGrapher.vectorPointsPositive = vectorPointsPositive;
-    if(equation == "") {
-        //ImplicitGrapher::surfaceEquation = 40; // Resets to 0 on the first render
-        //for (int i = 0; i < ImplicitGrapher::numOfDefaultEquations; i++) {
-        //    ImplicitGrapher::memoryEquations[i][1] = ImplicitGrapher::defaultEquations[i][1];
-        //    //Convert any 'π' symbols to a ''
-        //    ImplicitGrapher::convertPiSymbol(ImplicitGrapher::memoryEquations[i][1]);
-        //    ImplicitGrapher::processEquation(i);
-        //    ImplicitGrapher::numOfEquationsInMemory++;
-        //}
-    }else{
-        ImplicitGrapher::surfaceEquation = 0;
-        ImplicitGrapher::memoryEquations[ImplicitGrapher::surfaceEquation][1] = equation;
-        ImplicitGrapher::processEquation(ImplicitGrapher::surfaceEquation);
-        ImplicitGrapher::numOfEquationsInMemory++;
-    }
+    ImplicitGrapher::surfaceEquation = 0;
+    ImplicitGrapher::memoryEquations[ImplicitGrapher::surfaceEquation][1] = equation;
+    ImplicitGrapher::processEquation(ImplicitGrapher::surfaceEquation);
+    ImplicitGrapher::numOfEquationsInMemory++;
 }
 
 Graph2View::~Graph2View(){

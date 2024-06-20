@@ -58,8 +58,7 @@ int FBO::initialize(const bool& addDepthBuffer, const bool& addStencilBuffer) {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    bool frameBufferStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-    return frameBufferStatus == GL_FRAMEBUFFER_COMPLETE;
+    return glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
 }
 
 GLuint FBO::getWidth() {
