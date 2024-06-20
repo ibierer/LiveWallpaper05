@@ -130,6 +130,8 @@ void NaiveSimulationFluidSurfaceView::render(){
     rotation = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
     inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();
 
+    float distanceToCenter = 100.0f * distanceToOrigin;
+
     if(fluidSurface) {
 
         enum Material {
@@ -159,8 +161,6 @@ void NaiveSimulationFluidSurfaceView::render(){
                 twoSidedRefraction = NO;
                 break;
         }
-
-        float distanceToCenter = 100.0f * distanceToOrigin;
 
         translation = translation.Translation(Vec3<float>(0.0f, 0.0f, -distanceToCenter));
         normalMatrix = referenceFrameRotates ? rotation.GetSubMatrix3().GetInverse() : normalMatrix.Identity();
@@ -567,7 +567,7 @@ void NaiveSimulationFluidSurfaceView::render(){
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(cubeProgram);
         projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
-        translation = translation.Translation(Vec3<float>(0.0f, 0.0f, 50.0f * (distanceToOrigin - 1.0f)));
+        translation = translation.Translation(Vec3<float>(0.0f, 0.0f, -distanceToCenter));
         rotation = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
         for (int i = 0; i < simulation.particleCount; i++) {
             model = model.Translation(Vec3<float>(simulation.particles[i].position.x, simulation.particles[i].position.y, simulation.particles[i].position.z));
