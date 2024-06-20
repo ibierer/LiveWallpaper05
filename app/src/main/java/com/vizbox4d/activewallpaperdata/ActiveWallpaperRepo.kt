@@ -14,7 +14,7 @@ import kotlinx.coroutines.CoroutineScope
 import org.json.JSONArray
 import org.json.JSONObject
 
-class ActiveWallpaperRepo private constructor(val context: Context/*, private val wallpaperDao: SavedWallpaperDao, profileDao: ProfileDao*/) : SensorEventListener {
+class ActiveWallpaperRepo private constructor(val context: Context) : SensorEventListener {
 
     private val sharedPreferences: SharedPreferences = getPreferences()
     private val sharedPreferencesEditor: SharedPreferences.Editor = sharedPreferences.edit()
@@ -262,5 +262,3 @@ class ActiveWallpaperRepo private constructor(val context: Context/*, private va
         sharedPreferencesEditor.apply()
     }
 }
-
-data class Tuple(val wid: Int, val lastModified: Long)
