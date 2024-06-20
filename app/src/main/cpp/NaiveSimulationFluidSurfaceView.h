@@ -33,8 +33,6 @@ public:
 
     VertexArrayObject tilesVAO;
 
-    FBO fbo;
-
     NaiveSimulation simulation;
 
     Sphere sphere;

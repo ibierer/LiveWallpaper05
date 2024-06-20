@@ -2,8 +2,6 @@
 // Created by Immanuel Bierer on 12/4/2023.
 //
 
-#include "View.h"
-
 const PositionXYZ View::triangleVertices[3] = {
         PositionXYZ(vec3(1.0f, 0.0f, 0.0f)),
         PositionXYZ(vec3(0.0f, 1.0f, 0.0f)),

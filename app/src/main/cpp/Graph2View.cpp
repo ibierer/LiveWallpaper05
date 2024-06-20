@@ -41,13 +41,6 @@ void Graph2View::render(){
     rotation = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
     inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();
 
-    if (getFrameCount() == 0) {
-        fbo = FBO(
-                (void *) new Texture(GL_RGBA, width, height, 0, GL_LINEAR),
-                YES,
-                NO);
-    }
-
     enum Material {
         MERCURY,
         WATER,

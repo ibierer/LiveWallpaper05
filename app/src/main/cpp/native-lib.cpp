@@ -32,6 +32,9 @@
 #include "PositionXYZ.cpp"
 #include "PositionXYZNormalXYZ.cpp"
 #include "PositionXYZColorRGB.cpp"
+#include "View.h"
+#include "Texture.h"
+#include "FBO.h"
 #include "View.cpp"
 #include "Texture.cpp"
 #include "FBO.cpp"
@@ -169,6 +172,11 @@ Java_com_vizbox4d_PreviewActivity_00024Companion_resize(JNIEnv *env, jobject thi
         if (view[mode]->initialWidth == 0 || view[mode]->initialHeight == 0) {
             view[mode]->initialWidth = width;
             view[mode]->initialHeight = height;
+            view[mode]->fbo = FBO(
+                (void *) new Texture(GL_RGBA, width, height, 0, GL_LINEAR),
+                YES,
+                NO
+            );
         }
         view[mode]->width = width;
         view[mode]->height = height;

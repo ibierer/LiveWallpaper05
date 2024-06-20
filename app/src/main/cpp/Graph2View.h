@@ -19,8 +19,6 @@ public:
 
     SphereMap sphereMap;
 
-    FBO fbo;
-
     ImplicitGrapher implicitGrapher;
 
     bool vectorPointsPositive;

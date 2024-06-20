@@ -5,12 +5,16 @@
 #ifndef LIVEWALLPAPER05_VIEW_H
 #define LIVEWALLPAPER05_VIEW_H
 
+#include "FBO.h"
+
 using std::string;
 using cy::Matrix4;
 using std::vector;
 
 class View {
 public:
+
+    FBO fbo;
 
     GLuint mProgram;
 

@@ -2,8 +2,6 @@
 // Created by Immanuel Bierer on 12/14/2023.
 //
 
-#include "Texture.h"
-
 const string Texture::FETCH_FROM_SPECTRUM_FUNCTION =
         "vec3 fetchFromSpectrum(float value) {\n"
         "    float index = value - floor(value);\n"
