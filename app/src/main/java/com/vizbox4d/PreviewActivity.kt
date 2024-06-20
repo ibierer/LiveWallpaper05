@@ -42,7 +42,6 @@ class PreviewActivity : AppCompatActivity() {
         ActiveWallpaperViewModelFactory((application as ActiveWallpaperApplication).wallpaperRepo)
     }
 
-    // grab ui element for preview page
     private val layout: LinearLayout by lazy { findViewById<LinearLayout>(R.id.render_layout) }
     private val fpsMeter: TextView by lazy { findViewById<TextView>(R.id.tv_fps_meter) }
     private val syntaxCheck: TextView by lazy { findViewById<TextView>(R.id.tv_syntax_check) }
@@ -58,13 +57,15 @@ class PreviewActivity : AppCompatActivity() {
     private val newButton: Button by lazy { findViewById<Button>(R.id.new_button) }
     private val copyButton: Button by lazy { findViewById<Button>(R.id.copy_button) }
     private val deleteButton: Button by lazy { findViewById<Button>(R.id.delete_button) }
-    //private val saveButton: Button by lazy { findViewById<Button>(R.id.save_button) }
-    //private val syncButton: Button by lazy { findViewById<Button>(R.id.sync_button) }
     private val equationNameEditText: EditText by lazy { findViewById<EditText>(R.id.et_equation_name) }
     private val equationValueEditText: EditText by lazy { findViewById<EditText>(R.id.et_equation_value) }
     private val flipsNormalsCheckBox: CheckBox by lazy { findViewById<CheckBox>(R.id.flip_normals_checkbox) }
+    private val fluidSurfaceCheckBox: CheckBox by lazy { findViewById<CheckBox>(R.id.fluid_surface_checkbox) }
+    private val gyroscopeCompensationCheckBox: CheckBox by lazy { findViewById<CheckBox>(R.id.gyroscope_compensation_checkbox) }
+    private val smoothSphereSurfaceCheckBox: CheckBox by lazy { findViewById<CheckBox>(R.id.smooth_sphere_surface_checkbox) }
     private val linearLayout: LinearLayout by lazy { findViewById<LinearLayout>(R.id.settings_linearlayout) }
     private val backgroundRadioGroup: RadioGroup by lazy { findViewById<RadioGroup>(R.id.background_radio_group) }
+    private val backgroundLabelTextView: TextView by lazy { findViewById<TextView>(R.id.background_label) }
     private val preferredGraphListRadioGroup: RadioGroup by lazy { findViewById<RadioGroup>(R.id.equation_radio_group) }
     private val solidColorRadioButton: RadioButton by lazy { findViewById<RadioButton>(R.id.solid_color_radio_button) }
     private val imageRadioButton: RadioButton by lazy { findViewById<RadioButton>(R.id.image_radio_button) }
@@ -72,7 +73,6 @@ class PreviewActivity : AppCompatActivity() {
     private val savedEquationsRadioButton: RadioButton by lazy { findViewById<RadioButton>(R.id.saved_equations_radio_button) }
     private val defaultGraphsSpinner: Spinner by lazy { findViewById<Spinner>(R.id.default_graph_selection_spinner) }
     private val savedGraphsSpinner: Spinner by lazy { findViewById<Spinner>(R.id.saved_graph_selection_spinner) }
-    //private val previewImageView: ImageView by lazy { findViewById<ImageView>(R.id.imageView) }
 
     private var editTextsChangingViaKeyboard = true
 
@@ -112,7 +112,10 @@ class PreviewActivity : AppCompatActivity() {
             R.id.et_equation_value
         )
         val checkBoxIds: List<Int> = listOf(
-            R.id.flip_normals_checkbox
+            R.id.flip_normals_checkbox,
+            R.id.fluid_surface_checkbox,
+            R.id.gyroscope_compensation_checkbox,
+            R.id.smooth_sphere_surface_checkbox
         )
         val spinnerIds: List<Int> = listOf(
             R.id.default_graph_selection_spinner,
@@ -218,22 +221,10 @@ class PreviewActivity : AppCompatActivity() {
 
     private fun doneButton(): Runnable {
         return Runnable {
-            // update equation in repo if valid
-            //val equationChecker: EquationChecker = EquationChecker()
-            //val result: String = equationChecker.checkEquationSyntax(equationValueEditText.text.toString())
-            //Log.d("LiveWallpaper05", "result is: $result")
-            //Log.d("LiveWallpaper05", "result2 is: " + result2)
-            //if (result == "") {
-                //    viewModel.updateEquation(equationValueEditText.text.toString())
-                //    Log.d("LiveWallpaper05", "Syntax check passed.")
-                viewModel.repo.updateEquation(viewModel.repo.savedEquationSelection, equationNameEditText.text.toString(), equationValueEditText.text.toString())
-                viewModel.repo.updateSavedEquations()
-                mView!!.onPause()
-                mView!!.onResume()
-            //} else {
-                //    viewModel.updateEquation(getString(R.string.default_equation))
-                //    Log.d("LiveWallpaper05", "Syntax check failed.")
-            //}
+            viewModel.repo.updateEquation(viewModel.repo.savedEquationSelection, equationNameEditText.text.toString(), equationValueEditText.text.toString())
+            viewModel.repo.updateSavedEquations()
+            mView!!.onPause()
+            mView!!.onResume()
         }
     }
 
@@ -246,14 +237,15 @@ class PreviewActivity : AppCompatActivity() {
         backgroundRadioGroup.visibility = View.VISIBLE
         solidColorRadioButton.visibility = View.VISIBLE
         imageRadioButton.visibility = View.VISIBLE
-        findViewById<TextView>(R.id.background_label).visibility = View.VISIBLE
+        backgroundLabelTextView.visibility = View.VISIBLE
         environmentMapSelectorSpinner.visibility = View.VISIBLE
         defaultEquationsRadioButton.visibility = View.VISIBLE
         savedEquationsRadioButton.visibility = View.VISIBLE
         preferredGraphListRadioGroup.visibility = View.VISIBLE
-        //syncButton.visibility = View.VISIBLE
-        //saveButton.visibility = View.VISIBLE
-        //previewImageView.visibility = View.VISIBLE
+        flipsNormalsCheckBox.visibility = View.VISIBLE
+        fluidSurfaceCheckBox.visibility = View.VISIBLE
+        gyroscopeCompensationCheckBox.visibility = View.VISIBLE
+        smoothSphereSurfaceCheckBox.visibility = View.VISIBLE
         colorButton.isEnabled = true
         newButton.isEnabled = true
         copyButton.isEnabled = true
@@ -268,8 +260,10 @@ class PreviewActivity : AppCompatActivity() {
         defaultEquationsRadioButton.isEnabled = true
         savedEquationsRadioButton.isEnabled = true
         preferredGraphListRadioGroup.isEnabled = true
-        //syncButton.isEnabled = true
-        //saveButton.isEnabled = true
+        flipsNormalsCheckBox.isEnabled = true
+        fluidSurfaceCheckBox.isEnabled = true
+        gyroscopeCompensationCheckBox.isEnabled = true
+        smoothSphereSurfaceCheckBox.isEnabled = true
         loadOrUnloadUIElements()
     }
 
@@ -282,14 +276,15 @@ class PreviewActivity : AppCompatActivity() {
         solidColorRadioButton.visibility = View.GONE
         imageRadioButton.visibility = View.GONE
         backgroundRadioGroup.visibility = View.GONE
-        findViewById<TextView>(R.id.background_label).visibility = View.GONE
+        backgroundLabelTextView.visibility = View.GONE
         environmentMapSelectorSpinner.visibility = View.GONE
         defaultEquationsRadioButton.visibility = View.GONE
         savedEquationsRadioButton.visibility = View.GONE
         preferredGraphListRadioGroup.visibility = View.GONE
-        //syncButton.visibility = View.GONE
-        //saveButton.visibility = View.GONE
-        //previewImageView.visibility = View.GONE
+        flipsNormalsCheckBox.visibility = View.GONE
+        fluidSurfaceCheckBox.visibility = View.GONE
+        gyroscopeCompensationCheckBox.visibility = View.GONE
+        smoothSphereSurfaceCheckBox.visibility = View.GONE
         colorButton.isEnabled = false
         newButton.isEnabled = false
         copyButton.isEnabled = false
@@ -302,8 +297,10 @@ class PreviewActivity : AppCompatActivity() {
         defaultEquationsRadioButton.isEnabled = false
         savedEquationsRadioButton.isEnabled = false
         preferredGraphListRadioGroup.isEnabled = false
-        //syncButton.isEnabled = false
-        //saveButton.isEnabled = false
+        flipsNormalsCheckBox.isEnabled = false
+        fluidSurfaceCheckBox.isEnabled = false
+        gyroscopeCompensationCheckBox.isEnabled = false
+        smoothSphereSurfaceCheckBox.isEnabled = false
         loadOrUnloadUIElements()
     }
 
@@ -802,8 +799,41 @@ class PreviewActivity : AppCompatActivity() {
             viewModel.saveVisualizationState()
         }
 
+        fluidSurfaceCheckBox.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.repo.fluidSurface.value = isChecked
+            viewModel.saveVisualizationState()
+            mView!!.onPause()
+            mView!!.onResume()
+        }
+
+        gyroscopeCompensationCheckBox.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.repo.referenceFrameRotates.value = !isChecked
+            viewModel.saveVisualizationState()
+            mView!!.onPause()
+            mView!!.onResume()
+        }
+
+        smoothSphereSurfaceCheckBox.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.repo.smoothSphereSurface.value = isChecked
+            viewModel.saveVisualizationState()
+            mView!!.onPause()
+            mView!!.onResume()
+        }
+
         viewModel.repo.flipNormals.observe(this){ flip ->
             flipsNormalsCheckBox.isChecked = flip
+        }
+
+        viewModel.repo.fluidSurface.observe(this){ flip ->
+            fluidSurfaceCheckBox.isChecked = flip
+        }
+
+        viewModel.repo.referenceFrameRotates.observe(this){ flip ->
+            gyroscopeCompensationCheckBox.isChecked = !flip
+        }
+
+        viewModel.repo.smoothSphereSurface.observe(this){ flip ->
+            smoothSphereSurfaceCheckBox.isChecked = flip
         }
     }
 

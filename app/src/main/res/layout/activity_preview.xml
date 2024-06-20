@@ -174,29 +174,6 @@
                 android:max="4000"
                 android:min="3960" />
 
-            <!--<ImageView
-                android:id="@+id/imageView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_launcher_background" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:paddingRight="70dp">
-
-                <Button
-                    android:id="@+id/save_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/preview_ui_margin"
-                    android:layout_weight="1"
-                    android:background="@drawable/slightly_opaque_border_background"
-                    android:text="@string/update_preview_button_text" />
-
-            </LinearLayout>-->
-
             <TextView
                 android:id="@+id/background_label"
                 android:layout_width="wrap_content"
@@ -382,7 +359,6 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-
             <EditText
                 android:id="@+id/et_equation_name"
                 android:layout_width="match_parent"
@@ -428,12 +404,24 @@
                 android:layout_height="wrap_content"
                 android:text="Flip Normals" />
 
-            <!--<Button
-                android:id="@+id/sync_button"
-                android:layout_width="wrap_content"
+            <CheckBox
+                android:id="@+id/fluid_surface_checkbox"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#3C3868AF"
-                android:text="SYNC" />-->
+                android:text="Fluid Surface" />
+
+            <CheckBox
+                android:id="@+id/gyroscope_compensation_checkbox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Gyroscope Compensation" />
+
+            <CheckBox
+                android:id="@+id/smooth_sphere_surface_checkbox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Smooth Sphere Surface" />
+
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

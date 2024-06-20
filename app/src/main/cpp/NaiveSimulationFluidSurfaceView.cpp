@@ -89,7 +89,6 @@ NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView(const int &part
     environmentTriangleVAO = VertexArrayObject(EnvironmentMap::environmentTriangleVertices, sizeof(environmentMap.environmentTriangleVertices) / sizeof(PositionXYZ));
 
     if (fluidSurface) {
-        mProgram = createVertexAndFragmentShaderProgram(TILES_VERTEX_SHADER.c_str(), TILES_FRAGMENT_SHADER.c_str());
         graphNormalMapProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_NORMAL_MAP_FRAGMENT_SHADER.c_str());
         sphereNormalMapProgram = createVertexAndFragmentShaderProgram(SPHERE_VERTEX_SHADER.c_str(), SPHERE_NORMAL_MAP_FRAGMENT_SHADER.c_str());
         if(backgroundTexture == Texture::DefaultImages::MS_PAINT_COLORS){
@@ -368,22 +367,6 @@ void NaiveSimulationFluidSurfaceView::render(){
                     glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
 
                     glDepthMask(GL_TRUE);
-
-                    // Prepare model-view-projection matrix
-                    /*model = model.Translation(Vec3<float>(-0.5f));
-                    view = translation.Translation(Vec3<float>(0.0f, 0.0f, -0.1f * distanceToCenter)) * rotation;
-                    projection = orientationAdjustedPerspective;
-                    mvp = projection * view * model;
-
-                    // Render tiles
-                    glDisable(GL_CULL_FACE);
-                    glUseProgram(mProgram);
-                    glActiveTexture(GL_TEXTURE0);
-                    glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
-                    glUniform1i(glGetUniformLocation(mProgram, "image"), 0);
-                    glUniformMatrix4fv(glGetUniformLocation(mProgram, "mvp"), 1, GL_FALSE, (GLfloat *) &mvp);
-                    tilesVAO.drawArrays();
-                    glEnable(GL_CULL_FACE);*/
                 }
 
                 // Render near frustum
@@ -483,26 +466,6 @@ void NaiveSimulationFluidSurfaceView::render(){
                     glUniform1f(glGetUniformLocation(environmentMapDoubleRefractionProgram, "screenHeight"), initialHeight);
                     sphereVAO.drawArrays();
                     glDepthFunc(GL_LEQUAL);
-
-                    //// Prepare model-view-projection matrix
-                    //model = model.Translation(Vec3<float>(-0.5f));
-                    //view = translation.Translation(Vec3<float>(0.0f, 0.0f, -0.1f * distanceToCenter)) * rotation;
-                    //projection = orientationAdjustedPerspective;
-                    //mvp = projection * view * model;
-//
-                    //// Render tiles
-                    //glDisable(GL_CULL_FACE);
-                    //glUseProgram(mProgram);
-                    //glActiveTexture(GL_TEXTURE0);
-                    //glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
-                    //glUniform1i(glGetUniformLocation(mProgram, "image"), 0);
-                    //glUniformMatrix4fv(
-                    //        glGetUniformLocation(mProgram, "mvp"),
-                    //        1,
-                    //        GL_FALSE,
-                    //        (GLfloat *) &mvp);
-                    //tilesVAO.drawArrays();
-                    //glEnable(GL_CULL_FACE);
                 }
             }
 
@@ -548,17 +511,6 @@ void NaiveSimulationFluidSurfaceView::render(){
                 glUseProgram(mProgram);
                 glActiveTexture(GL_TEXTURE0);
                 glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
-                /*glUniform1i(glGetUniformLocation(mProgram, "image"), 0);
-
-                // Prepare model-view-projection matrix
-                model = model.Translation(Vec3<float>(-0.5f));
-                view = translation * rotation;
-                projection = orientationAdjustedPerspective;
-                mvp = projection * view * model;
-
-                glUniformMatrix4fv(glGetUniformLocation(mProgram, "mvp"), 1, GL_FALSE, (GLfloat *) &mvp);
-
-                tilesVAO.drawArrays();*/
 
                 glEnable(GL_CULL_FACE);
 
@@ -567,7 +519,11 @@ void NaiveSimulationFluidSurfaceView::render(){
                 view = referenceFrameRotates ? translation : translation * rotation;
                 projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
                 mvp = projection * view * model;
-                cameraTransformation = rotation.GetInverse() * translation * rotation * model;
+                if(referenceFrameRotates){
+                    cameraTransformation = rotation.GetInverse() * translation * model;
+                }else {
+                    cameraTransformation = rotation.GetInverse() * translation * rotation * model;
+                }
 
                 // Render graph
                 glUseProgram(graphFluidSurfaceProgram);

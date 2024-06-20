@@ -12,11 +12,11 @@ data class NaiveFluidVisualization (
     var backgroundColor: Color = createColorFromInts(0, 0, 0, 0),
     var fluidSurface: Boolean = true,
     var particleCount: Int = 1000,
-    var smoothSphereSurface: Boolean = true,
+    var smoothSphereSurface: Boolean = false,
     var gravity: Float = 2.0f,
     var linearAcceleration: Float = 1.75f,
     var efficiency: Float = 1.0f,
-    var referenceFrameRotates: Boolean = false,
+    var referenceFrameRotates: Boolean = true,
     var backgroundIsSolidColor: Boolean = false,
     var backgroundTexture: String = "rgb_cube"
 ) : Visualization() {
@@ -31,13 +31,13 @@ data class NaiveFluidVisualization (
                 it
             )
         }?: createColorFromInts(0, 0, 0, 0),
-        fluidSurface = jsonObject.optBoolean("fluid_surface", true),
+        fluidSurface = jsonObject.optBoolean("fluid_surface", false),
         particleCount = jsonObject.optInt("particle_count", 1000),
         smoothSphereSurface = jsonObject.optBoolean("smooth_sphere_surface", true),
         gravity = jsonObject.optDouble("gravity", 2.0).toFloat(),
         linearAcceleration = jsonObject.optDouble("linear_acceleration", 1.75).toFloat(),
         efficiency = jsonObject.optDouble("efficiency", 1.0).toFloat(),
-        referenceFrameRotates = jsonObject.optBoolean("reference_frame_rotates", false),
+        referenceFrameRotates = jsonObject.optBoolean("reference_frame_rotates", true),
         backgroundIsSolidColor = jsonObject.optBoolean("background_is_solid_color", false),
         backgroundTexture = jsonObject.optString("background_texture", "rgb_cube")
     )
@@ -77,7 +77,9 @@ data class NaiveFluidVisualization (
 
     )
     override val relevantCheckBoxIds: List<Int> = listOf(
-
+        R.id.fluid_surface_checkbox,
+        R.id.gyroscope_compensation_checkbox,
+        R.id.smooth_sphere_surface_checkbox
     )
     override val relevantSpinnerIds: List<Int> = listOf(
         R.id.image_selection_spinner

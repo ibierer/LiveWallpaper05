@@ -63,7 +63,7 @@ data class PicFlipVisualization (
 
     )
     override val relevantCheckBoxIds: List<Int> = listOf(
-
+        R.id.gyroscope_compensation_checkbox
     )
     override val relevantSpinnerIds: List<Int> = listOf(
         R.id.image_selection_spinner

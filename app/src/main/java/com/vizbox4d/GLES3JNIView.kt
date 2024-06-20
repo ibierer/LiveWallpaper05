@@ -77,7 +77,9 @@ class Renderer(private val context: Context, private var mViewModel: ActiveWallp
                 mViewModel.repo.gravity.postValue(jsonConfig.getDouble("gravity").toFloat())
                 mViewModel.repo.linearAcceleration.postValue(jsonConfig.getDouble("linear_acceleration").toFloat())
                 mViewModel.repo.efficiency.postValue(jsonConfig.getDouble("efficiency").toFloat())
+                mViewModel.repo.fluidSurface.postValue(jsonConfig.getBoolean("fluid_surface"))
                 mViewModel.repo.referenceFrameRotates.postValue(jsonConfig.getBoolean("reference_frame_rotates"))
+                mViewModel.repo.smoothSphereSurface.postValue(jsonConfig.getBoolean("smooth_sphere_surface"))
             }
             2 -> {
                 mViewModel.repo.gravity.postValue(jsonConfig.getDouble("gravity").toFloat())
