@@ -154,7 +154,7 @@ ImplicitGrapher::ImplicitGrapher(const ivec3& size) {
     ImplicitGrapher::vertices = (PositionXYZNormalXYZ*)malloc(maxSolutionCount * sizeof(PositionXYZNormalXYZ));
     ImplicitGrapher::indices = (uvec3*)malloc(getRecommendedIndicesArraySize());
 
-    computeShaderProgram = View::createComputeShaderProgram(View::stringArrayToString((string*)computeShaderCode, 1000).c_str());
+    //computeShaderProgram = View::createComputeShaderProgram(View::stringArrayToString((string*)computeShaderCode, 1000).c_str());
     glGenBuffers(1, &computeShaderVBO);
     data = (GPUdata*)malloc(sizeof(GPUdata));
 }
