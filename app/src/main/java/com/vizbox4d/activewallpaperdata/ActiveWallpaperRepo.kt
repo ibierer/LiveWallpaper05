@@ -193,11 +193,6 @@ class ActiveWallpaperRepo private constructor(val context: Context) : SensorEven
         }
     }
 
-    fun updateColor(r: Float, g: Float, b: Float, a: Float) {
-        color.value = Color.valueOf(r, g, b, a)
-        //color.postValue(Color.valueOf(r, g, b, a))
-    }
-
     fun saveVisualizationState() {
         val selection: Int = getVisualizationSelection()
         visualization = when (selection) {
