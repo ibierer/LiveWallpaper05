@@ -519,11 +519,7 @@ void NaiveSimulationFluidSurfaceView::render(){
                 view = referenceFrameRotates ? translation : translation * rotation;
                 projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
                 mvp = projection * view * model;
-                if(referenceFrameRotates){
-                    cameraTransformation = rotation.GetInverse() * translation * model;
-                }else {
-                    cameraTransformation = rotation.GetInverse() * translation * rotation * model;
-                }
+                cameraTransformation = referenceFrameRotates ? rotation.GetInverse() * translation * model : rotation.GetInverse() * translation * rotation * model;
 
                 // Render graph
                 glUseProgram(graphFluidSurfaceProgram);
