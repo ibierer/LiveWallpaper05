@@ -82,7 +82,7 @@ using std::string;
 using nlohmann::json;
 
 View* view[2] = {nullptr, nullptr}; // Separate pointers for Activity and Wallpaper Service
-Matrix3<float> rotationMatrix;
+//Matrix3<float> rotationMatrix;
 
 extern "C"
 JNIEXPORT void JNICALL
@@ -105,6 +105,8 @@ Java_com_vizbox4d_PreviewActivity_00024Companion_init(JNIEnv *env, jobject thiz,
             View::backgroundTexture = Texture::DefaultImages::MS_PAINT_COLORS;
         } else if(backgroundTexture == "mandelbrot") {
             View::backgroundTexture = Texture::DefaultImages::MANDELBROT;
+        } else if(backgroundTexture == "rgb_cube") {
+            View::backgroundTexture = Texture::DefaultImages::RGB_CUBE;
         }
 
         string visualizationType = visualizationJSON["visualization_type"];

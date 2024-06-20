@@ -10,16 +10,25 @@ using std::max;
 Graph2View::Graph2View(const string &equation, const int &graphSize, const bool &referenceFrameRotates, const bool& vectorPointsPositive) : View() {
     this->referenceFrameRotates = referenceFrameRotates;
 
-    sphereMapProgram = createVertexAndFragmentShaderProgram(ENVIRONMENT_MAP_VERTEX_SHADER.c_str(), SPHERE_MAP_FRAGMENT_SHADER.c_str());
     if(backgroundTexture == Texture::DefaultImages::MS_PAINT_COLORS){
-        sphereMap = SphereMap(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
+        environmentMapTextureTarget = GL_TEXTURE_2D;
+        environmentMapProgram = createVertexAndFragmentShaderProgram(ENVIRONMENT_MAP_VERTEX_SHADER.c_str(), SPHERE_MAP_FRAGMENT_SHADER.c_str());
+        environmentMap = SphereMap(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
+        graphFluidSurfaceProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_FLUID_SURFACE_SPHERE_MAP_FRAGMENT_SHADER.c_str());
     }else if(backgroundTexture == Texture::DefaultImages::MANDELBROT){
-        sphereMap = SphereMap(Texture::DefaultImages::MANDELBROT, 2048, 2048, this);
+        environmentMapTextureTarget = GL_TEXTURE_2D;
+        environmentMapProgram = createVertexAndFragmentShaderProgram(ENVIRONMENT_MAP_VERTEX_SHADER.c_str(), SPHERE_MAP_FRAGMENT_SHADER.c_str());
+        environmentMap = SphereMap(Texture::DefaultImages::MANDELBROT, 2048, 2048, this);
+        graphFluidSurfaceProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_FLUID_SURFACE_SPHERE_MAP_FRAGMENT_SHADER.c_str());
+    }else if(backgroundTexture == Texture::DefaultImages::RGB_CUBE){
+        environmentMapTextureTarget = GL_TEXTURE_CUBE_MAP;
+        environmentMapProgram = createVertexAndFragmentShaderProgram(ENVIRONMENT_MAP_VERTEX_SHADER.c_str(), CUBE_MAP_FRAGMENT_SHADER.c_str());
+        environmentMap = CubeMap::createSimpleTextureCubemap();
+        graphFluidSurfaceProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_FLUID_SURFACE_CUBE_MAP_FRAGMENT_SHADER.c_str());
     }
-    environmentTriangleVAO = VertexArrayObject(EnvironmentMap::environmentTriangleVertices, sizeof(sphereMap.environmentTriangleVertices) / sizeof(PositionXYZ));
+    environmentTriangleVAO = VertexArrayObject(EnvironmentMap::environmentTriangleVertices, sizeof(environmentMap.environmentTriangleVertices) / sizeof(PositionXYZ));
 
     graphNormalMapProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_NORMAL_MAP_FRAGMENT_SHADER.c_str());
-    graphFluidSurfaceProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_FLUID_SURFACE_FRAGMENT_SHADER.c_str());
 
     implicitGrapher = ImplicitGrapher(ivec3(graphSize));
     implicitGrapher.vectorPointsPositive = vectorPointsPositive;
@@ -103,14 +112,9 @@ void Graph2View::render(){
                 (GLfloat *) &normalMatrix);
         glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
         glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
-        glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE,
-                              sizeof(PositionXYZNormalXYZ),
-                              (const GLvoid *) &ImplicitGrapher::vertices[0].p);
-        glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE,
-                              sizeof(PositionXYZNormalXYZ),
-                              (const GLvoid *) &ImplicitGrapher::vertices[0].n);
-        glDrawElements(GL_TRIANGLES, ImplicitGrapher::numIndices, GL_UNSIGNED_INT,
-                       ImplicitGrapher::indices);
+        glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].p);
+        glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].n);
+        glDrawElements(GL_TRIANGLES, ImplicitGrapher::numIndices, GL_UNSIGNED_INT, ImplicitGrapher::indices);
         glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
         glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
         glCullFace(GL_BACK);
@@ -153,48 +157,38 @@ void Graph2View::render(){
                 GL_FALSE,
                 (GLfloat *) &normalMatrix);
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, sphereMap.getTextureId());
-        glUniform1i(glGetUniformLocation(graphFluidSurfaceProgram, "environmentTexture"),
-                    0);
+        glBindTexture(environmentMapTextureTarget, environmentMap.getTextureId());
+        glUniform1i(glGetUniformLocation(graphFluidSurfaceProgram, "environmentTexture"), 0);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
         glUniform1i(glGetUniformLocation(graphFluidSurfaceProgram, "image"), 1);
-        glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "reflectivity"),
-                    reflectivity);
-        glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "indexOfRefraction"),
-                    indexOfRefraction);
-        glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "inverseIOR"),
-                    1.0f / indexOfRefraction);
-        glUniform1i(glGetUniformLocation(graphFluidSurfaceProgram, "twoSidedRefraction"),
-                    twoSidedRefraction);
+        glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "reflectivity"), reflectivity);
+        glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "indexOfRefraction"), indexOfRefraction);
+        glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "inverseIOR"), 1.0f / indexOfRefraction);
+        glUniform1i(glGetUniformLocation(graphFluidSurfaceProgram, "twoSidedRefraction"), twoSidedRefraction);
         glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenWidth"), initialWidth);
         glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenHeight"), initialHeight);
         glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
         glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
-        glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE,
-                              sizeof(PositionXYZNormalXYZ),
-                              (const GLvoid *) &ImplicitGrapher::vertices[0].p);
-        glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE,
-                              sizeof(PositionXYZNormalXYZ),
-                              (const GLvoid *) &ImplicitGrapher::vertices[0].n);
-        glDrawElements(GL_TRIANGLES, ImplicitGrapher::numIndices, GL_UNSIGNED_INT,
-                       ImplicitGrapher::indices);
+        glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].p);
+        glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].n);
+        glDrawElements(GL_TRIANGLES, ImplicitGrapher::numIndices, GL_UNSIGNED_INT, ImplicitGrapher::indices);
         glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
         glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
         glEnable(GL_DEPTH_TEST);
         glDisable(GL_CULL_FACE);
 
         if(!backgroundIsSolidColor) {
-            // Render sphere map
-            glUseProgram(sphereMapProgram);
+            // Render environment map
+            glUseProgram(environmentMapProgram);
             glUniformMatrix4fv(
-                    glGetUniformLocation(sphereMapProgram, "inverseViewProjection"),
+                    glGetUniformLocation(environmentMapProgram, "inverseViewProjection"),
                     1,
                     GL_FALSE,
                     (GLfloat *) &inverseViewProjection);
-            glBindTexture(GL_TEXTURE_2D, sphereMap.getTextureId());
             glActiveTexture(GL_TEXTURE1);
-            glUniform1i(glGetUniformLocation(sphereMapProgram, "environmentTexture"), 1);
+            glBindTexture(environmentMapTextureTarget, environmentMap.getTextureId());
+            glUniform1i(glGetUniformLocation(environmentMapProgram, "environmentTexture"), 1);
             environmentTriangleVAO.drawArrays();
         }
     }

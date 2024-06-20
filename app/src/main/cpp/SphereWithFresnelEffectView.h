@@ -11,23 +11,17 @@
 class SphereWithFresnelEffectView : public View {
 public:
 
-    GLuint sphereMapRefractionProgram;
+    GLuint environmentMapBackgroundProgram;
 
-    GLuint cubeMapDoubleRefractionProgram;
-
-    GLuint sphereMapBackgroundProgram;
-
-    GLuint sphereMapDoubleRefractionProgram;
-
-    GLuint cubeMapRefractionProgram;
-
-    GLuint cubeMapBackgroundProgram;
+    GLuint environmentMapDoubleRefractionProgram;
 
     VertexArrayObject sphereVAO;
 
     VertexArrayObject environmentTriangleVAO;
 
     EnvironmentMap environmentMap;
+
+    GLuint environmentMapTextureTarget;
 
     const string VERTEX_SHADER =
             ES_VERSION +

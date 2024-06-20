@@ -18,7 +18,7 @@ data class NaiveFluidVisualization (
     var efficiency: Float = 1.0f,
     var referenceFrameRotates: Boolean = false,
     var backgroundIsSolidColor: Boolean = false,
-    var backgroundTexture: String = "ms_paint_colors"
+    var backgroundTexture: String = "rgb_cube"
 ) : Visualization() {
 
     constructor(jsonObject: JSONObject) : this(
@@ -39,7 +39,7 @@ data class NaiveFluidVisualization (
         efficiency = jsonObject.optDouble("efficiency", 1.0).toFloat(),
         referenceFrameRotates = jsonObject.optBoolean("reference_frame_rotates", false),
         backgroundIsSolidColor = jsonObject.optBoolean("background_is_solid_color", false),
-        backgroundTexture = jsonObject.optString("background_texture", "ms_paint_colors")
+        backgroundTexture = jsonObject.optString("background_texture", "rgb_cube")
     )
 
     constructor(repo: ActiveWallpaperRepo) : this(

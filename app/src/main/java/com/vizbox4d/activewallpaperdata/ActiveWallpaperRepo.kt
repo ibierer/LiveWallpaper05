@@ -170,8 +170,10 @@ class ActiveWallpaperRepo private constructor(val context: Context) : SensorEven
     fun getEnvironmentMapSelection(): Int {
         return if (backgroundTexture.value!! == "ms_paint_colors") {
             0
-        } else if(backgroundTexture.value!! == "mandelbrot") {
+        } else if (backgroundTexture.value!! == "mandelbrot") {
             1
+        } else if (backgroundTexture.value!! == "rgb_cube") {
+            2
         } else {
             0
         }

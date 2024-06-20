@@ -14,7 +14,8 @@ public:
 
     enum DefaultImages {
         MS_PAINT_COLORS,
-        MANDELBROT
+        MANDELBROT,
+        RGB_CUBE
     };
 
     static const string FETCH_FROM_SPECTRUM_FUNCTION;

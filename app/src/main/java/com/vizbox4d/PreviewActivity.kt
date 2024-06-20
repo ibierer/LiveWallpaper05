@@ -609,6 +609,7 @@ class PreviewActivity : AppCompatActivity() {
                     viewModel.repo.backgroundTexture.value = when(pos) {
                         0 -> "ms_paint_colors"
                         1 -> "mandelbrot"
+                        2 -> "rgb_cube"
                         else -> throw IllegalArgumentException("Invalid environment map")
                     }
                     viewModel.saveVisualizationState()

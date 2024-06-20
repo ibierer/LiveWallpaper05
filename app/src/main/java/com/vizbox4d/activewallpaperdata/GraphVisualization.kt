@@ -11,7 +11,7 @@ data class GraphVisualization (
     var backgroundColor: Color = createColorFromInts(0, 0, 0, 0),
     var referenceFrameRotates: Boolean = false,
     var backgroundIsSolidColor: Boolean = false,
-    var backgroundTexture: String = "ms_paint_colors",
+    var backgroundTexture: String = "rgb_cube",
     var vectorPointsPositive: Boolean = false,
     var equation: String = "1/((sqrt(x^2 + y^2) - 1.5 + sin(t))^2 + (z + cos(t))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 2π/3))^2 + (z + cos(t + 2π/3))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 4π/3))^2 + (z + cos(t + 4π/3))^2) = 5"
 ) : Visualization() {
@@ -27,7 +27,7 @@ data class GraphVisualization (
         }?: createColorFromInts(0, 0, 0, 0),
         referenceFrameRotates = jsonObject.optBoolean("reference_frame_rotates", false),
         backgroundIsSolidColor = jsonObject.optBoolean("background_is_solid_color", false),
-        backgroundTexture = jsonObject.optString("background_texture", "ms_paint_colors"),
+        backgroundTexture = jsonObject.optString("background_texture", "rgb_cube"),
         vectorPointsPositive = jsonObject.optBoolean("vector_points_positive", false),
         equation = jsonObject.optString("equation", "1/((sqrt(x^2 + y^2) - 1.5 + sin(t))^2 + (z + cos(t))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 2π/3))^2 + (z + cos(t + 2π/3))^2) + 1/((sqrt(x^2 + y^2) - 1.5 + sin(t + 4π/3))^2 + (z + cos(t + 4π/3))^2) = 5")
     )

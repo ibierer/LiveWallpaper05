@@ -115,7 +115,7 @@ public:
             "    direction = (inverseViewProjection * vec4(pos, 1.0f)).xyz;\n"
             "}\n";
 
-    const string CUBEMAP_FRAGMENT_SHADER =
+    const string CUBE_MAP_FRAGMENT_SHADER =
             ES_VERSION +
             "precision mediump float;\n"
             "uniform samplerCube environmentTexture;\n"

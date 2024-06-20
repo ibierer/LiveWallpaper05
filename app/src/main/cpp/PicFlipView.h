@@ -15,9 +15,11 @@ public:
 
     VertexArrayObject environmentTriangleVAO;
 
-    SphereMap sphereMap;
+    EnvironmentMap environmentMap;
 
-    GLuint sphereMapProgram;
+    GLuint environmentMapTextureTarget;
+
+    GLuint environmentMapProgram;
 
     bool referenceFrameRotates;
 

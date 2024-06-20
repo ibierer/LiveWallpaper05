@@ -11,13 +11,20 @@ PicFlipView::PicFlipView(const bool &referenceFrameRotates) : View() {
     mProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
     cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
 
-    sphereMapProgram = createVertexAndFragmentShaderProgram(ENVIRONMENT_MAP_VERTEX_SHADER.c_str(), SPHERE_MAP_FRAGMENT_SHADER.c_str());
     if(backgroundTexture == Texture::DefaultImages::MS_PAINT_COLORS){
-        sphereMap = SphereMap(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
+        environmentMapTextureTarget = GL_TEXTURE_2D;
+        environmentMap = SphereMap(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
+        environmentMapProgram = createVertexAndFragmentShaderProgram(ENVIRONMENT_MAP_VERTEX_SHADER.c_str(), SPHERE_MAP_FRAGMENT_SHADER.c_str());
     }else if(backgroundTexture == Texture::DefaultImages::MANDELBROT){
-        sphereMap = SphereMap(Texture::DefaultImages::MANDELBROT, 2048, 2048, this);
+        environmentMapTextureTarget = GL_TEXTURE_2D;
+        environmentMap = SphereMap(Texture::DefaultImages::MANDELBROT, 2048, 2048, this);
+        environmentMapProgram = createVertexAndFragmentShaderProgram(ENVIRONMENT_MAP_VERTEX_SHADER.c_str(), SPHERE_MAP_FRAGMENT_SHADER.c_str());
+    }else if(backgroundTexture == Texture::DefaultImages::RGB_CUBE){
+        environmentMapTextureTarget = GL_TEXTURE_CUBE_MAP;
+        environmentMap = CubeMap::createSimpleTextureCubemap();
+        environmentMapProgram = createVertexAndFragmentShaderProgram(ENVIRONMENT_MAP_VERTEX_SHADER.c_str(), CUBE_MAP_FRAGMENT_SHADER.c_str());
     }
-    environmentTriangleVAO = VertexArrayObject(EnvironmentMap::environmentTriangleVertices, sizeof(sphereMap.environmentTriangleVertices) / sizeof(PositionXYZ));
+    environmentTriangleVAO = VertexArrayObject(EnvironmentMap::environmentTriangleVertices, sizeof(environmentMap.environmentTriangleVertices) / sizeof(PositionXYZ));
 
     setupScene();
 }
@@ -69,8 +76,6 @@ void PicFlipView::setupScene(){
     // create fluid
 
     fluid = new FlipFluid(density, tankWidth, tankHeight, tankDepth, h, r, maxParticles);
-
-    // create stars
 
     fluid->numParticles = numX * numY * numZ;
     int p = 0;
@@ -138,16 +143,16 @@ void PicFlipView::render() {
     }
 
     if(!backgroundIsSolidColor) {
-        // Render sphere map
-        glUseProgram(sphereMapProgram);
+        // Render environment map
+        glUseProgram(environmentMapProgram);
         glUniformMatrix4fv(
-                glGetUniformLocation(sphereMapProgram, "inverseViewProjection"),
+                glGetUniformLocation(environmentMapProgram, "inverseViewProjection"),
                 1,
                 GL_FALSE,
                 (GLfloat *) &inverseViewProjection);
-        glBindTexture(GL_TEXTURE_2D, sphereMap.getTextureId());
+        glBindTexture(environmentMapTextureTarget, environmentMap.getTextureId());
         glActiveTexture(GL_TEXTURE0);
-        glUniform1i(glGetUniformLocation(sphereMapProgram, "environmentTexture"), 0);
+        glUniform1i(glGetUniformLocation(environmentMapProgram, "environmentTexture"), 0);
         environmentTriangleVAO.drawArrays();
     }
 

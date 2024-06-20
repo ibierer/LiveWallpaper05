@@ -73,21 +73,38 @@ NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView(const int &part
 
     simulation.seed(particleCount, sphereRadius);
 
-    sphereMapProgram = createVertexAndFragmentShaderProgram(ENVIRONMENT_MAP_VERTEX_SHADER.c_str(), SPHERE_MAP_FRAGMENT_SHADER.c_str());
     if(backgroundTexture == Texture::DefaultImages::MS_PAINT_COLORS){
-        sphereMap = SphereMap(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
+        environmentMapTextureTarget = GL_TEXTURE_2D;
+        environmentMapProgram = createVertexAndFragmentShaderProgram(ENVIRONMENT_MAP_VERTEX_SHADER.c_str(), SPHERE_MAP_FRAGMENT_SHADER.c_str());
+        environmentMap = SphereMap(Texture::DefaultImages::MS_PAINT_COLORS, 1536, 1536, this);
     }else if(backgroundTexture == Texture::DefaultImages::MANDELBROT){
-        sphereMap = SphereMap(Texture::DefaultImages::MANDELBROT, 2048, 2048, this);
+        environmentMapTextureTarget = GL_TEXTURE_2D;
+        environmentMapProgram = createVertexAndFragmentShaderProgram(ENVIRONMENT_MAP_VERTEX_SHADER.c_str(), SPHERE_MAP_FRAGMENT_SHADER.c_str());
+        environmentMap = SphereMap(Texture::DefaultImages::MANDELBROT, 2048, 2048, this);
+    }else if(backgroundTexture == Texture::DefaultImages::RGB_CUBE){
+        environmentMapTextureTarget = GL_TEXTURE_CUBE_MAP;
+        environmentMapProgram = createVertexAndFragmentShaderProgram(ENVIRONMENT_MAP_VERTEX_SHADER.c_str(), CUBE_MAP_FRAGMENT_SHADER.c_str());
+        environmentMap = CubeMap::createSimpleTextureCubemap();
     }
-    environmentTriangleVAO = VertexArrayObject(EnvironmentMap::environmentTriangleVertices, sizeof(sphereMap.environmentTriangleVertices) / sizeof(PositionXYZ));
+    environmentTriangleVAO = VertexArrayObject(EnvironmentMap::environmentTriangleVertices, sizeof(environmentMap.environmentTriangleVertices) / sizeof(PositionXYZ));
 
     if (fluidSurface) {
         mProgram = createVertexAndFragmentShaderProgram(TILES_VERTEX_SHADER.c_str(), TILES_FRAGMENT_SHADER.c_str());
         graphNormalMapProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_NORMAL_MAP_FRAGMENT_SHADER.c_str());
-        graphFluidSurfaceProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_FLUID_SURFACE_FRAGMENT_SHADER.c_str());
-        graphFluidSurfaceClipsSphereProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_FLUID_SURFACE_CLIPS_SPHERE_FRAGMENT_SHADER.c_str());
         sphereNormalMapProgram = createVertexAndFragmentShaderProgram(SPHERE_VERTEX_SHADER.c_str(), SPHERE_NORMAL_MAP_FRAGMENT_SHADER.c_str());
-        sphereMapDoubleRefractionProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(), SPHERE_MAP_DOUBLE_REFRACTION_FRAGMENT_SHADER.c_str());
+        if(backgroundTexture == Texture::DefaultImages::MS_PAINT_COLORS){
+            graphFluidSurfaceProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_FLUID_SURFACE_SPHERE_MAP_FRAGMENT_SHADER.c_str());
+            graphFluidSurfaceClipsSphereProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_FLUID_SURFACE_CLIPS_SPHERE_SPHERE_MAP_FRAGMENT_SHADER.c_str());
+            environmentMapDoubleRefractionProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(), SPHERE_MAP_DOUBLE_REFRACTION_FRAGMENT_SHADER.c_str());
+        }else if(backgroundTexture == Texture::DefaultImages::MANDELBROT){
+            graphFluidSurfaceProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_FLUID_SURFACE_SPHERE_MAP_FRAGMENT_SHADER.c_str());
+            graphFluidSurfaceClipsSphereProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_FLUID_SURFACE_CLIPS_SPHERE_SPHERE_MAP_FRAGMENT_SHADER.c_str());
+            environmentMapDoubleRefractionProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(), SPHERE_MAP_DOUBLE_REFRACTION_FRAGMENT_SHADER.c_str());
+        }else if(backgroundTexture == Texture::DefaultImages::RGB_CUBE){
+            graphFluidSurfaceProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_FLUID_SURFACE_CUBE_MAP_FRAGMENT_SHADER.c_str());
+            graphFluidSurfaceClipsSphereProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_FLUID_SURFACE_CLIPS_SPHERE_CUBE_MAP_FRAGMENT_SHADER.c_str());
+            environmentMapDoubleRefractionProgram = createVertexAndFragmentShaderProgram(VERTEX_SHADER.c_str(), CUBE_MAP_DOUBLE_REFRACTION_FRAGMENT_SHADER.c_str());
+        }
 
         tilesVAO = VertexArrayObject(tilesVertices, sizeof(tilesVertices) / sizeof(PositionXYZ));
 
@@ -290,13 +307,13 @@ void NaiveSimulationFluidSurfaceView::render(){
                         mvp = projection * view * model;
                         cameraTransformation = rotation.GetInverse() * translation * rotation * model;
 
-                        // Render sphere map
+                        // Render environment map
                         glDisable(GL_DEPTH_TEST);
-                        glUseProgram(sphereMapProgram);
-                        glUniformMatrix4fv(glGetUniformLocation(sphereMapProgram, "inverseViewProjection"), 1, GL_FALSE, (GLfloat *) &inverseViewProjection);
-                        glBindTexture(GL_TEXTURE_2D, sphereMap.getTextureId());
+                        glUseProgram(environmentMapProgram);
+                        glUniformMatrix4fv(glGetUniformLocation(environmentMapProgram, "inverseViewProjection"), 1, GL_FALSE, (GLfloat *) &inverseViewProjection);
+                        glBindTexture(environmentMapTextureTarget, environmentMap.getTextureId());
                         glActiveTexture(GL_TEXTURE0);
-                        glUniform1i(glGetUniformLocation(sphereMapProgram, "environmentTexture"), 0);
+                        glUniform1i(glGetUniformLocation(environmentMapProgram, "environmentTexture"), 0);
                         environmentTriangleVAO.drawArrays();
                         glEnable(GL_DEPTH_TEST);
                     }
@@ -331,7 +348,7 @@ void NaiveSimulationFluidSurfaceView::render(){
                     glUniformMatrix4fv(glGetUniformLocation(graphFluidSurfaceClipsSphereProgram, "viewTransformation"), 1, GL_FALSE, (GLfloat *) &cameraTransformation);
                     glUniformMatrix3fv(glGetUniformLocation(graphFluidSurfaceClipsSphereProgram, "normalMatrix"), 1, GL_FALSE, (GLfloat *) &normalMatrix);
                     glActiveTexture(GL_TEXTURE0);
-                    glBindTexture(GL_TEXTURE_2D, sphereMap.getTextureId());
+                    glBindTexture(environmentMapTextureTarget, environmentMap.getTextureId());
                     glUniform1i(glGetUniformLocation(graphFluidSurfaceClipsSphereProgram, "environmentTexture"), 0);
                     glActiveTexture(GL_TEXTURE1);
                     glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
@@ -407,7 +424,7 @@ void NaiveSimulationFluidSurfaceView::render(){
                     glUniformMatrix4fv(glGetUniformLocation(graphFluidSurfaceClipsSphereProgram, "viewTransformation"), 1, GL_FALSE, (GLfloat *) &cameraTransformation);
                     glUniformMatrix3fv(glGetUniformLocation(graphFluidSurfaceClipsSphereProgram, "normalMatrix"), 1, GL_FALSE, (GLfloat *) &normalMatrix);
                     glActiveTexture(GL_TEXTURE0);
-                    glBindTexture(GL_TEXTURE_2D, sphereMap.getTextureId());
+                    glBindTexture(environmentMapTextureTarget, environmentMap.getTextureId());
                     glUniform1i(glGetUniformLocation(graphFluidSurfaceClipsSphereProgram, "environmentTexture"), 0);
                     glActiveTexture(GL_TEXTURE1);
                     glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
@@ -449,21 +466,21 @@ void NaiveSimulationFluidSurfaceView::render(){
 
                     // Render a sphere
                     glDepthFunc(GL_GREATER);
-                    glUseProgram(sphereMapDoubleRefractionProgram);
-                    glUniformMatrix4fv(glGetUniformLocation(sphereMapDoubleRefractionProgram, "mvp"), 1, GL_FALSE, (GLfloat *) &mvp);
-                    glUniformMatrix4fv(glGetUniformLocation(sphereMapDoubleRefractionProgram, "viewTransformation"), 1, GL_FALSE, (GLfloat *) &cameraTransformation);
-                    glBindTexture(GL_TEXTURE_2D, sphereMap.getTextureId());
+                    glUseProgram(environmentMapDoubleRefractionProgram);
+                    glUniformMatrix4fv(glGetUniformLocation(environmentMapDoubleRefractionProgram, "mvp"), 1, GL_FALSE, (GLfloat *) &mvp);
+                    glUniformMatrix4fv(glGetUniformLocation(environmentMapDoubleRefractionProgram, "viewTransformation"), 1, GL_FALSE, (GLfloat *) &cameraTransformation);
+                    glBindTexture(environmentMapTextureTarget, environmentMap.getTextureId());
                     glActiveTexture(GL_TEXTURE0);
-                    glUniform1i(glGetUniformLocation(sphereMapDoubleRefractionProgram, "environmentTexture"), 0);
+                    glUniform1i(glGetUniformLocation(environmentMapDoubleRefractionProgram, "environmentTexture"), 0);
                     glActiveTexture(GL_TEXTURE1);
                     glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
-                    glUniform1i(glGetUniformLocation(sphereMapDoubleRefractionProgram, "image"), 1);
-                    glUniform1f(glGetUniformLocation(sphereMapDoubleRefractionProgram, "reflectivity"), reflectivity);
-                    glUniform1f(glGetUniformLocation(sphereMapDoubleRefractionProgram, "indexOfRefraction"), indexOfRefraction);
-                    glUniform1f(glGetUniformLocation(sphereMapDoubleRefractionProgram, "inverseIOR"), 1.0f / indexOfRefraction);
-                    glUniform1i(glGetUniformLocation(sphereMapDoubleRefractionProgram, "twoSidedRefraction"), twoSidedRefraction);
-                    glUniform1f(glGetUniformLocation(sphereMapDoubleRefractionProgram, "screenWidth"), initialWidth);
-                    glUniform1f(glGetUniformLocation(sphereMapDoubleRefractionProgram, "screenHeight"), initialHeight);
+                    glUniform1i(glGetUniformLocation(environmentMapDoubleRefractionProgram, "image"), 1);
+                    glUniform1f(glGetUniformLocation(environmentMapDoubleRefractionProgram, "reflectivity"), reflectivity);
+                    glUniform1f(glGetUniformLocation(environmentMapDoubleRefractionProgram, "indexOfRefraction"), indexOfRefraction);
+                    glUniform1f(glGetUniformLocation(environmentMapDoubleRefractionProgram, "inverseIOR"), 1.0f / indexOfRefraction);
+                    glUniform1i(glGetUniformLocation(environmentMapDoubleRefractionProgram, "twoSidedRefraction"), twoSidedRefraction);
+                    glUniform1f(glGetUniformLocation(environmentMapDoubleRefractionProgram, "screenWidth"), initialWidth);
+                    glUniform1f(glGetUniformLocation(environmentMapDoubleRefractionProgram, "screenHeight"), initialHeight);
                     sphereVAO.drawArrays();
                     glDepthFunc(GL_LEQUAL);
 
@@ -558,7 +575,7 @@ void NaiveSimulationFluidSurfaceView::render(){
                 glUniformMatrix4fv(glGetUniformLocation(graphFluidSurfaceProgram, "viewTransformation"), 1, GL_FALSE, (GLfloat *) &cameraTransformation);
                 glUniformMatrix3fv(glGetUniformLocation(graphFluidSurfaceProgram, "normalMatrix"), 1, GL_FALSE, (GLfloat *) &normalMatrix);
                 glActiveTexture(GL_TEXTURE0);
-                glBindTexture(GL_TEXTURE_2D, sphereMap.getTextureId());
+                glBindTexture(environmentMapTextureTarget, environmentMap.getTextureId());
                 glUniform1i(glGetUniformLocation(graphFluidSurfaceProgram, "environmentTexture"), 0);
                 glActiveTexture(GL_TEXTURE1);
                 glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
@@ -582,11 +599,11 @@ void NaiveSimulationFluidSurfaceView::render(){
 
                 if(!backgroundIsSolidColor) {
                     // Render sphere map
-                    glUseProgram(sphereMapProgram);
-                    glUniformMatrix4fv(glGetUniformLocation(sphereMapProgram, "inverseViewProjection"), 1, GL_FALSE, (GLfloat *) &inverseViewProjection);
-                    glBindTexture(GL_TEXTURE_2D, sphereMap.getTextureId());
+                    glUseProgram(environmentMapProgram);
+                    glUniformMatrix4fv(glGetUniformLocation(environmentMapProgram, "inverseViewProjection"), 1, GL_FALSE, (GLfloat *) &inverseViewProjection);
+                    glBindTexture(environmentMapTextureTarget, environmentMap.getTextureId());
                     glActiveTexture(GL_TEXTURE1);
-                    glUniform1i(glGetUniformLocation(sphereMapProgram, "environmentTexture"), 1);
+                    glUniform1i(glGetUniformLocation(environmentMapProgram, "environmentTexture"), 1);
                     environmentTriangleVAO.drawArrays();
                 }
             }
@@ -617,11 +634,11 @@ void NaiveSimulationFluidSurfaceView::render(){
 
         if(!backgroundIsSolidColor) {
             // Render sphere map
-            glUseProgram(sphereMapProgram);
-            glUniformMatrix4fv(glGetUniformLocation(sphereMapProgram, "inverseViewProjection"), 1, GL_FALSE, (GLfloat *) &inverseViewProjection);
-            glBindTexture(GL_TEXTURE_2D, sphereMap.getTextureId());
+            glUseProgram(environmentMapProgram);
+            glUniformMatrix4fv(glGetUniformLocation(environmentMapProgram, "inverseViewProjection"), 1, GL_FALSE, (GLfloat *) &inverseViewProjection);
+            glBindTexture(environmentMapTextureTarget, environmentMap.getTextureId());
             glActiveTexture(GL_TEXTURE0);
-            glUniform1i(glGetUniformLocation(sphereMapProgram, "environmentTexture"), 0);
+            glUniform1i(glGetUniformLocation(environmentMapProgram, "environmentTexture"), 0);
             environmentTriangleVAO.drawArrays();
         }
 
