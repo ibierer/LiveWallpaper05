@@ -87,11 +87,9 @@ class ActiveWallpaperRepo private constructor(val context: Context) : SensorEven
         @Synchronized
         fun getInstance(
             context: Context,
-            /*savedWallpaperDao: SavedWallpaperDao,
-            profileDao: ProfileDao,*/
             scope: CoroutineScope
         ): ActiveWallpaperRepo {
-            return instance ?: ActiveWallpaperRepo(context/*, savedWallpaperDao, profileDao*/).also {
+            return instance ?: ActiveWallpaperRepo(context).also {
                 instance = it
                 mScope = scope
             }
