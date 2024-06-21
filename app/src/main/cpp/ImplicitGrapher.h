@@ -5,7 +5,6 @@
 #ifndef LIVEWALLPAPER05_IMPLICITGRAPHER_H
 #define LIVEWALLPAPER05_IMPLICITGRAPHER_H
 
-
 #include "PositionXYZNormalXYZ.h"
 #include "NaiveSimulation.h"
 
@@ -578,8 +577,6 @@ public:
 
     static const int numOfDefaultEquations = 41;
 
-    static const string defaultEquations[numOfDefaultEquations][2];
-
     static void convertPiSymbol(string &basicString);
 
     static string checkEquationSyntax(const string& editable);
@@ -587,10 +584,6 @@ public:
 private:
 
     static const char pi = 5;
-
-    static const int NAME = 0;
-
-    static const int EQUATION = 1;
 
     static const int X = -1;
 
@@ -715,6 +708,5 @@ private:
     static bool anOperator(const char& character);
 
 };
-
 
 #endif //LIVEWALLPAPER05_IMPLICITGRAPHER_H
