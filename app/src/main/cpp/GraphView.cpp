@@ -14,7 +14,7 @@ GraphView::GraphView(const string& equation) : View() {
     graphProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_FRAGMENT_SHADER.c_str());
     cubeProgram = createVertexAndFragmentShaderProgram(CUBE_VERTEX_SHADER.c_str(), CUBE_FRAGMENT_SHADER.c_str());
 
-    implicitGrapher = ImplicitGrapher(ivec3(29));
+    implicitGrapher = ImplicitGrapher(ivec3(29), vertices, indices);
     if(equation == "") {
         //ImplicitGrapher::surfaceEquation = 40; // Resets to 0 on the first render
         //for (int i = 0; i < ImplicitGrapher::numOfDefaultEquations; i++) {

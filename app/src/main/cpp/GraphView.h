@@ -19,6 +19,12 @@ public:
 
     ImplicitGrapher implicitGrapher;
 
+    PositionXYZNormalXYZ* vertices;
+
+    uvec3* indices;
+
+    uint numIndices;
+
     const string GRAPH_VERTEX_SHADER =
             ES_VERSION +
             "layout(location = " STRV(POSITION_ATTRIBUTE_LOCATION) ") in vec3 pos;\n"

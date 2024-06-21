@@ -23,6 +23,12 @@ public:
 
     ImplicitGrapher implicitGrapher;
 
+    PositionXYZNormalXYZ* vertices;
+
+    uvec3* indices;
+
+    uint numIndices;
+
     bool vectorPointsPositive;
 
     bool referenceFrameRotates;

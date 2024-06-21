@@ -41,6 +41,12 @@ public:
 
     ImplicitGrapher implicitGrapher;
 
+    PositionXYZNormalXYZ* vertices;
+
+    uvec3* indices;
+
+    uint numIndices;
+
     bool fluidSurface;
 
     bool referenceFrameRotates;

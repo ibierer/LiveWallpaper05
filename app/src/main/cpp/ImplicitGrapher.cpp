@@ -78,7 +78,7 @@ ImplicitGrapher::ImplicitGrapher() {
 
 }
 
-ImplicitGrapher::ImplicitGrapher(const ivec3& size) {
+ImplicitGrapher::ImplicitGrapher(const ivec3& size, PositionXYZNormalXYZ*& vertices, uvec3*& indices) {
     //computeShaderProgram = 0;
     //computeShaderVBO = 0;
     //indexBufferBinding = 0;

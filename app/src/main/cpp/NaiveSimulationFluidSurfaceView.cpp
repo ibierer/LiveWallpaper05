@@ -107,7 +107,7 @@ NaiveSimulationFluidSurfaceView::NaiveSimulationFluidSurfaceView(const int &part
 
         tilesVAO = VertexArrayObject(tilesVertices, sizeof(tilesVertices) / sizeof(PositionXYZ));
 
-        implicitGrapher = ImplicitGrapher(ivec3(graphSize));
+        implicitGrapher = ImplicitGrapher(ivec3(graphSize), vertices, indices);
 
         sphere = Sphere(sphereRadius + 0.5f, 100);
         sphereVAO = VertexArrayObject(sphere);
@@ -189,7 +189,7 @@ void NaiveSimulationFluidSurfaceView::render(){
             camPosition = (inverseView * Vec4<float>(0.0f, 0.0f, 0.0f, 1.0f)).XYZ();
             cameraPosition = vec3(camPosition.x, camPosition.y, camPosition.z);
 
-            auto compareUvec3 = [&cameraPosition](const uvec3 &a, const uvec3 &b) {
+            auto compareUvec3 = [&cameraPosition, this](const uvec3 &a, const uvec3 &b) {
                 vec3 positionA = (1.0f / 3.0f) * (vertices[a.v[0]].p + vertices[a.v[1]].p + vertices[a.v[2]].p);
                 vec3 positionB = (1.0f / 3.0f) * (vertices[b.v[0]].p + vertices[b.v[1]].p + vertices[b.v[2]].p);
                 vec3 differenceA = positionA - cameraPosition;

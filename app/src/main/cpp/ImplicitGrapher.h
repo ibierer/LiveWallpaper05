@@ -8,12 +8,6 @@
 #include "PositionXYZNormalXYZ.h"
 #include "NaiveSimulation.h"
 
-PositionXYZNormalXYZ* vertices;
-
-uvec3* indices;
-
-uint numIndices;
-
 class ImplicitGrapher {
 private:
 
@@ -523,7 +517,7 @@ public:
 
     void processEquation();
 
-    explicit ImplicitGrapher(const ivec3& size);
+    explicit ImplicitGrapher(const ivec3& size, PositionXYZNormalXYZ*& vertices, uvec3*& indices);
 
     ~ImplicitGrapher();
 
