@@ -174,7 +174,7 @@ void NaiveSimulationFluidSurfaceView::render(){
         normalMatrix = referenceFrameRotates ? rotation.GetSubMatrix3().GetInverse() : normalMatrix.Identity();
         cameraTransformation = rotation.GetInverse() * translation * rotation * model.Translation(Vec3<float>(0.0f, 0.0f, 0.0f));
 
-        ImplicitGrapher::calculateSurfaceOnCPU(fOfXYZFluidSurface, 0.1f * getFrameCount(), 10, ImplicitGrapher::defaultOffset, 3.0f / 7.0f, false, false, ImplicitGrapher::vertices, ImplicitGrapher::indices, ImplicitGrapher::numIndices, simulation);
+        ImplicitGrapher::calculateSurfaceOnCPU(fOfXYZFluidSurface, 0.1f * getFrameCount(), 10, ImplicitGrapher::defaultOffset, 3.0f / 7.0f, false, false, vertices, indices, numIndices, simulation);
 
         if (sphereClipsGraph) {
             float distanceToTangent = (pow(distanceToCenter, 2.0f) - pow(sphere.getRadius(), 2.0f)) / distanceToCenter;
@@ -190,15 +190,15 @@ void NaiveSimulationFluidSurfaceView::render(){
             cameraPosition = vec3(camPosition.x, camPosition.y, camPosition.z);
 
             auto compareUvec3 = [&cameraPosition](const uvec3 &a, const uvec3 &b) {
-                vec3 positionA = (1.0f / 3.0f) * (ImplicitGrapher::vertices[a.v[0]].p + ImplicitGrapher::vertices[a.v[1]].p + ImplicitGrapher::vertices[a.v[2]].p);
-                vec3 positionB = (1.0f / 3.0f) * (ImplicitGrapher::vertices[b.v[0]].p + ImplicitGrapher::vertices[b.v[1]].p + ImplicitGrapher::vertices[b.v[2]].p);
+                vec3 positionA = (1.0f / 3.0f) * (vertices[a.v[0]].p + vertices[a.v[1]].p + vertices[a.v[2]].p);
+                vec3 positionB = (1.0f / 3.0f) * (vertices[b.v[0]].p + vertices[b.v[1]].p + vertices[b.v[2]].p);
                 vec3 differenceA = positionA - cameraPosition;
                 vec3 differenceB = positionB - cameraPosition;
                 float squaredDistanceA = dot(differenceA, differenceA);
                 float squaredDistanceB = dot(differenceB, differenceB);
                 return squaredDistanceA > squaredDistanceB;
             };
-            std::sort(ImplicitGrapher::indices, ImplicitGrapher::indices + ImplicitGrapher::numIndices / 3, compareUvec3);
+            std::sort(indices, indices + numIndices / 3, compareUvec3);
 
             // Render to texture
             glBindFramebuffer(GL_FRAMEBUFFER, fbo.getFrameBuffer());
@@ -226,9 +226,9 @@ void NaiveSimulationFluidSurfaceView::render(){
                     glUniformMatrix3fv(glGetUniformLocation(graphNormalMapProgram, "normalMatrix"), 1, GL_FALSE, (GLfloat *) &normalMatrix);
                     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
                     glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
-                    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].p);
-                    glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].n);
-                    glDrawElements(GL_TRIANGLES, ImplicitGrapher::numIndices, GL_UNSIGNED_INT, ImplicitGrapher::indices);
+                    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &vertices[0].p);
+                    glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &vertices[0].n);
+                    glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, indices);
                     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
                     glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
 
@@ -281,9 +281,9 @@ void NaiveSimulationFluidSurfaceView::render(){
                     glUniformMatrix3fv(glGetUniformLocation(graphNormalMapProgram, "normalMatrix"), 1, GL_FALSE, (GLfloat *) &normalMatrix);
                     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
                     glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
-                    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].p);
-                    glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].n);
-                    glDrawElements(GL_TRIANGLES, ImplicitGrapher::numIndices, GL_UNSIGNED_INT, ImplicitGrapher::indices);
+                    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &vertices[0].p);
+                    glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &vertices[0].n);
+                    glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, indices);
                     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
                     glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
 
@@ -366,9 +366,9 @@ void NaiveSimulationFluidSurfaceView::render(){
                     glUniform1f(glGetUniformLocation(graphFluidSurfaceClipsSphereProgram, "screenHeight"), initialHeight);
                     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
                     glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
-                    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].p);
-                    glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].n);
-                    glDrawElements(GL_TRIANGLES, ImplicitGrapher::numIndices, GL_UNSIGNED_INT, ImplicitGrapher::indices);
+                    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &vertices[0].p);
+                    glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &vertices[0].n);
+                    glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, indices);
                     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
                     glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
 
@@ -426,9 +426,9 @@ void NaiveSimulationFluidSurfaceView::render(){
                     glUniform1f(glGetUniformLocation(graphFluidSurfaceClipsSphereProgram, "screenHeight"), initialHeight);
                     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
                     glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
-                    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].p);
-                    glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].n);
-                    glDrawElements(GL_TRIANGLES, ImplicitGrapher::numIndices, GL_UNSIGNED_INT, ImplicitGrapher::indices);
+                    glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &vertices[0].p);
+                    glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &vertices[0].n);
+                    glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, indices);
                     glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
                     glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
 
@@ -498,9 +498,9 @@ void NaiveSimulationFluidSurfaceView::render(){
                 glUniformMatrix3fv(glGetUniformLocation(graphNormalMapProgram, "normalMatrix"), 1, GL_FALSE, (GLfloat *) &normalMatrix);
                 glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
                 glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
-                glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].p);
-                glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].n);
-                glDrawElements(GL_TRIANGLES, ImplicitGrapher::numIndices, GL_UNSIGNED_INT, ImplicitGrapher::indices);
+                glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &vertices[0].p);
+                glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &vertices[0].n);
+                glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, indices);
                 glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
                 glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
                 glCullFace(GL_BACK);
@@ -546,9 +546,9 @@ void NaiveSimulationFluidSurfaceView::render(){
                 glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenHeight"), initialHeight);
                 glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
                 glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
-                glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].p);
-                glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].n);
-                glDrawElements(GL_TRIANGLES, ImplicitGrapher::numIndices, GL_UNSIGNED_INT, ImplicitGrapher::indices);
+                glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &vertices[0].p);
+                glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &vertices[0].n);
+                glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, indices);
                 glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
                 glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
 

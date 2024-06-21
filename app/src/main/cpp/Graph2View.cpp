@@ -85,7 +85,7 @@ void Graph2View::render(){
     normalMatrix = referenceFrameRotates ? rotation.GetSubMatrix3().GetInverse() : normalMatrix.Identity();
 
     if(getFrameCount() == 0 || ImplicitGrapher::hasTimeVariable || vectorPointsPositive != ImplicitGrapher::vectorPointsPositive){
-        ImplicitGrapher::calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, implicitGrapher.vectorPointsPositive, false, ImplicitGrapher::vertices, ImplicitGrapher::indices, ImplicitGrapher::numIndices);
+        ImplicitGrapher::calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, implicitGrapher.vectorPointsPositive, false, vertices, indices, numIndices);
         vectorPointsPositive = ImplicitGrapher::vectorPointsPositive;
     }
 
@@ -118,9 +118,9 @@ void Graph2View::render(){
                 (GLfloat *) &normalMatrix);
         glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
         glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
-        glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].p);
-        glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].n);
-        glDrawElements(GL_TRIANGLES, ImplicitGrapher::numIndices, GL_UNSIGNED_INT, ImplicitGrapher::indices);
+        glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &vertices[0].p);
+        glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &vertices[0].n);
+        glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, indices);
         glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
         glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
         glCullFace(GL_BACK);
@@ -176,9 +176,9 @@ void Graph2View::render(){
         glUniform1f(glGetUniformLocation(graphFluidSurfaceProgram, "screenHeight"), initialHeight);
         glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
         glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
-        glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].p);
-        glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &ImplicitGrapher::vertices[0].n);
-        glDrawElements(GL_TRIANGLES, ImplicitGrapher::numIndices, GL_UNSIGNED_INT, ImplicitGrapher::indices);
+        glVertexAttribPointer(POSITION_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &vertices[0].p);
+        glVertexAttribPointer(NORMAL_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(PositionXYZNormalXYZ), (const GLvoid *) &vertices[0].n);
+        glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, indices);
         glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
         glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
         glEnable(GL_DEPTH_TEST);

@@ -8,6 +8,12 @@
 #include "PositionXYZNormalXYZ.h"
 #include "NaiveSimulation.h"
 
+PositionXYZNormalXYZ* vertices;
+
+uvec3* indices;
+
+uint numIndices;
+
 class ImplicitGrapher {
 private:
 
@@ -520,12 +526,6 @@ public:
     explicit ImplicitGrapher(const ivec3& size);
 
     ~ImplicitGrapher();
-
-    static PositionXYZNormalXYZ* vertices;
-
-    static uvec3* indices;
-
-    static uint numIndices;
 
     static size_t getRecommendedIndicesArraySize();
 

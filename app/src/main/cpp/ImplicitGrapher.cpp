@@ -4,12 +4,6 @@
 
 #include "ImplicitGrapher.h"
 
-PositionXYZNormalXYZ* ImplicitGrapher::vertices = nullptr;
-
-uvec3* ImplicitGrapher::indices = nullptr;
-
-uint ImplicitGrapher::numIndices = 0;
-
 double ImplicitGrapher::t = 0.0;
 
 bool* ImplicitGrapher::plusMinus = nullptr;
@@ -95,8 +89,8 @@ ImplicitGrapher::ImplicitGrapher(const ivec3& size) {
     xyzLineIndex = (ivec3*)malloc(sizePlus3.x * sizePlus3.y * sizePlus3.z * sizeof(ivec3));
     groupSegments = (ivec3*)malloc(maxSolutionCount * sizeof(ivec3));
     withinGraphRadius = (bool*)malloc(maxSolutionCount * sizeof(bool));
-    ImplicitGrapher::vertices = (PositionXYZNormalXYZ*)malloc(maxSolutionCount * sizeof(PositionXYZNormalXYZ));
-    ImplicitGrapher::indices = (uvec3*)malloc(getRecommendedIndicesArraySize());
+    vertices = (PositionXYZNormalXYZ*)malloc(maxSolutionCount * sizeof(PositionXYZNormalXYZ));
+    indices = (uvec3*)malloc(getRecommendedIndicesArraySize());
 
     //computeShaderProgram = View::createComputeShaderProgram(View::stringArrayToString((string*)computeShaderCode, 1000).c_str());
     glGenBuffers(1, &computeShaderVBO);
