@@ -18,16 +18,16 @@ GraphView::GraphView(const string& equation) : View() {
     if(equation == "") {
         //ImplicitGrapher::surfaceEquation = 40; // Resets to 0 on the first render
         //for (int i = 0; i < ImplicitGrapher::numOfDefaultEquations; i++) {
-        //    ImplicitGrapher::memoryEquations[i][1] = ImplicitGrapher::defaultEquations[i][1];
+        //    ImplicitGrapher::memoryEquation[i][1] = ImplicitGrapher::defaultEquations[i][1];
         //    //Convert any 'π' symbols to a ''
-        //    ImplicitGrapher::convertPiSymbol(ImplicitGrapher::memoryEquations[i][1]);
+        //    ImplicitGrapher::convertPiSymbol(ImplicitGrapher::memoryEquation[i][1]);
         //    ImplicitGrapher::processEquation(i);
         //    ImplicitGrapher::numOfEquationsInMemory++;
         //}
     }else{
         ImplicitGrapher::surfaceEquation = 0;
-        ImplicitGrapher::memoryEquations[ImplicitGrapher::surfaceEquation][1] = equation;
-        ImplicitGrapher::processEquation(ImplicitGrapher::surfaceEquation);
+        ImplicitGrapher::memoryEquation = equation;
+        ImplicitGrapher::processEquation();
         ImplicitGrapher::numOfEquationsInMemory++;
     }
 

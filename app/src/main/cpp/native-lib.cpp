@@ -73,7 +73,6 @@
 #include "SphereWithReflectionView.cpp"
 #include "SphereWithFresnelEffectView.cpp"
 #include "Graph2View.cpp"
-#include "LinearithmicNBodySimulationView.h"
 
 using std::string;
 using nlohmann::json;

@@ -14,33 +14,31 @@ uvec3* ImplicitGrapher::indices = nullptr;
 
 uint ImplicitGrapher::numIndices = 0;
 
-string ImplicitGrapher::memoryEquations[maxNumOfEquations][2] = {};
+string ImplicitGrapher::memoryEquation = "";
 
 double ImplicitGrapher::t = 0.0;
 
 bool* ImplicitGrapher::plusMinus = nullptr;
 
-int ImplicitGrapher::constants[maxNumOfEquations][maxEquationLength] = {};
+int ImplicitGrapher::constants[maxEquationLength] = {};
 
-int ImplicitGrapher::valuesCounter[maxNumOfEquations] = {};
+int ImplicitGrapher::valuesCounter = 0;
 
-int ImplicitGrapher::hasTimeVariable[maxNumOfEquations] = {};
+int ImplicitGrapher::hasTimeVariable = 0;
 
 string ImplicitGrapher::debug_string = "";
 
-float ImplicitGrapher::equationValues[maxNumOfEquations][maxEquationLength] = {};
+float ImplicitGrapher::equationValues[maxEquationLength] = {};
 
 float ImplicitGrapher::values[maxEquationLength] = {};
 
-ivec3 ImplicitGrapher::sequences[maxNumOfEquations][maxEquationLength] = {};
+ivec3 ImplicitGrapher::sequences[maxEquationLength] = {};
 
-int ImplicitGrapher::sequenceLengths[maxNumOfEquations] = {};
+int ImplicitGrapher::sequenceLength = 0;
 
 vec3 ImplicitGrapher::defaultOffset = vec3(0.0f);
 
 vec3 ImplicitGrapher::offset = vec3(0.0f);
-
-uint ImplicitGrapher::iterations = 0;
 
 vec3 ImplicitGrapher::currentOffset = vec3(0.0f);
 
@@ -62,19 +60,11 @@ bool* ImplicitGrapher::withinGraphRadius = nullptr;
 
 int ImplicitGrapher::maxSolutionCount = 0;
 
-GLuint ImplicitGrapher::computeShaderProgram = 0;
-
-GLuint ImplicitGrapher::computeShaderVBO = 0;
-
-GLuint ImplicitGrapher::indexBufferBinding = 0;
-
 float ImplicitGrapher::zoom = 0.0f;
 
 bool ImplicitGrapher::vectorPointsPositive = false;
 
-bool ImplicitGrapher::clipEdges = false;
-
-ImplicitGrapher::GPUdata* ImplicitGrapher::data = nullptr;
+//ImplicitGrapher::GPUdata* ImplicitGrapher::data = nullptr;
 
 const string ImplicitGrapher::functions[numOfFunctions] = {
         "sin(__",
@@ -101,6 +91,9 @@ ImplicitGrapher::ImplicitGrapher() {
 }
 
 ImplicitGrapher::ImplicitGrapher(const ivec3& size) {
+    //computeShaderProgram = 0;
+    //computeShaderVBO = 0;
+    //indexBufferBinding = 0;
     refactor(size);
     plusMinus = (bool*)malloc(sizePlus3.x * sizePlus3.y * sizePlus3.z * sizeof(bool));
     xyzLineIndex = (ivec3*)malloc(sizePlus3.x * sizePlus3.y * sizePlus3.z * sizeof(ivec3));
@@ -111,7 +104,7 @@ ImplicitGrapher::ImplicitGrapher(const ivec3& size) {
 
     //computeShaderProgram = View::createComputeShaderProgram(View::stringArrayToString((string*)computeShaderCode, 1000).c_str());
     glGenBuffers(1, &computeShaderVBO);
-    data = (GPUdata*)malloc(sizeof(GPUdata));
+    //data = (GPUdata*)malloc(sizeof(GPUdata));
 }
 
 ImplicitGrapher::~ImplicitGrapher(){
@@ -521,27 +514,27 @@ string ImplicitGrapher::charToString(const char* const characters, const int& le
     return string;
 }
 
-void ImplicitGrapher::processEquation(const int& i) {
+void ImplicitGrapher::processEquation() {
     bool debugEquation = false;
     for (int j = 0; j < maxEquationLength; j++) {
-        constants[i][j] = 0;
+        constants[j] = 0;
     }
 
     char equation[2 * maxEquationLength];
-    int length = memoryEquations[i][EQUATION].length();
+    int length = memoryEquation.length();
 
     // Convert string to string array
     for (int j = 0; j < length; j++) {
-        equation[j] = memoryEquations[i][EQUATION].at(j);
+        equation[j] = memoryEquation.at(j);
     }
     // Remove spaces and fill remainder with underscores
-    if (i == numOfEquationsInMemory - 1 && debugEquation) {
+    if (debugEquation) {
         debug_string = "Remove spaces and fill remainder with underscores:";
     }
-    valuesCounter[i] = 0;
-    for (int j = 0; j < length; valuesCounter[i]++) {
-        if (equation[valuesCounter[i]] != ' ') {
-            equation[j] = equation[valuesCounter[i]];
+    valuesCounter = 0;
+    for (int j = 0; j < length; valuesCounter++) {
+        if (equation[valuesCounter] != ' ') {
+            equation[j] = equation[valuesCounter];
             j++;
         }
         else {
@@ -554,37 +547,37 @@ void ImplicitGrapher::processEquation(const int& i) {
         equation[j] = '_';
     }
 
-    if (i == numOfEquationsInMemory - 1 && debugEquation) {
+    if (debugEquation) {
         debug_string += charToString(equation, length);
     }
 
     // Isolate and convert '=' to '-'
-    if (i == numOfEquationsInMemory - 1 && debugEquation) {
+    if (debugEquation) {
         debug_string += "Isolate and convert '=' to '-':";
     }
     equation[length + 3] = ')';
-    valuesCounter[i] = length - 1;
-    while (equation[valuesCounter[i]] != '=') {
-        equation[valuesCounter[i] + 3] = equation[valuesCounter[i]];
-        valuesCounter[i]--;
+    valuesCounter = length - 1;
+    while (equation[valuesCounter] != '=') {
+        equation[valuesCounter + 3] = equation[valuesCounter];
+        valuesCounter--;
     }
-    equation[valuesCounter[i] + 3] = '(';
-    equation[valuesCounter[i] + 2] = '-';
-    equation[valuesCounter[i] + 1] = ')';
-    valuesCounter[i]--;
-    while (valuesCounter[i] > -1) {
-        equation[valuesCounter[i] + 1] = equation[valuesCounter[i]];
-        valuesCounter[i]--;
+    equation[valuesCounter + 3] = '(';
+    equation[valuesCounter + 2] = '-';
+    equation[valuesCounter + 1] = ')';
+    valuesCounter--;
+    while (valuesCounter > -1) {
+        equation[valuesCounter + 1] = equation[valuesCounter];
+        valuesCounter--;
     }
     equation[0] = '(';
     length += 4;
 
-    if (i == numOfEquationsInMemory - 1 && debugEquation) {
+    if (debugEquation) {
         debug_string += charToString(equation, length);
     }
 
     // Add parentheses to ends
-    if (i == numOfEquationsInMemory - 1 && debugEquation) {
+    if (debugEquation) {
         debug_string += "Add parentheses to ends:";
     }
     // Insert close parenthesis
@@ -597,12 +590,12 @@ void ImplicitGrapher::processEquation(const int& i) {
     // Insert open parenthesis
     equation[0] = '(';
 
-    if (i == numOfEquationsInMemory - 1 && debugEquation) {
+    if (debugEquation) {
         debug_string += charToString(equation, length);
     }
 
     // Add parentheses to functions
-    if (i == numOfEquationsInMemory - 1 && debugEquation) {
+    if (debugEquation) {
         debug_string += "Add parentheses to functions:";
     }
     for (int j = 0; j < length - 1; j++) {//index equation
@@ -641,12 +634,12 @@ void ImplicitGrapher::processEquation(const int& i) {
         }
     }
 
-    if (i == numOfEquationsInMemory - 1 && debugEquation) {
+    if (debugEquation) {
         debug_string += charToString(equation, length);
     }
 
     // Add multiplication signs to close terms
-    if (i == numOfEquationsInMemory - 1 && debugEquation) {
+    if (debugEquation) {
         debug_string += "Add multiplication signs to close terms:";
     }
     for (int j = 0; j < length; j++) {
@@ -683,12 +676,12 @@ void ImplicitGrapher::processEquation(const int& i) {
         }
     }
 
-    if (i == numOfEquationsInMemory - 1 && debugEquation) {
+    if (debugEquation) {
         debug_string += charToString(equation, length);
     }
 
     // Convert (-x to (0-x or (-1 to (0-1
-    if (i == numOfEquationsInMemory - 1 && debugEquation) {
+    if (debugEquation) {
         debug_string += "Convert (-x to ((0-x) or (-1 to ((0-1):";
     }
     for (int j = 0; j < length; j++) {
@@ -703,12 +696,12 @@ void ImplicitGrapher::processEquation(const int& i) {
         }
     }
 
-    if (i == numOfEquationsInMemory - 1 && debugEquation) {
+    if (debugEquation) {
         debug_string += charToString(equation, length);
     }
 
     // Add parentheses to symbol functions
-    if (i == numOfEquationsInMemory - 1 && debugEquation) {
+    if (debugEquation) {
         debug_string += "Add parentheses to symbol functions:";
     }
     for (int sweep = 1; sweep < 4; sweep++) {
@@ -792,44 +785,44 @@ void ImplicitGrapher::processEquation(const int& i) {
         }
     }
 
-    if (i == numOfEquationsInMemory - 1 && debugEquation) {
+    if (debugEquation) {
         debug_string += charToString(equation, length) + ", ";
     }
 
     // Convert to coded equation
-    if (i == numOfEquationsInMemory - 1 && debugEquation) {
+    if (debugEquation) {
         debug_string += "Convert to coded equation:";
     }
     int codedEquation[2 * maxEquationLength];
     int codedEquationCounter = 0;
-    valuesCounter[i] = 0;
-    hasTimeVariable[i] = false;
+    valuesCounter = 0;
+    hasTimeVariable = false;
     for (int j = 0; j < length; j++, codedEquationCounter++) {
         if (equation[j] != '.' && !aDigit(equation[j])) {
             if (equation[j] == 'x') {
-                codedEquation[codedEquationCounter] = constants[i][valuesCounter[i]] = X;
-                valuesCounter[i]++;
+                codedEquation[codedEquationCounter] = constants[valuesCounter] = X;
+                valuesCounter++;
             }
             else if (equation[j] == 'y') {
-                codedEquation[codedEquationCounter] = constants[i][valuesCounter[i]] = Y;
-                valuesCounter[i]++;
+                codedEquation[codedEquationCounter] = constants[valuesCounter] = Y;
+                valuesCounter++;
             }
             else if (equation[j] == 'z') {
-                codedEquation[codedEquationCounter] = constants[i][valuesCounter[i]] = Z;
-                valuesCounter[i]++;
+                codedEquation[codedEquationCounter] = constants[valuesCounter] = Z;
+                valuesCounter++;
             }
             else if (equation[j] == 't' && equation[j + 1] != 'a') {
-                codedEquation[codedEquationCounter] = constants[i][valuesCounter[i]] = T;
-                valuesCounter[i]++;
-                hasTimeVariable[i] = true;
+                codedEquation[codedEquationCounter] = constants[valuesCounter] = T;
+                valuesCounter++;
+                hasTimeVariable = true;
             }
             else if (equation[j] == 'e') {
-                codedEquation[codedEquationCounter] = constants[i][valuesCounter[i]] = E;
-                valuesCounter[i]++;
+                codedEquation[codedEquationCounter] = constants[valuesCounter] = E;
+                valuesCounter++;
             }
             else if (equation[j] == pi) {
-                codedEquation[codedEquationCounter] = constants[i][valuesCounter[i]] = PI;
-                valuesCounter[i]++;
+                codedEquation[codedEquationCounter] = constants[valuesCounter] = PI;
+                valuesCounter++;
             }
             else if (equation[j] == '(') {
                 codedEquation[codedEquationCounter] = OPEN_PARENTHESIS;
@@ -952,14 +945,14 @@ void ImplicitGrapher::processEquation(const int& i) {
                     number += (equation[k] - 48) * pow(10, power);
                 }
             }
-            codedEquation[codedEquationCounter] = valuesCounter[i];
-            equationValues[i][valuesCounter[i]] = values[valuesCounter[i]] = number;
-            valuesCounter[i]++;
+            codedEquation[codedEquationCounter] = valuesCounter;
+            equationValues[valuesCounter] = values[valuesCounter] = number;
+            valuesCounter++;
             j += numberSize - 1;
         }
     }
     // Display equation
-    if (i == numOfEquationsInMemory - 1 && debugEquation) {
+    if (debugEquation) {
         debug_string += decode(codedEquation, codedEquationCounter, values);
     }
 
@@ -984,7 +977,7 @@ void ImplicitGrapher::processEquation(const int& i) {
     }
 
     bool end = false;
-    for (sequenceLengths[i] = 0; !end; ) {
+    for (sequenceLength = 0; !end; ) {
         for (int j = 0, openParenthesis = 0; j < codedEquationCounter; j++) {
             if (j > codedEquationCounter - 2) {
                 end = true;
@@ -1006,23 +999,23 @@ void ImplicitGrapher::processEquation(const int& i) {
                             }
                             break;
                         case 3: {// "(fa)"
-                            sequences[i][sequenceLengths[i]][0] = codedEquation[j - 2];//function
-                            sequences[i][sequenceLengths[i]][1] = codedEquation[j - 1];//where first value is and where result will be stored
+                            sequences[sequenceLength][0] = codedEquation[j - 2];//function
+                            sequences[sequenceLength][1] = codedEquation[j - 1];//where first value is and where result will be stored
                             codedEquation[j - 3] = codedEquation[j - 1];
                             for (int k = j - 2; k < codedEquationCounter; k++) {
                                 codedEquation[k] = codedEquation[k + 3];
                             }
-                            sequenceLengths[i]++; }
+                            sequenceLength++; }
                             break;
                         case 4: {// "(a+b)" "(a-b)" "(a*b)" "(a/b)" "(a^b)"
-                            sequences[i][sequenceLengths[i]][0] = codedEquation[j - 2];//function
-                            sequences[i][sequenceLengths[i]][1] = codedEquation[j - 3];//where first value is and where result will be stored
-                            sequences[i][sequenceLengths[i]][2] = codedEquation[j - 1];//where second value is
+                            sequences[sequenceLength][0] = codedEquation[j - 2];//function
+                            sequences[sequenceLength][1] = codedEquation[j - 3];//where first value is and where result will be stored
+                            sequences[sequenceLength][2] = codedEquation[j - 1];//where second value is
                             codedEquation[j - 4] = codedEquation[j - 3];
                             for (int k = j - 3; k < codedEquationCounter; k++) {
                                 codedEquation[k] = codedEquation[k + 4];
                             }
-                            sequenceLengths[i]++; }
+                            sequenceLength++; }
                             break;
                     }
 
@@ -1085,9 +1078,9 @@ inline int ImplicitGrapher::node3(const int& i, const int& j, const int& k, cons
 float ImplicitGrapher::fOfXYZ(vec3 position) {
     position -= currentOffset;
     position *= zoom;
-    for (int i = 0; i < valuesCounter[surfaceEquation]; i++) {
-        switch (constants[surfaceEquation][i]) {
-            case 0: values[i] = equationValues[surfaceEquation][i]; break;
+    for (int i = 0; i < valuesCounter; i++) {
+        switch (constants[i]) {
+            case 0: values[i] = equationValues[i]; break;
             case X: values[i] = position.x; break;
             case Y: values[i] = position.y; break;
             case Z: values[i] = position.z; break;
@@ -1098,8 +1091,8 @@ float ImplicitGrapher::fOfXYZ(vec3 position) {
     }
     int e = surfaceEquation;
     float* v = values;
-    for (int i = 0; i < sequenceLengths[e]; i++) {
-        int* s = sequences[e][i].v;
+    for (int i = 0; i < sequenceLength; i++) {
+        int* s = sequences[i].v;
         switch (s[0]) {
             case ADD: v[s[1]] += v[s[2]]; break;
             case SUBTRACT: v[s[1]] -= v[s[2]]; break;
@@ -1130,10 +1123,8 @@ float ImplicitGrapher::fOfXYZ(vec3 position) {
 
 void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(vec3), const float& timeVariable, const uint& iterations, const vec3& offset, const float& zoom, const bool& vectorPointsPositive, const bool& clipEdges, PositionXYZNormalXYZ* _vertices, uvec3* _indices, GLuint& _numIndices) {
     ImplicitGrapher::zoom = zoom;
-    ImplicitGrapher::iterations = iterations;
     ImplicitGrapher::vectorPointsPositive = vectorPointsPositive;
     ImplicitGrapher::t = timeVariable;
-    ImplicitGrapher::clipEdges = clipEdges;
     ImplicitGrapher::offset = offset;
     t = timeVariable;
     currentOffset = defaultOffset + offset;
@@ -1425,10 +1416,8 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(vec3, NaiveSimulatio
                                             PositionXYZNormalXYZ *_vertices, uvec3 *_indices,
                                             GLuint &_numIndices, NaiveSimulation& sim) {
     ImplicitGrapher::zoom = zoom;
-    ImplicitGrapher::iterations = iterations;
     ImplicitGrapher::vectorPointsPositive = vectorPointsPositive;
     ImplicitGrapher::t = timeVariable;
-    ImplicitGrapher::clipEdges = clipEdges;
     ImplicitGrapher::offset = offset;
     t = timeVariable;
     currentOffset = defaultOffset + offset;

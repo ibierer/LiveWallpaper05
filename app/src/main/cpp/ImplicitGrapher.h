@@ -12,17 +12,15 @@
 class ImplicitGrapher {
 private:
 
-    static const int maxNumOfEquations = 1024;
-
     static const int maxEquationLength = 4096;
 
 public:
 
-    static GLuint computeShaderProgram;
+    GLuint computeShaderProgram;
 
-    static GLuint computeShaderVBO;
+    GLuint computeShaderVBO;
 
-    static GLuint indexBufferBinding;
+    GLuint indexBufferBinding;
 
     struct chunk {
         bool plusMinus[32];
@@ -42,7 +40,7 @@ public:
         int valuesCounter;
     };
 
-    static GPUdata* data;
+    //static GPUdata* data;
 
     const string computeShaderCode[1000] = {
             View::ES_VERSION,
@@ -516,9 +514,9 @@ public:
             "    }\n",*/
             "}"};
 
-    static string memoryEquations[maxNumOfEquations][2];
+    static string memoryEquation;
 
-    static void processEquation(const int& i);
+    static void processEquation();
 
     static int numOfEquationsInMemory;
 
@@ -566,25 +564,21 @@ public:
 
     static vec3 offset;
 
-    static uint iterations;
-
     static bool vectorPointsPositive;
 
-    static bool clipEdges;
+    static int valuesCounter;
 
-    static int valuesCounter[maxNumOfEquations];
+    static int hasTimeVariable;
 
-    static int hasTimeVariable[maxNumOfEquations];
+    static int sequenceLength;
 
-    static int sequenceLengths[maxNumOfEquations];
-
-    static int constants[maxNumOfEquations][maxEquationLength];
+    static int constants[maxEquationLength];
 
     static float values[maxEquationLength];
 
-    static float equationValues[maxNumOfEquations][maxEquationLength];
+    static float equationValues[maxEquationLength];
 
-    static ivec3 sequences[maxNumOfEquations][maxEquationLength];
+    static ivec3 sequences[maxEquationLength];
 
     static const int numOfDefaultEquations = 41;
 
@@ -717,10 +711,6 @@ private:
     static bool aCharacter(const char& character);
 
     static string charToString(const char* const characters, const int& length);
-
-    static void writeDefaultEquationsToMemory();
-
-    static void writeUserEquationsToMemory();
 
     static bool getPlusMinus(const int& i, const int& j, const int& k);
 

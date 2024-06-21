@@ -34,8 +34,8 @@ Graph2View::Graph2View(const string &equation, const int &graphSize, const bool 
     implicitGrapher.vectorPointsPositive = vectorPointsPositive;
     if(equation != "") {
         ImplicitGrapher::surfaceEquation = 0;
-        ImplicitGrapher::memoryEquations[ImplicitGrapher::surfaceEquation][1] = equation;
-        ImplicitGrapher::processEquation(ImplicitGrapher::surfaceEquation);
+        ImplicitGrapher::memoryEquation = equation;
+        ImplicitGrapher::processEquation();
         ImplicitGrapher::numOfEquationsInMemory++;
     }
 }
@@ -86,7 +86,7 @@ void Graph2View::render(){
     translation = translation.Translation(Vec3<float>(0.0f, 0.0f, -distanceToCenter));
     normalMatrix = referenceFrameRotates ? rotation.GetSubMatrix3().GetInverse() : normalMatrix.Identity();
 
-    if(getFrameCount() == 0 || ImplicitGrapher::hasTimeVariable[ImplicitGrapher::surfaceEquation] || vectorPointsPositive != ImplicitGrapher::vectorPointsPositive){
+    if(getFrameCount() == 0 || ImplicitGrapher::hasTimeVariable || vectorPointsPositive != ImplicitGrapher::vectorPointsPositive){
         ImplicitGrapher::calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, implicitGrapher.vectorPointsPositive, false, ImplicitGrapher::vertices, ImplicitGrapher::indices, ImplicitGrapher::numIndices);
         vectorPointsPositive = ImplicitGrapher::vectorPointsPositive;
     }
