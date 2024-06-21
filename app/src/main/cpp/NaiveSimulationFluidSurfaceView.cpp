@@ -130,6 +130,8 @@ void NaiveSimulationFluidSurfaceView::render(){
     rotation = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
     inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();
 
+    glEnable(GL_DEPTH_TEST);
+
     float distanceToCenter = 100.0f * distanceToOrigin;
 
     if(fluidSurface) {
@@ -189,7 +191,7 @@ void NaiveSimulationFluidSurfaceView::render(){
             camPosition = (inverseView * Vec4<float>(0.0f, 0.0f, 0.0f, 1.0f)).XYZ();
             cameraPosition = vec3(camPosition.x, camPosition.y, camPosition.z);
 
-            auto compareUvec3 = [&cameraPosition, this](const uvec3 &a, const uvec3 &b) {
+            std::function<bool(const uvec3&, const uvec3&)> compareUvec3 = [&cameraPosition, this](const uvec3 &a, const uvec3 &b) {
                 vec3 positionA = (1.0f / 3.0f) * (vertices[a.v[0]].p + vertices[a.v[1]].p + vertices[a.v[2]].p);
                 vec3 positionB = (1.0f / 3.0f) * (vertices[b.v[0]].p + vertices[b.v[1]].p + vertices[b.v[2]].p);
                 vec3 differenceA = positionA - cameraPosition;
@@ -218,7 +220,6 @@ void NaiveSimulationFluidSurfaceView::render(){
 
                     // Render graph
                     glDepthFunc(GL_LEQUAL);
-                    glEnable(GL_DEPTH_TEST);
                     glEnable(GL_CULL_FACE);
                     glCullFace(GL_FRONT);
                     glUseProgram(graphNormalMapProgram);
@@ -490,7 +491,6 @@ void NaiveSimulationFluidSurfaceView::render(){
                 mvp = projection * view * model;
 
                 // Render graph
-                glEnable(GL_DEPTH_TEST);
                 glEnable(GL_CULL_FACE);
                 glCullFace(GL_FRONT);
                 glUseProgram(graphNormalMapProgram);
@@ -512,8 +512,6 @@ void NaiveSimulationFluidSurfaceView::render(){
             glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             {
-                glEnable(GL_DEPTH_TEST);
-                glDisable(GL_CULL_FACE);
                 glUseProgram(mProgram);
                 glActiveTexture(GL_TEXTURE0);
                 glBindTexture(GL_TEXTURE_2D, fbo.getRenderedTextureId());
@@ -552,7 +550,6 @@ void NaiveSimulationFluidSurfaceView::render(){
                 glDisableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
                 glDisableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
 
-                glEnable(GL_DEPTH_TEST);
                 glDisable(GL_CULL_FACE);
 
                 if(!backgroundIsSolidColor) {
@@ -567,7 +564,6 @@ void NaiveSimulationFluidSurfaceView::render(){
             }
         }
     } else {
-        glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
         glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
