@@ -525,21 +525,21 @@ public:
 
     static float fOfXYZ(vec3 position);
 
-    static void calculateSurfaceOnCPU(float (*fOfXYZ)(vec3),
-                                      const float &timeVariable, const uint &iterations,
-                                      const vec3 &offset,
-                                      const float &zoom, const bool &vectorPointsPositive,
-                                      const bool &clipEdges, PositionXYZNormalXYZ *_vertices,
-                                      uvec3 *_indices,
-                                      GLuint &_numIndices);
+    void calculateSurfaceOnCPU(float (*fOfXYZ)(vec3),
+                               const float &timeVariable, const uint &iterations,
+                               const vec3 &offset,
+                               const float &zoom, const bool &vectorPointsPositive,
+                               const bool &clipEdges, PositionXYZNormalXYZ *_vertices,
+                               uvec3 *_indices,
+                               GLuint &_numIndices);
 
-    static void calculateSurfaceOnCPU(float (*fOfXYZ)(vec3, NaiveSimulation& sim),
-                                      const float &timeVariable, const uint &iterations,
-                                      const vec3 &offset,
-                                      const float &zoom, const bool &vectorPointsPositive,
-                                      const bool &clipEdges, PositionXYZNormalXYZ *_vertices,
-                                      uvec3 *_indices,
-                                      GLuint &_numIndices, NaiveSimulation& sim);
+    void calculateSurfaceOnCPU(float (*fOfXYZ)(vec3, NaiveSimulation& sim),
+                               const float &timeVariable, const uint &iterations,
+                               const vec3 &offset,
+                               const float &zoom, const bool &vectorPointsPositive,
+                               const bool &clipEdges, PositionXYZNormalXYZ *_vertices,
+                               uvec3 *_indices,
+                               GLuint &_numIndices, NaiveSimulation& sim);
 
     ImplicitGrapher();
 

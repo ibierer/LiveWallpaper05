@@ -85,7 +85,7 @@ void Graph2View::render(){
     normalMatrix = referenceFrameRotates ? rotation.GetSubMatrix3().GetInverse() : normalMatrix.Identity();
 
     if(getFrameCount() == 0 || ImplicitGrapher::hasTimeVariable || vectorPointsPositive != ImplicitGrapher::vectorPointsPositive){
-        ImplicitGrapher::calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, implicitGrapher.vectorPointsPositive, false, vertices, indices, numIndices);
+        implicitGrapher.calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, implicitGrapher.vectorPointsPositive, false, vertices, indices, numIndices);
         vectorPointsPositive = ImplicitGrapher::vectorPointsPositive;
     }
 
