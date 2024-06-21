@@ -182,25 +182,23 @@ void NaiveSimulationFluidSurfaceView::render(){
             GLenum draw_buffer[1] = {GL_BACK};
             static Matrix4<float> inverseView;
             static Vec3<float> camPosition;
-            static vec3 cameraPosition;
+            vec3 cameraPosition;
             model = model.Translation(Vec3<float>(ImplicitGrapher::defaultOffset.x, ImplicitGrapher::defaultOffset.y, ImplicitGrapher::defaultOffset.z));
             view = referenceFrameRotates ? translation : translation * rotation;
             inverseView = (view * model).GetInverse();
             camPosition = (inverseView * Vec4<float>(0.0f, 0.0f, 0.0f, 1.0f)).XYZ();
             cameraPosition = vec3(camPosition.x, camPosition.y, camPosition.z);
 
-            struct sortingUtility {
-                static bool compareUvec3(const uvec3 &a, const uvec3 &b) {
-                    vec3 positionA = (1.0f / 3.0f) * (ImplicitGrapher::vertices[a.v[0]].p + ImplicitGrapher::vertices[a.v[1]].p + ImplicitGrapher::vertices[a.v[2]].p);
-                    vec3 positionB = (1.0f / 3.0f) * (ImplicitGrapher::vertices[b.v[0]].p + ImplicitGrapher::vertices[b.v[1]].p + ImplicitGrapher::vertices[b.v[2]].p);
-                    vec3 differenceA = positionA - cameraPosition;
-                    vec3 differenceB = positionB - cameraPosition;
-                    float squaredDistanceA = dot(differenceA, differenceA);
-                    float squaredDistanceB = dot(differenceB, differenceB);
-                    return squaredDistanceA > squaredDistanceB;
-                }
+            auto compareUvec3 = [&cameraPosition](const uvec3 &a, const uvec3 &b) {
+                vec3 positionA = (1.0f / 3.0f) * (ImplicitGrapher::vertices[a.v[0]].p + ImplicitGrapher::vertices[a.v[1]].p + ImplicitGrapher::vertices[a.v[2]].p);
+                vec3 positionB = (1.0f / 3.0f) * (ImplicitGrapher::vertices[b.v[0]].p + ImplicitGrapher::vertices[b.v[1]].p + ImplicitGrapher::vertices[b.v[2]].p);
+                vec3 differenceA = positionA - cameraPosition;
+                vec3 differenceB = positionB - cameraPosition;
+                float squaredDistanceA = dot(differenceA, differenceA);
+                float squaredDistanceB = dot(differenceB, differenceB);
+                return squaredDistanceA > squaredDistanceB;
             };
-            std::sort(ImplicitGrapher::indices, ImplicitGrapher::indices + ImplicitGrapher::numIndices / 3, sortingUtility::compareUvec3);
+            std::sort(ImplicitGrapher::indices, ImplicitGrapher::indices + ImplicitGrapher::numIndices / 3, compareUvec3);
 
             // Render to texture
             glBindFramebuffer(GL_FRAMEBUFFER, fbo.getFrameBuffer());
