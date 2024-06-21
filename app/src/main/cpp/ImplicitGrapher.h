@@ -514,13 +514,9 @@ public:
             "    }\n",*/
             "}"};
 
-    static string memoryEquation;
+    string memoryEquation;
 
-    static void processEquation();
-
-    static int numOfEquationsInMemory;
-
-    static int surfaceEquation;
+    void processEquation();
 
     explicit ImplicitGrapher(const ivec3& size);
 

@@ -4,17 +4,11 @@
 
 #include "ImplicitGrapher.h"
 
-int ImplicitGrapher::surfaceEquation = 0;
-
-int ImplicitGrapher::numOfEquationsInMemory = 0;
-
 PositionXYZNormalXYZ* ImplicitGrapher::vertices = nullptr;
 
 uvec3* ImplicitGrapher::indices = nullptr;
 
 uint ImplicitGrapher::numIndices = 0;
-
-string ImplicitGrapher::memoryEquation = "";
 
 double ImplicitGrapher::t = 0.0;
 
@@ -94,6 +88,8 @@ ImplicitGrapher::ImplicitGrapher(const ivec3& size) {
     //computeShaderProgram = 0;
     //computeShaderVBO = 0;
     //indexBufferBinding = 0;
+    memoryEquation = "";
+
     refactor(size);
     plusMinus = (bool*)malloc(sizePlus3.x * sizePlus3.y * sizePlus3.z * sizeof(bool));
     xyzLineIndex = (ivec3*)malloc(sizePlus3.x * sizePlus3.y * sizePlus3.z * sizeof(ivec3));
@@ -1089,7 +1085,6 @@ float ImplicitGrapher::fOfXYZ(vec3 position) {
             case PI: values[i] = M_PI; break;
         }
     }
-    int e = surfaceEquation;
     float* v = values;
     for (int i = 0; i < sequenceLength; i++) {
         int* s = sequences[i].v;

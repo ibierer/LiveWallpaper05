@@ -25,10 +25,8 @@ GraphView::GraphView(const string& equation) : View() {
         //    ImplicitGrapher::numOfEquationsInMemory++;
         //}
     }else{
-        ImplicitGrapher::surfaceEquation = 0;
-        ImplicitGrapher::memoryEquation = equation;
-        ImplicitGrapher::processEquation();
-        ImplicitGrapher::numOfEquationsInMemory++;
+        implicitGrapher.memoryEquation = equation;
+        implicitGrapher.processEquation();
     }
 
     simulation.initialize(Computation::ComputationOptions::CPU);

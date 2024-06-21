@@ -33,10 +33,8 @@ Graph2View::Graph2View(const string &equation, const int &graphSize, const bool 
     implicitGrapher = ImplicitGrapher(ivec3(graphSize));
     implicitGrapher.vectorPointsPositive = vectorPointsPositive;
     if(equation != "") {
-        ImplicitGrapher::surfaceEquation = 0;
-        ImplicitGrapher::memoryEquation = equation;
-        ImplicitGrapher::processEquation();
-        ImplicitGrapher::numOfEquationsInMemory++;
+        implicitGrapher.memoryEquation = equation;
+        implicitGrapher.processEquation();
     }
 }
 
