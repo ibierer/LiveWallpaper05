@@ -10,15 +10,7 @@ using std::max;
 bool sphereClipsGraph;
 float fOfXYZFluidSurface(vec3 _, NaiveSimulation& sim) {
     _ -= ImplicitGrapher::offset;
-    //return 1.0f - dot(_, _);
-    //return 48.0f - dot(_, _);
-    //return 52.0f - dot(_.xy, _.xy);
 
-    /*if (
-            abs(_.x) > (ImplicitGrapher::offset.x - 0.01f) ||
-            abs(_.y) > (ImplicitGrapher::offset.y - 0.01f) ||
-            abs(_.z) > (ImplicitGrapher::offset.z - 0.01f)
-    ) {*/
     if (sphereClipsGraph) {
         if (dot(_, _) > (ImplicitGrapher::offset.x - 0.01f) * (ImplicitGrapher::offset.x - 0.01f)) {
             return -1.0f;

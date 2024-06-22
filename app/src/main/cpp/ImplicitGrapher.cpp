@@ -1289,27 +1289,32 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(vec3), const float& 
                             if (l % 2 != vectorPointsPositive)
                                 groupSegments[groupSegmentCounter++] = ivec3(node0(i, j, k, l), node3(i, j, k, l), -1);
                             else
-                                groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node0(i, j, k, l), -1); break;
+                                groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node0(i, j, k, l), -1);
+                            break;
                         case 11://1011
                             if (l % 2 != vectorPointsPositive)
                                 groupSegments[groupSegmentCounter++] = ivec3(node0(i, j, k, l), node2(i, j, k, l), -1);
                             else
-                                groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node0(i, j, k, l), -1); break;
+                                groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node0(i, j, k, l), -1);
+                            break;
                         case 12://1100
                             if (l % 2 != vectorPointsPositive)
                                 groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node1(i, j, k, l), -1);
                             else
-                                groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node2(i, j, k, l), -1); break;
+                                groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node2(i, j, k, l), -1);
+                            break;
                         case 13://1101
                             if (l % 2 != vectorPointsPositive)
                                 groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node1(i, j, k, l), -1);
                             else
-                                groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node3(i, j, k, l), -1); break;
+                                groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node3(i, j, k, l), -1);
+                            break;
                         case 14://1110
                             if (l % 2 != vectorPointsPositive)
                                 groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node3(i, j, k, l), -1);
                             else
-                                groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node2(i, j, k, l), -1); break;
+                                groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node2(i, j, k, l), -1);
+                            break;
                         case 15:
                             break;//1111
                     }
@@ -1505,7 +1510,8 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(vec3, NaiveSimulatio
                             if (l % 2 != vectorPointsPositive)
                                 groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node2(i, j, k, l), -1);
                             else
-                                groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node1(i, j, k, l), -1); break;
+                                groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node1(i, j, k, l), -1);
+                            break;
                         case 4://0100
                             if (l % 2 != vectorPointsPositive)
                                 groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node0(i, j, k, l), -1);
@@ -1582,27 +1588,32 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(vec3, NaiveSimulatio
                             if (l % 2 != vectorPointsPositive)
                                 groupSegments[groupSegmentCounter++] = ivec3(node0(i, j, k, l), node3(i, j, k, l), -1);
                             else
-                                groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node0(i, j, k, l), -1); break;
+                                groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node0(i, j, k, l), -1);
+                            break;
                         case 11://1011
                             if (l % 2 != vectorPointsPositive)
                                 groupSegments[groupSegmentCounter++] = ivec3(node0(i, j, k, l), node2(i, j, k, l), -1);
                             else
-                                groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node0(i, j, k, l), -1); break;
+                                groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node0(i, j, k, l), -1);
+                            break;
                         case 12://1100
                             if (l % 2 != vectorPointsPositive)
                                 groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node1(i, j, k, l), -1);
                             else
-                                groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node2(i, j, k, l), -1); break;
+                                groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node2(i, j, k, l), -1);
+                            break;
                         case 13://1101
                             if (l % 2 != vectorPointsPositive)
                                 groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node1(i, j, k, l), -1);
                             else
-                                groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node3(i, j, k, l), -1); break;
+                                groupSegments[groupSegmentCounter++] = ivec3(node1(i, j, k, l), node3(i, j, k, l), -1);
+                            break;
                         case 14://1110
                             if (l % 2 != vectorPointsPositive)
                                 groupSegments[groupSegmentCounter++] = ivec3(node2(i, j, k, l), node3(i, j, k, l), -1);
                             else
-                                groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node2(i, j, k, l), -1); break;
+                                groupSegments[groupSegmentCounter++] = ivec3(node3(i, j, k, l), node2(i, j, k, l), -1);
+                            break;
                         case 15:
                             break;//1111
                     }
