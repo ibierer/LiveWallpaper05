@@ -533,7 +533,7 @@ public:
                                uvec3 *_indices,
                                GLuint &_numIndices);
 
-    void calculateSurfaceOnCPU(float (*fOfXYZ)(vec3, NaiveSimulation& sim),
+    void calculateSurfaceOnCPU(float (*fOfXYZ)(vec3, NaiveSimulation&, const vec3&, const vec3&),
                                const float &timeVariable, const uint &iterations,
                                const vec3 &offset,
                                const float &zoom, const bool &vectorPointsPositive,
@@ -550,8 +550,6 @@ public:
     ImplicitGrapher& operator=(const ImplicitGrapher& other);
 
     static vec3 defaultOffset;
-
-    static vec3 offset;
 
     static bool vectorPointsPositive;
 

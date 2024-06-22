@@ -8,20 +8,20 @@ using std::min;
 using std::max;
 
 bool sphereClipsGraph;
-float fOfXYZFluidSurface(vec3 _, NaiveSimulation& sim) {
-    _ -= ImplicitGrapher::offset;
+float fOfXYZFluidSurface(vec3 _, NaiveSimulation& sim, const vec3& offset, const vec3& defaultOffset) {
+    _ -= offset;
 
     if (sphereClipsGraph) {
-        if (dot(_, _) > (ImplicitGrapher::offset.x - 0.01f) * (ImplicitGrapher::offset.x - 0.01f)) {
+        if (dot(_, _) > (offset.x - 0.01f) * (offset.x - 0.01f)) {
             return -1.0f;
         }
     } else {
-        if (dot(_, _) > (ImplicitGrapher::offset.x - 0.5f) * (ImplicitGrapher::offset.x - 0.5f)) {
+        if (dot(_, _) > (offset.x - 0.5f) * (offset.x - 0.5f)) {
             return -1.0f;
         }
     }
 
-    _ *= sim.sphereRadiusPlusPointFive / ImplicitGrapher::defaultOffset.x;
+    _ *= sim.sphereRadiusPlusPointFive / defaultOffset.x;
 
     float px = _.x + sim.sphereRadiusPlusPointFive;
     float py = _.y + sim.sphereRadiusPlusPointFive;
