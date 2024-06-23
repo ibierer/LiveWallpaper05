@@ -116,7 +116,7 @@ void NaiveSimulationFluidSurfaceView::render(){
         normalMatrix = referenceFrameRotates ? rotation.GetSubMatrix3().GetInverse() : normalMatrix.Identity();
         cameraTransformation = rotation.GetInverse() * translation * rotation * model.Translation(Vec3<float>(0.0f, 0.0f, 0.0f));
 
-        std::function<float(vec3 _, NaiveSimulation& sim, const vec3& offset, const vec3& defaultOffset, const bool& sphereClipsGraph)> fOfXYZFluidSurface = [](vec3 _, NaiveSimulation& sim, const vec3& offset, const vec3& defaultOffset, const bool& sphereClipsGraph) {
+        std::function<float(vec3 _, NaiveSimulation& sim, const vec3& offset, const vec3& defaultOffset)> fOfXYZFluidSurface = [this](vec3 _, NaiveSimulation& sim, const vec3& offset, const vec3& defaultOffset) {
             _ -= offset;
 
             if (sphereClipsGraph) {
@@ -167,7 +167,7 @@ void NaiveSimulationFluidSurfaceView::render(){
             return sum - 2.0f;
         };
 
-        implicitGrapher.calculateSurfaceOnCPU(fOfXYZFluidSurface, 0.1f * getFrameCount(), 10, implicitGrapher.defaultOffset, 3.0f / 7.0f, false, vertices, indices, numIndices, simulation, sphereClipsGraph);
+        implicitGrapher.calculateSurfaceOnCPU(fOfXYZFluidSurface, 0.1f * getFrameCount(), 10, implicitGrapher.defaultOffset, 3.0f / 7.0f, false, vertices, indices, numIndices, simulation);
 
         if (sphereClipsGraph) {
             float distanceToTangent = (pow(distanceToCenter, 2.0f) - pow(sphere.getRadius(), 2.0f)) / distanceToCenter;
