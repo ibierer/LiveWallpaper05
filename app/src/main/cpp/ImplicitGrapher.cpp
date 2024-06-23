@@ -1391,12 +1391,7 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(vec3), const float& 
     }
 }
 
-void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(vec3, NaiveSimulation&, const vec3&, const vec3&),
-                                            const float &timeVariable, const uint &iterations,
-                                            const vec3 &offset, const float &zoom,
-                                            const bool &clipEdges,
-                                            PositionXYZNormalXYZ *_vertices, uvec3 *_indices,
-                                            GLuint &_numIndices, NaiveSimulation& sim) {
+void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(vec3, NaiveSimulation&, const vec3&, const vec3&), const float &timeVariable, const uint &iterations, const vec3 &offset, const float &zoom, const bool &clipEdges, PositionXYZNormalXYZ *_vertices, uvec3 *_indices, GLuint &_numIndices, NaiveSimulation& sim) {
     ImplicitGrapher::zoom = zoom;
     ImplicitGrapher::vectorPointsPositive = vectorPointsPositive;
     ImplicitGrapher::t = timeVariable;

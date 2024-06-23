@@ -517,7 +517,7 @@ public:
 
     void processEquation();
 
-    explicit ImplicitGrapher(const ivec3& size, PositionXYZNormalXYZ*& vertices, uvec3*& indices);
+    explicit ImplicitGrapher(const ivec3& size, PositionXYZNormalXYZ*& vertices, uvec3*& indices, const bool& vectorPointsPositive);
 
     ~ImplicitGrapher();
 
@@ -525,21 +525,9 @@ public:
 
     static float fOfXYZ(vec3 position);
 
-    void calculateSurfaceOnCPU(float (*fOfXYZ)(vec3),
-                               const float &timeVariable, const uint &iterations,
-                               const vec3 &offset,
-                               const float &zoom, const bool &vectorPointsPositive,
-                               const bool &clipEdges, PositionXYZNormalXYZ *_vertices,
-                               uvec3 *_indices,
-                               GLuint &_numIndices);
+    void calculateSurfaceOnCPU(float (*fOfXYZ)(vec3), const float &timeVariable, const uint &iterations, const vec3 &offset, const float &zoom, const bool &clipEdges, PositionXYZNormalXYZ *_vertices, uvec3 *_indices, GLuint &_numIndices);
 
-    void calculateSurfaceOnCPU(float (*fOfXYZ)(vec3, NaiveSimulation&, const vec3&, const vec3&),
-                               const float &timeVariable, const uint &iterations,
-                               const vec3 &offset,
-                               const float &zoom, const bool &vectorPointsPositive,
-                               const bool &clipEdges, PositionXYZNormalXYZ *_vertices,
-                               uvec3 *_indices,
-                               GLuint &_numIndices, NaiveSimulation& sim);
+    void calculateSurfaceOnCPU(float (*fOfXYZ)(vec3, NaiveSimulation&, const vec3&, const vec3&), const float &timeVariable, const uint &iterations, const vec3 &offset, const float &zoom, const bool &clipEdges, PositionXYZNormalXYZ *_vertices, uvec3 *_indices, GLuint &_numIndices, NaiveSimulation& sim);
 
     ImplicitGrapher();
 
@@ -549,9 +537,7 @@ public:
     // Copy Constructor
     ImplicitGrapher& operator=(const ImplicitGrapher& other);
 
-    static vec3 defaultOffset;
-
-    static bool vectorPointsPositive;
+    vec3 defaultOffset;
 
     static int valuesCounter;
 
@@ -658,6 +644,8 @@ private:
     static ivec3* xyzLineIndex;
 
     static ivec3* groupSegments;
+
+    bool vectorPointsPositive;
 
     ivec3 size;
 
