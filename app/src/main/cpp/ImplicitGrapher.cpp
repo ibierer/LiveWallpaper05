@@ -1390,7 +1390,7 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(vec3), const float& 
     }
 }
 
-void ImplicitGrapher::calculateSurfaceOnCPU(std::function<float(vec3 _, NaiveSimulation& sim, const vec3& offset, const vec3& defaultOffset)> fOfXYZ, const float &timeVariable, const uint &iterations, const vec3 &offset, const float &zoom, const bool &clipEdges, PositionXYZNormalXYZ *_vertices, uvec3 *_indices, GLuint &_numIndices, NaiveSimulation& sim) {
+void ImplicitGrapher::calculateSurfaceOnCPU(std::function<float(vec3 _, const vec3& offset, const vec3& defaultOffset)> fOfXYZ, const float &timeVariable, const uint &iterations, const vec3 &offset, const float &zoom, const bool &clipEdges, PositionXYZNormalXYZ *_vertices, uvec3 *_indices, GLuint &_numIndices) {
     ImplicitGrapher::zoom = zoom;
     ImplicitGrapher::t = timeVariable;
     t = timeVariable;
@@ -1407,7 +1407,7 @@ void ImplicitGrapher::calculateSurfaceOnCPU(std::function<float(vec3 _, NaiveSim
     for (int i = 0; i < sizePlus3.x; i++) {
         for (int j = 0; j < sizePlus3.y; j++) {
             for (int k = 0; k < sizePlus3.z; k++) {
-                plusMinus[(i * sizePlus3.y + j) * sizePlus3.z + k] = fOfXYZ(vec3(i, j, k), sim, offset, defaultOffset) > 0.0f;
+                plusMinus[(i * sizePlus3.y + j) * sizePlus3.z + k] = fOfXYZ(vec3(i, j, k), offset, defaultOffset) > 0.0f;
                 uvec3 ijk = uvec3(i, j, k);
                 for (int l = 0; l < 3; l++) {
                     if (ijk[l] == 0u) {
@@ -1429,7 +1429,7 @@ void ImplicitGrapher::calculateSurfaceOnCPU(std::function<float(vec3 _, NaiveSim
                     float scan = 0.5f;
                     for (int m = 0; m < iterations; m++) {// Maybe use a do-while loop here to reduce the scan operations by 1.
                         _vertices[solutionCount].p[l] += scan;
-                        if ((sign == POSITIVE) != (fOfXYZ(_vertices[solutionCount].p, sim, offset, defaultOffset) > 0.0f)) {
+                        if ((sign == POSITIVE) != (fOfXYZ(_vertices[solutionCount].p, offset, defaultOffset) > 0.0f)) {
                             scan *= 0.5f;
                         }else{
                             sign *= -1;
@@ -1509,7 +1509,7 @@ void ImplicitGrapher::calculateSurfaceOnCPU(std::function<float(vec3 _, NaiveSim
                             int _node1 = node1(i, j, k, l);
                             int _node2 = node2(i, j, k, l);
                             int _node3 = node3(i, j, k, l);
-                            if (fOfXYZ((_vertices[_node0].p + _vertices[_node1].p + _vertices[_node2].p + _vertices[_node3].p) * 0.25f, sim, offset, defaultOffset) > 0.0f) {
+                            if (fOfXYZ((_vertices[_node0].p + _vertices[_node1].p + _vertices[_node2].p + _vertices[_node3].p) * 0.25f, offset, defaultOffset) > 0.0f) {
                                 if (l % 2 != vectorPointsPositive){
                                     groupSegments[groupSegmentCounter++] = ivec3(_node1, _node0, -1);
                                     groupSegments[groupSegmentCounter++] = ivec3(_node2, _node3, -1);
@@ -1545,7 +1545,7 @@ void ImplicitGrapher::calculateSurfaceOnCPU(std::function<float(vec3 _, NaiveSim
                             int _node1 = node1(i, j, k, l);
                             int _node2 = node2(i, j, k, l);
                             int _node3 = node3(i, j, k, l);
-                            if (fOfXYZ((_vertices[_node0].p + _vertices[_node1].p + _vertices[_node2].p + _vertices[_node3].p) * 0.25f, sim, offset, defaultOffset) > 0.0f) {
+                            if (fOfXYZ((_vertices[_node0].p + _vertices[_node1].p + _vertices[_node2].p + _vertices[_node3].p) * 0.25f, offset, defaultOffset) > 0.0f) {
                                 if (l % 2 != vectorPointsPositive) {
                                     groupSegments[groupSegmentCounter++] = ivec3(_node0, _node2, -1);
                                     groupSegments[groupSegmentCounter++] = ivec3(_node3, _node1, -1);

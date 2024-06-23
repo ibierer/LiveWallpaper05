@@ -116,8 +116,9 @@ void NaiveSimulationFluidSurfaceView::render(){
         normalMatrix = referenceFrameRotates ? rotation.GetSubMatrix3().GetInverse() : normalMatrix.Identity();
         cameraTransformation = rotation.GetInverse() * translation * rotation * model.Translation(Vec3<float>(0.0f, 0.0f, 0.0f));
 
-        vec3 offset = implicitGrapher.offset;
-        std::function<float(vec3 _)> fOfXYZFluidSurface = [this, offset](vec3 _) {
+        //vec3 offset = implicitGrapher.defaultOffset;
+        //vec3 defaultOffset = implicitGrapher.defaultOffset;
+        std::function<float(vec3 _, const vec3& offset, const vec3& defaultOffset)> fOfXYZFluidSurface = [this](vec3 _, const vec3& offset, const vec3& defaultOffset) {
             _ -= offset;
 
             if (sphereClipsGraph) {
@@ -168,7 +169,7 @@ void NaiveSimulationFluidSurfaceView::render(){
             return sum - 2.0f;
         };
 
-        implicitGrapher.calculateSurfaceOnCPU(fOfXYZFluidSurface, 0.1f * getFrameCount(), 10, implicitGrapher.offset, 3.0f / 7.0f, false, vertices, indices, numIndices);
+        implicitGrapher.calculateSurfaceOnCPU(fOfXYZFluidSurface, 0.1f * getFrameCount(), 10, implicitGrapher.defaultOffset, 3.0f / 7.0f, false, vertices, indices, numIndices);
 
         if (sphereClipsGraph) {
             float distanceToTangent = (pow(distanceToCenter, 2.0f) - pow(sphere.getRadius(), 2.0f)) / distanceToCenter;
@@ -177,7 +178,7 @@ void NaiveSimulationFluidSurfaceView::render(){
             static Matrix4<float> inverseView;
             static Vec3<float> camPosition;
             vec3 cameraPosition;
-            model = model.Translation(Vec3<float>(implicitGrapher.offset.x, implicitGrapher.offset.y, implicitGrapher.offset.z));
+            model = model.Translation(Vec3<float>(implicitGrapher.defaultOffset.x, implicitGrapher.defaultOffset.y, implicitGrapher.defaultOffset.z));
             view = referenceFrameRotates ? translation : translation * rotation;
             inverseView = (view * model).GetInverse();
             camPosition = (inverseView * Vec4<float>(0.0f, 0.0f, 0.0f, 1.0f)).XYZ();
@@ -205,7 +206,7 @@ void NaiveSimulationFluidSurfaceView::render(){
                 calculatePerspectiveSetViewport(maxViewAngle, distanceToTangent, zFar);
                 {
                     // Prepare model-view-projection matrix
-                    model = model.Translation(Vec3<float>(implicitGrapher.offset.x, implicitGrapher.offset.y, implicitGrapher.offset.z));
+                    model = model.Translation(Vec3<float>(implicitGrapher.defaultOffset.x, implicitGrapher.defaultOffset.y, implicitGrapher.defaultOffset.z));
                     view = referenceFrameRotates ? translation : translation * rotation;
                     projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
                     mvp = projection * view * model;
@@ -260,7 +261,7 @@ void NaiveSimulationFluidSurfaceView::render(){
                     glDrawBuffers(1, fbo.drawBuffers);
 
                     // Prepare model-view-projection matrix
-                    model = model.Translation(Vec3<float>(implicitGrapher.offset.x, implicitGrapher.offset.y, implicitGrapher.offset.z));
+                    model = model.Translation(Vec3<float>(implicitGrapher.defaultOffset.x, implicitGrapher.defaultOffset.y, implicitGrapher.defaultOffset.z));
                     view = referenceFrameRotates ? translation : translation * rotation;
                     projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
                     mvp = projection * view * model;
@@ -299,7 +300,7 @@ void NaiveSimulationFluidSurfaceView::render(){
 
                     if (!backgroundIsSolidColor) {
                         // Prepare model-view-projection matrix
-                        model = model.Translation(Vec3<float>(implicitGrapher.offset.x, implicitGrapher.offset.y, implicitGrapher.offset.z));
+                        model = model.Translation(Vec3<float>(implicitGrapher.defaultOffset.x, implicitGrapher.defaultOffset.y, implicitGrapher.defaultOffset.z));
                         view = referenceFrameRotates ? translation : translation * rotation;
                         projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
                         mvp = projection * view * model;
@@ -334,7 +335,7 @@ void NaiveSimulationFluidSurfaceView::render(){
                     glCullFace(GL_BACK);
 
                     // Prepare model-view-projection matrix
-                    model = model.Translation(Vec3<float>(implicitGrapher.offset.x, implicitGrapher.offset.y, implicitGrapher.offset.z));
+                    model = model.Translation(Vec3<float>(implicitGrapher.defaultOffset.x, implicitGrapher.defaultOffset.y, implicitGrapher.defaultOffset.z));
                     view = referenceFrameRotates ? translation : translation * rotation;
                     projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
                     mvp = projection * view * model;
@@ -395,7 +396,7 @@ void NaiveSimulationFluidSurfaceView::render(){
                     glDepthFunc(GL_LEQUAL);
 
                     // Prepare model-view-projection matrix
-                    model = model.Translation(Vec3<float>(implicitGrapher.offset.x, implicitGrapher.offset.y, implicitGrapher.offset.z));
+                    model = model.Translation(Vec3<float>(implicitGrapher.defaultOffset.x, implicitGrapher.defaultOffset.y, implicitGrapher.defaultOffset.z));
                     view = referenceFrameRotates ? translation : translation * rotation;
                     projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
                     mvp = projection * view * model;
@@ -477,7 +478,7 @@ void NaiveSimulationFluidSurfaceView::render(){
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             {
                 // Prepare model-view-projection matrix
-                model = model.Translation(Vec3<float>(implicitGrapher.offset.x, implicitGrapher.offset.y, implicitGrapher.offset.z));
+                model = model.Translation(Vec3<float>(implicitGrapher.defaultOffset.x, implicitGrapher.defaultOffset.y, implicitGrapher.defaultOffset.z));
                 view = referenceFrameRotates ? translation : translation * rotation;
                 projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
                 mvp = projection * view * model;
@@ -511,7 +512,7 @@ void NaiveSimulationFluidSurfaceView::render(){
                 glEnable(GL_CULL_FACE);
 
                 // Prepare model-view-projection matrix
-                model = model.Translation(Vec3<float>(implicitGrapher.offset.x, implicitGrapher.offset.y, implicitGrapher.offset.z));
+                model = model.Translation(Vec3<float>(implicitGrapher.defaultOffset.x, implicitGrapher.defaultOffset.y, implicitGrapher.defaultOffset.z));
                 view = referenceFrameRotates ? translation : translation * rotation;
                 projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
                 mvp = projection * view * model;
