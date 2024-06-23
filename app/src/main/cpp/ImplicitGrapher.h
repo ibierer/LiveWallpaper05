@@ -693,9 +693,9 @@ private:
 
     static string charToString(const char* const characters, const int& length);
 
-    static inline bool getPlusMinus(const int& i, const int& j, const int& k);
+    inline bool getPlusMinus(const int& i, const int& j, const int& k);
 
-    static inline ivec3 getXYZLineIndex(const int& i, const int& j, const int& k);
+    inline ivec3 getXYZLineIndex(const int& i, const int& j, const int& k);
 
     static bool anOperator(const char& character);
 
