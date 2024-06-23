@@ -116,21 +116,20 @@ void NaiveSimulationFluidSurfaceView::render(){
         normalMatrix = referenceFrameRotates ? rotation.GetSubMatrix3().GetInverse() : normalMatrix.Identity();
         cameraTransformation = rotation.GetInverse() * translation * rotation * model.Translation(Vec3<float>(0.0f, 0.0f, 0.0f));
 
-        vec3 offset = implicitGrapher.defaultOffset;
-        std::function<float(vec3 _)> fOfXYZFluidSurface = [this, offset](vec3 _) {
-            _ -= offset;
+        std::function<float(vec3 _)> fOfXYZFluidSurface = [this](vec3 _) {
+            _ -= implicitGrapher.defaultOffset;
 
             if (sphereClipsGraph) {
-                if (dot(_, _) > (offset.x - 0.01f) * (offset.x - 0.01f)) {
+                if (dot(_, _) > (implicitGrapher.defaultOffset.x - 0.01f) * (implicitGrapher.defaultOffset.x - 0.01f)) {
                     return -1.0f;
                 }
             } else {
-                if (dot(_, _) > (offset.x - 0.5f) * (offset.x - 0.5f)) {
+                if (dot(_, _) > (implicitGrapher.defaultOffset.x - 0.5f) * (implicitGrapher.defaultOffset.x - 0.5f)) {
                     return -1.0f;
                 }
             }
 
-            _ *= simulation.sphereRadiusPlusPointFive / offset.x;
+            _ *= simulation.sphereRadiusPlusPointFive / implicitGrapher.defaultOffset.x;
 
             float px = _.x + simulation.sphereRadiusPlusPointFive;
             float py = _.y + simulation.sphereRadiusPlusPointFive;
