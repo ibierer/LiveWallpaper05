@@ -677,13 +677,13 @@ private:
 
     static void refactor(const ivec3& inputSize);
 
-    static inline int node0(const int& i, const int& j, const int& k, const int& l);
+    inline int node0(const int& i, const int& j, const int& k, const int& l);
 
-    static inline int node1(const int& i, const int& j, const int& k, const int& l);
+    inline int node1(const int& i, const int& j, const int& k, const int& l);
 
-    static inline int node2(const int& i, const int& j, const int& k, const int& l);
+    inline int node2(const int& i, const int& j, const int& k, const int& l);
 
-    static inline int node3(const int& i, const int& j, const int& k, const int& l);
+    inline int node3(const int& i, const int& j, const int& k, const int& l);
 
     static string decode(const int* const codedEquation, const int& length, const float* const values);
 
