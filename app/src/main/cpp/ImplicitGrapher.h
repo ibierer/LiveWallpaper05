@@ -663,7 +663,7 @@ private:
 
     ivec3 sizePlus2;
 
-    static ivec3 sizePlus3;
+    ivec3 sizePlus3;
 
     static vec3 currentOffset;
 
@@ -675,7 +675,7 @@ private:
 
     static float zoom;
 
-    //void refactor(const ivec3& inputSize);
+    void refactor(const ivec3& inputSize);
 
     inline int node0(const int& i, const int& j, const int& k, const int& l);
 
