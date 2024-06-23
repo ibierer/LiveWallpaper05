@@ -659,9 +659,9 @@ private:
 
     static ivec3* groupSegments;
 
-    static ivec3 size;
+    ivec3 size;
 
-    static ivec3 sizePlus2;
+    ivec3 sizePlus2;
 
     static ivec3 sizePlus3;
 
@@ -675,15 +675,15 @@ private:
 
     static float zoom;
 
-    static void refactor(const ivec3& inputSize);
+    //void refactor(const ivec3& inputSize);
 
-    inline int node0(const int& i, const int& j, const int& k, const int& l);
+    int node0(const int& i, const int& j, const int& k, const int& l);
 
-    inline int node1(const int& i, const int& j, const int& k, const int& l);
+    int node1(const int& i, const int& j, const int& k, const int& l);
 
-    inline int node2(const int& i, const int& j, const int& k, const int& l);
+    int node2(const int& i, const int& j, const int& k, const int& l);
 
-    inline int node3(const int& i, const int& j, const int& k, const int& l);
+    int node3(const int& i, const int& j, const int& k, const int& l);
 
     static string decode(const int* const codedEquation, const int& length, const float* const values);
 
@@ -695,7 +695,7 @@ private:
 
     static bool getPlusMinus(const int& i, const int& j, const int& k);
 
-    static inline ivec3 getXYZLineIndex(const int& i, const int& j, const int& k);
+    static ivec3 getXYZLineIndex(const int& i, const int& j, const int& k);
 
     static bool anOperator(const char& character);
 

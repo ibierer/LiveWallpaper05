@@ -32,10 +32,6 @@ int ImplicitGrapher::solutionCount = 0;
 
 int ImplicitGrapher::groupSegmentCounter = 0;
 
-ivec3 ImplicitGrapher::size = ivec3(0);
-
-ivec3 ImplicitGrapher::sizePlus2 = ivec3(0);
-
 ivec3 ImplicitGrapher::sizePlus3 = ivec3(0);
 
 ivec3* ImplicitGrapher::xyzLineIndex = nullptr;
@@ -76,13 +72,19 @@ ImplicitGrapher::ImplicitGrapher() {
 
 }
 
-ImplicitGrapher::ImplicitGrapher(const ivec3& size, PositionXYZNormalXYZ*& vertices, uvec3*& indices) {
+ImplicitGrapher::ImplicitGrapher(const ivec3& inputSize, PositionXYZNormalXYZ*& vertices, uvec3*& indices) {
     //computeShaderProgram = 0;
     //computeShaderVBO = 0;
     //indexBufferBinding = 0;
     memoryEquation = "";
 
-    refactor(size);
+    //refactor(inputSize);
+    size = inputSize;
+    sizePlus2 = size + ivec3(2);
+    sizePlus3 = size + ivec3(3);
+    defaultOffset = vec3(0.5f * inputSize) + vec3(1.0f);
+    maxSolutionCount = 3 * sizePlus3.x * sizePlus3.y * sizePlus3.z;
+
     plusMinus = (bool*)malloc(sizePlus3.x * sizePlus3.y * sizePlus3.z * sizeof(bool));
     xyzLineIndex = (ivec3*)malloc(sizePlus3.x * sizePlus3.y * sizePlus3.z * sizeof(ivec3));
     groupSegments = (ivec3*)malloc(maxSolutionCount * sizeof(ivec3));
@@ -1707,13 +1709,13 @@ inline ivec3 ImplicitGrapher::getXYZLineIndex(const int& i, const int& j, const 
     return xyzLineIndex[(i * sizePlus3.y + j) * sizePlus3.z + k];
 }
 
-void ImplicitGrapher::refactor(const ivec3& inputSize) {
-    size = inputSize;
-    sizePlus2 = size + ivec3(2);
-    sizePlus3 = size + ivec3(3);
-    defaultOffset = vec3(0.5f * inputSize) + vec3(1.0f);
-    maxSolutionCount = 3 * sizePlus3.x * sizePlus3.y * sizePlus3.z;
-}
+//void ImplicitGrapher::refactor(const ivec3& inputSize) {
+    //size = inputSize;
+    //sizePlus2 = size + ivec3(2);
+    //sizePlus3 = size + ivec3(3);
+    //defaultOffset = vec3(0.5f * inputSize) + vec3(1.0f);
+    //maxSolutionCount = 3 * sizePlus3.x * sizePlus3.y * sizePlus3.z;
+//}
 
 size_t ImplicitGrapher::getRecommendedIndicesArraySize() {
     return 3 * maxSolutionCount * sizeof(uvec3);
