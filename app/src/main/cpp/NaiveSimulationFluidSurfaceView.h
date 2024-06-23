@@ -47,6 +47,8 @@ public:
 
     uint numIndices;
 
+    bool sphereClipsGraph;
+
     bool fluidSurface;
 
     bool referenceFrameRotates;
