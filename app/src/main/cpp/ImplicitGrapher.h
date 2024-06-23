@@ -43,7 +43,7 @@ public:
 
     static size_t getRecommendedIndicesArraySize();
 
-    static float fOfXYZ(vec3 position);
+    static std::function<float(vec3 position)> fOfXYZ;
 
     void calculateSurfaceOnCPU(std::function<float(vec3 _)> fOfXYZ, const float &timeVariable, const uint &iterations, const vec3 &offset, const float &zoom, const bool &clipEdges, PositionXYZNormalXYZ *_vertices, uvec3 *_indices, GLuint &_numIndices);
 

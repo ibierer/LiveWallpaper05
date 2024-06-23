@@ -62,17 +62,64 @@ const string ImplicitGrapher::functions[numOfFunctions] = {
         "cbrt(_",
 };
 
+std::function<float(vec3 position)> ImplicitGrapher::fOfXYZ = [](vec3 position) {
+    position -= currentOffset;
+    position *= zoom;
+    for (int i = 0; i < valuesCounter; i++) {
+        switch (constants[i]) {
+            case 0: values[i] = equationValues[i]; break;
+            case X: values[i] = position.x; break;
+            case Y: values[i] = position.y; break;
+            case Z: values[i] = position.z; break;
+            case T: values[i] = t; break;
+            case E: values[i] = M_E; break;
+            case PI: values[i] = M_PI; break;
+        }
+    }
+    float* v = values;
+    for (int i = 0; i < sequenceLength; i++) {
+        int* s = sequences[i].v;
+        switch (s[0]) {
+            case ADD: v[s[1]] += v[s[2]]; break;
+            case SUBTRACT: v[s[1]] -= v[s[2]]; break;
+            case MULTIPLY: v[s[1]] *= v[s[2]]; break;
+            case DIVIDE: v[s[1]] /= v[s[2]]; break;
+            case POWER: v[s[1]] = powf(v[s[1]], v[s[2]]); break;
+            case SINE: v[s[1]] = sinf(v[s[1]]); break;
+            case COSINE: v[s[1]] = cosf(v[s[1]]); break;
+            case TANGENT: v[s[1]] = tanf(v[s[1]]); break;
+            case ARC_SINE: v[s[1]] = asinf(v[s[1]]); break;
+            case ARC_COSINE: v[s[1]] = acosf(v[s[1]]); break;
+            case ARC_TANGENT: v[s[1]] = atanf(v[s[1]]); break;
+            case HYPERBOLIC_SINE: v[s[1]] = sinhf(v[s[1]]); break;
+            case HYPERBOLIC_COSINE: v[s[1]] = coshf(v[s[1]]); break;
+            case HYPERBOLIC_TANGENT: v[s[1]] = tanhf(v[s[1]]); break;
+            case HYPERBOLIC_ARC_SINE: v[s[1]] = asinhf(v[s[1]]); break;
+            case HYPERBOLIC_ARC_COSINE: v[s[1]] = acoshf(v[s[1]]); break;
+            case HYPERBOLIC_ARC_TANGENT: v[s[1]] = atanhf(v[s[1]]); break;
+            case ABSOLUTE_VALUE: v[s[1]] = abs(v[s[1]]); break;
+            case LOG: v[s[1]] = log10f(v[s[1]]); break;
+            case NATURAL_LOG: v[s[1]] = logf(v[s[1]]); break;
+            case SQUARE_ROOT: v[s[1]] = sqrtf(v[s[1]]); break;
+            case CUBED_ROOT: v[s[1]] = cbrtf(v[s[1]]); break;
+        }
+    }
+    return v[0];
+};
+
 ImplicitGrapher::ImplicitGrapher() {
 
 }
 
 ImplicitGrapher::ImplicitGrapher(const ivec3& inputSize, PositionXYZNormalXYZ*& vertices, uvec3*& indices, const bool& vectorPointsPositive) {
+
     refactor(inputSize);
+
     this->vectorPointsPositive = vectorPointsPositive;
-    plusMinus = (bool*)malloc(sizePlus3.x * sizePlus3.y * sizePlus3.z * sizeof(bool));
-    xyzLineIndex = (ivec3*)malloc(sizePlus3.x * sizePlus3.y * sizePlus3.z * sizeof(ivec3));
-    groupSegments = (ivec3*)malloc(maxSolutionCount * sizeof(ivec3));
-    withinGraphRadius = (bool*)malloc(maxSolutionCount * sizeof(bool));
+    this->plusMinus = (bool*)malloc(sizePlus3.x * sizePlus3.y * sizePlus3.z * sizeof(bool));
+    this->xyzLineIndex = (ivec3*)malloc(sizePlus3.x * sizePlus3.y * sizePlus3.z * sizeof(ivec3));
+    this->groupSegments = (ivec3*)malloc(maxSolutionCount * sizeof(ivec3));
+    this->withinGraphRadius = (bool*)malloc(maxSolutionCount * sizeof(bool));
     vertices = (PositionXYZNormalXYZ*)malloc(maxSolutionCount * sizeof(PositionXYZNormalXYZ));
     indices = (uvec3*)malloc(getRecommendedIndicesArraySize());
 }
@@ -1049,7 +1096,7 @@ inline int ImplicitGrapher::node3(const int& i, const int& j, const int& k, cons
 }
 
 // Calculates the difference between f(x, y, z) and 0.
-float ImplicitGrapher::fOfXYZ(vec3 position) {
+/*float ImplicitGrapher::fOfXYZ(vec3 position) {
     position -= currentOffset;
     position *= zoom;
     for (int i = 0; i < valuesCounter; i++) {
@@ -1092,7 +1139,51 @@ float ImplicitGrapher::fOfXYZ(vec3 position) {
         }
     }
     return v[0];
-}
+}*/
+/*std::function<float(vec3 position)> ImplicitGrapher::fOfXYZ = [](vec3 position) {
+    position -= currentOffset;
+    position *= zoom;
+    for (int i = 0; i < valuesCounter; i++) {
+        switch (constants[i]) {
+            case 0: values[i] = equationValues[i]; break;
+            case X: values[i] = position.x; break;
+            case Y: values[i] = position.y; break;
+            case Z: values[i] = position.z; break;
+            case T: values[i] = t; break;
+            case E: values[i] = M_E; break;
+            case PI: values[i] = M_PI; break;
+        }
+    }
+    float* v = values;
+    for (int i = 0; i < sequenceLength; i++) {
+        int* s = sequences[i].v;
+        switch (s[0]) {
+            case ADD: v[s[1]] += v[s[2]]; break;
+            case SUBTRACT: v[s[1]] -= v[s[2]]; break;
+            case MULTIPLY: v[s[1]] *= v[s[2]]; break;
+            case DIVIDE: v[s[1]] /= v[s[2]]; break;
+            case POWER: v[s[1]] = powf(v[s[1]], v[s[2]]); break;
+            case SINE: v[s[1]] = sinf(v[s[1]]); break;
+            case COSINE: v[s[1]] = cosf(v[s[1]]); break;
+            case TANGENT: v[s[1]] = tanf(v[s[1]]); break;
+            case ARC_SINE: v[s[1]] = asinf(v[s[1]]); break;
+            case ARC_COSINE: v[s[1]] = acosf(v[s[1]]); break;
+            case ARC_TANGENT: v[s[1]] = atanf(v[s[1]]); break;
+            case HYPERBOLIC_SINE: v[s[1]] = sinhf(v[s[1]]); break;
+            case HYPERBOLIC_COSINE: v[s[1]] = coshf(v[s[1]]); break;
+            case HYPERBOLIC_TANGENT: v[s[1]] = tanhf(v[s[1]]); break;
+            case HYPERBOLIC_ARC_SINE: v[s[1]] = asinhf(v[s[1]]); break;
+            case HYPERBOLIC_ARC_COSINE: v[s[1]] = acoshf(v[s[1]]); break;
+            case HYPERBOLIC_ARC_TANGENT: v[s[1]] = atanhf(v[s[1]]); break;
+            case ABSOLUTE_VALUE: v[s[1]] = abs(v[s[1]]); break;
+            case LOG: v[s[1]] = log10f(v[s[1]]); break;
+            case NATURAL_LOG: v[s[1]] = logf(v[s[1]]); break;
+            case SQUARE_ROOT: v[s[1]] = sqrtf(v[s[1]]); break;
+            case CUBED_ROOT: v[s[1]] = cbrtf(v[s[1]]); break;
+        }
+    }
+    return v[0];
+};*/
 
 void ImplicitGrapher::calculateSurfaceOnCPU(std::function<float(vec3 _)> fOfXYZ, const float& timeVariable, const uint& iterations, const vec3& offset, const float& zoom, const bool& clipEdges, PositionXYZNormalXYZ* _vertices, uvec3* _indices, GLuint& _numIndices) {
     ImplicitGrapher::zoom = zoom;
