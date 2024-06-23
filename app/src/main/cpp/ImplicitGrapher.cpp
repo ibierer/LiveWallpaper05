@@ -82,7 +82,7 @@ ImplicitGrapher::ImplicitGrapher(const ivec3& inputSize, PositionXYZNormalXYZ*& 
     size = inputSize;
     sizePlus2 = size + ivec3(2);
     sizePlus3 = size + ivec3(3);
-    defaultOffset = vec3(0.5f * inputSize) + vec3(1.0f);
+    defaultOffset = vec3(0.5f * inputSize + 1.0f);
     maxSolutionCount = 3 * sizePlus3.x * sizePlus3.y * sizePlus3.z;
 
     plusMinus = (bool*)malloc(sizePlus3.x * sizePlus3.y * sizePlus3.z * sizeof(bool));
@@ -1713,7 +1713,7 @@ inline ivec3 ImplicitGrapher::getXYZLineIndex(const int& i, const int& j, const 
     //size = inputSize;
     //sizePlus2 = size + ivec3(2);
     //sizePlus3 = size + ivec3(3);
-    //defaultOffset = vec3(0.5f * inputSize) + vec3(1.0f);
+    //defaultOffset = vec3(0.5f * inputSize + 1.0f);
     //maxSolutionCount = 3 * sizePlus3.x * sizePlus3.y * sizePlus3.z;
 //}
 
