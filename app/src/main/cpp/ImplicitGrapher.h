@@ -527,7 +527,7 @@ public:
 
     void calculateSurfaceOnCPU(float (*fOfXYZ)(vec3), const float &timeVariable, const uint &iterations, const vec3 &offset, const float &zoom, const bool &clipEdges, PositionXYZNormalXYZ *_vertices, uvec3 *_indices, GLuint &_numIndices);
 
-    void calculateSurfaceOnCPU(std::function<float(vec3 _, const vec3& offset, const vec3& defaultOffset)> fOfXYZ, const float &timeVariable, const uint &iterations, const vec3 &offset, const float &zoom, const bool &clipEdges, PositionXYZNormalXYZ *_vertices, uvec3 *_indices, GLuint &_numIndices);
+    void calculateSurfaceOnCPU(std::function<float(vec3 _)> fOfXYZ, const float &timeVariable, const uint &iterations, const vec3 &offset, const float &zoom, const bool &clipEdges, PositionXYZNormalXYZ *_vertices, uvec3 *_indices, GLuint &_numIndices);
 
     ImplicitGrapher();
 
