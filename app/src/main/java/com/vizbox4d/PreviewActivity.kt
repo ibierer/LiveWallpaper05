@@ -797,6 +797,8 @@ class PreviewActivity : AppCompatActivity() {
         flipsNormalsCheckBox.setOnCheckedChangeListener { _, isChecked ->
             viewModel.repo.flipNormals.value = isChecked
             viewModel.saveVisualizationState()
+            mView!!.onPause()
+            mView!!.onResume()
         }
 
         fluidSurfaceCheckBox.setOnCheckedChangeListener { _, isChecked ->

@@ -201,7 +201,6 @@ Java_com_vizbox4d_PreviewActivity_00024Companion_step(JNIEnv *env, jobject thiz,
         view[mode]->maxViewAngle = field_of_view;
         view[mode]->gravity = gravity;
         view[mode]->efficiency = efficiency;
-        ImplicitGrapher::vectorPointsPositive = flip_normals;
         view[mode]->orientation = orientation;
         //ALOGI("field_of_view = %s\n", to_string(field_of_view).c_str());
         view[mode]->calculatePerspectiveSetViewport(view[mode]->maxViewAngle, view[mode]->zNear, view[mode]->zFar);

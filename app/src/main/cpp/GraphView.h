@@ -90,7 +90,7 @@ public:
 
     GraphView();
 
-    explicit GraphView(const string& equation);
+    explicit GraphView(const string& equation, const bool& vectorPointsPositive);
 
     ~GraphView();
 

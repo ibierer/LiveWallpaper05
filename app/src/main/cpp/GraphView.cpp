@@ -10,11 +10,11 @@ GraphView::GraphView() : View() {
 
 }
 
-GraphView::GraphView(const string& equation) : View() {
+GraphView::GraphView(const string& equation, const bool& vectorPointsPositive) : View() {
     graphProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_FRAGMENT_SHADER.c_str());
     cubeProgram = createVertexAndFragmentShaderProgram(CUBE_VERTEX_SHADER.c_str(), CUBE_FRAGMENT_SHADER.c_str());
 
-    implicitGrapher = ImplicitGrapher(ivec3(29), vertices, indices);
+    implicitGrapher = ImplicitGrapher(ivec3(29), vertices, indices, vectorPointsPositive);
     if(equation == "") {
         //ImplicitGrapher::surfaceEquation = 40; // Resets to 0 on the first render
         //for (int i = 0; i < ImplicitGrapher::numOfDefaultEquations; i++) {
@@ -53,7 +53,7 @@ void GraphView::render(){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
 
-    implicitGrapher.calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, false, false, vertices, indices, numIndices);
+    implicitGrapher.calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, false, vertices, indices, numIndices);
 
     // Prepare model-view-projection matrix
     Matrix4<float> translation;

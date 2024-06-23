@@ -30,8 +30,7 @@ Graph2View::Graph2View(const string &equation, const int &graphSize, const bool 
 
     graphNormalMapProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_NORMAL_MAP_FRAGMENT_SHADER.c_str());
 
-    implicitGrapher = ImplicitGrapher(ivec3(graphSize), vertices, indices);
-    implicitGrapher.vectorPointsPositive = vectorPointsPositive;
+    implicitGrapher = ImplicitGrapher(ivec3(graphSize), vertices, indices, vectorPointsPositive);
     if(equation != "") {
         implicitGrapher.memoryEquation = equation;
         implicitGrapher.processEquation();
@@ -84,9 +83,8 @@ void Graph2View::render(){
     translation = translation.Translation(Vec3<float>(0.0f, 0.0f, -distanceToCenter));
     normalMatrix = referenceFrameRotates ? rotation.GetSubMatrix3().GetInverse() : normalMatrix.Identity();
 
-    if(getFrameCount() == 0 || ImplicitGrapher::hasTimeVariable || vectorPointsPositive != ImplicitGrapher::vectorPointsPositive){
-        implicitGrapher.calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, implicitGrapher.vectorPointsPositive, false, vertices, indices, numIndices);
-        vectorPointsPositive = ImplicitGrapher::vectorPointsPositive;
+    if(getFrameCount() == 0 || ImplicitGrapher::hasTimeVariable){
+        implicitGrapher.calculateSurfaceOnCPU(ImplicitGrapher::fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, false, vertices, indices, numIndices);
     }
 
     // Render to texture

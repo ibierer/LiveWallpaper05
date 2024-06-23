@@ -24,8 +24,6 @@ ivec3 ImplicitGrapher::sequences[maxEquationLength] = {};
 
 int ImplicitGrapher::sequenceLength = 0;
 
-vec3 ImplicitGrapher::defaultOffset = vec3(0.0f);
-
 vec3 ImplicitGrapher::currentOffset = vec3(0.0f);
 
 int ImplicitGrapher::solutionCount = 0;
@@ -41,8 +39,6 @@ bool* ImplicitGrapher::withinGraphRadius = nullptr;
 int ImplicitGrapher::maxSolutionCount = 0;
 
 float ImplicitGrapher::zoom = 0.0f;
-
-bool ImplicitGrapher::vectorPointsPositive = false;
 
 //ImplicitGrapher::GPUdata* ImplicitGrapher::data = nullptr;
 
@@ -70,8 +66,9 @@ ImplicitGrapher::ImplicitGrapher() {
 
 }
 
-ImplicitGrapher::ImplicitGrapher(const ivec3& inputSize, PositionXYZNormalXYZ*& vertices, uvec3*& indices) {
+ImplicitGrapher::ImplicitGrapher(const ivec3& inputSize, PositionXYZNormalXYZ*& vertices, uvec3*& indices, const bool& vectorPointsPositive) {
     refactor(inputSize);
+    this->vectorPointsPositive = vectorPointsPositive;
     plusMinus = (bool*)malloc(sizePlus3.x * sizePlus3.y * sizePlus3.z * sizeof(bool));
     xyzLineIndex = (ivec3*)malloc(sizePlus3.x * sizePlus3.y * sizePlus3.z * sizeof(ivec3));
     groupSegments = (ivec3*)malloc(maxSolutionCount * sizeof(ivec3));
@@ -96,6 +93,8 @@ ImplicitGrapher::ImplicitGrapher(const ImplicitGrapher& other) {
 // Copy Constructor
 ImplicitGrapher&ImplicitGrapher::operator=(const ImplicitGrapher& other) {
     if (this != &other) {
+        defaultOffset = other.defaultOffset;
+        vectorPointsPositive = other.vectorPointsPositive;
         size = other.size;
         sizePlus2 = other.sizePlus2;
         sizePlus3 = other.sizePlus3;
@@ -1099,7 +1098,7 @@ float ImplicitGrapher::fOfXYZ(vec3 position) {
     return v[0];
 }
 
-void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(vec3), const float& timeVariable, const uint& iterations, const vec3& offset, const float& zoom, const bool& vectorPointsPositive, const bool& clipEdges, PositionXYZNormalXYZ* _vertices, uvec3* _indices, GLuint& _numIndices) {
+void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(vec3), const float& timeVariable, const uint& iterations, const vec3& offset, const float& zoom, const bool& clipEdges, PositionXYZNormalXYZ* _vertices, uvec3* _indices, GLuint& _numIndices) {
     ImplicitGrapher::zoom = zoom;
     ImplicitGrapher::vectorPointsPositive = vectorPointsPositive;
     ImplicitGrapher::t = timeVariable;
@@ -1395,7 +1394,7 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(vec3), const float& 
 void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(vec3, NaiveSimulation&, const vec3&, const vec3&),
                                             const float &timeVariable, const uint &iterations,
                                             const vec3 &offset, const float &zoom,
-                                            const bool &vectorPointsPositive, const bool &clipEdges,
+                                            const bool &clipEdges,
                                             PositionXYZNormalXYZ *_vertices, uvec3 *_indices,
                                             GLuint &_numIndices, NaiveSimulation& sim) {
     ImplicitGrapher::zoom = zoom;
