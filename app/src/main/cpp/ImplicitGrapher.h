@@ -677,13 +677,13 @@ private:
 
     //void refactor(const ivec3& inputSize);
 
-    int node0(const int& i, const int& j, const int& k, const int& l);
+    inline int node0(const int& i, const int& j, const int& k, const int& l);
 
-    int node1(const int& i, const int& j, const int& k, const int& l);
+    inline int node1(const int& i, const int& j, const int& k, const int& l);
 
-    int node2(const int& i, const int& j, const int& k, const int& l);
+    inline int node2(const int& i, const int& j, const int& k, const int& l);
 
-    int node3(const int& i, const int& j, const int& k, const int& l);
+    inline int node3(const int& i, const int& j, const int& k, const int& l);
 
     static string decode(const int* const codedEquation, const int& length, const float* const values);
 
@@ -693,9 +693,9 @@ private:
 
     static string charToString(const char* const characters, const int& length);
 
-    static bool getPlusMinus(const int& i, const int& j, const int& k);
+    static inline bool getPlusMinus(const int& i, const int& j, const int& k);
 
-    static ivec3 getXYZLineIndex(const int& i, const int& j, const int& k);
+    static inline ivec3 getXYZLineIndex(const int& i, const int& j, const int& k);
 
     static bool anOperator(const char& character);
 

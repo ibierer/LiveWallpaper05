@@ -1702,11 +1702,11 @@ void ImplicitGrapher::calculateSurfaceOnCPU(float (*fOfXYZ)(vec3, NaiveSimulatio
 }
 
 bool ImplicitGrapher::getPlusMinus(const int& i, const int& j, const int& k){
-    return plusMinus[(i * sizePlus3.y + j) * sizePlus3.z + k];
+    return plusMinus[(i * ImplicitGrapher::sizePlus3.y + j) * ImplicitGrapher::sizePlus3.z + k];
 }
 
 inline ivec3 ImplicitGrapher::getXYZLineIndex(const int& i, const int& j, const int& k){
-    return xyzLineIndex[(i * sizePlus3.y + j) * sizePlus3.z + k];
+    return xyzLineIndex[(i * ImplicitGrapher::sizePlus3.y + j) * ImplicitGrapher::sizePlus3.z + k];
 }
 
 //void ImplicitGrapher::refactor(const ivec3& inputSize) {
