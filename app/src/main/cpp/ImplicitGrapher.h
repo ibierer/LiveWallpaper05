@@ -43,7 +43,50 @@ public:
 
     static size_t getRecommendedIndicesArraySize();
 
-    static std::function<float(vec3 position)> fOfXYZ;
+    std::function<float(vec3 position)> fOfXYZ = [this](vec3 position) {
+        position -= currentOffset;
+        position *= zoom;
+        float* v = values;
+        for (int i = 0; i < valuesCounter; i++) {
+            switch (constants[i]) {
+                case 0: v[i] = equationValues[i]; break;
+                case X: v[i] = position.x; break;
+                case Y: v[i] = position.y; break;
+                case Z: v[i] = position.z; break;
+                case T: v[i] = t; break;
+                case E: v[i] = M_E; break;
+                case PI: v[i] = M_PI; break;
+            }
+        }
+        for (int i = 0; i < sequenceLength; i++) {
+            int* s = sequences[i].v;
+            switch (s[0]) {
+                case ADD: v[s[1]] += v[s[2]]; break;
+                case SUBTRACT: v[s[1]] -= v[s[2]]; break;
+                case MULTIPLY: v[s[1]] *= v[s[2]]; break;
+                case DIVIDE: v[s[1]] /= v[s[2]]; break;
+                case POWER: v[s[1]] = powf(v[s[1]], v[s[2]]); break;
+                case SINE: v[s[1]] = sinf(v[s[1]]); break;
+                case COSINE: v[s[1]] = cosf(v[s[1]]); break;
+                case TANGENT: v[s[1]] = tanf(v[s[1]]); break;
+                case ARC_SINE: v[s[1]] = asinf(v[s[1]]); break;
+                case ARC_COSINE: v[s[1]] = acosf(v[s[1]]); break;
+                case ARC_TANGENT: v[s[1]] = atanf(v[s[1]]); break;
+                case HYPERBOLIC_SINE: v[s[1]] = sinhf(v[s[1]]); break;
+                case HYPERBOLIC_COSINE: v[s[1]] = coshf(v[s[1]]); break;
+                case HYPERBOLIC_TANGENT: v[s[1]] = tanhf(v[s[1]]); break;
+                case HYPERBOLIC_ARC_SINE: v[s[1]] = asinhf(v[s[1]]); break;
+                case HYPERBOLIC_ARC_COSINE: v[s[1]] = acoshf(v[s[1]]); break;
+                case HYPERBOLIC_ARC_TANGENT: v[s[1]] = atanhf(v[s[1]]); break;
+                case ABSOLUTE_VALUE: v[s[1]] = abs(v[s[1]]); break;
+                case LOG: v[s[1]] = log10f(v[s[1]]); break;
+                case NATURAL_LOG: v[s[1]] = logf(v[s[1]]); break;
+                case SQUARE_ROOT: v[s[1]] = sqrtf(v[s[1]]); break;
+                case CUBED_ROOT: v[s[1]] = cbrtf(v[s[1]]); break;
+            }
+        }
+        return v[0];
+    };;
 
     void calculateSurfaceOnCPU(std::function<float(vec3 _)> fOfXYZ, const float &timeVariable, const uint &iterations, const vec3 &offset, const float &zoom, const bool &clipEdges, PositionXYZNormalXYZ *_vertices, uvec3 *_indices, GLuint &_numIndices);
 
@@ -57,21 +100,19 @@ public:
 
     vec3 defaultOffset;
 
-    static int valuesCounter;
+    int valuesCounter;
 
     static int hasTimeVariable;
 
-    static int sequenceLength;
+    int sequenceLength;
 
-    static int constants[maxEquationLength];
+    int constants[maxEquationLength];
 
-    static float values[maxEquationLength];
+    float values[maxEquationLength];
 
-    static float equationValues[maxEquationLength];
+    float equationValues[maxEquationLength];
 
-    static ivec3 sequences[maxEquationLength];
-
-    static const int numOfDefaultEquations = 41;
+    ivec3 sequences[maxEquationLength];
 
     static void convertPiSymbol(string &basicString);
 
@@ -171,7 +212,7 @@ private:
 
     ivec3 sizePlus3;
 
-    static vec3 currentOffset;
+    vec3 currentOffset;
 
     static int maxSolutionCount;
 
@@ -179,7 +220,7 @@ private:
 
     static int groupSegmentCounter;
 
-    static float zoom;
+    float zoom;
 
     void refactor(const ivec3& inputSize);
 

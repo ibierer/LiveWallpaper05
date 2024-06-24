@@ -8,23 +8,9 @@ double ImplicitGrapher::t = 0.0;
 
 bool* ImplicitGrapher::plusMinus = nullptr;
 
-int ImplicitGrapher::constants[maxEquationLength] = {};
-
-int ImplicitGrapher::valuesCounter = 0;
-
 int ImplicitGrapher::hasTimeVariable = 0;
 
 string ImplicitGrapher::debug_string = "";
-
-float ImplicitGrapher::equationValues[maxEquationLength] = {};
-
-float ImplicitGrapher::values[maxEquationLength] = {};
-
-ivec3 ImplicitGrapher::sequences[maxEquationLength] = {};
-
-int ImplicitGrapher::sequenceLength = 0;
-
-vec3 ImplicitGrapher::currentOffset = vec3(0.0f);
 
 int ImplicitGrapher::solutionCount = 0;
 
@@ -37,8 +23,6 @@ ivec3* ImplicitGrapher::groupSegments = nullptr;
 bool* ImplicitGrapher::withinGraphRadius = nullptr;
 
 int ImplicitGrapher::maxSolutionCount = 0;
-
-float ImplicitGrapher::zoom = 0.0f;
 
 //ImplicitGrapher::GPUdata* ImplicitGrapher::data = nullptr;
 
@@ -60,51 +44,6 @@ const string ImplicitGrapher::functions[numOfFunctions] = {
         "ln(___",
         "sqrt(_",
         "cbrt(_",
-};
-
-std::function<float(vec3 position)> ImplicitGrapher::fOfXYZ = [](vec3 position) {
-    position -= currentOffset;
-    position *= zoom;
-    for (int i = 0; i < valuesCounter; i++) {
-        switch (constants[i]) {
-            case 0: values[i] = equationValues[i]; break;
-            case X: values[i] = position.x; break;
-            case Y: values[i] = position.y; break;
-            case Z: values[i] = position.z; break;
-            case T: values[i] = t; break;
-            case E: values[i] = M_E; break;
-            case PI: values[i] = M_PI; break;
-        }
-    }
-    float* v = values;
-    for (int i = 0; i < sequenceLength; i++) {
-        int* s = sequences[i].v;
-        switch (s[0]) {
-            case ADD: v[s[1]] += v[s[2]]; break;
-            case SUBTRACT: v[s[1]] -= v[s[2]]; break;
-            case MULTIPLY: v[s[1]] *= v[s[2]]; break;
-            case DIVIDE: v[s[1]] /= v[s[2]]; break;
-            case POWER: v[s[1]] = powf(v[s[1]], v[s[2]]); break;
-            case SINE: v[s[1]] = sinf(v[s[1]]); break;
-            case COSINE: v[s[1]] = cosf(v[s[1]]); break;
-            case TANGENT: v[s[1]] = tanf(v[s[1]]); break;
-            case ARC_SINE: v[s[1]] = asinf(v[s[1]]); break;
-            case ARC_COSINE: v[s[1]] = acosf(v[s[1]]); break;
-            case ARC_TANGENT: v[s[1]] = atanf(v[s[1]]); break;
-            case HYPERBOLIC_SINE: v[s[1]] = sinhf(v[s[1]]); break;
-            case HYPERBOLIC_COSINE: v[s[1]] = coshf(v[s[1]]); break;
-            case HYPERBOLIC_TANGENT: v[s[1]] = tanhf(v[s[1]]); break;
-            case HYPERBOLIC_ARC_SINE: v[s[1]] = asinhf(v[s[1]]); break;
-            case HYPERBOLIC_ARC_COSINE: v[s[1]] = acoshf(v[s[1]]); break;
-            case HYPERBOLIC_ARC_TANGENT: v[s[1]] = atanhf(v[s[1]]); break;
-            case ABSOLUTE_VALUE: v[s[1]] = abs(v[s[1]]); break;
-            case LOG: v[s[1]] = log10f(v[s[1]]); break;
-            case NATURAL_LOG: v[s[1]] = logf(v[s[1]]); break;
-            case SQUARE_ROOT: v[s[1]] = sqrtf(v[s[1]]); break;
-            case CUBED_ROOT: v[s[1]] = cbrtf(v[s[1]]); break;
-        }
-    }
-    return v[0];
 };
 
 ImplicitGrapher::ImplicitGrapher() {
