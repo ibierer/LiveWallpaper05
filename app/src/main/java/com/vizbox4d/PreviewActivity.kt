@@ -594,9 +594,9 @@ class PreviewActivity : AppCompatActivity() {
             }
         }
 
-        viewModel.repo.backgroundTexture.observe(this) {
-            environmentMapSelectorSpinner.setSelection(viewModel.repo.getEnvironmentMapSelection())
-        }
+        //viewModel.repo.backgroundTexture.observe(this) {
+        //    environmentMapSelectorSpinner.setSelection(viewModel.repo.getEnvironmentMapSelection())
+        //}
 
         // register spinner actions to update image selection in repo
         environmentMapSelectorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
