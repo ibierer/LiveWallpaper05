@@ -8,6 +8,8 @@
 #include "PositionXYZNormalXYZ.h"
 #include "NaiveSimulation.h"
 
+using std::function;
+
 class ImplicitGrapher {
 private:
 
@@ -43,7 +45,7 @@ public:
 
     size_t getRecommendedIndicesArraySize();
 
-    std::function<float(vec3 position)> fOfXYZ = [this](vec3 position) {
+    const function<float(vec3 position)> fOfXYZ = [this](vec3 position) {
         position -= currentOffset;
         position *= zoom;
         float* v = values;

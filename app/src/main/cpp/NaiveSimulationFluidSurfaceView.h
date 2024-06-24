@@ -6,6 +6,8 @@
 #define LIVEWALLPAPER05_NAIVESIMULATIONFLUIDSURFACEVIEW_H
 
 
+using std::function;
+
 class NaiveSimulationFluidSurfaceView : public View{
 public:
 
@@ -52,6 +54,57 @@ public:
     bool fluidSurface;
 
     bool referenceFrameRotates;
+
+    const function<float(vec3 _)> fOfXYZFluidSurface = [this](vec3 _) {
+        _ -= implicitGrapher.defaultOffset;
+
+        if (sphereClipsGraph) {
+            if (dot(_, _) > (implicitGrapher.defaultOffset.x - 0.01f) * (implicitGrapher.defaultOffset.x - 0.01f)) {
+                return -1.0f;
+            }
+        } else {
+            if (dot(_, _) > (implicitGrapher.defaultOffset.x - 0.5f) * (implicitGrapher.defaultOffset.x - 0.5f)) {
+                return -1.0f;
+            }
+        }
+
+        _ *= simulation.sphereRadiusPlusPointFive / implicitGrapher.defaultOffset.x;
+
+        float px = _.x + simulation.sphereRadiusPlusPointFive;
+        float py = _.y + simulation.sphereRadiusPlusPointFive;
+        float pz = _.z + simulation.sphereRadiusPlusPointFive;
+
+        int pxi = floor(px * simulation.pInvSpacing);
+        int pyi = floor(py * simulation.pInvSpacing);
+        int pzi = floor(pz * simulation.pInvSpacing);
+        int x0 = max(pxi - 1, 0);
+        int y0 = max(pyi - 1, 0);
+        int z0 = max(pzi - 1, 0);
+        int x1 = min(pxi + 1, simulation.pNumX - 1);
+        int y1 = min(pyi + 1, simulation.pNumY - 1);
+        int z1 = min(pzi + 1, simulation.pNumZ - 1);
+
+        float sum = 0.0f;
+
+        for (int xi = x0; xi <= x1; xi++) {
+            for (int yi = y0; yi <= y1; yi++) {
+                for (int zi = z0; zi <= z1; zi++) {
+                    int cellNr = xi * simulation.pNumY * simulation.pNumZ + yi * simulation.pNumZ + zi;
+                    int first = simulation.firstCellParticle[cellNr];
+                    int last = simulation.firstCellParticle[cellNr + 1];
+                    for (int j = first; j < last; j++) {
+                        int id = simulation.cellParticleIds[j];
+                        vec3 difference = simulation.particles[id].position - _;
+                        float distanceSquared = dot(difference, difference);
+                        if(distanceSquared < simulation.maxForceDistanceSquared) {
+                            sum += 1.0f / distanceSquared;
+                        }
+                    }
+                }
+            }
+        }
+        return sum - 2.0f;
+    };
 
     const string _VERTEX_SHADER =
             ES_VERSION +
