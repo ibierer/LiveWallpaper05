@@ -43,7 +43,7 @@ public:
 
     static size_t getRecommendedIndicesArraySize();
 
-    const std::function<float(vec3 position)> fOfXYZ = [this](vec3 position) {
+    std::function<float(vec3 position)> fOfXYZ = [this](vec3 position) {
         position -= currentOffset;
         position *= zoom;
         float* v = values;
