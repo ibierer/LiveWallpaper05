@@ -83,7 +83,7 @@ void Graph2View::render(){
     translation = translation.Translation(Vec3<float>(0.0f, 0.0f, -distanceToCenter));
     normalMatrix = referenceFrameRotates ? rotation.GetSubMatrix3().GetInverse() : normalMatrix.Identity();
 
-    if(getFrameCount() == 0 || ImplicitGrapher::hasTimeVariable){
+    if(getFrameCount() == 0 || implicitGrapher.hasTimeVariable){
         implicitGrapher.calculateSurfaceOnCPU(implicitGrapher.fOfXYZ, 0.1f * getFrameCount(), 10, vec3(0.0f), 0.15f, false, vertices, indices, numIndices);
     }
 

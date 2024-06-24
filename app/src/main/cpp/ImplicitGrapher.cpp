@@ -4,27 +4,9 @@
 
 #include "ImplicitGrapher.h"
 
-double ImplicitGrapher::t = 0.0;
-
-bool* ImplicitGrapher::plusMinus = nullptr;
-
-int ImplicitGrapher::hasTimeVariable = 0;
-
 string ImplicitGrapher::debug_string = "";
 
-int ImplicitGrapher::solutionCount = 0;
-
 int ImplicitGrapher::groupSegmentCounter = 0;
-
-ivec3* ImplicitGrapher::xyzLineIndex = nullptr;
-
-ivec3* ImplicitGrapher::groupSegments = nullptr;
-
-bool* ImplicitGrapher::withinGraphRadius = nullptr;
-
-int ImplicitGrapher::maxSolutionCount = 0;
-
-//ImplicitGrapher::GPUdata* ImplicitGrapher::data = nullptr;
 
 const string ImplicitGrapher::functions[numOfFunctions] = {
         "sin(__",
@@ -75,6 +57,10 @@ ImplicitGrapher::ImplicitGrapher(const ImplicitGrapher& other) {
 // Copy Constructor
 ImplicitGrapher&ImplicitGrapher::operator=(const ImplicitGrapher& other) {
     if (this != &other) {
+        plusMinus = other.plusMinus;
+        withinGraphRadius = other.withinGraphRadius;
+        xyzLineIndex = other.xyzLineIndex;
+        groupSegments = other.groupSegments;
         defaultOffset = other.defaultOffset;
         vectorPointsPositive = other.vectorPointsPositive;
         size = other.size;

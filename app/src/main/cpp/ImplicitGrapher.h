@@ -41,7 +41,7 @@ public:
 
     ~ImplicitGrapher();
 
-    static size_t getRecommendedIndicesArraySize();
+    size_t getRecommendedIndicesArraySize();
 
     std::function<float(vec3 position)> fOfXYZ = [this](vec3 position) {
         position -= currentOffset;
@@ -102,7 +102,7 @@ public:
 
     int valuesCounter;
 
-    static int hasTimeVariable;
+    int hasTimeVariable;
 
     int sequenceLength;
 
@@ -194,15 +194,15 @@ private:
 
     static string debug_string;
 
-    static double t;
+    double t;
 
-    static bool* plusMinus;
+    bool* plusMinus;
 
-    static bool* withinGraphRadius;
+    bool* withinGraphRadius;
 
-    static ivec3* xyzLineIndex;
+    ivec3* xyzLineIndex;
 
-    static ivec3* groupSegments;
+    ivec3* groupSegments;
 
     bool vectorPointsPositive;
 
@@ -214,9 +214,9 @@ private:
 
     vec3 currentOffset;
 
-    static int maxSolutionCount;
+    int maxSolutionCount;
 
-    static int solutionCount;
+    int solutionCount;
 
     static int groupSegmentCounter;
 
