@@ -4,6 +4,7 @@ import android.content.Context
 import android.opengl.GLSurfaceView
 import android.os.Build
 import android.os.SystemClock
+import android.util.Log
 import androidx.annotation.RequiresApi
 import com.vizbox4d.activewallpaperdata.ActiveWallpaperViewModel
 import org.json.JSONObject

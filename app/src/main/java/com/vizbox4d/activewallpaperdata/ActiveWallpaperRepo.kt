@@ -142,7 +142,7 @@ class ActiveWallpaperRepo private constructor(val context: Context) : SensorEven
     }
 
     private fun getPreferences(): SharedPreferences {
-        val preferences: SharedPreferences = context.getSharedPreferences("com.example.livewallpaper05"/*context.packageName*/, Context.MODE_PRIVATE)
+        val preferences: SharedPreferences = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
         if(preferences.getBoolean("firstTimeStartup", true)){
             val sharedPreferencesEditor = preferences.edit()
             with(sharedPreferencesEditor){

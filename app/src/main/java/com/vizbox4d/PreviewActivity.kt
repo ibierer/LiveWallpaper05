@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.text.TextWatcher
+import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewTreeObserver
@@ -223,6 +224,7 @@ class PreviewActivity : AppCompatActivity() {
         return Runnable {
             viewModel.repo.updateEquation(viewModel.repo.savedEquationSelection, equationNameEditText.text.toString(), equationValueEditText.text.toString())
             viewModel.repo.updateSavedEquations()
+            Log.d("onPause,onResume", "doneButton()")
             mView!!.onPause()
             mView!!.onResume()
         }
@@ -523,6 +525,7 @@ class PreviewActivity : AppCompatActivity() {
                 val changed = viewModel.updateVisualizationSelection(pos)
                 if (changed) {
                     // tell view it needs to be reloaded
+                    Log.d("onPause,onResume", "visualizationSelectorSpinner.onItemSelectedListener")
                     mView!!.onPause()
                     mView!!.onResume()
                     loadOrUnloadUIElements()
@@ -542,6 +545,7 @@ class PreviewActivity : AppCompatActivity() {
                     equationValueEditText.setText(resources.getStringArray(R.array.graph_options)[position])
                     equationNameEditText.isEnabled = false
                     equationValueEditText.isEnabled = false
+                    Log.d("onPause,onResume", "defaultGraphsSpinner.onItemSelectedListener")
                     mView!!.onPause()
                     mView!!.onResume()
                 }
@@ -561,6 +565,7 @@ class PreviewActivity : AppCompatActivity() {
                     equationValueEditText.setText(viewModel.repo.getEquation(position).value)
                     equationNameEditText.isEnabled = true
                     equationValueEditText.isEnabled = true
+                    Log.d("onPause,onResume", "savedGraphsSpinner.onItemSelectedListener")
                     mView!!.onPause()
                     mView!!.onResume()
                 }
@@ -575,6 +580,7 @@ class PreviewActivity : AppCompatActivity() {
         solidColorRadioButton.setOnClickListener {
             viewModel.repo.backgroundIsSolidColor.value = true
             viewModel.saveVisualizationState()
+            Log.d("onPause,onResume", "solidColorRadioButton.setOnClickListener")
             mView!!.onPause()
             mView!!.onResume()
         }
@@ -582,6 +588,7 @@ class PreviewActivity : AppCompatActivity() {
         imageRadioButton.setOnClickListener {
             viewModel.repo.backgroundIsSolidColor.value = false
             viewModel.saveVisualizationState()
+            Log.d("onPause,onResume", "imageRadioButton.setOnClickListener")
             mView!!.onPause()
             mView!!.onResume()
         }
@@ -610,6 +617,7 @@ class PreviewActivity : AppCompatActivity() {
                         else -> throw IllegalArgumentException("Invalid environment map")
                     }
                     viewModel.saveVisualizationState()
+                    Log.d("onPause,onResume", "environmentMapSelectorSpinner.onItemSelectedListener")
                     mView!!.onPause()
                     mView!!.onResume()
                 }
@@ -635,6 +643,7 @@ class PreviewActivity : AppCompatActivity() {
                             viewModel.repo.rememberColorPickerValue = color
                             viewModel.repo.color.value = Color.valueOf(color)
                             viewModel.saveVisualizationState()
+                            Log.d("onPause,onResume", "colorButton.setOnClickListener")
                             mView!!.onPause()
                             mView!!.onResume()
                         }
@@ -656,6 +665,7 @@ class PreviewActivity : AppCompatActivity() {
             deleteButton.isEnabled = false
             if(viewModel.repo.preferredGraphList != 0) {
                 viewModel.repo.preferredGraphList = 0
+                Log.d("onPause,onResume", "defaultEquationsRadioButton.setOnClickListener")
                 mView!!.onPause()
                 mView!!.onResume()
             }
@@ -673,6 +683,7 @@ class PreviewActivity : AppCompatActivity() {
             deleteButton.isEnabled = true
             if(viewModel.repo.preferredGraphList != 1) {
                 viewModel.repo.preferredGraphList = 1
+                Log.d("onPause,onResume", "savedEquationsRadioButton.setOnClickListener")
                 mView!!.onPause()
                 mView!!.onResume()
             }
@@ -715,6 +726,7 @@ class PreviewActivity : AppCompatActivity() {
             }
             populateSavedEquationNamesSpinner()
             savedGraphsSpinner.setSelection(viewModel.repo.savedEquationSelection)
+            Log.d("onPause,onResume", "deleteButton.setOnClickListener")
             mView!!.onPause()
             mView!!.onResume()
         }
@@ -795,31 +807,46 @@ class PreviewActivity : AppCompatActivity() {
         }
 
         flipsNormalsCheckBox.setOnCheckedChangeListener { _, isChecked ->
-            viewModel.repo.flipNormals.value = isChecked
-            viewModel.saveVisualizationState()
-            mView!!.onPause()
-            mView!!.onResume()
+            if(viewModel.repo.flipNormals.value != isChecked) {
+                viewModel.repo.flipNormals.value = isChecked
+                viewModel.saveVisualizationState()
+                Log.d("onPause,onResume", "flipsNormalsCheckBox.setOnCheckedChangeListener")
+                mView!!.onPause()
+                mView!!.onResume()
+            }
         }
 
         fluidSurfaceCheckBox.setOnCheckedChangeListener { _, isChecked ->
-            viewModel.repo.fluidSurface.value = isChecked
-            viewModel.saveVisualizationState()
-            mView!!.onPause()
-            mView!!.onResume()
+            if(viewModel.repo.fluidSurface.value != isChecked) {
+                viewModel.repo.fluidSurface.value = isChecked
+                viewModel.saveVisualizationState()
+                Log.d("onPause,onResume", "fluidSurfaceCheckBox.setOnCheckedChangeListener")
+                mView!!.onPause()
+                mView!!.onResume()
+            }
         }
 
         gyroscopeCompensationCheckBox.setOnCheckedChangeListener { _, isChecked ->
-            viewModel.repo.referenceFrameRotates.value = !isChecked
-            viewModel.saveVisualizationState()
-            mView!!.onPause()
-            mView!!.onResume()
+            if(viewModel.repo.referenceFrameRotates.value == isChecked) {
+                viewModel.repo.referenceFrameRotates.value = !isChecked
+                viewModel.saveVisualizationState()
+                Log.d(
+                    "onPause,onResume",
+                    "gyroscopeCompensationCheckBox.setOnCheckedChangeListener"
+                )
+                mView!!.onPause()
+                mView!!.onResume()
+            }
         }
 
         smoothSphereSurfaceCheckBox.setOnCheckedChangeListener { _, isChecked ->
-            viewModel.repo.smoothSphereSurface.value = isChecked
-            viewModel.saveVisualizationState()
-            mView!!.onPause()
-            mView!!.onResume()
+            if(viewModel.repo.smoothSphereSurface.value != isChecked) {
+                viewModel.repo.smoothSphereSurface.value = isChecked
+                viewModel.saveVisualizationState()
+                Log.d("onPause,onResume", "smoothSphereSurfaceCheckBox.setOnCheckedChangeListener")
+                mView!!.onPause()
+                mView!!.onResume()
+            }
         }
 
         viewModel.repo.flipNormals.observe(this){ flip ->
