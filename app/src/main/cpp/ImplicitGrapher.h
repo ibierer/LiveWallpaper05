@@ -192,7 +192,7 @@ private:
 
     static const string functions[numOfFunctions];
 
-    static string debug_string;
+    string debug_string;
 
     double t;
 
@@ -218,7 +218,7 @@ private:
 
     int solutionCount;
 
-    static int groupSegmentCounter;
+    int groupSegmentCounter;
 
     float zoom;
 

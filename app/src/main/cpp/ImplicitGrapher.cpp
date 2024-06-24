@@ -4,10 +4,6 @@
 
 #include "ImplicitGrapher.h"
 
-string ImplicitGrapher::debug_string = "";
-
-int ImplicitGrapher::groupSegmentCounter = 0;
-
 const string ImplicitGrapher::functions[numOfFunctions] = {
         "sin(__",
         "cos(__",
