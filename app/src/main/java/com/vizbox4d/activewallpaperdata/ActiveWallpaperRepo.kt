@@ -16,8 +16,8 @@ import org.json.JSONObject
 
 class ActiveWallpaperRepo private constructor(val context: Context) : SensorEventListener {
 
-    private val sharedPreferences: SharedPreferences = getPreferences()
-    private val sharedPreferencesEditor: SharedPreferences.Editor = sharedPreferences.edit()
+    val sharedPreferences: SharedPreferences = getPreferences()
+    val sharedPreferencesEditor: SharedPreferences.Editor = sharedPreferences.edit()
     var visualization: Visualization = visualizationIntToVisualizationObject(getVisualizationSelection())
     val backgroundTexture: MutableLiveData<String> = MutableLiveData<String>(visualization.toJsonObject().getString("background_texture"))
     val fluidSurface: MutableLiveData<Boolean> = MutableLiveData(visualization.toJsonObject().optBoolean("fluid_surface", true))
@@ -45,6 +45,7 @@ class ActiveWallpaperRepo private constructor(val context: Context) : SensorEven
     private var preferredGraphListValue: Int = -1
     private var defaultEquationSelectionValue: Int = -1
     private var savedEquationSelectionValue: Int = -1
+    var isCollapsed = sharedPreferences.getBoolean("isCollapsed", false)
     var preferredGraphList: Int
         get() { if(preferredGraphListValue == -1) preferredGraphListValue = sharedPreferences.getInt("preferredGraphList", 0); return preferredGraphListValue }
         set(value) { preferredGraphListValue = value; sharedPreferencesEditor.putInt("preferredGraphList", value); sharedPreferencesEditor.apply() }
@@ -74,7 +75,6 @@ class ActiveWallpaperRepo private constructor(val context: Context) : SensorEven
     var rememberColorPickerValue: Int = Color.RED
 
     private lateinit var mSensorManager: SensorManager
-    var isCollapsed = false
 
     // setup companion object so repo can be created from any thread and still be a singleton
     companion object {
@@ -150,6 +150,7 @@ class ActiveWallpaperRepo private constructor(val context: Context) : SensorEven
                 putInt("preferredGraphList", 0)
                 putInt("preferredDefaultEquation", 0)
                 putInt("preferredSavedEquation", 0)
+                putBoolean("isCollapsed", isCollapsed)
                 putString("savedEquations", JSONArray("""[{"name": "", "value": ""}]""").toString())
                 putString("0", NBodyVisualization().toJsonObject().toString())
                 putString("1", NaiveFluidVisualization().toJsonObject().toString())

@@ -331,6 +331,8 @@ class PreviewActivity : AppCompatActivity() {
         animation.setAnimationListener(animationListener)
         linearLayout.startAnimation(animation)
         viewModel.repo.isCollapsed = !viewModel.repo.isCollapsed
+        viewModel.repo.sharedPreferencesEditor.putBoolean("isCollapsed", viewModel.repo.isCollapsed)
+        viewModel.repo.sharedPreferencesEditor.apply()
     }
 
     private fun populateSavedEquationNamesSpinner() {
@@ -603,10 +605,6 @@ class PreviewActivity : AppCompatActivity() {
             }
         }
 
-        //viewModel.repo.backgroundTexture.observe(this) {
-        //    environmentMapSelectorSpinner.setSelection(viewModel.repo.getEnvironmentMapSelection())
-        //}
-
         // register spinner actions to update image selection in repo
         environmentMapSelectorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
@@ -813,10 +811,10 @@ class PreviewActivity : AppCompatActivity() {
         }
 
         hideUIButton.setOnClickListener {
-            val animation: Animation = if (!viewModel.repo.isCollapsed) {
-                TranslateAnimation(0f, linearLayout.width.toFloat(), 0f, 0f)
-            } else {
+            val animation: Animation = if (viewModel.repo.isCollapsed) {
                 TranslateAnimation(linearLayout.width.toFloat(), 0f, 0f, 0f)
+            } else {
+                TranslateAnimation(0f, linearLayout.width.toFloat(), 0f, 0f)
             }
             setDefaultAnimationParametersAndAnimate(animation)
         }
