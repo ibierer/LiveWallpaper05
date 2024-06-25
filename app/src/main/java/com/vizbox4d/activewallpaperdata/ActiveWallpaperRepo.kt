@@ -16,7 +16,7 @@ import org.json.JSONObject
 
 class ActiveWallpaperRepo private constructor(val context: Context) : SensorEventListener {
 
-    val sharedPreferences: SharedPreferences = getPreferences()
+    private val sharedPreferences: SharedPreferences = getPreferences()
     val sharedPreferencesEditor: SharedPreferences.Editor = sharedPreferences.edit()
     var visualization: Visualization = visualizationIntToVisualizationObject(getVisualizationSelection())
     val backgroundTexture: MutableLiveData<String> = MutableLiveData<String>(visualization.toJsonObject().getString("background_texture"))
