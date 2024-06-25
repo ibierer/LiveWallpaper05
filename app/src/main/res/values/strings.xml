@@ -3,8 +3,8 @@
      them to be changed based on the locale and options. -->
 <resources>
     <!-- Simple strings. -->
-    <string name="gles3jni_activity">GLES3JNI</string>
     <!--<string name="app_name">4D Visualization Sandbox</string>-->
+    <string name="visualization_spinner_text">Visualization Selection</string>
     <string name="distance_label">Distance:</string>
     <string name="field_of_view_label">Field of View:</string>
     <string name="img_description">Profile Image</string>
@@ -25,6 +25,22 @@
     <string name="linear_acceleration_label">Linear Acceleration:</string>
     <string name="efficiency_label">Efficiency:</string>
     <string name="background_label">Background:</string>
+    <string name="solid_color_radio_button">Solid Color</string>
+    <string name="image_radio_button">Image</string>
+    <string name="change_color_button_text">Change Color</string>
+    <string name="equation_selection_label">Equation Selection:</string>
+    <string name="examples_radio_button">Examples</string>
+    <string name="user_defined_radio_button">User Defined</string>
+    <string name="equation_name_label">Title:</string>
+    <string name="new_button">New</string>
+    <string name="copy_button">New</string>
+    <string name="delete_button">New</string>
+    <string name="equation_label">Equation:</string>
+    <string name="syntax_check_result">Syntax check result</string>
+    <string name="flip_normals_checkbox">Flip Normals</string>
+    <string name="fluid_surface_checkbox">Fluid Surface</string>
+    <string name="gyroscope_compensation_checkbox">Gyroscope Compensation</string>
+    <string name="smooth_sphere_surface_checkbox">Smooth Sphere Surface</string>
     <string name="showUIButtonText">Show Controls</string>
     <string name="hideUIButtonText">Hide Controls</string>
     <string name="update_preview_button_text">Update Preview Thumbnail</string>

@@ -42,7 +42,7 @@
                 android:id="@+id/visualization_type_selection_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Visualization Selection:"
+                android:text="@string/visualization_spinner_text"
                 android:textStyle="bold" />
 
             <Spinner
@@ -202,7 +202,7 @@
                         android:layout_height="50dp"
                         android:layout_weight="1"
                         android:checked="true"
-                        android:text="Solid Color"
+                        android:text="@string/solid_color_radio_button"
                         android:layout_margin="@dimen/preview_ui_margin" />
 
                     <RadioButton
@@ -210,7 +210,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:layout_weight="1"
-                        android:text="Image"
+                        android:text="@string/image_radio_button"
                         android:layout_margin="@dimen/preview_ui_margin" />
                 </RadioGroup>
 
@@ -224,7 +224,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:layout_weight="1"
-                        android:text="Change Color"
+                        android:text="@string/change_color_button_text"
                         android:layout_margin="@dimen/preview_ui_margin" />
 
                     <Spinner
@@ -246,7 +246,7 @@
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:padding="@dimen/preview_ui_padding"
                 android:background="@drawable/slightly_opaque_border_background"
-                android:text="Equation Selection:" />
+                android:text="@string/equation_selection_label" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -267,7 +267,7 @@
                         android:layout_height="50dp"
                         android:layout_weight="1"
                         android:checked="true"
-                        android:text="Examples"
+                        android:text="@string/examples_radio_button"
                         android:layout_margin="@dimen/preview_ui_margin" />
 
                     <RadioButton
@@ -275,7 +275,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="50dp"
                         android:layout_weight="1"
-                        android:text="User Defined"
+                        android:text="@string/user_defined_radio_button"
                         android:layout_margin="@dimen/preview_ui_margin" />
                 </RadioGroup>
 
@@ -315,7 +315,7 @@
                     android:layout_margin="@dimen/preview_ui_margin"
                     android:background="@drawable/slightly_opaque_border_background"
                     android:padding="@dimen/preview_ui_padding"
-                    android:text="Title:"
+                    android:text="@string/equation_name_label"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -327,7 +327,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/preview_ui_margin"
                     android:layout_marginEnd="@dimen/preview_ui_margin"
-                    android:text="New"
+                    android:text="@string/new_button"
                     app:layout_constraintEnd_toStartOf="@id/copy_button"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -339,7 +339,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/preview_ui_margin"
                     android:layout_marginEnd="@dimen/preview_ui_margin"
-                    android:text="Copy"
+                    android:text="@string/copy_button"
                     app:layout_constraintEnd_toStartOf="@id/delete_button"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -351,7 +351,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/preview_ui_margin"
                     android:layout_marginEnd="@dimen/preview_ui_margin"
-                    android:text="Delete"
+                    android:text="@string/delete_button"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -376,7 +376,7 @@
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:padding="@dimen/preview_ui_padding"
                 android:background="@drawable/slightly_opaque_border_background"
-                android:text="Equation:" />
+                android:text="@string/equation_label" />
 
             <EditText
                 android:id="@+id/et_equation_value"
@@ -396,31 +396,31 @@
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:padding="@dimen/preview_ui_padding"
                 android:background="@drawable/slightly_opaque_border_background"
-                android:text="Syntax check result" />
+                android:text="@string/syntax_check_result" />
 
             <CheckBox
                 android:id="@+id/flip_normals_checkbox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Flip Normals" />
+                android:text="@string/flip_normals_checkbox" />
 
             <CheckBox
                 android:id="@+id/fluid_surface_checkbox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Fluid Surface" />
+                android:text="@string/fluid_surface_checkbox" />
 
             <CheckBox
                 android:id="@+id/gyroscope_compensation_checkbox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Gyroscope Compensation" />
+                android:text="@string/gyroscope_compensation_checkbox" />
 
             <CheckBox
                 android:id="@+id/smooth_sphere_surface_checkbox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Smooth Sphere Surface" />
+                android:text="@string/smooth_sphere_surface_checkbox" />
 
         </LinearLayout>
     </ScrollView>
