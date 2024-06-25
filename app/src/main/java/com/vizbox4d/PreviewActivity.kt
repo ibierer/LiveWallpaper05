@@ -559,14 +559,17 @@ class PreviewActivity : AppCompatActivity() {
         savedGraphsSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 if(position != viewModel.repo.savedEquationSelection){
+                    val initialEquation: String = viewModel.repo.currentEquation.value
                     viewModel.repo.savedEquationSelection = position
                     equationNameEditText.setText(viewModel.repo.getEquation(position).name)
                     equationValueEditText.setText(viewModel.repo.getEquation(position).value)
                     equationNameEditText.isEnabled = true
                     equationValueEditText.isEnabled = true
-                    Log.d("onPause,onResume", "savedGraphsSpinner.onItemSelectedListener")
-                    mView!!.onPause()
-                    mView!!.onResume()
+                    if(viewModel.repo.currentEquation.value != initialEquation) {
+                        Log.d("onPause,onResume", "savedGraphsSpinner.onItemSelectedListener, viewModel.repo.currentEquation.value = ${viewModel.repo.currentEquation.value}, initialEquation = $initialEquation")
+                        mView!!.onPause()
+                        mView!!.onResume()
+                    }
                 }
             }
 
@@ -718,6 +721,7 @@ class PreviewActivity : AppCompatActivity() {
         }
 
         deleteButton.setOnClickListener {
+            val initialEquation: String = viewModel.repo.currentEquation.value
             if(viewModel.repo.equationsJSONArray.length() > 1) {
                 viewModel.repo.deleteEquation(viewModel.repo.savedEquationSelection)
                 equationNameEditText.setText(viewModel.repo.currentEquation.name)
@@ -729,9 +733,11 @@ class PreviewActivity : AppCompatActivity() {
             }
             populateSavedEquationNamesSpinner()
             savedGraphsSpinner.setSelection(viewModel.repo.savedEquationSelection)
-            Log.d("onPause,onResume", "deleteButton.setOnClickListener")
-            mView!!.onPause()
-            mView!!.onResume()
+            if(viewModel.repo.currentEquation.value != initialEquation) {
+                Log.d("onPause,onResume", "deleteButton.setOnClickListener")
+                mView!!.onPause()
+                mView!!.onResume()
+            }
         }
 
         equationNameEditText.addTextChangedListener(object : TextWatcher {
