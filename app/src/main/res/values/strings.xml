@@ -33,8 +33,8 @@
     <string name="user_defined_radio_button">User Defined</string>
     <string name="equation_name_label">Title:</string>
     <string name="new_button">New</string>
-    <string name="copy_button">New</string>
-    <string name="delete_button">New</string>
+    <string name="copy_button">Copy</string>
+    <string name="delete_button">Delete</string>
     <string name="equation_label">Equation:</string>
     <string name="syntax_check_result">Syntax check result</string>
     <string name="flip_normals_checkbox">Flip Normals</string>

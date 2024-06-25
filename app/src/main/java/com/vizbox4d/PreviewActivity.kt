@@ -29,7 +29,6 @@ import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import com.vizbox4d.R
 import com.vizbox4d.activewallpaperdata.ActiveWallpaperApplication
 import com.vizbox4d.activewallpaperdata.ActiveWallpaperRepo
 import com.vizbox4d.activewallpaperdata.ActiveWallpaperViewModel
@@ -830,10 +829,7 @@ class PreviewActivity : AppCompatActivity() {
             if(viewModel.repo.referenceFrameRotates.value == isChecked) {
                 viewModel.repo.referenceFrameRotates.value = !isChecked
                 viewModel.saveVisualizationState()
-                Log.d(
-                    "onPause,onResume",
-                    "gyroscopeCompensationCheckBox.setOnCheckedChangeListener"
-                )
+                Log.d("onPause,onResume", "gyroscopeCompensationCheckBox.setOnCheckedChangeListener")
                 mView!!.onPause()
                 mView!!.onResume()
             }
