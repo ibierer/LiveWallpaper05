@@ -31,10 +31,7 @@ Graph2View::Graph2View(const string &equation, const int &graphSize, const bool 
     graphNormalMapProgram = createVertexAndFragmentShaderProgram(GRAPH_VERTEX_SHADER.c_str(), GRAPH_NORMAL_MAP_FRAGMENT_SHADER.c_str());
 
     implicitGrapher = ImplicitGrapher(ivec3(graphSize), vertices, indices, vectorPointsPositive);
-    if(equation != "") {
-        implicitGrapher.memoryEquation = equation;
-        implicitGrapher.processEquation();
-    }
+    implicitGrapher.processEquation(equation);
 }
 
 Graph2View::~Graph2View(){

@@ -15,19 +15,7 @@ GraphView::GraphView(const string& equation, const bool& vectorPointsPositive) :
     cubeProgram = createVertexAndFragmentShaderProgram(CUBE_VERTEX_SHADER.c_str(), CUBE_FRAGMENT_SHADER.c_str());
 
     implicitGrapher = ImplicitGrapher(ivec3(29), vertices, indices, vectorPointsPositive);
-    if(equation == "") {
-        //ImplicitGrapher::surfaceEquation = 40; // Resets to 0 on the first render
-        //for (int i = 0; i < ImplicitGrapher::numOfDefaultEquations; i++) {
-        //    ImplicitGrapher::memoryEquation[i][1] = ImplicitGrapher::defaultEquations[i][1];
-        //    //Convert any 'π' symbols to a ''
-        //    ImplicitGrapher::convertPiSymbol(ImplicitGrapher::memoryEquation[i][1]);
-        //    ImplicitGrapher::processEquation(i);
-        //    ImplicitGrapher::numOfEquationsInMemory++;
-        //}
-    }else{
-        implicitGrapher.memoryEquation = equation;
-        implicitGrapher.processEquation();
-    }
+    implicitGrapher.processEquation(equation);
 
     simulation.initialize(Computation::ComputationOptions::CPU);
     //simulation.initialize(Computation::ComputationOptions::GPU);

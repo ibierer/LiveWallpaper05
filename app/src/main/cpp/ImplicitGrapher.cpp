@@ -456,18 +456,18 @@ string ImplicitGrapher::charToString(const char* const characters, const int& le
     return string;
 }
 
-void ImplicitGrapher::processEquation() {
+void ImplicitGrapher::processEquation(const string& equationString) {
     bool debugEquation = false;
     for (int j = 0; j < maxEquationLength; j++) {
         constants[j] = 0;
     }
 
-    char equation[2 * maxEquationLength];
-    int length = memoryEquation.length();
+    char equationCharacterArray[2 * maxEquationLength];
+    int length = equationString.length();
 
     // Convert string to string array
     for (int j = 0; j < length; j++) {
-        equation[j] = memoryEquation.at(j);
+        equationCharacterArray[j] = equationString.at(j);
     }
     // Remove spaces and fill remainder with underscores
     if (debugEquation) {
@@ -475,8 +475,8 @@ void ImplicitGrapher::processEquation() {
     }
     valuesCounter = 0;
     for (int j = 0; j < length; valuesCounter++) {
-        if (equation[valuesCounter] != ' ') {
-            equation[j] = equation[valuesCounter];
+        if (equationCharacterArray[valuesCounter] != ' ') {
+            equationCharacterArray[j] = equationCharacterArray[valuesCounter];
             j++;
         }
         else {
@@ -486,36 +486,36 @@ void ImplicitGrapher::processEquation() {
 
     // Fill remainder with underscores
     for (int j = length; j < 2 * maxEquationLength; j++) {
-        equation[j] = '_';
+        equationCharacterArray[j] = '_';
     }
 
     if (debugEquation) {
-        debug_string += charToString(equation, length);
+        debug_string += charToString(equationCharacterArray, length);
     }
 
     // Isolate and convert '=' to '-'
     if (debugEquation) {
         debug_string += "Isolate and convert '=' to '-':";
     }
-    equation[length + 3] = ')';
+    equationCharacterArray[length + 3] = ')';
     valuesCounter = length - 1;
-    while (equation[valuesCounter] != '=') {
-        equation[valuesCounter + 3] = equation[valuesCounter];
+    while (equationCharacterArray[valuesCounter] != '=') {
+        equationCharacterArray[valuesCounter + 3] = equationCharacterArray[valuesCounter];
         valuesCounter--;
     }
-    equation[valuesCounter + 3] = '(';
-    equation[valuesCounter + 2] = '-';
-    equation[valuesCounter + 1] = ')';
+    equationCharacterArray[valuesCounter + 3] = '(';
+    equationCharacterArray[valuesCounter + 2] = '-';
+    equationCharacterArray[valuesCounter + 1] = ')';
     valuesCounter--;
     while (valuesCounter > -1) {
-        equation[valuesCounter + 1] = equation[valuesCounter];
+        equationCharacterArray[valuesCounter + 1] = equationCharacterArray[valuesCounter];
         valuesCounter--;
     }
-    equation[0] = '(';
+    equationCharacterArray[0] = '(';
     length += 4;
 
     if (debugEquation) {
-        debug_string += charToString(equation, length);
+        debug_string += charToString(equationCharacterArray, length);
     }
 
     // Add parentheses to ends
@@ -523,52 +523,52 @@ void ImplicitGrapher::processEquation() {
         debug_string += "Add parentheses to ends:";
     }
     // Insert close parenthesis
-    equation[length + 1] = ')';
+    equationCharacterArray[length + 1] = ')';
     // Move characters
     for (int j = length; j > 0; j--) {
-        equation[j] = equation[j - 1];
+        equationCharacterArray[j] = equationCharacterArray[j - 1];
     }
     length += 2;
     // Insert open parenthesis
-    equation[0] = '(';
+    equationCharacterArray[0] = '(';
 
     if (debugEquation) {
-        debug_string += charToString(equation, length);
+        debug_string += charToString(equationCharacterArray, length);
     }
 
     // Add parentheses to functions
     if (debugEquation) {
         debug_string += "Add parentheses to functions:";
     }
-    for (int j = 0; j < length - 1; j++) {//index equation
+    for (int j = 0; j < length - 1; j++) {//index equationCharacterArray
         bool functionFound = false;
         for (int k = 0; k < numOfFunctions && !functionFound; k++) {//index functions
-            for (int l = j, functionLength = 0; l < length && !functionFound && equation[l] == functions[k][functionLength]; l++, functionLength++) {//index function characters
-                if (equation[l] == '(') {
+            for (int l = j, functionLength = 0; l < length && !functionFound && equationCharacterArray[l] == functions[k][functionLength]; l++, functionLength++) {//index function characters
+                if (equationCharacterArray[l] == '(') {
                     functionFound = true;
                     l++;
                     for (int parentheses = 1; parentheses > 0; l++) {
-                        if (equation[l] == ')') {
+                        if (equationCharacterArray[l] == ')') {
                             parentheses--;
                         }
-                        else if (equation[l] == '(') {
+                        else if (equationCharacterArray[l] == '(') {
                             parentheses++;
                         }
                     }
-                    if (!(equation[j - 1] == '(' && equation[l] == ')')) {
+                    if (!(equationCharacterArray[j - 1] == '(' && equationCharacterArray[l] == ')')) {
                         length += 2;
                         //Move characters
                         for (int m = length - 1; m > l + 1; m--) {
-                            equation[m] = equation[m - 2];
+                            equationCharacterArray[m] = equationCharacterArray[m - 2];
                         }
                         //Insert close parenthesis
-                        equation[l + 1] = ')';
+                        equationCharacterArray[l + 1] = ')';
                         //Move characters
                         for (int m = l; m > j; m--) {
-                            equation[m] = equation[m - 1];
+                            equationCharacterArray[m] = equationCharacterArray[m - 1];
                         }
                         //Insert open parenthesis
-                        equation[j] = '(';
+                        equationCharacterArray[j] = '(';
                     }
                     j += functionLength;
                 }
@@ -577,7 +577,7 @@ void ImplicitGrapher::processEquation() {
     }
 
     if (debugEquation) {
-        debug_string += charToString(equation, length);
+        debug_string += charToString(equationCharacterArray, length);
     }
 
     // Add multiplication signs to close terms
@@ -587,39 +587,39 @@ void ImplicitGrapher::processEquation() {
     for (int j = 0; j < length; j++) {
         bool notR = true;
         if (j > 0) {
-            if (equation[j - 1] == 'r') {
+            if (equationCharacterArray[j - 1] == 'r') {
                 notR = false;
             }
         }
         if (
                 (
-                        equation[j] == ')' ||
-                        aDigit(equation[j]) ||
+                        equationCharacterArray[j] == ')' ||
+                        aDigit(equationCharacterArray[j]) ||
                         (
-                                aCharacter(equation[j]) &&
+                                aCharacter(equationCharacterArray[j]) &&
                                 (
-                                        equation[j] != 't' || notR
+                                        equationCharacterArray[j] != 't' || notR
                                 )
                         )
                 ) && (
-                        aCharacter(equation[j + 1]) ||
-                        equation[j + 1] == '(' ||
-                        aDigit(equation[j + 1])
+                        aCharacter(equationCharacterArray[j + 1]) ||
+                        equationCharacterArray[j + 1] == '(' ||
+                        aDigit(equationCharacterArray[j + 1])
                 ) && (
-                        !aDigit(equation[j]) ||
-                        !aDigit(equation[j + 1])
+                        !aDigit(equationCharacterArray[j]) ||
+                        !aDigit(equationCharacterArray[j + 1])
                 )
                 ) {
             for (int k = length; k > j; k--) {
-                equation[k] = equation[k - 1];
+                equationCharacterArray[k] = equationCharacterArray[k - 1];
             }
-            equation[j + 1] = '*';
+            equationCharacterArray[j + 1] = '*';
             length++;
         }
     }
 
     if (debugEquation) {
-        debug_string += charToString(equation, length);
+        debug_string += charToString(equationCharacterArray, length);
     }
 
     // Convert (-x to (0-x or (-1 to (0-1
@@ -627,19 +627,19 @@ void ImplicitGrapher::processEquation() {
         debug_string += "Convert (-x to ((0-x) or (-1 to ((0-1):";
     }
     for (int j = 0; j < length; j++) {
-        if (equation[j] == '(' && equation[j + 1] == '-') {
+        if (equationCharacterArray[j] == '(' && equationCharacterArray[j + 1] == '-') {
             // Move characters
             length++;
             for (int k = length - 1; k > j + 1; k--) {
-                equation[k] = equation[k - 1];
+                equationCharacterArray[k] = equationCharacterArray[k - 1];
             }
             // Insert zero
-            equation[j + 1] = '0';
+            equationCharacterArray[j + 1] = '0';
         }
     }
 
     if (debugEquation) {
-        debug_string += charToString(equation, length);
+        debug_string += charToString(equationCharacterArray, length);
     }
 
     // Add parentheses to symbol functions
@@ -656,14 +656,14 @@ void ImplicitGrapher::processEquation() {
             whatJEquals = 1;
             increment = 1;
         }
-        for (int j = whatJEquals; (sweep == 1 && j > 0) || (sweep > 1 && j < length); j += increment) {//Index equation
+        for (int j = whatJEquals; (sweep == 1 && j > 0) || (sweep > 1 && j < length); j += increment) {//Index equationCharacterArray
             if (
                     (
-                            sweep == 1 && equation[j] == '^'
+                            sweep == 1 && equationCharacterArray[j] == '^'
                     ) || (
-                            sweep == 2 && (equation[j] == '*' || equation[j] == '/')
+                            sweep == 2 && (equationCharacterArray[j] == '*' || equationCharacterArray[j] == '/')
                     ) || (
-                            sweep == 3 && (equation[j] == '+' || equation[j] == '-')
+                            sweep == 3 && (equationCharacterArray[j] == '+' || equationCharacterArray[j] == '-')
                     )
                     ) {
                 int mode = 0;
@@ -672,15 +672,15 @@ void ImplicitGrapher::processEquation() {
                 const int PARENTHESIS = 3;
                 int positions[2] = { 0, 0 };
                 for (int k = 1, position = 0; k > -2; k -= 2, position++) {
-                    if (aDigit(equation[j + k]) || equation[j + k] == '.') {
+                    if (aDigit(equationCharacterArray[j + k]) || equationCharacterArray[j + k] == '.') {
                         mode = DIGIT;
                     }
-                    else if (aCharacter(equation[j + k])) {
+                    else if (aCharacter(equationCharacterArray[j + k])) {
                         mode = LETTER;
                     }
                     else if (
-                            (equation[j + k] == '(' && k == 1) ||
-                            (equation[j + k] == ')' && k == -1)
+                            (equationCharacterArray[j + k] == '(' && k == 1) ||
+                            (equationCharacterArray[j + k] == ')' && k == -1)
                             ) {
                         mode = PARENTHESIS;
                     }
@@ -688,8 +688,8 @@ void ImplicitGrapher::processEquation() {
                     switch (mode) {
                         case DIGIT:
                             while (
-                                    aDigit(equation[positions[position]]) ||
-                                    equation[positions[position]] == '.'
+                                    aDigit(equationCharacterArray[positions[position]]) ||
+                                    equationCharacterArray[positions[position]] == '.'
                                     ) {
                                 positions[position] += k;
                             }
@@ -698,193 +698,193 @@ void ImplicitGrapher::processEquation() {
                             break;
                         case PARENTHESIS:
                             for (int parentheses = 1; parentheses > 0; positions[position] += k) {
-                                if (equation[positions[position]] == ')') {
+                                if (equationCharacterArray[positions[position]] == ')') {
                                     parentheses -= k;
                                 }
-                                else if (equation[positions[position]] == '(') {
+                                else if (equationCharacterArray[positions[position]] == '(') {
                                     parentheses += k;
                                 }
                             }
                             break;
                     }
                 }
-                if (!(equation[positions[1]] == '(' && equation[positions[0]] == ')')) {
+                if (!(equationCharacterArray[positions[1]] == '(' && equationCharacterArray[positions[0]] == ')')) {
                     length += 2;
                     // Move characters
                     for (int k = length - 1; k > positions[0] + 1; k--) {
-                        equation[k] = equation[k - 2];
+                        equationCharacterArray[k] = equationCharacterArray[k - 2];
                     }
                     // Insert close parenthesis
-                    equation[positions[0] + 1] = ')';
+                    equationCharacterArray[positions[0] + 1] = ')';
                     // Move characters
                     for (int k = positions[0]; k > positions[1]; k--) {
-                        equation[k] = equation[k - 1];
+                        equationCharacterArray[k] = equationCharacterArray[k - 1];
                     }
                     // Insert close parenthesis
-                    equation[positions[1] + 1] = '(';
+                    equationCharacterArray[positions[1] + 1] = '(';
                 }
             }
         }
     }
 
     if (debugEquation) {
-        debug_string += charToString(equation, length) + ", ";
+        debug_string += charToString(equationCharacterArray, length) + ", ";
     }
 
-    // Convert to coded equation
+    // Convert to coded equationCharacterArray
     if (debugEquation) {
-        debug_string += "Convert to coded equation:";
+        debug_string += "Convert to coded equationCharacterArray:";
     }
     int codedEquation[2 * maxEquationLength];
     int codedEquationCounter = 0;
     valuesCounter = 0;
     hasTimeVariable = false;
     for (int j = 0; j < length; j++, codedEquationCounter++) {
-        if (equation[j] != '.' && !aDigit(equation[j])) {
-            if (equation[j] == 'x') {
+        if (equationCharacterArray[j] != '.' && !aDigit(equationCharacterArray[j])) {
+            if (equationCharacterArray[j] == 'x') {
                 codedEquation[codedEquationCounter] = constants[valuesCounter] = X;
                 valuesCounter++;
             }
-            else if (equation[j] == 'y') {
+            else if (equationCharacterArray[j] == 'y') {
                 codedEquation[codedEquationCounter] = constants[valuesCounter] = Y;
                 valuesCounter++;
             }
-            else if (equation[j] == 'z') {
+            else if (equationCharacterArray[j] == 'z') {
                 codedEquation[codedEquationCounter] = constants[valuesCounter] = Z;
                 valuesCounter++;
             }
-            else if (equation[j] == 't' && equation[j + 1] != 'a') {
+            else if (equationCharacterArray[j] == 't' && equationCharacterArray[j + 1] != 'a') {
                 codedEquation[codedEquationCounter] = constants[valuesCounter] = T;
                 valuesCounter++;
                 hasTimeVariable = true;
             }
-            else if (equation[j] == 'e') {
+            else if (equationCharacterArray[j] == 'e') {
                 codedEquation[codedEquationCounter] = constants[valuesCounter] = E;
                 valuesCounter++;
             }
-            else if (equation[j] == pi) {
+            else if (equationCharacterArray[j] == pi) {
                 codedEquation[codedEquationCounter] = constants[valuesCounter] = PI;
                 valuesCounter++;
             }
-            else if (equation[j] == '(') {
+            else if (equationCharacterArray[j] == '(') {
                 codedEquation[codedEquationCounter] = OPEN_PARENTHESIS;
             }
-            else if (equation[j] == ')') {
+            else if (equationCharacterArray[j] == ')') {
                 codedEquation[codedEquationCounter] = CLOSE_PARENTHESIS;
             }
-            else if (equation[j] == '+') {
+            else if (equationCharacterArray[j] == '+') {
                 codedEquation[codedEquationCounter] = ADD;
             }
-            else if (equation[j] == '-') {
+            else if (equationCharacterArray[j] == '-') {
                 codedEquation[codedEquationCounter] = SUBTRACT;
             }
-            else if (equation[j] == '*') {
+            else if (equationCharacterArray[j] == '*') {
                 codedEquation[codedEquationCounter] = MULTIPLY;
             }
-            else if (equation[j] == '/') {
+            else if (equationCharacterArray[j] == '/') {
                 codedEquation[codedEquationCounter] = DIVIDE;
             }
-            else if (equation[j] == '^') {
+            else if (equationCharacterArray[j] == '^') {
                 codedEquation[codedEquationCounter] = POWER;
             }
-            else if (equation[j] == functions[0][0] && equation[j + 1] == functions[0][1]) {
-                if (equation[j + 3] == functions[0][3]) {
+            else if (equationCharacterArray[j] == functions[0][0] && equationCharacterArray[j + 1] == functions[0][1]) {
+                if (equationCharacterArray[j + 3] == functions[0][3]) {
                     codedEquation[codedEquationCounter] = SINE;
                     j += 2;
                 }
-                else if (equation[j + 3] == functions[6][3]) {
+                else if (equationCharacterArray[j + 3] == functions[6][3]) {
                     codedEquation[codedEquationCounter] = HYPERBOLIC_SINE;
                     j += 3;
                 }
             }
-            else if (equation[j] == functions[1][0] && equation[j + 1] == functions[1][1]) {
-                if (equation[j + 3] == functions[1][3]) {
+            else if (equationCharacterArray[j] == functions[1][0] && equationCharacterArray[j + 1] == functions[1][1]) {
+                if (equationCharacterArray[j + 3] == functions[1][3]) {
                     codedEquation[codedEquationCounter] = COSINE;
                     j += 2;
                 }
-                else if (equation[j + 3] == functions[7][3]) {
+                else if (equationCharacterArray[j + 3] == functions[7][3]) {
                     codedEquation[codedEquationCounter] = HYPERBOLIC_COSINE;
                     j += 3;
                 }
             }
-            else if (equation[j] == functions[2][0] && equation[j + 1] == functions[2][1]) {
-                if (equation[j + 3] == functions[2][3]) {
+            else if (equationCharacterArray[j] == functions[2][0] && equationCharacterArray[j + 1] == functions[2][1]) {
+                if (equationCharacterArray[j + 3] == functions[2][3]) {
                     codedEquation[codedEquationCounter] = TANGENT;
                     j += 2;
                 }
-                else if (equation[j + 3] == functions[8][3]) {
+                else if (equationCharacterArray[j + 3] == functions[8][3]) {
                     codedEquation[codedEquationCounter] = HYPERBOLIC_TANGENT;
                     j += 3;
                 }
             }
-            else if (equation[j] == functions[3][0] && equation[j + 1] == functions[3][1]) {
-                if (equation[j + 4] == functions[3][4]) {
+            else if (equationCharacterArray[j] == functions[3][0] && equationCharacterArray[j + 1] == functions[3][1]) {
+                if (equationCharacterArray[j + 4] == functions[3][4]) {
                     codedEquation[codedEquationCounter] = ARC_SINE;
                     j += 3;
                 }
-                else if (equation[j + 4] == functions[9][4]) {
+                else if (equationCharacterArray[j + 4] == functions[9][4]) {
                     codedEquation[codedEquationCounter] = HYPERBOLIC_ARC_SINE;
                     j += 4;
                 }
             }
-            else if (equation[j] == functions[4][0] && equation[j + 1] == functions[4][1]) {
-                if (equation[j + 4] == functions[4][4]) {
+            else if (equationCharacterArray[j] == functions[4][0] && equationCharacterArray[j + 1] == functions[4][1]) {
+                if (equationCharacterArray[j + 4] == functions[4][4]) {
                     codedEquation[codedEquationCounter] = ARC_COSINE;
                     j += 3;
                 }
-                else if (equation[j + 4] == functions[10][4]) {
+                else if (equationCharacterArray[j + 4] == functions[10][4]) {
                     codedEquation[codedEquationCounter] = HYPERBOLIC_ARC_COSINE;
                     j += 4;
                 }
             }
-            else if (equation[j] == functions[5][0] && equation[j + 1] == functions[5][1]) {
-                if (equation[j + 4] == functions[5][4]) {
+            else if (equationCharacterArray[j] == functions[5][0] && equationCharacterArray[j + 1] == functions[5][1]) {
+                if (equationCharacterArray[j + 4] == functions[5][4]) {
                     codedEquation[codedEquationCounter] = ARC_TANGENT;
                     j += 3;
                 }
-                else if (equation[j + 4] == functions[11][4]) {
+                else if (equationCharacterArray[j + 4] == functions[11][4]) {
                     codedEquation[codedEquationCounter] = HYPERBOLIC_ARC_TANGENT;
                     j += 4;
                 }
             }
-            else if (equation[j] == functions[12][0] && equation[j + 1] == functions[12][1]) {
+            else if (equationCharacterArray[j] == functions[12][0] && equationCharacterArray[j + 1] == functions[12][1]) {
                 codedEquation[codedEquationCounter] = ABSOLUTE_VALUE;
                 j += 2;
             }
-            else if (equation[j] == functions[13][0] && equation[j + 1] == functions[13][1]) {
+            else if (equationCharacterArray[j] == functions[13][0] && equationCharacterArray[j + 1] == functions[13][1]) {
                 codedEquation[codedEquationCounter] = LOG;
                 j += 2;
             }
-            else if (equation[j] == functions[14][0] && equation[j + 1] == functions[14][1]) {
+            else if (equationCharacterArray[j] == functions[14][0] && equationCharacterArray[j + 1] == functions[14][1]) {
                 codedEquation[codedEquationCounter] = NATURAL_LOG;
                 j += 1;
             }
-            else if (equation[j] == functions[15][0] && equation[j + 1] == functions[15][1]) {
+            else if (equationCharacterArray[j] == functions[15][0] && equationCharacterArray[j + 1] == functions[15][1]) {
                 codedEquation[codedEquationCounter] = SQUARE_ROOT;
                 j += 3;
             }
-            else if (equation[j] == functions[16][0] && equation[j + 1] == functions[16][1]) {
+            else if (equationCharacterArray[j] == functions[16][0] && equationCharacterArray[j + 1] == functions[16][1]) {
                 codedEquation[codedEquationCounter] = CUBED_ROOT;
                 j += 3;
             }
-            else if (equation[j] == '_') {
+            else if (equationCharacterArray[j] == '_') {
                 codedEquation[codedEquationCounter] = UNDERSCORE;
             }
         }
         else {
             int numberSize = 0;
-            for (int k = j; equation[k] == '.' || aDigit(equation[k]); k++) {
+            for (int k = j; equationCharacterArray[k] == '.' || aDigit(equationCharacterArray[k]); k++) {
                 numberSize++;
             }
             float number = 0;
             int power = 0;
             for (int jMinusOne = j - 1, k = jMinusOne + numberSize; k > jMinusOne; k--, power++) {
-                if (equation[k] == '.') {
+                if (equationCharacterArray[k] == '.') {
                     number *= pow(10, -power);
                     power = -1;
                 }
-                else if (aDigit(equation[k])) {
-                    number += (equation[k] - 48) * pow(10, power);
+                else if (aDigit(equationCharacterArray[k])) {
+                    number += (equationCharacterArray[k] - 48) * pow(10, power);
                 }
             }
             codedEquation[codedEquationCounter] = valuesCounter;
@@ -893,7 +893,7 @@ void ImplicitGrapher::processEquation() {
             j += numberSize - 1;
         }
     }
-    // Display equation
+    // Display equationCharacterArray
     if (debugEquation) {
         debug_string += decode(codedEquation, codedEquationCounter, values);
     }
@@ -907,7 +907,7 @@ void ImplicitGrapher::processEquation() {
     // Convert 0/2 to 0
     // Convert 2/0 to error
 
-    // Create Sequence Table destroying coded equation
+    // Create Sequence Table destroying coded equationCharacterArray
     for (int j = 0, counter = 0; j < codedEquationCounter; j++) {
         if (codedEquation[j] > -1) {
             counter++;

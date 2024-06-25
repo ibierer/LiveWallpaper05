@@ -642,9 +642,11 @@ class PreviewActivity : AppCompatActivity() {
                             viewModel.repo.rememberColorPickerValue = color
                             viewModel.repo.color.value = Color.valueOf(color)
                             viewModel.saveVisualizationState()
-                            Log.d("onPause,onResume", "colorButton.setOnClickListener")
-                            mView!!.onPause()
-                            mView!!.onResume()
+                            if(viewModel.repo.backgroundIsSolidColor.value!!) {
+                                Log.d("onPause,onResume", "colorButton.setOnClickListener")
+                                mView!!.onPause()
+                                mView!!.onResume()
+                            }
                         }
                     }
                 }
@@ -718,6 +720,8 @@ class PreviewActivity : AppCompatActivity() {
         deleteButton.setOnClickListener {
             if(viewModel.repo.equationsJSONArray.length() > 1) {
                 viewModel.repo.deleteEquation(viewModel.repo.savedEquationSelection)
+                equationNameEditText.setText(viewModel.repo.currentEquation.name)
+                equationValueEditText.setText(viewModel.repo.currentEquation.value)
             } else {
                 viewModel.repo.updateEquation(viewModel.repo.savedEquationSelection, "", "")
                 equationNameEditText.setText("")

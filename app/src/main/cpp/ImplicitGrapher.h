@@ -35,9 +35,7 @@ public:
         int valuesCounter;
     };
 
-    string memoryEquation;
-
-    void processEquation();
+    void processEquation(const string& equationString);
 
     explicit ImplicitGrapher(const ivec3& size, PositionXYZNormalXYZ*& vertices, uvec3*& indices, const bool& vectorPointsPositive);
 

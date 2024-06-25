@@ -142,14 +142,14 @@ Java_com_vizbox4d_PreviewActivity_00024Companion_init(JNIEnv *env, jobject thiz,
         }else if(visualizationType == "graph"){
             string equation = visualizationJSON["equation"];
             ImplicitGrapher::convertPiSymbol(equation);
-            string syntaxCheck = ImplicitGrapher::checkEquationSyntax(equation);
+            //string syntaxCheck = ImplicitGrapher::checkEquationSyntax(equation);
             bool referenceFrameRotates = visualizationJSON["reference_frame_rotates"];
             bool vectorPointsPositive = visualizationJSON["vector_points_positive"];
-            if(syntaxCheck == "") {
+            //if(syntaxCheck == "") {
                 view[mode] = new Graph2View(equation, 40, referenceFrameRotates, vectorPointsPositive);
-            }else{
-                view[mode] = new Graph2View("", 40, referenceFrameRotates, vectorPointsPositive);
-            }
+            //}else{
+            //    view[mode] = new Graph2View("", 40, referenceFrameRotates, vectorPointsPositive);
+            //}
         }
 
         view[mode]->backgroundIsSolidColor = visualizationJSON["background_is_solid_color"];
