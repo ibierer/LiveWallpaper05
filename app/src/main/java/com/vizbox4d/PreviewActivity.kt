@@ -886,21 +886,21 @@ class PreviewActivity : AppCompatActivity() {
         external fun init(visualization: String, mode: Int)
         external fun resize(width: Int, height: Int, mode: Int)
         external fun step(
-            acc_x: Float,
-            acc_y: Float,
-            acc_z: Float,
-            rot_x: Float,
-            rot_y: Float,
-            rot_z: Float,
-            rot_w: Float,
-            linear_acc_x: Float,
-            linear_acc_y: Float,
-            linear_acc_z: Float,
+            accX: Float,
+            accY: Float,
+            accZ: Float,
+            rotX: Float,
+            rotY: Float,
+            rotZ: Float,
+            rotW: Float,
+            linearAccX: Float,
+            linearAccY: Float,
+            linearAccZ: Float,
             distance: Float,
-            field_of_view: Float,
+            fieldOfView: Float,
             gravity: Float,
             efficiency: Float,
-            flip_normals: Boolean,
+            flipNormals: Boolean,
             orientation: Int,
             mode: Int
         )
