@@ -559,14 +559,14 @@ class PreviewActivity : AppCompatActivity() {
         savedGraphsSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 if(position != viewModel.repo.savedEquationSelection){
-                    val initialEquation: String = viewModel.repo.currentEquation.value
+                    val initialEquation: String = equationValueEditText.text.toString()
                     viewModel.repo.savedEquationSelection = position
                     equationNameEditText.setText(viewModel.repo.getEquation(position).name)
                     equationValueEditText.setText(viewModel.repo.getEquation(position).value)
                     equationNameEditText.isEnabled = true
                     equationValueEditText.isEnabled = true
                     if(viewModel.repo.currentEquation.value != initialEquation) {
-                        Log.d("onPause,onResume", "savedGraphsSpinner.onItemSelectedListener, viewModel.repo.currentEquation.value = ${viewModel.repo.currentEquation.value}, initialEquation = $initialEquation")
+                        Log.d("onPause,onResume", "savedGraphsSpinner.onItemSelectedListener")
                         mView!!.onPause()
                         mView!!.onResume()
                     }
@@ -658,6 +658,7 @@ class PreviewActivity : AppCompatActivity() {
         }
 
         defaultEquationsRadioButton.setOnClickListener {
+            val initialEquation: String = equationValueEditText.text.toString()
             defaultGraphsSpinner.isEnabled = true
             savedGraphsSpinner.isEnabled = false
             editTextsChangingViaKeyboard = false
@@ -669,13 +670,16 @@ class PreviewActivity : AppCompatActivity() {
             deleteButton.isEnabled = false
             if(viewModel.repo.preferredGraphList != 0) {
                 viewModel.repo.preferredGraphList = 0
-                Log.d("onPause,onResume", "defaultEquationsRadioButton.setOnClickListener")
-                mView!!.onPause()
-                mView!!.onResume()
+                if(viewModel.repo.currentEquation.value != initialEquation) {
+                    Log.d("onPause,onResume", "defaultEquationsRadioButton.setOnClickListener")
+                    mView!!.onPause()
+                    mView!!.onResume()
+                }
             }
         }
 
         savedEquationsRadioButton.setOnClickListener {
+            val initialEquation: String = equationValueEditText.text.toString()
             savedGraphsSpinner.isEnabled = true
             defaultGraphsSpinner.isEnabled = false
             editTextsChangingViaKeyboard = false
@@ -687,9 +691,11 @@ class PreviewActivity : AppCompatActivity() {
             deleteButton.isEnabled = true
             if(viewModel.repo.preferredGraphList != 1) {
                 viewModel.repo.preferredGraphList = 1
-                Log.d("onPause,onResume", "savedEquationsRadioButton.setOnClickListener")
-                mView!!.onPause()
-                mView!!.onResume()
+                if(viewModel.repo.currentEquation.value != initialEquation) {
+                    Log.d("onPause,onResume", "savedEquationsRadioButton.setOnClickListener")
+                    mView!!.onPause()
+                    mView!!.onResume()
+                }
             }
         }
 
@@ -721,7 +727,7 @@ class PreviewActivity : AppCompatActivity() {
         }
 
         deleteButton.setOnClickListener {
-            val initialEquation: String = viewModel.repo.currentEquation.value
+            val initialEquation: String = equationValueEditText.text.toString()
             if(viewModel.repo.equationsJSONArray.length() > 1) {
                 viewModel.repo.deleteEquation(viewModel.repo.savedEquationSelection)
                 equationNameEditText.setText(viewModel.repo.currentEquation.name)
