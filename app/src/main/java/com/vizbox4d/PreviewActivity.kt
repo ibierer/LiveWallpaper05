@@ -2,6 +2,7 @@ package com.vizbox4d
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -10,7 +11,6 @@ import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewTreeObserver
-import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.TranslateAnimation
 import android.view.inputmethod.EditorInfo
@@ -23,6 +23,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.RadioGroup
+import android.widget.ScrollView
 import android.widget.SeekBar
 import android.widget.Spinner
 import android.widget.TextView
@@ -35,6 +36,7 @@ import com.vizbox4d.activewallpaperdata.ActiveWallpaperViewModel
 import com.vizbox4d.activewallpaperdata.ActiveWallpaperViewModelFactory
 import yuku.ambilwarna.AmbilWarnaDialog
 
+
 class PreviewActivity : AppCompatActivity() {
     private var mView: GLES3JNIView? = null
 
@@ -43,6 +45,7 @@ class PreviewActivity : AppCompatActivity() {
     }
 
     private val layout: LinearLayout by lazy { findViewById<LinearLayout>(R.id.render_layout) }
+    private val scrollView: ScrollView by lazy { findViewById<ScrollView>(R.id.settings_scrollview) }
     private val fpsMeter: TextView by lazy { findViewById<TextView>(R.id.tv_fps_meter) }
     private val syntaxCheck: TextView by lazy { findViewById<TextView>(R.id.tv_syntax_check) }
     private val distanceSeekBar: SeekBar by lazy { findViewById<SeekBar>(R.id.distance_seekbar) }
@@ -73,7 +76,8 @@ class PreviewActivity : AppCompatActivity() {
     private val savedEquationsRadioButton: RadioButton by lazy { findViewById<RadioButton>(R.id.saved_equations_radio_button) }
     private val defaultGraphsSpinner: Spinner by lazy { findViewById<Spinner>(R.id.default_graph_selection_spinner) }
     private val savedGraphsSpinner: Spinner by lazy { findViewById<Spinner>(R.id.saved_graph_selection_spinner) }
-
+    private val rootView: View by lazy { findViewById<View>(android.R.id.content) }
+    private var currentFocusedView: View? = null
     private var editTextsChangingViaKeyboard = true
 
     private fun updateSyntaxResult() {
@@ -738,6 +742,41 @@ class PreviewActivity : AppCompatActivity() {
                 Log.d("onPause,onResume", "deleteButton.setOnClickListener")
                 mView!!.onPause()
                 mView!!.onResume()
+            }
+        }
+
+        // Function to scroll so that the EditText is immediately above the keyboard
+        fun adjustScroll() {
+            val rootView = findViewById<View>(android.R.id.content)
+            val r = Rect()
+            rootView.getWindowVisibleDisplayFrame(r)
+            val screenHeight = rootView.rootView.height
+            val keypadHeight = screenHeight - r.bottom
+
+            if (keypadHeight > screenHeight * 0.15) { // keyboard is opened
+                currentFocusedView?.let {
+                    val location = IntArray(2)
+                    it.getLocationInWindow(location)
+                    val editTextBottom = location[1] + it.height
+                    val scrollY = editTextBottom - r.bottom + scrollView.paddingBottom
+                    scrollView.smoothScrollBy(0, scrollY)
+                }
+            }
+        }
+
+        rootView.viewTreeObserver.addOnGlobalLayoutListener { adjustScroll() }
+
+        equationNameEditText.setOnFocusChangeListener { view, hasFocus ->
+            if (hasFocus) {
+                currentFocusedView = view
+                adjustScroll()
+            }
+        }
+
+        equationValueEditText.setOnFocusChangeListener { view, hasFocus ->
+            if (hasFocus) {
+                currentFocusedView = view
+                adjustScroll()
             }
         }
 
