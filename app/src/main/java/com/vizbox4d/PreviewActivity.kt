@@ -223,14 +223,12 @@ class PreviewActivity : AppCompatActivity() {
         }
     }
 
-    private fun doneButton(): Runnable {
-        return Runnable {
-            viewModel.repo.updateEquation(viewModel.repo.savedEquationSelection, equationNameEditText.text.toString(), equationValueEditText.text.toString())
-            viewModel.repo.updateSavedEquations()
-            Log.d("onPause,onResume", "doneButton()")
-            mView!!.onPause()
-            mView!!.onResume()
-        }
+    private fun doneButton() {
+        viewModel.repo.updateEquation(viewModel.repo.savedEquationSelection, equationNameEditText.text.toString(), equationValueEditText.text.toString())
+        viewModel.repo.updateSavedEquations()
+        Log.d("onPause,onResume", "doneButton()")
+        mView!!.onPause()
+        mView!!.onResume()
     }
 
     private fun showUIComponents() {
@@ -814,30 +812,12 @@ class PreviewActivity : AppCompatActivity() {
         })
 
         // Setup listener for the Return button
-        equationValueEditText.setOnEditorActionListener { _, actionId, event ->
+        equationValueEditText.setOnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_DONE || (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
-                val view = currentFocus
-                if (view != null) {
-                    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                    imm.hideSoftInputFromWindow(view.windowToken, 0)
-
-                    // Add a global layout listener to wait until the keyboard is hidden
-                    view.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
-                        override fun onGlobalLayout() {
-                            if (findViewById<View>(android.R.id.content).rootView.height - findViewById<View>(android.R.id.content).height <= 200) {
-                                // Keyboard is hidden, run the action
-                                view.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                                Handler().post(doneButton())
-                            }
-                        }
-                    })
-                } else {
-                    // If no view is focused, run the action immediately
-                    Handler().post(doneButton())
-                }
-                return@setOnEditorActionListener true
+                doneButton()
+                true // Indicate that the action has been handled
             } else {
-                return@setOnEditorActionListener false
+                false
             }
         }
 
