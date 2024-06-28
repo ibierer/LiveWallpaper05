@@ -4,9 +4,12 @@ import android.graphics.Color
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.TextWatcher
 import android.util.Log
 import android.view.KeyEvent
+import android.view.MotionEvent
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowInsetsController
@@ -75,6 +78,7 @@ class PreviewActivity : AppCompatActivity() {
     private val defaultGraphsSpinner: Spinner by lazy { findViewById<Spinner>(R.id.default_graph_selection_spinner) }
     private val savedGraphsSpinner: Spinner by lazy { findViewById<Spinner>(R.id.saved_graph_selection_spinner) }
     private val rootView: View by lazy { findViewById<View>(android.R.id.content) }
+    private val settingsHeaderLayout: LinearLayout by lazy { findViewById<LinearLayout>(R.id.settings_header_layout)}
     private var currentFocusedView: View? = null
     private var isKeyboardVisible = false
     private var editTextsChangingViaKeyboard = true
@@ -375,6 +379,38 @@ class PreviewActivity : AppCompatActivity() {
 
         // add gl engine view to viewport
         layout.addView(mView)
+    }
+
+    private val handler = Handler(Looper.getMainLooper())
+    private val fadeOutRunnable = Runnable { fadeOutHeaderLayout() }
+
+    private fun startFadeOutTimer() {
+        handler.postDelayed(fadeOutRunnable, 2000)
+    }
+
+    private fun resetFadeOutTimer() {
+        handler.removeCallbacks(fadeOutRunnable)
+        settingsHeaderLayout.alpha = 1f
+        startFadeOutTimer()
+    }
+
+    private fun fadeOutHeaderLayout() {
+        if(viewModel.repo.isCollapsed) {
+            settingsHeaderLayout.animate()
+                .alpha(0f)
+                .setDuration(1000)
+                .start()
+        }
+    }
+
+    override fun onUserInteraction() {
+        super.onUserInteraction()
+        resetFadeOutTimer()
+    }
+
+    private fun resetFadeOutAnimation() {
+        settingsHeaderLayout.animate().cancel()
+        settingsHeaderLayout.alpha = 1f
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
@@ -850,6 +886,7 @@ class PreviewActivity : AppCompatActivity() {
 
         hideUIButton.setOnClickListener {
             val animation: Animation = if (viewModel.repo.isCollapsed) {
+                resetFadeOutAnimation()
                 TranslateAnimation(linearLayout.width.toFloat(), 0f, 0f, 0f)
             } else {
                 TranslateAnimation(0f, linearLayout.width.toFloat(), 0f, 0f)
@@ -912,6 +949,15 @@ class PreviewActivity : AppCompatActivity() {
         viewModel.repo.smoothSphereSurface.observe(this){ flip ->
             smoothSphereSurfaceCheckBox.isChecked = flip
         }
+
+        // Define fade-out logic
+        settingsHeaderLayout.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                resetFadeOutTimer()
+            }
+            false
+        }
+        startFadeOutTimer()
     }
 
     companion object {
