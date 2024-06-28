@@ -1,20 +1,16 @@
 package com.vizbox4d
 
-import android.content.Context
 import android.graphics.Color
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.text.TextWatcher
 import android.util.Log
 import android.view.KeyEvent
 import android.view.View
-import android.view.ViewTreeObserver
 import android.view.animation.Animation
 import android.view.animation.TranslateAnimation
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -78,6 +74,7 @@ class PreviewActivity : AppCompatActivity() {
     private val savedGraphsSpinner: Spinner by lazy { findViewById<Spinner>(R.id.saved_graph_selection_spinner) }
     private val rootView: View by lazy { findViewById<View>(android.R.id.content) }
     private var currentFocusedView: View? = null
+    private var isKeyboardVisible = false
     private var editTextsChangingViaKeyboard = true
 
     private fun updateSyntaxResult() {
@@ -744,7 +741,7 @@ class PreviewActivity : AppCompatActivity() {
         }
 
         // Function to scroll so that the EditText is immediately above the keyboard
-        fun adjustScroll() {
+        fun adjustScrollOrRegenerateOpenGLView() {
             val rootView = findViewById<View>(android.R.id.content)
             val r = Rect()
             rootView.getWindowVisibleDisplayFrame(r)
@@ -752,6 +749,8 @@ class PreviewActivity : AppCompatActivity() {
             val keypadHeight = screenHeight - r.bottom
 
             if (keypadHeight > screenHeight * 0.15) { // keyboard is opened
+                // Scroll
+                isKeyboardVisible = true
                 currentFocusedView?.let {
                     val location = IntArray(2)
                     it.getLocationInWindow(location)
@@ -759,22 +758,27 @@ class PreviewActivity : AppCompatActivity() {
                     val scrollY = editTextBottom - r.bottom + scrollView.paddingBottom
                     scrollView.smoothScrollBy(0, scrollY)
                 }
+            } else if(isKeyboardVisible) {
+                // Re-generate OpenGL view if keyboard was retracted
+                isKeyboardVisible = false
+                mView!!.onPause()
+                mView!!.onResume()
             }
         }
 
-        rootView.viewTreeObserver.addOnGlobalLayoutListener { adjustScroll() }
+        rootView.viewTreeObserver.addOnGlobalLayoutListener { adjustScrollOrRegenerateOpenGLView() }
 
         equationNameEditText.setOnFocusChangeListener { view, hasFocus ->
             if (hasFocus) {
                 currentFocusedView = view
-                adjustScroll()
+                adjustScrollOrRegenerateOpenGLView()
             }
         }
 
         equationValueEditText.setOnFocusChangeListener { view, hasFocus ->
             if (hasFocus) {
                 currentFocusedView = view
-                adjustScroll()
+                adjustScrollOrRegenerateOpenGLView()
             }
         }
 
