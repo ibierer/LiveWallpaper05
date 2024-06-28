@@ -413,6 +413,14 @@ class PreviewActivity : AppCompatActivity() {
         settingsHeaderLayout.alpha = 1f
     }
 
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        if (!viewModel.repo.isCollapsed) {
+            val animation: Animation = TranslateAnimation(0f, linearLayout.width.toFloat(), 0f, 0f)
+            setDefaultAnimationParametersAndAnimate(animation)
+        }
+    }
+
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
