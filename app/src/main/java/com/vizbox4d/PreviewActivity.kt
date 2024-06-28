@@ -418,6 +418,8 @@ class PreviewActivity : AppCompatActivity() {
         if (!viewModel.repo.isCollapsed) {
             val animation: Animation = TranslateAnimation(0f, linearLayout.width.toFloat(), 0f, 0f)
             setDefaultAnimationParametersAndAnimate(animation)
+        }else{
+            super.onBackPressed()
         }
     }
 

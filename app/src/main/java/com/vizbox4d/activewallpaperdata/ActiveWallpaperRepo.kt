@@ -45,7 +45,7 @@ class ActiveWallpaperRepo private constructor(val context: Context) : SensorEven
     private var preferredGraphListValue: Int = -1
     private var defaultEquationSelectionValue: Int = -1
     private var savedEquationSelectionValue: Int = -1
-    var isCollapsed = sharedPreferences.getBoolean("isCollapsed", false)
+    var isCollapsed = sharedPreferences.getBoolean("isCollapsed", true)
     var preferredGraphList: Int
         get() { if(preferredGraphListValue == -1) preferredGraphListValue = sharedPreferences.getInt("preferredGraphList", 0); return preferredGraphListValue }
         set(value) { preferredGraphListValue = value; sharedPreferencesEditor.putInt("preferredGraphList", value); sharedPreferencesEditor.apply() }
