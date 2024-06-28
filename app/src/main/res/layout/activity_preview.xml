@@ -402,24 +402,28 @@
                 android:id="@+id/flip_normals_checkbox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/slightly_opaque_border_background"
                 android:text="@string/flip_normals_checkbox" />
 
             <CheckBox
                 android:id="@+id/fluid_surface_checkbox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/slightly_opaque_border_background"
                 android:text="@string/fluid_surface_checkbox" />
 
             <CheckBox
                 android:id="@+id/gyroscope_compensation_checkbox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/slightly_opaque_border_background"
                 android:text="@string/gyroscope_compensation_checkbox" />
 
             <CheckBox
                 android:id="@+id/smooth_sphere_surface_checkbox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/slightly_opaque_border_background"
                 android:text="@string/smooth_sphere_surface_checkbox" />
 
         </LinearLayout>
