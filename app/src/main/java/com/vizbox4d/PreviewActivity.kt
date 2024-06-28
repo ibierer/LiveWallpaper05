@@ -379,6 +379,12 @@ class PreviewActivity : AppCompatActivity() {
 
         // add gl engine view to viewport
         layout.addView(mView)
+
+        // set default to viewmodel visualization type
+        visualizationSelectorSpinner.setSelection(viewModel.getVisualization())
+
+        environmentMapSelectorSpinner.setSelection(viewModel.repo.getEnvironmentMapSelection())
+
     }
 
     private val handler = Handler(Looper.getMainLooper())
@@ -428,11 +434,6 @@ class PreviewActivity : AppCompatActivity() {
         super.onPostCreate(savedInstanceState)
 
         loadOrUnloadUIElements()
-
-        // set default to viewmodel visualization type
-        visualizationSelectorSpinner.setSelection(viewModel.getVisualization())
-
-        environmentMapSelectorSpinner.setSelection(viewModel.repo.getEnvironmentMapSelection())
 
         viewModel.updateOrientation(this.display!!.rotation)
 
