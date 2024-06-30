@@ -9,9 +9,9 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@drawable/ic_toroids"
+        android:icon="@drawable/ic_toroids_red_512x512"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/ic_toroids"
+        android:roundIcon="@drawable/ic_toroids_red_512x512"
         android:supportsRtl="true"
         android:theme="@style/Theme.LiveWallpaper05"
         tools:targetApi="34">

@@ -7,7 +7,7 @@ import org.json.JSONObject
 data class GraphVisualization (
     val visualizationType: String = "graph",
     var distance: Float = 0.5f,
-    var fieldOfView: Float = 60.0f,
+    var fieldOfView: Float = 90.0f,
     var backgroundColor: Color = createColorFromInts(0, 0, 0, 0),
     var referenceFrameRotates: Boolean = false,
     var backgroundIsSolidColor: Boolean = false,
@@ -19,7 +19,7 @@ data class GraphVisualization (
     constructor(jsonObject: JSONObject) : this(
         visualizationType = jsonObject.optString("visualization_type", "graph"),
         distance = jsonObject.optDouble("distance", 0.5).toFloat(),
-        fieldOfView = jsonObject.optDouble("field_of_view", 60.0).toFloat(),
+        fieldOfView = jsonObject.optDouble("field_of_view", 90.0).toFloat(),
         backgroundColor = jsonObject.optJSONObject("background_color")?.let {
             Companion.jsonObjectToColor(
                 it
