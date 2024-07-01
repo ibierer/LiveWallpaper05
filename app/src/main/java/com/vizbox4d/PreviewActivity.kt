@@ -608,12 +608,26 @@ class PreviewActivity : AppCompatActivity() {
         // register spinner actions to update visualization type in repo
         visualizationSelectorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
+                fun getEnvironmentMapSelection(): Int {
+                    return when (viewModel.repo.visualization.toJsonObject().getString("background_texture")) {
+                        "ms_paint_colors" -> 0
+                        "mandelbrot" -> 1
+                        "rgb_cube" -> 2
+                        else -> 0
+                    }
+                }
+                val initialEnvironmentMap: Int = getEnvironmentMapSelection()
                 val changed = viewModel.updateVisualizationSelection(pos)
                 if (changed) {
-                    // tell view it needs to be reloaded
-                    Log.d("onPause,onResume", "visualizationSelectorSpinner.onItemSelectedListener")
-                    mView!!.onPause()
-                    mView!!.onResume()
+                    val newEnvironmentMap: Int = getEnvironmentMapSelection()
+                    if(initialEnvironmentMap != newEnvironmentMap) {
+                        environmentMapSelectorSpinner.setSelection(getEnvironmentMapSelection())
+                    }else {
+                        // tell view it needs to be reloaded
+                        Log.d("onPause,onResume", "visualizationSelectorSpinner.onItemSelectedListener")
+                        mView!!.onPause()
+                        mView!!.onResume()
+                    }
                     loadOrUnloadUIElements()
                 }
             }

@@ -244,15 +244,14 @@ void NaiveSimulationFluidSurfaceView::render(){
                 calculatePerspectiveSetViewport(maxViewAngle, distanceToTangent, zFar);
                 {
                     glEnable(GL_CULL_FACE);
+                    // Prepare model-view-projection matrix
+                    model = model.Translation(Vec3<float>(implicitGrapher.defaultOffset.x, implicitGrapher.defaultOffset.y, implicitGrapher.defaultOffset.z));
+                    view = referenceFrameRotates ? translation : translation * rotation;
+                    projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
+                    mvp = projection * view * model;
+                    cameraTransformation = rotation.GetInverse() * translation * rotation * model;
 
                     if (!backgroundIsSolidColor) {
-                        // Prepare model-view-projection matrix
-                        model = model.Translation(Vec3<float>(implicitGrapher.defaultOffset.x, implicitGrapher.defaultOffset.y, implicitGrapher.defaultOffset.z));
-                        view = referenceFrameRotates ? translation : translation * rotation;
-                        projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
-                        mvp = projection * view * model;
-                        cameraTransformation = rotation.GetInverse() * translation * rotation * model;
-
                         // Render environment map
                         glDisable(GL_DEPTH_TEST);
                         glUseProgram(environmentMapProgram);
