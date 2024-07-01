@@ -249,7 +249,7 @@ void NaiveSimulationFluidSurfaceView::render(){
                     view = referenceFrameRotates ? translation : translation * rotation;
                     projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
                     mvp = projection * view * model;
-                    cameraTransformation = rotation.GetInverse() * translation * rotation * model;
+                    cameraTransformation = referenceFrameRotates ? translation * rotation * model : rotation.GetInverse() * translation * rotation * model;
 
                     if (!backgroundIsSolidColor) {
                         // Render environment map
