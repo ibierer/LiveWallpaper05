@@ -185,6 +185,9 @@ public:
             REFRACT2_FUNCTION +
             FRESNEL_EFFECT_FUNCTION + +
             "void main() {\n"
+            "    outColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);\n"
+            "    outColor = Texture(environmentTexture, direction);\n"
+            "    return;\n"
             "    vec3 normalizedDirection = normalize(direction);\n"
             "    vec3 normalizedNormal = normalize(vNormal);\n"
             "    float dotNI = dot(normalizedDirection, normalizedNormal);\n"
@@ -229,6 +232,9 @@ public:
             REFRACT2_FUNCTION +
             FRESNEL_EFFECT_FUNCTION + +
             "void main() {\n"
+            "    outColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);\n"
+            "    outColor = texture(environmentTexture, direction);\n"
+            "    return;\n"
             "    vec3 normalizedDirection = normalize(direction);\n"
             "    vec3 normalizedNormal = normalize(vNormal);\n"
             "    float dotNI = dot(normalizedDirection, normalizedNormal);\n"
@@ -274,6 +280,9 @@ public:
             REFRACT2_FUNCTION +
             FRESNEL_EFFECT_FUNCTION + +
             "void main() {\n"
+            "    outColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);\n"
+            "    outColor = Texture(environmentTexture, direction);\n"
+            "    return;\n"
             "    vec3 normalizedDirection = normalize(direction);\n"
             "    vec3 normalizedNormal = normalize(vNormal);\n"
             "    float dotNI = dot(normalizedDirection, normalizedNormal);\n"
@@ -318,6 +327,9 @@ public:
             REFRACT2_FUNCTION +
             FRESNEL_EFFECT_FUNCTION + +
             "void main() {\n"
+            "    outColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);\n"
+            "    outColor = texture(environmentTexture, direction);\n"
+            "    return;\n"
             "    vec3 normalizedDirection = normalize(direction);\n"
             "    vec3 normalizedNormal = normalize(vNormal);\n"
             "    float dotNI = dot(normalizedDirection, normalizedNormal);\n"
@@ -365,6 +377,8 @@ public:
             FRESNEL_EFFECT_FUNCTION +
             "void main() {\n"
             "    outColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);\n"
+            "    outColor = Texture(environmentTexture, direction);\n"
+            "    return;\n"
             "    vec4 bufferColor = texture(image, gl_FragCoord.xy/vec2(screenWidth, screenHeight));\n"
             "    if(bufferColor.a == 0.0f){\n"
             "        outColor = Texture(environmentTexture, direction);\n"
@@ -424,6 +438,8 @@ public:
             FRESNEL_EFFECT_FUNCTION +
             "void main() {\n"
             "    outColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);\n"
+            "    outColor = texture(environmentTexture, direction);\n"
+            "    return;\n"
             "    vec4 bufferColor = texture(image, gl_FragCoord.xy/vec2(screenWidth, screenHeight));\n"
             "    if(bufferColor.a == 0.0f){\n"
             "        outColor = texture(environmentTexture, direction);\n"
