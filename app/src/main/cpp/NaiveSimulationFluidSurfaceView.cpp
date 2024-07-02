@@ -114,7 +114,7 @@ void NaiveSimulationFluidSurfaceView::render(){
 
         translation = translation.Translation(Vec3<float>(0.0f, 0.0f, -distanceToCenter));
         normalMatrix = referenceFrameRotates ? rotation.GetSubMatrix3().GetInverse() : normalMatrix.Identity();
-        cameraTransformation = rotation.GetInverse() * translation * rotation * model.Translation(Vec3<float>(0.0f, 0.0f, 0.0f));
+        cameraTransformation = referenceFrameRotates ? rotation.GetInverse() * translation * rotation * model.Translation(Vec3<float>(0.0f, 0.0f, 0.0f)) : rotation.GetInverse() * translation * rotation * model.Translation(Vec3<float>(0.0f, 0.0f, 0.0f));
 
         implicitGrapher.calculateSurfaceOnCPU(fOfXYZFluidSurface, 0.1f * getFrameCount(), 10, implicitGrapher.defaultOffset, 3.0f / 7.0f, false, vertices, indices, numIndices);
 
@@ -244,12 +244,13 @@ void NaiveSimulationFluidSurfaceView::render(){
                 calculatePerspectiveSetViewport(maxViewAngle, distanceToTangent, zFar);
                 {
                     glEnable(GL_CULL_FACE);
+
                     // Prepare model-view-projection matrix
                     model = model.Translation(Vec3<float>(implicitGrapher.defaultOffset.x, implicitGrapher.defaultOffset.y, implicitGrapher.defaultOffset.z));
                     view = referenceFrameRotates ? translation : translation * rotation;
                     projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
                     mvp = projection * view * model;
-                    cameraTransformation = referenceFrameRotates ? translation * rotation * model : rotation.GetInverse() * translation * rotation * model;
+                    cameraTransformation = referenceFrameRotates ? rotation.GetInverse() * translation * rotation * model : rotation.GetInverse() * translation * rotation * model;
 
                     if (!backgroundIsSolidColor) {
                         // Render environment map
@@ -391,7 +392,10 @@ void NaiveSimulationFluidSurfaceView::render(){
                     projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
                     mvp = projection * view * model;
 
-                    cameraTransformation = rotation.GetInverse() * view;
+                    cameraTransformation = referenceFrameRotates ? rotation.GetInverse() * view : rotation.GetInverse() * view;
+                    //cameraTransformation = rotation.GetInverse() * translation * rotation;
+                    //cameraTransformation = rotation.GetInverse() * translation * rotation * model;
+                    //cameraTransformation = rotation.GetInverse() * translation * rotation * model.Translation(Vec3<float>(0.0f, 0.0f, 0.0f));
 
                     // Render a sphere
                     glDepthFunc(GL_GREATER);
