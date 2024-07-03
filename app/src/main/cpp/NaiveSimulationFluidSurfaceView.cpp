@@ -114,7 +114,7 @@ void NaiveSimulationFluidSurfaceView::render(){
 
         translation = translation.Translation(Vec3<float>(0.0f, 0.0f, -distanceToCenter));
         normalMatrix = referenceFrameRotates ? rotation.GetSubMatrix3().GetInverse() : normalMatrix.Identity();
-        cameraTransformation = referenceFrameRotates ? rotation.GetInverse() * translation * rotation * model.Translation(Vec3<float>(0.0f, 0.0f, 0.0f)) : rotation.GetInverse() * translation * rotation * model.Translation(Vec3<float>(0.0f, 0.0f, 0.0f));
+        cameraTransformation = rotation.GetInverse() * translation * rotation * model.Translation(Vec3<float>(0.0f, 0.0f, 0.0f));
 
         implicitGrapher.calculateSurfaceOnCPU(fOfXYZFluidSurface, 0.1f * getFrameCount(), 10, implicitGrapher.defaultOffset, 3.0f / 7.0f, false, vertices, indices, numIndices);
 
@@ -250,7 +250,7 @@ void NaiveSimulationFluidSurfaceView::render(){
                     view = referenceFrameRotates ? translation : translation * rotation;
                     projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
                     mvp = projection * view * model;
-                    cameraTransformation = referenceFrameRotates ? rotation.GetInverse() * translation * rotation * model : rotation.GetInverse() * translation * rotation * model;
+                    cameraTransformation = rotation.GetInverse() * view * model;
 
                     if (!backgroundIsSolidColor) {
                         // Render environment map
@@ -392,10 +392,7 @@ void NaiveSimulationFluidSurfaceView::render(){
                     projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
                     mvp = projection * view * model;
 
-                    cameraTransformation = referenceFrameRotates ? rotation.GetInverse() * view : rotation.GetInverse() * view;
-                    //cameraTransformation = rotation.GetInverse() * translation * rotation;
-                    //cameraTransformation = rotation.GetInverse() * translation * rotation * model;
-                    //cameraTransformation = rotation.GetInverse() * translation * rotation * model.Translation(Vec3<float>(0.0f, 0.0f, 0.0f));
+                    cameraTransformation = rotation.GetInverse() * view * model;
 
                     // Render a sphere
                     glDepthFunc(GL_GREATER);
@@ -466,7 +463,7 @@ void NaiveSimulationFluidSurfaceView::render(){
                 view = referenceFrameRotates ? translation : translation * rotation;
                 projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
                 mvp = projection * view * model;
-                cameraTransformation = referenceFrameRotates ? rotation.GetInverse() * translation * model : rotation.GetInverse() * translation * rotation * model;
+                cameraTransformation = rotation.GetInverse() * view * model;
 
                 // Render graph
                 glUseProgram(graphFluidSurfaceProgram);
