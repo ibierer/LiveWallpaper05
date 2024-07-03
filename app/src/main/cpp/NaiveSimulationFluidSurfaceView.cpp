@@ -250,6 +250,7 @@ void NaiveSimulationFluidSurfaceView::render(){
                     view = referenceFrameRotates ? translation : translation * rotation;
                     projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
                     mvp = projection * view * model;
+
                     cameraTransformation = rotation.GetInverse() * view * model;
 
                     if (!backgroundIsSolidColor) {
@@ -462,6 +463,7 @@ void NaiveSimulationFluidSurfaceView::render(){
                 view = referenceFrameRotates ? translation : translation * rotation;
                 projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
                 mvp = projection * view * model;
+
                 cameraTransformation = rotation.GetInverse() * view * model;
 
                 // Render graph
