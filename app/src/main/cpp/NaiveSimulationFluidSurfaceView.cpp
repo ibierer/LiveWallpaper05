@@ -446,7 +446,6 @@ void NaiveSimulationFluidSurfaceView::render(){
                 glCullFace(GL_BACK);
             }
 
-
             // Render to default frame buffer
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
