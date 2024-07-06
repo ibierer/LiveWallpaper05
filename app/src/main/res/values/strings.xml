@@ -29,7 +29,7 @@
     <string name="image_radio_button">Image</string>
     <string name="change_color_button_text">Change Color</string>
     <string name="equation_selection_label">Equation Selection:</string>
-    <string name="examples_radio_button">Examples</string>
+    <string name="examples_radio_button">Demo</string>
     <string name="user_defined_radio_button">User Defined</string>
     <string name="equation_name_label">Title:</string>
     <string name="new_button">New</string>
