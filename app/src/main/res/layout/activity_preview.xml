@@ -24,6 +24,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
+        android:layout_marginBottom="@dimen/preview_ui_margin"
+        android:layout_marginLeft="@dimen/preview_ui_margin"
+        android:layout_marginRight="@dimen/preview_ui_margin"
         android:orientation="vertical"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -34,19 +37,20 @@
 
             <TextView
                 android:id="@+id/tv_fps_meter"
-                android:layout_width="80dp"
+                android:layout_width="81dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:background="@drawable/slightly_opaque_border_background"
                 android:padding="@dimen/preview_ui_padding"
+                android:textColor="@color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <Button
                 android:id="@+id/hide_ui_button"
-                android:layout_width="130dp"
-                android:layout_height="30dp"
+                android:layout_width="129dp"
+                android:layout_height="29dp"
                 android:text="@string/showUIButtonText"
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:background="@drawable/slightly_opaque_border_background"
@@ -64,8 +68,8 @@
             <Spinner
                 android:id="@+id/visualization_type_spinner"
                 style="@style/Widget.AppCompat.Spinner"
+                android:layout_height="29dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:entries="@array/visualization_types" />
         </LinearLayout>
     </LinearLayout>
@@ -82,8 +86,9 @@
             android:id="@+id/settings_linearlayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="@dimen/preview_ui_margin"
             android:orientation="vertical"
-            android:paddingBottom="120dp">
+            android:paddingBottom="110dp">
 
             <TextView
                 android:id="@+id/distance_label"
@@ -92,7 +97,8 @@
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:padding="@dimen/preview_ui_padding"
                 android:background="@drawable/slightly_opaque_border_background"
-                android:text="@string/distance_label" />
+                android:text="@string/distance_label"
+                android:textColor="@color/white" />
 
             <SeekBar
                 android:id="@+id/distance_seekbar"
@@ -111,7 +117,8 @@
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:padding="@dimen/preview_ui_padding"
                 android:background="@drawable/slightly_opaque_border_background"
-                android:text="@string/field_of_view_label" />
+                android:text="@string/field_of_view_label"
+                android:textColor="@color/white" />
 
             <SeekBar
                 android:id="@+id/field_of_view_seekbar"
@@ -130,7 +137,8 @@
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:padding="@dimen/preview_ui_padding"
                 android:background="@drawable/slightly_opaque_border_background"
-                android:text="@string/gravity_label" />
+                android:text="@string/gravity_label"
+                android:textColor="@color/white" />
 
             <SeekBar
                 android:id="@+id/gravity_seekbar"
@@ -149,7 +157,8 @@
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:padding="@dimen/preview_ui_padding"
                 android:background="@drawable/slightly_opaque_border_background"
-                android:text="@string/linear_acceleration_label" />
+                android:text="@string/linear_acceleration_label"
+                android:textColor="@color/white" />
 
             <SeekBar
                 android:id="@+id/linear_acceleration_seekbar"
@@ -168,7 +177,8 @@
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:padding="@dimen/preview_ui_padding"
                 android:background="@drawable/slightly_opaque_border_background"
-                android:text="@string/efficiency_label" />
+                android:text="@string/efficiency_label"
+                android:textColor="@color/white" />
 
             <SeekBar
                 android:id="@+id/efficiency_seekbar"
@@ -187,7 +197,8 @@
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:padding="@dimen/preview_ui_padding"
                 android:background="@drawable/slightly_opaque_border_background"
-                android:text="@string/background_label" />
+                android:text="@string/background_label"
+                android:textColor="@color/white" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -223,6 +234,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:padding="@dimen/preview_ui_padding"
                     android:orientation="horizontal">
 
                     <Button
@@ -231,7 +243,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/change_color_button_text"
-                        android:layout_margin="@dimen/preview_ui_margin" />
+                        android:layout_margin="@dimen/preview_ui_margin"
+                        android:background="@drawable/slightly_opaque_border_background" />
 
                     <Spinner
                         android:id="@+id/image_selection_spinner"
@@ -241,6 +254,7 @@
                         android:layout_weight="1"
                         android:entries="@array/environment_map_options"
                         android:layout_margin="@dimen/preview_ui_margin" />
+
                 </LinearLayout>
 
             </LinearLayout>
@@ -252,7 +266,8 @@
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:padding="@dimen/preview_ui_padding"
                 android:background="@drawable/slightly_opaque_border_background"
-                android:text="@string/equation_selection_label" />
+                android:text="@string/equation_selection_label"
+                android:textColor="@color/white" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -269,7 +284,7 @@
 
                     <RadioButton
                         android:id="@+id/default_equations_radio_button"
-                        android:layout_width="wrap_content"
+                        android:layout_width="93dp"
                         android:layout_height="50dp"
                         android:layout_weight="1"
                         android:checked="true"
@@ -278,7 +293,7 @@
 
                     <RadioButton
                         android:id="@+id/saved_equations_radio_button"
-                        android:layout_width="wrap_content"
+                        android:layout_width="93dp"
                         android:layout_height="50dp"
                         android:layout_weight="1"
                         android:text="@string/user_defined_radio_button"
@@ -317,7 +332,7 @@
                 <Button
                     android:id="@+id/new_button"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="29dp"
                     android:layout_weight="1"
                     android:layout_margin="@dimen/preview_ui_margin"
                     android:background="@drawable/slightly_opaque_border_background"
@@ -326,7 +341,7 @@
                 <Button
                     android:id="@+id/copy_button"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="29dp"
                     android:layout_weight="1"
                     android:layout_margin="@dimen/preview_ui_margin"
                     android:background="@drawable/slightly_opaque_border_background"
@@ -335,7 +350,7 @@
                 <Button
                     android:id="@+id/delete_button"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="29dp"
                     android:layout_weight="1"
                     android:layout_margin="@dimen/preview_ui_margin"
                     android:background="@drawable/slightly_opaque_border_background"
@@ -351,6 +366,7 @@
                 android:background="@drawable/slightly_opaque_border_background"
                 android:padding="@dimen/preview_ui_padding"
                 android:text="@string/equation_name_label"
+                android:textColor="@color/white"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -373,7 +389,8 @@
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:padding="@dimen/preview_ui_padding"
                 android:background="@drawable/slightly_opaque_border_background"
-                android:text="@string/equation_label" />
+                android:text="@string/equation_label"
+                android:textColor="@color/white" />
 
             <EditText
                 android:id="@+id/et_equation_value"
@@ -393,7 +410,8 @@
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:padding="@dimen/preview_ui_padding"
                 android:background="@drawable/slightly_opaque_border_background"
-                android:text="@string/syntax_check_result" />
+                android:text="@string/syntax_check_result"
+                android:textColor="@color/white" />
 
             <CheckBox
                 android:id="@+id/flip_normals_checkbox"
