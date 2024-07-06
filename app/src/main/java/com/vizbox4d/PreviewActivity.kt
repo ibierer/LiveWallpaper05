@@ -622,12 +622,13 @@ class PreviewActivity : AppCompatActivity() {
                     val newEnvironmentMap: Int = getEnvironmentMapSelection()
                     if(initialEnvironmentMap != newEnvironmentMap) {
                         environmentMapSelectorSpinner.setSelection(getEnvironmentMapSelection())
-                    }else {
-                        // tell view it needs to be reloaded
-                        Log.d("onPause,onResume", "visualizationSelectorSpinner.onItemSelectedListener")
-                        mView!!.onPause()
-                        mView!!.onResume()
+                    } else {
+
                     }
+                    // tell view it needs to be reloaded
+                    Log.d("onPause,onResume", "visualizationSelectorSpinner.onItemSelectedListener")
+                    mView!!.onPause()
+                    mView!!.onResume()
                     loadOrUnloadUIElements()
                 }
             }
