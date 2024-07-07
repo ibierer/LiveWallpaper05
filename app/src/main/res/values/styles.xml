@@ -1,0 +1,16 @@
+<resources>
+    <style name="CustomSeekBar" parent="Widget.AppCompat.SeekBar">
+        <item name="android:progressDrawable">@drawable/seekbar_progress</item>
+        <item name="android:thumb">@drawable/seekbar_thumb</item>
+        <item name="android:minHeight">2dp</item> <!-- Minimum height for the SeekBar -->
+        <item name="android:maxHeight">2dp</item> <!-- Maximum height for the SeekBar -->
+    </style>
+    <style name="CustomRadioButton" parent="Widget.AppCompat.CompoundButton.RadioButton">
+        <item name="buttonTint">@drawable/radio_button_selector</item>
+        <item name="android:textColor">@color/white</item> <!-- Optional: Change text color -->
+    </style>
+    <style name="CustomCheckBox" parent="Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="buttonTint">@drawable/checkbox_selector</item>
+        <item name="android:textColor">@color/white</item> <!-- Optional: Change text color -->
+    </style>
+</resources>

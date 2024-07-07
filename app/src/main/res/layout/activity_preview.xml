@@ -107,6 +107,7 @@
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:padding="@dimen/preview_ui_padding"
                 android:background="@drawable/slightly_opaque_border_background"
+                style="@style/CustomSeekBar"
                 android:max="100"
                 android:min="0" />
 
@@ -127,6 +128,7 @@
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:padding="@dimen/preview_ui_padding"
                 android:background="@drawable/slightly_opaque_border_background"
+                style="@style/CustomSeekBar"
                 android:max="17999"
                 android:min="1" />
 
@@ -147,6 +149,7 @@
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:padding="@dimen/preview_ui_padding"
                 android:background="@drawable/slightly_opaque_border_background"
+                style="@style/CustomSeekBar"
                 android:max="200"
                 android:min="0" />
 
@@ -167,6 +170,7 @@
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:padding="@dimen/preview_ui_padding"
                 android:background="@drawable/slightly_opaque_border_background"
+                style="@style/CustomSeekBar"
                 android:max="400"
                 android:min="0" />
 
@@ -187,6 +191,7 @@
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:padding="@dimen/preview_ui_padding"
                 android:background="@drawable/slightly_opaque_border_background"
+                style="@style/CustomSeekBar"
                 android:max="4000"
                 android:min="3960" />
 
@@ -220,7 +225,8 @@
                         android:layout_weight="1"
                         android:checked="true"
                         android:text="@string/solid_color_radio_button"
-                        android:layout_margin="@dimen/preview_ui_margin" />
+                        android:layout_margin="@dimen/preview_ui_margin"
+                        style="@style/CustomRadioButton" />
 
                     <RadioButton
                         android:id="@+id/image_radio_button"
@@ -228,7 +234,8 @@
                         android:layout_height="50dp"
                         android:layout_weight="1"
                         android:text="@string/image_radio_button"
-                        android:layout_margin="@dimen/preview_ui_margin" />
+                        android:layout_margin="@dimen/preview_ui_margin"
+                        style="@style/CustomRadioButton" />
                 </RadioGroup>
 
                 <LinearLayout
@@ -289,7 +296,8 @@
                         android:layout_weight="1"
                         android:checked="true"
                         android:text="@string/examples_radio_button"
-                        android:layout_margin="@dimen/preview_ui_margin" />
+                        android:layout_margin="@dimen/preview_ui_margin"
+                        style="@style/CustomRadioButton" />
 
                     <RadioButton
                         android:id="@+id/saved_equations_radio_button"
@@ -297,7 +305,8 @@
                         android:layout_height="50dp"
                         android:layout_weight="1"
                         android:text="@string/user_defined_radio_button"
-                        android:layout_margin="@dimen/preview_ui_margin" />
+                        android:layout_margin="@dimen/preview_ui_margin"
+                        style="@style/CustomRadioButton" />
                 </RadioGroup>
 
                 <LinearLayout
@@ -419,7 +428,8 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:background="@drawable/slightly_opaque_border_background"
-                android:text="@string/flip_normals_checkbox" />
+                android:text="@string/flip_normals_checkbox"
+                style="@style/CustomCheckBox" />
 
             <CheckBox
                 android:id="@+id/fluid_surface_checkbox"
@@ -427,7 +437,8 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:background="@drawable/slightly_opaque_border_background"
-                android:text="@string/fluid_surface_checkbox" />
+                android:text="@string/fluid_surface_checkbox"
+                style="@style/CustomCheckBox" />
 
             <CheckBox
                 android:id="@+id/gyroscope_compensation_checkbox"
@@ -435,7 +446,8 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:background="@drawable/slightly_opaque_border_background"
-                android:text="@string/gyroscope_compensation_checkbox" />
+                android:text="@string/gyroscope_compensation_checkbox"
+                style="@style/CustomCheckBox" />
 
             <CheckBox
                 android:id="@+id/smooth_sphere_surface_checkbox"
@@ -443,7 +455,8 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/preview_ui_margin"
                 android:background="@drawable/slightly_opaque_border_background"
-                android:text="@string/smooth_sphere_surface_checkbox" />
+                android:text="@string/smooth_sphere_surface_checkbox"
+                style="@style/CustomCheckBox" />
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

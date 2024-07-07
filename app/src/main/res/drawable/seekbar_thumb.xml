@@ -1,0 +1,5 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <corners android:radius="6dp" />
+    <solid android:color="@color/seek_bar_color" /> <!-- Thumb color -->
+    <size android:width="12dp" android:height="12dp" />
+</shape>
