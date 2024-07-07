@@ -50,6 +50,7 @@ class PreviewActivity : AppCompatActivity() {
     }
 
     private val layout: LinearLayout by lazy { findViewById<LinearLayout>(R.id.render_layout) }
+    private val backgroundColorLinearLayout: LinearLayout by lazy { findViewById<LinearLayout>(R.id.background_color_linear_layout) }
     private val scrollView: ScrollView by lazy { findViewById<ScrollView>(R.id.settings_scrollview) }
     private val fpsMeter: TextView by lazy { findViewById<TextView>(R.id.tv_fps_meter) }
     private val syntaxCheck: TextView by lazy { findViewById<TextView>(R.id.tv_syntax_check) }
@@ -240,6 +241,7 @@ class PreviewActivity : AppCompatActivity() {
 
     private fun showUIComponents() {
         hideUIButton.text = resources.getString(R.string.hideUIButtonText)
+        backgroundColorLinearLayout.visibility = View.VISIBLE
         colorButton.visibility = View.VISIBLE
         newButton.visibility = View.VISIBLE
         copyButton.visibility = View.VISIBLE
@@ -257,6 +259,7 @@ class PreviewActivity : AppCompatActivity() {
         gyroscopeCompensationCheckBox.visibility = View.VISIBLE
         smoothSphereSurfaceCheckBox.visibility = View.VISIBLE
         colorButton.isEnabled = true
+        backgroundColorLinearLayout.isEnabled = true
         newButton.isEnabled = true
         copyButton.isEnabled = true
         if(viewModel.repo.preferredGraphList == 1) {
@@ -279,6 +282,7 @@ class PreviewActivity : AppCompatActivity() {
 
     private fun hideUIComponents() {
         hideUIButton.text = resources.getString(R.string.showUIButtonText)
+        backgroundColorLinearLayout.visibility = View.GONE
         colorButton.visibility = View.GONE
         newButton.visibility = View.GONE
         copyButton.visibility = View.GONE
@@ -296,6 +300,7 @@ class PreviewActivity : AppCompatActivity() {
         gyroscopeCompensationCheckBox.visibility = View.GONE
         smoothSphereSurfaceCheckBox.visibility = View.GONE
         colorButton.isEnabled = false
+        backgroundColorLinearLayout.isEnabled = false
         newButton.isEnabled = false
         copyButton.isEnabled = false
         deleteButton.isEnabled = false
