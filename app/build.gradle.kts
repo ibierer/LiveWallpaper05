@@ -12,9 +12,9 @@ android {
     defaultConfig {
         applicationId = "com.vizbox4d"
         minSdk = 26
-        targetSdk = 34
-        versionCode = 7
-        versionName = "1.007"
+        targetSdk = 33
+        versionCode = 8
+        versionName = "1.008"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
