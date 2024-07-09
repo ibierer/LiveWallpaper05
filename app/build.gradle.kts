@@ -12,7 +12,7 @@ android {
     defaultConfig {
         applicationId = "com.vizbox4d"
         minSdk = 26
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 8
         versionName = "1.008"
 
