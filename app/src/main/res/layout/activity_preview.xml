@@ -30,6 +30,19 @@
         android:orientation="vertical"
         app:layout_constraintTop_toTopOf="parent">
 
+        <LinearLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_margin="@dimen/preview_ui_margin"
+            android:background="@drawable/slightly_opaque_border_background">
+            <Spinner
+                android:id="@+id/visualization_type_spinner"
+                style="@style/Widget.AppCompat.Spinner"
+                android:layout_height="29dp"
+                android:layout_width="match_parent"
+                android:entries="@array/visualization_types" />
+        </LinearLayout>
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
@@ -59,19 +72,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <LinearLayout
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:layout_margin="@dimen/preview_ui_margin"
-            android:background="@drawable/slightly_opaque_border_background">
-            <Spinner
-                android:id="@+id/visualization_type_spinner"
-                style="@style/Widget.AppCompat.Spinner"
-                android:layout_height="29dp"
-                android:layout_width="match_parent"
-                android:entries="@array/visualization_types" />
-        </LinearLayout>
     </LinearLayout>
 
     <ScrollView
