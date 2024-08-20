@@ -59,12 +59,12 @@ android {
         create("free") {
             dimension = "version"
             applicationIdSuffix = ".free"
-            resValue("string", "app_name", "VizBox 4D Free")
+            resValue("string", "app_name", "Xeratude Free")
         }
         create("paid") {
             dimension = "version"
             //applicationIdSuffix = ".paid"
-            resValue("string", "app_name", "VizBox 4D")
+            resValue("string", "app_name", "Xeratude")
         }
     }
 
