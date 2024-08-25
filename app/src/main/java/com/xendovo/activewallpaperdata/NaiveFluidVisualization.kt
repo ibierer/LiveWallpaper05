@@ -1,7 +1,7 @@
-package com.vizbox4d.activewallpaperdata
+package com.xendovo.activewallpaperdata
 
 import android.graphics.Color
-import com.vizbox4d.R
+import com.xendovo.R
 import org.json.JSONObject
 
 data class NaiveFluidVisualization (

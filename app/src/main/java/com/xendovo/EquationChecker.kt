@@ -1,4 +1,4 @@
-package com.vizbox4d
+package com.xendovo
 
 class EquationChecker {
     fun checkEquationSyntax(editable: String): String {

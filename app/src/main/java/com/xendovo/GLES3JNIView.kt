@@ -1,12 +1,11 @@
-package com.vizbox4d
+package com.xendovo
 
 import android.content.Context
 import android.opengl.GLSurfaceView
 import android.os.Build
 import android.os.SystemClock
-import android.util.Log
 import androidx.annotation.RequiresApi
-import com.vizbox4d.activewallpaperdata.ActiveWallpaperViewModel
+import com.xendovo.activewallpaperdata.ActiveWallpaperViewModel
 import org.json.JSONObject
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10

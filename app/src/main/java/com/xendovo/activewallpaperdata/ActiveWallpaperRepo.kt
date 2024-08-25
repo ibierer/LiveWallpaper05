@@ -1,4 +1,4 @@
-package com.vizbox4d.activewallpaperdata
+package com.xendovo.activewallpaperdata
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -9,7 +9,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import androidx.lifecycle.MutableLiveData
-import com.vizbox4d.R
+import com.xendovo.R
 import kotlinx.coroutines.CoroutineScope
 import org.json.JSONArray
 import org.json.JSONObject

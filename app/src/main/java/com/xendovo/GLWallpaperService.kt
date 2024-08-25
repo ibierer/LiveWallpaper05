@@ -1,13 +1,13 @@
-package com.vizbox4d
+package com.xendovo
 
 import android.content.Context
 import android.opengl.GLSurfaceView
 import android.service.wallpaper.WallpaperService
 import android.view.SurfaceHolder
 import android.view.WindowManager
-import com.vizbox4d.activewallpaperdata.ActiveWallpaperApplication
-import com.vizbox4d.activewallpaperdata.ActiveWallpaperRepo
-import com.vizbox4d.activewallpaperdata.ActiveWallpaperViewModel
+import com.xendovo.activewallpaperdata.ActiveWallpaperApplication
+import com.xendovo.activewallpaperdata.ActiveWallpaperRepo
+import com.xendovo.activewallpaperdata.ActiveWallpaperViewModel
 
 class GLWallpaperService : WallpaperService() {
 

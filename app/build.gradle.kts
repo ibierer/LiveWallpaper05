@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.vizbox4d"
+    namespace = "com.xendovo"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.vizbox4d"
+        applicationId = "com.xendovo"
         minSdk = 26
         targetSdk = 34
         versionCode = 9
@@ -59,12 +59,12 @@ android {
         create("free") {
             dimension = "version"
             applicationIdSuffix = ".free"
-            resValue("string", "app_name", "Xeratude Free")
+            resValue("string", "app_name", "Xendovo Free")
         }
         create("paid") {
             dimension = "version"
             //applicationIdSuffix = ".paid"
-            resValue("string", "app_name", "Xeratude")
+            resValue("string", "app_name", "Xendovo")
         }
     }
 

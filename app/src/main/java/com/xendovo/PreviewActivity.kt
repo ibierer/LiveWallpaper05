@@ -1,4 +1,4 @@
-package com.vizbox4d
+package com.xendovo
 
 import android.graphics.Color
 import android.graphics.Rect
@@ -12,8 +12,6 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowInsets
-import android.view.WindowInsetsController
 import android.view.animation.Animation
 import android.view.animation.TranslateAnimation
 import android.view.inputmethod.EditorInfo
@@ -35,10 +33,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
-import com.vizbox4d.activewallpaperdata.ActiveWallpaperApplication
-import com.vizbox4d.activewallpaperdata.ActiveWallpaperRepo
-import com.vizbox4d.activewallpaperdata.ActiveWallpaperViewModel
-import com.vizbox4d.activewallpaperdata.ActiveWallpaperViewModelFactory
+import com.xendovo.activewallpaperdata.ActiveWallpaperApplication
+import com.xendovo.activewallpaperdata.ActiveWallpaperRepo
+import com.xendovo.activewallpaperdata.ActiveWallpaperViewModel
+import com.xendovo.activewallpaperdata.ActiveWallpaperViewModelFactory
 import yuku.ambilwarna.AmbilWarnaDialog
 
 

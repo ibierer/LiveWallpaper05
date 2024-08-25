@@ -1,4 +1,4 @@
-package com.vizbox4d.activewallpaperdata
+package com.xendovo.activewallpaperdata
 
 import android.app.Application
 import android.content.Context
