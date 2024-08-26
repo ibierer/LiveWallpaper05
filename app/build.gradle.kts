@@ -67,19 +67,6 @@ android {
             resValue("string", "app_name", "Xendovo")
         }
     }
-
-    /*buildscript {
-        repositories {
-            google()
-            mavenCentral()
-        }
-    }
-    allprojects {
-        repositories {
-            google()
-            mavenCentral()
-        }
-    }*/
 }
 
 dependencies {

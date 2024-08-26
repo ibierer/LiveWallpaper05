@@ -3,7 +3,7 @@
      them to be changed based on the locale and options. -->
 <resources>
     <!-- Simple strings. -->
-    <string name="app_name">Xendovo</string>
+    <!--<string name="app_name">Xendovo</string>-->
     <string name="visualization_spinner_text">Visualization:</string>
     <string name="distance_label">Distance:</string>
     <string name="field_of_view_label">Field of View:</string>
