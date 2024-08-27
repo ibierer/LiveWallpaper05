@@ -60,11 +60,13 @@ android {
             dimension = "version"
             applicationIdSuffix = ".free"
             resValue("string", "app_name", "Xendovo Free")
+            resValue("string", "flavor", "free")
         }
         create("paid") {
             dimension = "version"
             //applicationIdSuffix = ".paid"
             resValue("string", "app_name", "Xendovo")
+            resValue("string", "flavor", "paid")
         }
     }
 }
@@ -111,11 +113,11 @@ dependencies {
     //implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$ktxVersion")
     //implementation("androidx.lifecycle:lifecycle-livedata-ktx:$ktxVersion")
     //implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
-    implementation("androidx.fragment:fragment-ktx:1.8.0")
+    implementation("androidx.fragment:fragment-ktx:1.8.2")
     //kapt("androidx.lifecycle:lifecycle-compiler:$ktxVersion")
     //api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
     //api("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
 
     // ad dependencies
-    //implementation("com.google.android.gms:play-services-ads:23.1.0")
+    implementation("com.google.android.gms:play-services-ads:23.3.0")
 }

@@ -20,6 +20,7 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.RadioGroup
@@ -33,11 +34,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
 import com.xendovo.activewallpaperdata.ActiveWallpaperApplication
 import com.xendovo.activewallpaperdata.ActiveWallpaperRepo
 import com.xendovo.activewallpaperdata.ActiveWallpaperViewModel
 import com.xendovo.activewallpaperdata.ActiveWallpaperViewModelFactory
 import yuku.ambilwarna.AmbilWarnaDialog
+import yuku.ambilwarna.BuildConfig
 
 
 class PreviewActivity : AppCompatActivity() {
@@ -85,6 +90,8 @@ class PreviewActivity : AppCompatActivity() {
     private var currentFocusedView: View? = null
     private var isKeyboardVisible = false
     private var editTextsChangingViaKeyboard = true
+    private val AD_UNIT_ID: String by lazy { getString(R.string.ad_unit_id) }
+    private lateinit var adView: AdView
 
     private fun updateSyntaxResult() {
         // update syntax check message
@@ -365,13 +372,6 @@ class PreviewActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_preview)
 
-        // Make notification bar and navigation buttons transparent
-        //window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-        //        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-        //        or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
-        //window.statusBarColor = Color.TRANSPARENT
-        //window.navigationBarColor = Color.TRANSPARENT
-
         // Set the system UI visibility flags
         window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
@@ -392,15 +392,6 @@ class PreviewActivity : AppCompatActivity() {
             insets
         }
 
-        //window.insetsController?.let {
-        //    it.hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
-        //    it.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        //}
-        //window.apply {
-        //    statusBarColor = Color.TRANSPARENT
-        //    navigationBarColor = Color.TRANSPARENT
-        //}
-
         // get view window from GLES3JNIView
         mView = GLES3JNIView(this@PreviewActivity, viewModel)
 
@@ -412,6 +403,22 @@ class PreviewActivity : AppCompatActivity() {
 
         environmentMapSelectorSpinner.setSelection(viewModel.repo.getEnvironmentMapSelection())
 
+        //if (BuildConfig.FLAVOR == "free") {
+        if (getString(R.string.flavor) == "free") {
+            // Create a new ad view.
+            adView = AdView(this)
+            adView.adUnitId = AD_UNIT_ID
+            adView.setAdSize(AdSize.BANNER)
+
+            val adViewContainer: FrameLayout = findViewById<FrameLayout>(R.id.adViewContainer)
+
+            // Replace ad container with new ad view.
+            adViewContainer.removeAllViews()
+            adViewContainer.addView(adView)
+            // Load an ad into the ad view.
+            val adRequest = AdRequest.Builder().build()
+            adView.loadAd(adRequest)
+        }
     }
 
     private val handler = Handler(Looper.getMainLooper())
