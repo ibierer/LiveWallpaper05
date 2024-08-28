@@ -420,6 +420,28 @@ class PreviewActivity : AppCompatActivity() {
             // Load an ad into the ad view.
             val adRequest = AdRequest.Builder().build()
             adView.loadAd(adRequest)
+
+            linearLayout.setPadding(
+                linearLayout.paddingLeft,   // Keep current left padding
+                linearLayout.paddingTop,    // Keep current top padding
+                linearLayout.paddingRight,  // Keep current right padding
+                TypedValue.applyDimension(  // Set new bottom padding
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    211f, // 211dp
+                    resources.displayMetrics
+                ).toInt()
+            )
+        } else {
+            linearLayout.setPadding(
+                linearLayout.paddingLeft,   // Keep current left padding
+                linearLayout.paddingTop,    // Keep current top padding
+                linearLayout.paddingRight,  // Keep current right padding
+                TypedValue.applyDimension(  // Set new bottom padding
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    161f, // 161dp
+                    resources.displayMetrics
+                ).toInt()
+            )
         }
     }
 
