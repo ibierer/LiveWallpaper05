@@ -17,10 +17,6 @@ android {
         versionName = "1.011"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        /*ndk { // reduces compilation size by restricting CPU type
-            abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
-        }*/
     }
 
     buildTypes {

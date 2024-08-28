@@ -8,6 +8,7 @@ import android.os.Handler
 import android.os.Looper
 import android.text.TextWatcher
 import android.util.Log
+import android.util.TypedValue
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
@@ -418,6 +419,28 @@ class PreviewActivity : AppCompatActivity() {
             // Load an ad into the ad view.
             val adRequest = AdRequest.Builder().build()
             adView.loadAd(adRequest)
+
+            linearLayout.setPadding(
+                linearLayout.paddingLeft,   // Keep current left padding
+                linearLayout.paddingTop,    // Keep current top padding
+                linearLayout.paddingRight,  // Keep current right padding
+                TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    211f,             // 211dp
+                    resources.displayMetrics
+                ).toInt()                   // Set new bottom padding
+            )
+        } else {
+            linearLayout.setPadding(
+                linearLayout.paddingLeft,   // Keep current left padding
+                linearLayout.paddingTop,    // Keep current top padding
+                linearLayout.paddingRight,  // Keep current right padding
+                TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    161f,             // 161dp
+                    resources.displayMetrics
+                ).toInt()                   // Set new bottom padding
+            )
         }
     }
 
