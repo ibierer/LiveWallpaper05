@@ -416,6 +416,7 @@ class PreviewActivity : AppCompatActivity() {
             // Replace ad container with new ad view.
             adViewContainer.removeAllViews()
             adViewContainer.addView(adView)
+
             // Load an ad into the ad view.
             val adRequest = AdRequest.Builder().build()
             adView.loadAd(adRequest)
