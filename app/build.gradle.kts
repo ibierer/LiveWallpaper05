@@ -13,8 +13,8 @@ android {
         applicationId = "com.xendovo"
         minSdk = 26
         targetSdk = 34
-        versionCode = 11
-        versionName = "1.011"
+        versionCode = 12
+        versionName = "1.012"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
