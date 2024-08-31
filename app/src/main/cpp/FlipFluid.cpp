@@ -228,6 +228,77 @@ void FlipFluid::handleParticleCollisions()
         particlePos[i].y = y;
         particlePos[i].z = z;
     }
+
+//    float r = particleRadius;
+//    //float oR = _obstacleRadius;
+//    //float or2 = oR * oR;
+//    //float minDist = _obstacleRadius + r;
+//    //float minDist2 = minDist * minDist;
+//
+//    float minX = h + r;
+//    float maxX = (fNumX - 1) * h - r;
+//    float minY = h + r;
+//    float maxY = (fNumY - 1) * h - r;
+//    float minZ = h + r;
+//    float maxZ = (fNumZ - 1) * h - r;
+//
+//    float centerX = (minX + maxX) / 2.0;
+//    float centerY = (minY + maxY) / 2.0;
+//    float centerZ = (minZ + maxZ) / 2.0;
+//    float radius = (maxX - minX) / 2.0; // Assuming the region is a circle with the same width as the square
+//
+//    for (int i = 0; i < numParticles; i++) {
+//        float x = particlePos[i].x;
+//        float y = particlePos[i].y;
+//        float z = particlePos[i].z;
+//
+//        /*float dx = x - _obstacleX;
+//        float dy = y - _obstacleY;
+//        float dz = z - _obstacleZ;
+//        float d2 = dx * dx + dy * dy + dz * dz;*/
+//
+//        // obstacle collision
+//
+//        /*if (d2 < minDist2) {
+//            particleVel[i].x = scene.obstacleVelX;
+//            particleVel[i].y = scene.obstacleVelY;
+//            particleVel[i].z = scene.obstacleVelZ;
+//        }*/
+//
+//        // Check if the particle is outside the circular region
+//        float _dx = x - centerX;
+//        float _dy = y - centerY;
+//        float _dz = z - centerZ;
+//        float distanceSquared = _dx * _dx + _dy * _dy + _dz * _dz;
+//
+//        if (distanceSquared > radius * radius) {
+//            // Particle is outside the circular region, perform collision response
+//            float distance = sqrt(distanceSquared);
+//
+//            float velocityInitialSquared = particleVel[i].x * particleVel[i].x + particleVel[i].y * particleVel[i].y + particleVel[i].z * particleVel[i].z;
+//
+//            // Calculate the collision response by projecting the velocity onto the radial direction
+//            float dotProduct = (_dx * particleVel[i].x + _dy * particleVel[i].y + _dz * particleVel[i].z) / distance;
+//            float projectionX = dotProduct * _dx / distance;
+//            float projectionY = dotProduct * _dy / distance;
+//            float projectionZ = dotProduct * _dz / distance;
+//
+//            // Update the particle's position and velocity based on the collision response
+//            particlePos[i].x = centerX + (radius * _dx / distance);
+//            particlePos[i].y = centerY + (radius * _dy / distance);
+//            particlePos[i].z = centerZ + (radius * _dz / distance);
+//            particleVel[i].x -= projectionX;
+//            particleVel[i].y -= projectionY;
+//            particleVel[i].z -= projectionZ;
+//        }
+//        particleVel[i] *= 1.0024f;
+//    }
+//
+//    float kineticEnergy = 0.0f;
+//    for (int i = 0; i < numParticles; i++){
+//        kineticEnergy += dot(particleVel[i], particleVel[i]);
+//    }
+//    ALOGV("kineticEnergy = %f", kineticEnergy);
 }
 
 void FlipFluid::updateParticleDensity()
