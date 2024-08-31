@@ -46,6 +46,6 @@
     <string name="update_preview_button_text">Update Preview Thumbnail</string>
     <string name="fps_label_text">FPS:</string>
     <string name="app_id">ca-app-pub-7713469970034463~5658759703</string>
-    <string name="ad_unit_id">ca-app-pub-3940256099942544/9214589741</string><!--test ad-->
-    <!--<string name="ad_unit_id">ca-app-pub-7713469970034463/6568516692</string>--><!--official ad-->
+    <!--<string name="ad_unit_id">ca-app-pub-3940256099942544/9214589741</string>--><!--test ad-->
+    <string name="ad_unit_id">ca-app-pub-7713469970034463/6568516692</string><!--official ad-->
 </resources>
