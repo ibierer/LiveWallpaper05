@@ -49,27 +49,9 @@ public:
 
     FlipFluid* fluid;
 
-    void simulate(const vec3 &acceleration, const mat3<float> &incrementalRotationMatrix);
-
-    void setupScene();
+    void simulate(const vec3 &acceleration);
 
 private:
-
-    struct {
-
-        const int width = 1000;
-
-        const int height = 1000;
-
-    } canvas;
-
-    float simHeight;
-
-    float cScale;
-
-    float simWidth;
-
-    float simDepth;
 
 };
 

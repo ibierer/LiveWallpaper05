@@ -4,15 +4,59 @@
 
 #include "FlipFluid.h"
 
-FlipFluid::FlipFluid(const float& _density, const float& _width, const float& _height, const float& _depth, const float& _spacing, const float& _particleRadius, const int& _maxParticles) {
+FlipFluid::FlipFluid() {
+
+    struct {
+
+        const int width = 1000;
+
+        const int height = 1000;
+
+    } canvas;
+
+    float simHeight;
+
+    float cScale;
+
+    float simWidth;
+
+    float simDepth;
+
+    simHeight = 3.0;
+    cScale = canvas.height / simHeight;
+    simWidth = canvas.width / cScale;
+    simDepth = simHeight;  // Assuming the depth is the same as the height
+
+    int res = 15;
+
+    float tankHeight = 1.0f * simHeight;
+    float tankWidth = 1.0f * simWidth;
+    float tankDepth = 1.0f * simDepth;
+    float spacing = tankHeight / res;
+    density = 1000.0f;
+
+    float relWaterHeight = 1.0f;
+    float relWaterWidth = 0.6f;
+    float relWaterDepth = 1.0f;
+
+    // compute number of stars
+
+    particleRadius = 0.3 * spacing;    // particle radius w.r.t. cell size
+    float dx = 2.0 * particleRadius;
+    float dy = sqrt(3.0) / 2.0 * dx;
+    float dz = 2.0 * particleRadius;
+
+    int numX = floor((relWaterWidth * tankWidth - 2.0 * spacing - 2.0 * particleRadius) / dx);
+    int numY = floor((relWaterHeight * tankHeight - 2.0 * spacing - 2.0 * particleRadius) / dy);
+    int numZ = floor((relWaterDepth * tankDepth - 2.0 * spacing - 2.0 * particleRadius) / dz);
+    maxParticles = numX * numY * numZ;
 
     // fluid properties
 
-    density = _density;
-    fNumX = floor(_width / _spacing) + 1;
-    fNumY = floor(_height / _spacing) + 1;
-    fNumZ = floor(_depth / _spacing) + 1;
-    h = max(max(_width / fNumX, _height / fNumY), _depth / fNumZ);
+    fNumX = floor(tankWidth / spacing) + 1;
+    fNumY = floor(tankHeight / spacing) + 1;
+    fNumZ = floor(tankDepth / spacing) + 1;
+    h = max(max(tankWidth / fNumX, tankHeight / fNumY), tankDepth / fNumZ);
     fInvSpacing = 1.0 / h;
     fNumCells = fNumX * fNumY * fNumZ;
 
@@ -31,8 +75,6 @@ FlipFluid::FlipFluid(const float& _density, const float& _width, const float& _h
 
     // particle properties
 
-    maxParticles = _maxParticles;
-
     particlePos = (vec3*)calloc(maxParticles, sizeof(vec3));   // Initialize particle positions (x, y, z)
     particleColor = (vec3*)calloc(maxParticles, sizeof(vec3)); // Initialize particle color (for visualization)
 
@@ -40,28 +82,53 @@ FlipFluid::FlipFluid(const float& _density, const float& _width, const float& _h
     particleDensity = (float*)calloc(fNumCells, sizeof(float));         // Initialize particle density
     particleRestDensity = 0.0;                                            // Set the rest density of the stars
 
-    particleRadius = _particleRadius;
-    pInvSpacing = 1.0 / (2.2 * _particleRadius);
-    pNumX = floor(_width * pInvSpacing) + 1;
-    pNumY = floor(_height * pInvSpacing) + 1;
-    pNumZ = floor(_depth * pInvSpacing) + 1;
+    pInvSpacing = 1.0 / (2.2 * particleRadius);
+    pNumX = floor(tankWidth * pInvSpacing) + 1;
+    pNumY = floor(tankHeight * pInvSpacing) + 1;
+    pNumZ = floor(tankDepth * pInvSpacing) + 1;
     pNumCells = pNumX * pNumY * pNumZ;
 
     numCellParticles = (int*)calloc(pNumCells, sizeof(int));              // Initialize the number of stars in each cell
     firstCellParticle = (int*)calloc((pNumCells + 1), sizeof(int));       // Initialize the index of the first particle in each cell
-    cellParticleIds = (int*)calloc(_maxParticles, sizeof(int));           // Initialize the particle ids
+    cellParticleIds = (int*)calloc(maxParticles, sizeof(int));           // Initialize the particle ids
 
-    numParticles = 0;                                                     // Set the initial number of stars to zero
+    numParticles = numX * numY * numZ;
+    int index = 0;
+    for (int i = 0; i < numX; i++) {
+        for (int j = 0; j < numY; j++) {
+            for (int k = 0; k < numZ; k++) {
+                this->particlePos[index++] = vec3(
+                        spacing + particleRadius + dx * i + (j % 2 == 0 ? 0.0 : particleRadius),
+                        spacing + particleRadius + dy * j,
+                        spacing + dz * k
+                );
+            }
+        }
+    }
+
+    // setup grid cells for tank
+
+    int nx = this->fNumX;
+    int ny = this->fNumY;
+    int nz = this->fNumZ;
+
+    for (int i = 0; i < nx; i++) {
+        for (int j = 0; j < ny; j++) {
+            for (int k = 0; k < nz; k++) {
+                float cellDensity = 1.0;    // fluid
+                if (i == 0 || i == nx - 1 || j == 0 || j == ny - 1 || k == 0 || k == nz - 1)
+                    cellDensity = 0.0;    // solid
+                this->s[(i * ny + j) * nz + k] = cellDensity;
+            }
+        }
+    }
 }
 
-void FlipFluid::integrateParticles(const float &_dt, const vec3 &_gravity, const mat3<float>& incrementalRotationMatrix)
+void FlipFluid::integrateParticles(const float &_dt, const vec3 &_gravity)
 {
     for (int i = 0; i < numParticles; i++) {
         particleVel[i] += _dt * _gravity;
         particlePos[i] += particleVel[i] * _dt;
-
-        //particlePos[i] = incrementalRotationMatrix * particlePos[i];
-        //particleVel[i] = incrementalRotationMatrix * particleVel[i];
     }
 }
 
@@ -618,13 +685,13 @@ void FlipFluid::updateParticleColors()
     }
 }
 
-void FlipFluid::simulate(const float &_dt, const vec3 &_gravity, const float &_flipRatio, const int &_numPressureIters, const int &_numParticleIters, const float &_overRelaxation, const bool &_compensateDrift, const bool &_separateParticles, const mat3<float>& incrementalRotationMatrix)
+void FlipFluid::simulate(const float &_dt, const vec3 &_gravity, const float &_flipRatio, const int &_numPressureIters, const int &_numParticleIters, const float &_overRelaxation, const bool &_compensateDrift, const bool &_separateParticles)
 {
     int numSubSteps = 1;
     float sdt = _dt / numSubSteps;
 
     for (int step = 0; step < numSubSteps; step++) {
-        this->integrateParticles(sdt, _gravity, incrementalRotationMatrix);
+        this->integrateParticles(sdt, _gravity);
         if (_separateParticles)
             this->pushParticlesApart(_numParticleIters);
         this->handleParticleCollisions();
