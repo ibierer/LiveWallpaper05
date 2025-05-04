@@ -102,7 +102,7 @@ public:
 
     FlipFluid();
 
-    void simulate(const float &_dt, const vec3 &_gravity, const float &_flipRatio, const int &_numPressureIters, const int &_numParticleIters, const float &_overRelaxation, const bool &_compensateDrift, const bool &_separateParticles);
+    void simulate(const vec3 &_gravity);
 
 private:
 
@@ -123,8 +123,6 @@ private:
     void transferVelocities(const bool& _toGrid, const float& _flipRatio);
 
     void solveIncompressibility(const int& _numIters, const float& _dt, const float& _overRelaxation, const bool& _compensateDrift);
-
-    void updateParticleColors();
 
 };
 

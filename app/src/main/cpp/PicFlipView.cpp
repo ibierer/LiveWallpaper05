@@ -36,10 +36,7 @@ PicFlipView::~PicFlipView(){
 }
 
 void PicFlipView::simulate(const vec3 &acceleration) {
-    fluid->simulate(
-            fluid->dt, acceleration, fluid->flipRatio, fluid->numPressureIters,
-            fluid->numParticleIters,
-            fluid->overRelaxation, fluid->compensateDrift, fluid->separateParticles);
+    fluid->simulate(acceleration);
     fluid->frameNr++;
 }
 

@@ -183,20 +183,6 @@ Java_com_xendovo_PreviewActivity_00024Companion_step(JNIEnv *env, jobject thiz, 
         view[mode]->accelerometerVector = vec3(acc_x, acc_y, acc_z);
         view[mode]->linearAccelerationVector = vec3(linear_acc_x, linear_acc_y, linear_acc_z);
         view[mode]->rotationVector = vec4(rot_x, rot_y, rot_z, rot_w);
-        //if(view[mode]->getFrameCount() == 0){
-        //    rotationMatrix = quaternionTo3x3(Vec4<float>(rot_x, rot_y, rot_z, rot_w));
-        //    for(int i = 0; i < 9; i++){
-        //        view[mode]->incrementalRotationMatrix[i] = (float)(i % 4 == 0);
-        //    }
-        //}else{
-        //    Matrix3<float> currentRotationMatrix = quaternionTo3x3(Vec4<float>(rot_x, rot_y, rot_z, rot_w));
-        //    Matrix3<float> incrementalRotationMatrix = rotationMatrix.GetInverse() * currentRotationMatrix;
-        //    for(int i = 0; i < 9; i++){
-        //        view[mode]->incrementalRotationMatrix[i] = incrementalRotationMatrix[i];
-        //    }
-        //    rotationMatrix = currentRotationMatrix;
-        //}
-        //ALOGI("view[mode]->incrementalRotationMatrix = %s %s %s\n", view[mode]->incrementalRotationMatrix.m[0].str().c_str(), view[mode]->incrementalRotationMatrix.m[1].str().c_str(), view[mode]->incrementalRotationMatrix.m[2].str().c_str());
         view[mode]->distanceToOrigin = distance;
         view[mode]->maxViewAngle = field_of_view;
         view[mode]->gravity = gravity;
