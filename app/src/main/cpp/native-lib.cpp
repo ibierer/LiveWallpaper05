@@ -47,6 +47,8 @@
 #include "ComputeShader.cpp"
 #include "Computation.cpp"
 #include "Simulation.cpp"
+#include "FlipFluidSimulation.cpp"
+#include "FlipFluidSimulationView.cpp"
 #include "SimpleNBodySimulation.cpp"
 #include "SimpleNBodySimulationView.cpp"
 #include "LinearithmicNBodySimulation.cpp"
@@ -124,8 +126,9 @@ Java_com_xendovo_PreviewActivity_00024Companion_init(JNIEnv *env, jobject thiz, 
                 //view[mode] = new SphereWithReflectionView();
                 //view[mode] = new SphereWithFresnelEffectView();
                 //view[mode] = new SimpleNBodySimulationView();
+                view[mode] = new FlipFluidSimulationView();
                 //view[mode] = new ShaderToyView();
-                view[mode] = new LinearithmicNBodySimulationView();
+                //view[mode] = new LinearithmicNBodySimulationView();
             }else if(simulation == "naive"){
                 int particleCount = visualizationJSON["particle_count"];
                 bool fluidSurface = visualizationJSON["fluid_surface"];
