@@ -28,23 +28,11 @@ public:
 
     int fNumCells;
 
-    float* u;
+    vec3* uvw;       // Combined velocity field (replaces u, v, w)
 
-    float* v;
+    vec3* duvw;      // Combined velocity change (replaces du, dv, dw)
 
-    float* w;
-
-    float* du;
-
-    float* dv;
-
-    float* dw;
-
-    float* prevU;
-
-    float* prevV;
-
-    float* prevW;
+    vec3* prevUVW;   // Combined previous velocity (replaces prevU, prevV, prevW)
 
     float* p;
 
