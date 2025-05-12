@@ -6,13 +6,9 @@
 
 FlipFluid::FlipFluid() {
 
-    struct {
+    const int width = 1000;
 
-        const int width = 1000;
-
-        const int height = 1000;
-
-    } canvas;
+    const int height = 1000;
 
     float simHeight;
 
@@ -23,8 +19,8 @@ FlipFluid::FlipFluid() {
     float simDepth;
 
     simHeight = 3.0;
-    cScale = canvas.height / simHeight;
-    simWidth = canvas.width / cScale;
+    cScale = height / simHeight;
+    simWidth = width / cScale;
     simDepth = simHeight;  // Assuming the depth is the same as the height
 
     int res = 15;
@@ -97,7 +93,7 @@ FlipFluid::FlipFluid() {
     for (int i = 0; i < numX; i++) {
         for (int j = 0; j < numY; j++) {
             for (int k = 0; k < numZ; k++) {
-                this->particlePos[index++] = vec3(
+                particlePos[index++] = vec3(
                         spacing + particleRadius + dx * i + (j % 2 == 0 ? 0.0 : particleRadius),
                         spacing + particleRadius + dy * j,
                         spacing + dz * k
@@ -108,17 +104,13 @@ FlipFluid::FlipFluid() {
 
     // setup grid cells for tank
 
-    int nx = this->fNumX;
-    int ny = this->fNumY;
-    int nz = this->fNumZ;
-
-    for (int i = 0; i < nx; i++) {
-        for (int j = 0; j < ny; j++) {
-            for (int k = 0; k < nz; k++) {
+    for (int i = 0; i < fNumX; i++) {
+        for (int j = 0; j < fNumY; j++) {
+            for (int k = 0; k < fNumZ; k++) {
                 float cellDensity = 1.0;    // fluid
-                if (i == 0 || i == nx - 1 || j == 0 || j == ny - 1 || k == 0 || k == nz - 1)
+                if (i == 0 || i == fNumX - 1 || j == 0 || j == fNumY - 1 || k == 0 || k == fNumZ - 1)
                     cellDensity = 0.0;    // solid
-                this->s[(i * ny + j) * nz + k] = cellDensity;
+                s[(i * fNumY + j) * fNumZ + k] = cellDensity;
             }
         }
     }
@@ -204,7 +196,7 @@ void FlipFluid::pushParticlesApart(const float& _numIters)
                 for (int yi = y0; yi <= y1; yi++) {
                     for (int zi = z0; zi <= z1; zi++) {
                         int cellNr = xi * pNumY * pNumZ + yi * pNumZ + zi;
-                        int first = firstCellParticle[cellNr];
+                        first = firstCellParticle[cellNr];
                         int last = firstCellParticle[cellNr + 1];
                         for (int j = first; j < last; j++) {
                             int id = cellParticleIds[j];
@@ -221,10 +213,10 @@ void FlipFluid::pushParticlesApart(const float& _numIters)
                             if (d2 > minDist2 || d2 == 0.0)
                                 continue;
                             float d = sqrt(d2);
-                            float s = 0.5 * (minDist - d) / d;
-                            dx *= s;
-                            dy *= s;
-                            dz *= s;
+                            float _s = 0.5 * (minDist - d) / d;
+                            dx *= _s;
+                            dy *= _s;
+                            dz *= _s;
                             particlePos[i].x -= dx;
                             particlePos[i].y -= dy;
                             particlePos[i].z -= dz;
@@ -475,18 +467,18 @@ void FlipFluid::transferVelocities(const bool& _toGrid, const float& _flipRatio)
                 float valid6 = (cellType[nr6] != AIR_CELL || cellType[nr6 - offset] != AIR_CELL) ? 1.0 : 0.0;
                 float valid7 = (cellType[nr7] != AIR_CELL || cellType[nr7 - offset] != AIR_CELL) ? 1.0 : 0.0;
 
-                float v = particleVel[i].v[component];
-                float d = valid0 * d0 + valid1 * d1 + valid2 * d2 + valid3 * d3 +
+                float _v = particleVel[i].v[component];
+                float _d = valid0 * d0 + valid1 * d1 + valid2 * d2 + valid3 * d3 +
                           valid4 * d4 + valid5 * d5 + valid6 * d6 + valid7 * d7;
 
-                if (d > 0.0) {
+                if (_d > 0.0) {
                     float picV = (valid0 * d0 * f[nr0] + valid1 * d1 * f[nr1] + valid2 * d2 * f[nr2] + valid3 * d3 * f[nr3] +
-                                  valid4 * d4 * f[nr4] + valid5 * d5 * f[nr5] + valid6 * d6 * f[nr6] + valid7 * d7 * f[nr7]) / d;
+                                  valid4 * d4 * f[nr4] + valid5 * d5 * f[nr5] + valid6 * d6 * f[nr6] + valid7 * d7 * f[nr7]) / _d;
                     float corr = (valid0 * d0 * (f[nr0] - prevF[nr0]) + valid1 * d1 * (f[nr1] - prevF[nr1]) +
                                   valid2 * d2 * (f[nr2] - prevF[nr2]) + valid3 * d3 * (f[nr3] - prevF[nr3]) +
                                   valid4 * d4 * (f[nr4] - prevF[nr4]) + valid5 * d5 * (f[nr5] - prevF[nr5]) +
-                                  valid6 * d6 * (f[nr6] - prevF[nr6]) + valid7 * d7 * (f[nr7] - prevF[nr7])) / d;
-                    float flipV = v + corr;
+                                  valid6 * d6 * (f[nr6] - prevF[nr6]) + valid7 * d7 * (f[nr7] - prevF[nr7])) / _d;
+                    float flipV = _v + corr;
 
                     particleVel[i].v[component] = (1.0 - _flipRatio) * picV + _flipRatio * flipV;
                 }
@@ -550,9 +542,9 @@ void FlipFluid::solveIncompressibility(const int& _numIters, const float& _dt, c
                     float sy1 = s[top];
                     float sz0 = s[back];
                     float sz1 = s[front];
-                    float s = sx0 + sx1 + sy0 + sy1 + sz0 + sz1;
+                    float _s = sx0 + sx1 + sy0 + sy1 + sz0 + sz1;
 
-                    if (s == 0.0)
+                    if (_s == 0.0)
                         continue;
 
                     float div = u[right] - u[center] + v[top] - v[center] + w[front] - w[center];
@@ -564,16 +556,15 @@ void FlipFluid::solveIncompressibility(const int& _numIters, const float& _dt, c
                             div = div - _k * compression;
                     }
 
-                    float p = -div / s;
-                    p *= _overRelaxation;
-                    this->p[center] += cp * p;
+                    float _p = -div / _s * _overRelaxation;
+                    p[center] += cp * _p;
 
-                    u[center] -= sx0 * p;
-                    u[right] += sx1 * p;
-                    v[center] -= sy0 * p;
-                    v[top] += sy1 * p;
-                    w[center] -= sz0 * p;
-                    w[front] += sz1 * p;
+                    u[center] -= sx0 * _p;
+                    u[right] += sx1 * _p;
+                    v[center] -= sy0 * _p;
+                    v[top] += sy1 * _p;
+                    w[center] -= sz0 * _p;
+                    w[front] += sz1 * _p;
                 }
             }
         }
@@ -586,15 +577,15 @@ void FlipFluid::simulate(const vec3 &_gravity)
     float sdt = dt / numSubSteps;
 
     for (int step = 0; step < numSubSteps; step++) {
-        this->integrateParticles(sdt, _gravity);
+        integrateParticles(sdt, _gravity);
         if (separateParticles)
-            this->pushParticlesApart(numParticleIters);
-        this->handleParticleCollisions();
-        this->transferVelocities(true, flipRatio);
-        this->updateParticleDensity();
-        this->solveIncompressibility(numPressureIters, sdt, overRelaxation, compensateDrift);
-        this->transferVelocities(false, flipRatio);
+            pushParticlesApart(numParticleIters);
+        handleParticleCollisions();
+        transferVelocities(true, flipRatio);
+        updateParticleDensity();
+        solveIncompressibility(numPressureIters, sdt, overRelaxation, compensateDrift);
+        transferVelocities(false, flipRatio);
     }
 
-    //this->updateParticleColors();
+    //updateParticleColors();
 }
