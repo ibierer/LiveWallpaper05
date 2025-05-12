@@ -68,7 +68,6 @@ FlipFluid::FlipFluid() {
     // particle properties
 
     particlePos = (vec3*)calloc(maxParticles, sizeof(vec3));   // Initialize particle positions (x, y, z)
-    particleColor = (vec3*)calloc(maxParticles, sizeof(vec3)); // Initialize particle color (for visualization)
 
     particleVel = (vec3*)calloc(maxParticles, sizeof(vec3));      // Initialize particle velocity (x, y, z)
     particleDensity = (float*)calloc(fNumCells, sizeof(float));         // Initialize particle density
@@ -219,16 +218,6 @@ void FlipFluid::pushParticlesApart(const float& _numIters)
                             particlePos[id].x += dx;
                             particlePos[id].y += dy;
                             particlePos[id].z += dz;
-
-                            // diffuse colors
-
-                            for (int k = 0; k < 3; k++) {
-                                float color0 = particleColor[i].v[k];
-                                float color1 = particleColor[id].v[k];
-                                float color = (color0 + color1) * 0.5;
-                                particleColor[i].v[k] = color0 + (color - color0) * colorDiffusionCoeff;
-                                particleColor[id].v[k] = color1 + (color - color1) * colorDiffusionCoeff;
-                            }
                         }
                     }
                 }
@@ -586,6 +575,4 @@ void FlipFluid::simulate(const vec3 &_gravity)
         solveIncompressibility(numPressureIters, sdt, overRelaxation, compensateDrift);
         transferVelocities(false, flipRatio);
     }
-
-    //updateParticleColors();
 }

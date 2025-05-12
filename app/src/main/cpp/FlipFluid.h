@@ -44,8 +44,6 @@ public:
 
     vec3* particlePos;
 
-    vec3* particleColor;
-
     vec3* particleVel;
 
     float* particleDensity;
