@@ -11,7 +11,7 @@
 using std::min;
 using std::max;
 
-class FlipFluid {
+class FlipFluid : Simulation {
 public:
 
     float density;
@@ -28,25 +28,57 @@ public:
 
     int fNumCells;
 
-    vec3* uvw;       // Combined velocity field (replaces u, v, w)
+    /*fCells = (fCell*)calloc(fNumCells, sizeof(fCell));
+    particles = (ParticleInfo*)calloc(maxParticles, sizeof(ParticleInfo));
+    cellParticles = (cellParticle*)calloc(pNumCells + 1, sizeof(int));*/
 
-    vec3* duvw;      // Combined velocity change (replaces du, dv, dw)
+    struct ParticleInfo : Particle {
 
-    vec3* prevUVW;   // Combined previous velocity (replaces prevU, prevV, prevW)
+        vec3 position;
 
-    float* p;
+        vec3 velocity;
 
-    float* s;
+        int cellParticleId;
 
-    int* cellType;
+    };
+
+    ParticleInfo* particles;
+
+    struct fCell {
+
+        vec3 uvw;       // Velocity field
+
+        vec3 duvw;      // Velocity change
+
+        vec3 prevUVW;   // Previous velocity
+
+        float p;
+
+        float s;
+
+        float particleDensity;
+
+        int cellType;
+
+        int numCellParticles;
+
+        int firstCellParticle;
+
+    };
+
+    fCell* fCells;
+
+    struct cellParticle {
+
+        int num;
+
+        int first;
+
+    };
+
+    cellParticle* cellParticles;
 
     int maxParticles;
-
-    vec3* particlePos;
-
-    vec3* particleVel;
-
-    float* particleDensity;
 
     float particleRestDensity;
 
@@ -61,12 +93,6 @@ public:
     int pNumZ;
 
     int pNumCells;
-
-    int* numCellParticles;
-
-    int* firstCellParticle;
-
-    int* cellParticleIds;
 
     int numParticles;
 

@@ -56,21 +56,11 @@ FlipFluid::FlipFluid() {
     fInvSpacing = 1.0 / h;
     fNumCells = fNumX * fNumY * fNumZ;
 
-    // Initialize velocity fields as vector fields instead of separate components
-    uvw = (vec3*)calloc(fNumCells, sizeof(vec3));         // Initialize fluid velocity as vector field
-    duvw = (vec3*)calloc(fNumCells, sizeof(vec3));        // Initialize the change in fluid velocity as vector field
-    prevUVW = (vec3*)calloc(fNumCells, sizeof(vec3));     // Initialize the previous fluid velocity as vector field
-
-    p = (float*)calloc(fNumCells, sizeof(float));         // Initialize pressure
-    s = (float*)calloc(fNumCells, sizeof(float));         // Initialize source term
-    cellType = (int*)calloc(fNumCells, sizeof(int));        // Initialize cell type (fluid, air, solid)
+    fCells = (fCell*)calloc(fNumCells, sizeof(fCell));
 
     // particle properties
 
-    particlePos = (vec3*)calloc(maxParticles, sizeof(vec3));   // Initialize particle positions (x, y, z)
-
-    particleVel = (vec3*)calloc(maxParticles, sizeof(vec3));      // Initialize particle velocity (x, y, z)
-    particleDensity = (float*)calloc(fNumCells, sizeof(float));         // Initialize particle density
+    particles = (ParticleInfo*)calloc(maxParticles, sizeof(ParticleInfo));   // Initialize particle positions, velocity, and cell IDs (x, y, z)
     particleRestDensity = 0.0;                                            // Set the rest density of the stars
 
     pInvSpacing = 1.0 / (2.2 * particleRadius);
@@ -79,16 +69,14 @@ FlipFluid::FlipFluid() {
     pNumZ = floor(tankDepth * pInvSpacing) + 1;
     pNumCells = pNumX * pNumY * pNumZ;
 
-    numCellParticles = (int*)calloc(pNumCells, sizeof(int));              // Initialize the number of stars in each cell
-    firstCellParticle = (int*)calloc((pNumCells + 1), sizeof(int));       // Initialize the index of the first particle in each cell
-    cellParticleIds = (int*)calloc(maxParticles, sizeof(int));           // Initialize the particle ids
+    cellParticles = (cellParticle*)calloc(pNumCells + 1, sizeof(int));              // Initialize cell particle info
 
     numParticles = numX * numY * numZ;
     int index = 0;
     for (int i = 0; i < numX; i++) {
         for (int j = 0; j < numY; j++) {
             for (int k = 0; k < numZ; k++) {
-                particlePos[index++] = vec3(
+                particles[index++].position = vec3(
                         spacing + particleRadius + dx * i + (j % 2 == 0 ? 0.0 : particleRadius),
                         spacing + particleRadius + dy * j,
                         spacing + dz * k
@@ -105,7 +93,7 @@ FlipFluid::FlipFluid() {
                 float cellDensity = 1.0;    // fluid
                 if (i == 0 || i == fNumX - 1 || j == 0 || j == fNumY - 1 || k == 0 || k == fNumZ - 1)
                     cellDensity = 0.0;    // solid
-                s[(i * fNumY + j) * fNumZ + k] = cellDensity;
+                fCells[(i * fNumY + j) * fNumZ + k].s = cellDensity;
             }
         }
     }
@@ -114,8 +102,8 @@ FlipFluid::FlipFluid() {
 void FlipFluid::integrateParticles(const float &_dt, const vec3 &_gravity)
 {
     for (int i = 0; i < numParticles; i++) {
-        particleVel[i] += _dt * _gravity;
-        particlePos[i] += particleVel[i] * _dt;
+        particles[i].velocity += _dt * _gravity;
+        particles[i].position += particles[i].velocity * _dt;
     }
 }
 
@@ -126,18 +114,18 @@ void FlipFluid::pushParticlesApart(const float& _numIters)
     // particleCount stars per cell
 
     for (int i = 0; i < pNumCells; i++)
-        numCellParticles[i] = 0;
+        cellParticles[i].num = 0;
 
     for (int i = 0; i < numParticles; i++) {
-        float x = particlePos[i].x;
-        float y = particlePos[i].y;
-        float z = particlePos[i].z;
+        float x = particles[i].position.x;
+        float y = particles[i].position.y;
+        float z = particles[i].position.z;
 
         int xi = clamp(floor(x * pInvSpacing), 0.0f, float(pNumX - 1));
         int yi = clamp(floor(y * pInvSpacing), 0.0f, float(pNumY - 1));
         int zi = clamp(floor(z * pInvSpacing), 0.0f, float(pNumZ - 1));
-        int cellNr = xi * pNumY * pNumZ + yi * pNumZ + zi;
-        numCellParticles[cellNr]++;
+        int cellNr = pNumZ * (xi * pNumY + yi) + zi;
+        cellParticles[cellNr].num++;
     }
 
     // partial sums
@@ -145,24 +133,24 @@ void FlipFluid::pushParticlesApart(const float& _numIters)
     int first = 0;
 
     for (int i = 0; i < pNumCells; i++) {
-        first += numCellParticles[i];
-        firstCellParticle[i] = first;
+        first += cellParticles[i].num;
+        cellParticles[i].first = first;
     }
-    firstCellParticle[pNumCells] = first; // guard
+    cellParticles[pNumCells].first = first; // guard
 
     // fill stars into cells
 
     for (int i = 0; i < numParticles; i++) {
-        float x = particlePos[i].x;
-        float y = particlePos[i].y;
-        float z = particlePos[i].z;
+        float x = particles[i].position.x;
+        float y = particles[i].position.y;
+        float z = particles[i].position.z;
 
         int xi = clamp(floor(x * pInvSpacing), 0.0f, float(pNumX - 1));
         int yi = clamp(floor(y * pInvSpacing), 0.0f, float(pNumY - 1));
         int zi = clamp(floor(z * pInvSpacing), 0.0f, float(pNumZ - 1));
-        int cellNr = xi * pNumY * pNumZ + yi * pNumZ + zi;
-        firstCellParticle[cellNr]--;
-        cellParticleIds[firstCellParticle[cellNr]] = i;
+        int cellNr = pNumZ * (xi * pNumY + yi) + zi;
+        cellParticles[cellNr].first--;
+        particles[cellParticles[cellNr].first].cellParticleId = i;
     }
 
     // push stars apart
@@ -173,9 +161,9 @@ void FlipFluid::pushParticlesApart(const float& _numIters)
     for (int iter = 0; iter < _numIters; iter++) {
 
         for (int i = 0; i < numParticles; i++) {
-            float px = particlePos[i].x;
-            float py = particlePos[i].y;
-            float pz = particlePos[i].z;
+            float px = particles[i].position.x;
+            float py = particles[i].position.y;
+            float pz = particles[i].position.z;
 
             int pxi = floor(px * pInvSpacing);
             int pyi = floor(py * pInvSpacing);
@@ -190,16 +178,16 @@ void FlipFluid::pushParticlesApart(const float& _numIters)
             for (int xi = x0; xi <= x1; xi++) {
                 for (int yi = y0; yi <= y1; yi++) {
                     for (int zi = z0; zi <= z1; zi++) {
-                        int cellNr = xi * pNumY * pNumZ + yi * pNumZ + zi;
-                        first = firstCellParticle[cellNr];
-                        int last = firstCellParticle[cellNr + 1];
+                        int cellNr = pNumZ * (xi * pNumY + yi) + zi;
+                        first = cellParticles[cellNr].first;
+                        int last = cellParticles[cellNr + 1].first;
                         for (int j = first; j < last; j++) {
-                            int id = cellParticleIds[j];
+                            int id = particles[j].cellParticleId;
                             if (id == i)
                                 continue;
-                            float qx = particlePos[id].x;
-                            float qy = particlePos[id].y;
-                            float qz = particlePos[id].z;
+                            float qx = particles[i].position.x;
+                            float qy = particles[i].position.y;
+                            float qz = particles[i].position.z;
 
                             float dx = qx - px;
                             float dy = qy - py;
@@ -212,12 +200,12 @@ void FlipFluid::pushParticlesApart(const float& _numIters)
                             dx *= _s;
                             dy *= _s;
                             dz *= _s;
-                            particlePos[i].x -= dx;
-                            particlePos[i].y -= dy;
-                            particlePos[i].z -= dz;
-                            particlePos[id].x += dx;
-                            particlePos[id].y += dy;
-                            particlePos[id].z += dz;
+                            particles[i].position.x -= dx;
+                            particles[i].position.y -= dy;
+                            particles[i].position.z -= dz;
+                            particles[i].position.x += dx;
+                            particles[i].position.y += dy;
+                            particles[i].position.z += dz;
                         }
                     }
                 }
@@ -238,39 +226,39 @@ void FlipFluid::handleParticleCollisions()
     float maxZ = (fNumZ - 1) * h - r;
 
     for (int i = 0; i < numParticles; i++) {
-        float x = particlePos[i].x;
-        float y = particlePos[i].y;
-        float z = particlePos[i].z;
+        float x = particles[i].position.x;
+        float y = particles[i].position.y;
+        float z = particles[i].position.z;
 
         // wall collisions
 
         if (x < minX) {
             x = minX;
-            particleVel[i].x = 0.0;
+            particles[i].velocity.x = 0.0;
         }
         if (x > maxX) {
             x = maxX;
-            particleVel[i].x = 0.0;
+            particles[i].velocity.x = 0.0;
         }
         if (y < minY) {
             y = minY;
-            particleVel[i].y = 0.0;
+            particles[i].velocity.y = 0.0;
         }
         if (y > maxY) {
             y = maxY;
-            particleVel[i].y = 0.0;
+            particles[i].velocity.y = 0.0;
         }
         if (z < minZ) {
             z = minZ;
-            particleVel[i].z = 0.0;
+            particles[i].velocity.z = 0.0;
         }
         if (z > maxZ) {
             z = maxZ;
-            particleVel[i].z = 0.0;
+            particles[i].velocity.z = 0.0;
         }
-        particlePos[i].x = x;
-        particlePos[i].y = y;
-        particlePos[i].z = z;
+        particles[i].position.x = x;
+        particles[i].position.y = y;
+        particles[i].position.z = z;
     }
 
 }
@@ -281,15 +269,13 @@ void FlipFluid::updateParticleDensity()
     float h1 = fInvSpacing;
     float h2 = 0.5 * h;
 
-    float* d = particleDensity;
-
     for (int i = 0; i < fNumCells; i++)
-        d[i] = 0.0;
+        fCells[i].particleDensity = 0.0;
 
     for (int i = 0; i < numParticles; i++) {
-        float x = particlePos[i].x;
-        float y = particlePos[i].y;
-        float z = particlePos[i].z;
+        float x = particles[i].position.x;
+        float y = particles[i].position.y;
+        float z = particles[i].position.z;
 
         x = clamp(x, h, (fNumX - 1) * h);
         y = clamp(y, h, (fNumY - 1) * h);
@@ -311,14 +297,14 @@ void FlipFluid::updateParticleDensity()
         float sy = 1.0 - ty;
         float sz = 1.0 - tz;
 
-        if (x0 < fNumX && y0 < fNumY && z0 < fNumZ) d[x0 * (n * fNumZ) + y0 * fNumZ + z0] += sx * sy * sz;
-        if (x1 < fNumX && y0 < fNumY && z0 < fNumZ) d[x1 * (n * fNumZ) + y0 * fNumZ + z0] += tx * sy * sz;
-        if (x1 < fNumX && y1 < fNumY && z0 < fNumZ) d[x1 * (n * fNumZ) + y1 * fNumZ + z0] += tx * ty * sz;
-        if (x0 < fNumX && y1 < fNumY && z0 < fNumZ) d[x0 * (n * fNumZ) + y1 * fNumZ + z0] += sx * ty * sz;
-        if (x0 < fNumX && y0 < fNumY && z1 < fNumZ) d[x0 * (n * fNumZ) + y0 * fNumZ + z1] += sx * sy * tz;
-        if (x1 < fNumX && y0 < fNumY && z1 < fNumZ) d[x1 * (n * fNumZ) + y0 * fNumZ + z1] += tx * sy * tz;
-        if (x1 < fNumX && y1 < fNumY && z1 < fNumZ) d[x1 * (n * fNumZ) + y1 * fNumZ + z1] += tx * ty * tz;
-        if (x0 < fNumX && y1 < fNumY && z1 < fNumZ) d[x0 * (n * fNumZ) + y1 * fNumZ + z1] += sx * ty * tz;
+        if (x0 < fNumX && y0 < fNumY && z0 < fNumZ) fCells[(x0 * n + y0) * fNumZ + z0].particleDensity += sx * sy * sz;
+        if (x1 < fNumX && y0 < fNumY && z0 < fNumZ) fCells[(x1 * n + y0) * fNumZ + z0].particleDensity += tx * sy * sz;
+        if (x1 < fNumX && y1 < fNumY && z0 < fNumZ) fCells[(x1 * n + y1) * fNumZ + z0].particleDensity += tx * ty * sz;
+        if (x0 < fNumX && y1 < fNumY && z0 < fNumZ) fCells[(x0 * n + y1) * fNumZ + z0].particleDensity += sx * ty * sz;
+        if (x0 < fNumX && y0 < fNumY && z1 < fNumZ) fCells[(x0 * n + y0) * fNumZ + z1].particleDensity += sx * sy * tz;
+        if (x1 < fNumX && y0 < fNumY && z1 < fNumZ) fCells[(x1 * n + y0) * fNumZ + z1].particleDensity += tx * sy * tz;
+        if (x1 < fNumX && y1 < fNumY && z1 < fNumZ) fCells[(x1 * n + y1) * fNumZ + z1].particleDensity += tx * ty * tz;
+        if (x0 < fNumX && y1 < fNumY && z1 < fNumZ) fCells[(x0 * n + y1) * fNumZ + z1].particleDensity += sx * ty * tz;
     }
 
     if (particleRestDensity == 0.0) {
@@ -326,8 +312,8 @@ void FlipFluid::updateParticleDensity()
         int numFluidCells = 0;
 
         for (int i = 0; i < fNumCells; i++) {
-            if (cellType[i] == FLUID_CELL) {
-                sum += d[i];
+            if (fCells[i].cellType == FLUID_CELL) {
+                sum += fCells[i].particleDensity;
                 numFluidCells++;
             }
         }
@@ -345,29 +331,29 @@ void FlipFluid::transferVelocities(const bool& _toGrid, const float& _flipRatio)
 
     if (_toGrid) {
         for (int i = 0; i < fNumCells; i++) {
-            prevUVW[i] = uvw[i];
+            fCells[i].prevUVW = fCells[i].uvw;
         }
 
         for (int i = 0; i < fNumCells; i++) {
-            duvw[i] = vec3(0.0f);
-            uvw[i] = vec3(0.0f);
+            fCells[i].duvw = vec3(0.0f);
+            fCells[i].uvw = vec3(0.0f);
         }
 
         for (int i = 0; i < fNumCells; i++)
-            cellType[i] = s[i] == 0.0 ? SOLID_CELL : AIR_CELL;
+            fCells[i].cellType = fCells[i].s == 0.0 ? SOLID_CELL : AIR_CELL;
 
         for (int i = 0; i < numParticles; i++) {
-            float x = particlePos[i].x;
-            float y = particlePos[i].y;
-            float z = particlePos[i].z;
+            float x = particles[i].position.x;
+            float y = particles[i].position.y;
+            float z = particles[i].position.z;
 
             int xi = clamp(floor(x * h1), 0.0f, float(fNumX - 1));
             int yi = clamp(floor(y * h1), 0.0f, float(fNumY - 1));
             int zi = clamp(floor(z * h1), 0.0f, float(fNumZ - 1));
 
             int cellNr = xi * (n * fNumZ) + yi * fNumZ + zi;
-            if (cellType[cellNr] == AIR_CELL)
-                cellType[cellNr] = FLUID_CELL;
+            if (fCells[cellNr].cellType == AIR_CELL)
+                fCells[cellNr].cellType = FLUID_CELL;
         }
     }
 
@@ -377,9 +363,9 @@ void FlipFluid::transferVelocities(const bool& _toGrid, const float& _flipRatio)
         float dz = (component == 2) ? 0.0 : h2;
 
         for (int i = 0; i < numParticles; i++) {
-            float x = particlePos[i].x;
-            float y = particlePos[i].y;
-            float z = particlePos[i].z;
+            float x = particles[i].position.x;
+            float y = particles[i].position.y;
+            float z = particles[i].position.z;
 
             x = clamp(x, h, (fNumX - 1) * h);
             y = clamp(y, h, (fNumY - 1) * h);
@@ -410,68 +396,68 @@ void FlipFluid::transferVelocities(const bool& _toGrid, const float& _flipRatio)
             float d6 = tx * ty * tz;
             float d7 = sx * ty * tz;
 
-            int nr0 = x0 * (n * fNumZ) + y0 * fNumZ + z0;
-            int nr1 = x1 * (n * fNumZ) + y0 * fNumZ + z0;
-            int nr2 = x1 * (n * fNumZ) + y1 * fNumZ + z0;
-            int nr3 = x0 * (n * fNumZ) + y1 * fNumZ + z0;
-            int nr4 = x0 * (n * fNumZ) + y0 * fNumZ + z1;
-            int nr5 = x1 * (n * fNumZ) + y0 * fNumZ + z1;
-            int nr6 = x1 * (n * fNumZ) + y1 * fNumZ + z1;
-            int nr7 = x0 * (n * fNumZ) + y1 * fNumZ + z1;
+            int nr0 = (x0 * n + y0) * fNumZ + z0;
+            int nr1 = (x1 * n + y0) * fNumZ + z0;
+            int nr2 = (x1 * n + y1) * fNumZ + z0;
+            int nr3 = (x0 * n + y1) * fNumZ + z0;
+            int nr4 = (x0 * n + y0) * fNumZ + z1;
+            int nr5 = (x1 * n + y0) * fNumZ + z1;
+            int nr6 = (x1 * n + y1) * fNumZ + z1;
+            int nr7 = (x0 * n + y1) * fNumZ + z1;
 
             if (_toGrid) {
-                float pv = particleVel[i].v[component];
-                uvw[nr0][component] += pv * d0; duvw[nr0][component] += d0;
-                uvw[nr1][component] += pv * d1; duvw[nr1][component] += d1;
-                uvw[nr2][component] += pv * d2; duvw[nr2][component] += d2;
-                uvw[nr3][component] += pv * d3; duvw[nr3][component] += d3;
-                uvw[nr4][component] += pv * d4; duvw[nr4][component] += d4;
-                uvw[nr5][component] += pv * d5; duvw[nr5][component] += d5;
-                uvw[nr6][component] += pv * d6; duvw[nr6][component] += d6;
-                uvw[nr7][component] += pv * d7; duvw[nr7][component] += d7;
+                float pv = particles[i].velocity.v[component];
+                fCells[nr0].uvw[component] += pv * d0; fCells[nr0].duvw[component] += d0;
+                fCells[nr1].uvw[component] += pv * d1; fCells[nr1].duvw[component] += d1;
+                fCells[nr2].uvw[component] += pv * d2; fCells[nr2].duvw[component] += d2;
+                fCells[nr3].uvw[component] += pv * d3; fCells[nr3].duvw[component] += d3;
+                fCells[nr4].uvw[component] += pv * d4; fCells[nr4].duvw[component] += d4;
+                fCells[nr5].uvw[component] += pv * d5; fCells[nr5].duvw[component] += d5;
+                fCells[nr6].uvw[component] += pv * d6; fCells[nr6].duvw[component] += d6;
+                fCells[nr7].uvw[component] += pv * d7; fCells[nr7].duvw[component] += d7;
             }
             else {
                 int offset = (component == 0) ? (n * fNumZ) : ((component == 1) ? fNumZ : 1);
 
-                float valid0 = (cellType[nr0] != AIR_CELL || cellType[nr0 - offset] != AIR_CELL) ? 1.0 : 0.0;
-                float valid1 = (cellType[nr1] != AIR_CELL || cellType[nr1 - offset] != AIR_CELL) ? 1.0 : 0.0;
-                float valid2 = (cellType[nr2] != AIR_CELL || cellType[nr2 - offset] != AIR_CELL) ? 1.0 : 0.0;
-                float valid3 = (cellType[nr3] != AIR_CELL || cellType[nr3 - offset] != AIR_CELL) ? 1.0 : 0.0;
-                float valid4 = (cellType[nr4] != AIR_CELL || cellType[nr4 - offset] != AIR_CELL) ? 1.0 : 0.0;
-                float valid5 = (cellType[nr5] != AIR_CELL || cellType[nr5 - offset] != AIR_CELL) ? 1.0 : 0.0;
-                float valid6 = (cellType[nr6] != AIR_CELL || cellType[nr6 - offset] != AIR_CELL) ? 1.0 : 0.0;
-                float valid7 = (cellType[nr7] != AIR_CELL || cellType[nr7 - offset] != AIR_CELL) ? 1.0 : 0.0;
+                float valid0 = (fCells[nr0].cellType != AIR_CELL || fCells[nr0 - offset].cellType != AIR_CELL) ? 1.0 : 0.0;
+                float valid1 = (fCells[nr1].cellType != AIR_CELL || fCells[nr1 - offset].cellType != AIR_CELL) ? 1.0 : 0.0;
+                float valid2 = (fCells[nr2].cellType != AIR_CELL || fCells[nr2 - offset].cellType != AIR_CELL) ? 1.0 : 0.0;
+                float valid3 = (fCells[nr3].cellType != AIR_CELL || fCells[nr3 - offset].cellType != AIR_CELL) ? 1.0 : 0.0;
+                float valid4 = (fCells[nr4].cellType != AIR_CELL || fCells[nr4 - offset].cellType != AIR_CELL) ? 1.0 : 0.0;
+                float valid5 = (fCells[nr5].cellType != AIR_CELL || fCells[nr5 - offset].cellType != AIR_CELL) ? 1.0 : 0.0;
+                float valid6 = (fCells[nr6].cellType != AIR_CELL || fCells[nr6 - offset].cellType != AIR_CELL) ? 1.0 : 0.0;
+                float valid7 = (fCells[nr7].cellType != AIR_CELL || fCells[nr7 - offset].cellType != AIR_CELL) ? 1.0 : 0.0;
 
-                float _v = particleVel[i].v[component];
+                float _v = particles[i].velocity.v[component];
                 float _d = valid0 * d0 + valid1 * d1 + valid2 * d2 + valid3 * d3 +
                            valid4 * d4 + valid5 * d5 + valid6 * d6 + valid7 * d7;
 
                 if (_d > 0.0) {
-                    float picV = (valid0 * d0 * uvw[nr0][component] + valid1 * d1 * uvw[nr1][component] +
-                                  valid2 * d2 * uvw[nr2][component] + valid3 * d3 * uvw[nr3][component] +
-                                  valid4 * d4 * uvw[nr4][component] + valid5 * d5 * uvw[nr5][component] +
-                                  valid6 * d6 * uvw[nr6][component] + valid7 * d7 * uvw[nr7][component]) / _d;
+                    float picV = (valid0 * d0 * fCells[nr0].uvw[component] + valid1 * d1 * fCells[nr1].uvw[component] +
+                                  valid2 * d2 * fCells[nr2].uvw[component] + valid3 * d3 * fCells[nr3].uvw[component] +
+                                  valid4 * d4 * fCells[nr4].uvw[component] + valid5 * d5 * fCells[nr5].uvw[component] +
+                                  valid6 * d6 * fCells[nr6].uvw[component] + valid7 * d7 * fCells[nr7].uvw[component]) / _d;
 
-                    float corr = (valid0 * d0 * (uvw[nr0][component] - prevUVW[nr0][component]) +
-                                  valid1 * d1 * (uvw[nr1][component] - prevUVW[nr1][component]) +
-                                  valid2 * d2 * (uvw[nr2][component] - prevUVW[nr2][component]) +
-                                  valid3 * d3 * (uvw[nr3][component] - prevUVW[nr3][component]) +
-                                  valid4 * d4 * (uvw[nr4][component] - prevUVW[nr4][component]) +
-                                  valid5 * d5 * (uvw[nr5][component] - prevUVW[nr5][component]) +
-                                  valid6 * d6 * (uvw[nr6][component] - prevUVW[nr6][component]) +
-                                  valid7 * d7 * (uvw[nr7][component] - prevUVW[nr7][component])) / _d;
+                    float corr = (valid0 * d0 * (fCells[nr0].uvw[component] - fCells[nr0].prevUVW[component]) +
+                                  valid1 * d1 * (fCells[nr1].uvw[component] - fCells[nr1].prevUVW[component]) +
+                                  valid2 * d2 * (fCells[nr2].uvw[component] - fCells[nr2].prevUVW[component]) +
+                                  valid3 * d3 * (fCells[nr3].uvw[component] - fCells[nr3].prevUVW[component]) +
+                                  valid4 * d4 * (fCells[nr4].uvw[component] - fCells[nr4].prevUVW[component]) +
+                                  valid5 * d5 * (fCells[nr5].uvw[component] - fCells[nr5].prevUVW[component]) +
+                                  valid6 * d6 * (fCells[nr6].uvw[component] - fCells[nr6].prevUVW[component]) +
+                                  valid7 * d7 * (fCells[nr7].uvw[component] - fCells[nr7].prevUVW[component])) / _d;
 
                     float flipV = _v + corr;
 
-                    particleVel[i].v[component] = (1.0 - _flipRatio) * picV + _flipRatio * flipV;
+                    particles[i].velocity.v[component] = (1.0 - _flipRatio) * picV + _flipRatio * flipV;
                 }
             }
         }
 
         if (_toGrid) {
             for (int i = 0; i < fNumCells; i++) {
-                if (duvw[i][component] > 0.0)
-                    uvw[i][component] /= duvw[i][component];
+                if (fCells[i].duvw[component] > 0.0)
+                    fCells[i].uvw[component] /= fCells[i].duvw[component];
             }
 
             // Restore solid cells
@@ -479,19 +465,19 @@ void FlipFluid::transferVelocities(const bool& _toGrid, const float& _flipRatio)
                 for (int j = 0; j < fNumY; j++) {
                     for (int k = 0; k < fNumZ; k++) {
                         int cellIndex = i * (n * fNumZ) + j * fNumZ + k;
-                        int solid = cellType[cellIndex] == SOLID_CELL;
+                        int solid = fCells[cellIndex].cellType == SOLID_CELL;
 
                         if (component == 0) {
-                            if (solid || (i > 0 && cellType[(i - 1) * (n * fNumZ) + j * fNumZ + k] == SOLID_CELL))
-                                uvw[cellIndex].x = 0.0;
+                            if (solid || (i > 0 && fCells[(i - 1) * (n * fNumZ) + j * fNumZ + k].cellType == SOLID_CELL))
+                                fCells[cellIndex].uvw.x = 0.0;
                         }
                         else if (component == 1) {
-                            if (solid || (j > 0 && cellType[i * (n * fNumZ) + (j - 1) * fNumZ + k] == SOLID_CELL))
-                                uvw[cellIndex].y = 0.0;
+                            if (solid || (j > 0 && fCells[i * (n * fNumZ) + (j - 1) * fNumZ + k].cellType == SOLID_CELL))
+                                fCells[cellIndex].uvw.y = 0.0;
                         }
                         else { // component == 2
-                            if (solid || (k > 0 && cellType[i * (n * fNumZ) + j * fNumZ + (k - 1)] == SOLID_CELL))
-                                uvw[cellIndex].z = 0.0;
+                            if (solid || (k > 0 && fCells[i * (n * fNumZ) + j * fNumZ + (k - 1)].cellType == SOLID_CELL))
+                                fCells[cellIndex].uvw.z = 0.0;
                         }
                     }
                 }
@@ -502,8 +488,8 @@ void FlipFluid::transferVelocities(const bool& _toGrid, const float& _flipRatio)
 
 void FlipFluid::solveIncompressibility(const int& _numIters, const float& _dt, const float& _overRelaxation, const bool& _compensateDrift = true) {
     for (int i = 0; i < fNumCells; i++) {
-        p[i] = 0.0;
-        prevUVW[i] = uvw[i];
+        fCells[i].p = 0.0;
+        fCells[i].prevUVW = fCells[i].uvw;
     }
 
     int n = fNumY;
@@ -514,46 +500,46 @@ void FlipFluid::solveIncompressibility(const int& _numIters, const float& _dt, c
             for (int j = 1; j < fNumY - 1; j++) {
                 for (int k = 1; k < fNumZ - 1; k++) {
 
-                    if (cellType[i * (n * fNumZ) + j * fNumZ + k] != FLUID_CELL)
+                    if (fCells[i * (n * fNumZ) + j * fNumZ + k].cellType != FLUID_CELL)
                         continue;
 
-                    int center = i * (n * fNumZ) + j * fNumZ + k;
-                    int left = (i - 1) * (n * fNumZ) + j * fNumZ + k;
-                    int right = (i + 1) * (n * fNumZ) + j * fNumZ + k;
-                    int bottom = i * (n * fNumZ) + (j - 1) * fNumZ + k;
-                    int top = i * (n * fNumZ) + (j + 1) * fNumZ + k;
-                    int back = i * (n * fNumZ) + j * fNumZ + (k - 1);
-                    int front = i * (n * fNumZ) + j * fNumZ + (k + 1);
+                    int center = (i * n + j) * fNumZ + k;
+                    int left = ((i - 1) * n + j) * fNumZ + k;
+                    int right = ((i + 1) * n + j) * fNumZ + k;
+                    int bottom = (i * n + (j - 1)) * fNumZ + k;
+                    int top = (i * n + (j + 1)) * fNumZ + k;
+                    int back = (i * n + j) * fNumZ + k - 1;
+                    int front = (i * n + j) * fNumZ + k + 1;
 
-                    float sx0 = s[left];
-                    float sx1 = s[right];
-                    float sy0 = s[bottom];
-                    float sy1 = s[top];
-                    float sz0 = s[back];
-                    float sz1 = s[front];
+                    float sx0 = fCells[left].s;
+                    float sx1 = fCells[right].s;
+                    float sy0 = fCells[bottom].s;
+                    float sy1 = fCells[top].s;
+                    float sz0 = fCells[back].s;
+                    float sz1 = fCells[front].s;
                     float _s = sx0 + sx1 + sy0 + sy1 + sz0 + sz1;
 
                     if (_s == 0.0)
                         continue;
 
-                    float div = uvw[right].x - uvw[center].x + uvw[top].y - uvw[center].y + uvw[front].z - uvw[center].z;
+                    float div = fCells[right].uvw.x - fCells[center].uvw.x + fCells[top].uvw.y - fCells[center].uvw.y + fCells[front].uvw.z - fCells[center].uvw.z;
 
                     if (particleRestDensity > 0.0 && _compensateDrift) {
                         float _k = 1.0;
-                        float compression = particleDensity[i * (n * fNumZ) + j * fNumZ + k] - particleRestDensity;
+                        float compression = fCells[i * (n * fNumZ) + j * fNumZ + k].particleDensity - particleRestDensity;
                         if (compression > 0.0)
                             div = div - _k * compression;
                     }
 
                     float _p = -div / _s * _overRelaxation;
-                    p[center] += cp * _p;
+                    fCells[center].p += cp * _p;
 
-                    uvw[center].x -= sx0 * _p;
-                    uvw[right].x += sx1 * _p;
-                    uvw[center].y -= sy0 * _p;
-                    uvw[top].y += sy1 * _p;
-                    uvw[center].z -= sz0 * _p;
-                    uvw[front].z += sz1 * _p;
+                    fCells[center].uvw.x -= sx0 * _p;
+                    fCells[right].uvw.x += sx1 * _p;
+                    fCells[center].uvw.y -= sy0 * _p;
+                    fCells[top].uvw.y += sy1 * _p;
+                    fCells[center].uvw.z -= sz0 * _p;
+                    fCells[front].uvw.z += sz1 * _p;
                 }
             }
         }
