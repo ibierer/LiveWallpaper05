@@ -11,7 +11,7 @@
 using std::min;
 using std::max;
 
-class FlipFluid {
+class FlipFluid : Simulation {
 public:
 
     float density;
@@ -28,25 +28,45 @@ public:
 
     int fNumCells;
 
-    vec3* uvw;       // Combined velocity field (replaces u, v, w)
+    struct ParticleInfo : Particle {
 
-    vec3* duvw;      // Combined velocity change (replaces du, dv, dw)
+        int cellParticleId;
 
-    vec3* prevUVW;   // Combined previous velocity (replaces prevU, prevV, prevW)
+    };
 
-    float* p;
+    ParticleInfo* particles;
 
-    float* s;
+    struct fCell {
 
-    int* cellType;
+        vec3 uvw;       // Combined velocity field
+
+        vec3 duvw;      // Combined velocity change
+
+        vec3 prevUVW;   // Combined previous velocity
+
+        float p;
+
+        float s;
+
+        int cellType;
+
+        float particleDensity;
+
+    };
+
+    fCell* fCells;
+
+    struct pCell {
+
+        int numCellParticles;
+
+        int firstCellParticle;
+
+    };
+
+    pCell* pCells;
 
     int maxParticles;
-
-    vec3* particlePos;
-
-    vec3* particleVel;
-
-    float* particleDensity;
 
     float particleRestDensity;
 
@@ -61,12 +81,6 @@ public:
     int pNumZ;
 
     int pNumCells;
-
-    int* numCellParticles;
-
-    int* firstCellParticle;
-
-    int* cellParticleIds;
 
     int numParticles;
 
