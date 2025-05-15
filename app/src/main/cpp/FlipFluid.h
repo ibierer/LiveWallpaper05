@@ -34,8 +34,6 @@ public:
 
     };
 
-    ParticleInfo* particles;
-
     struct fCell {
 
         vec3 uvw;       // Combined velocity field
@@ -54,17 +52,25 @@ public:
 
     };
 
-    fCell* fCells;
-
     struct pCell {
 
-        int numCellParticles;
+        int numCellParticles; // Max = 6
 
         int firstCellParticle;
 
     };
 
-    pCell* pCells;
+    struct Data {
+
+        ParticleInfo* particles;
+
+        fCell* fCells;
+
+        pCell* pCells;
+
+    };
+
+    Data data;
 
     int maxParticles;
 
