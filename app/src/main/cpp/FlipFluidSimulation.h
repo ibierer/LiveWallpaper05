@@ -11,9 +11,9 @@ using std::to_string;
 class FlipFluidSimulation : public Simulation {
 public:
 
-    static const int NUM_CACHE_CHUNKS = 512;
+    static const int NUM_CACHE_CHUNKS = 4600 / 8;
 
-    static const int PARTICLES_PER_CHUNK = 16;
+    static const int PARTICLES_PER_CHUNK = 8;
 
     static const int COUNT = NUM_CACHE_CHUNKS * PARTICLES_PER_CHUNK;
 
@@ -23,15 +23,59 @@ public:
 
     static const int VELOCITY_ATTRIBUTE_LOCATION = 3;
 
-    struct __attribute__((aligned(128))) cacheChunk { // 512 bytes
-        Particle particles[PARTICLES_PER_CHUNK];
+    struct ParticleInfo : Particle {
+
+        int cellParticleId;
+
+    };
+
+    struct fCell {
+
+        vec3 uvw;       // Combined velocity field
+
+        vec3 duvw;      // Combined velocity change
+
+        vec3 prevUVW;   // Combined previous velocity
+
+        float p;
+
+        float s;
+
+        int cellType;
+
+        float particleDensity;
+
+    };
+
+    struct pCell {
+
+        int numCellParticles; // Max = 6
+
+        int firstCellParticle;
+
+    };
+
+    struct __attribute__((aligned(128))) cacheChunk {
+        ParticleInfo particles[PARTICLES_PER_CHUNK];
+        float padding[(256 - sizeof(particles)) / sizeof(float)];
+    };
+
+    struct __attribute__((aligned(128))) cacheChunk1 {
+        fCell particles[PARTICLES_PER_CHUNK];
         float padding[(512 - sizeof(particles)) / sizeof(float)];
+    };
+
+    struct __attribute__((aligned(128))) cacheChunk2 {
+        pCell particles[PARTICLES_PER_CHUNK];
+        float padding[(128 - sizeof(particles)) / sizeof(float)];
     };
 
     struct __attribute__((aligned(128))) FlipFluidSimulationData {
         union {
             //Particle stars[COUNT]; // CPU computation data
             cacheChunk chunks[NUM_CACHE_CHUNKS]; // GPU computation data
+            cacheChunk1 chunks1[NUM_CACHE_CHUNKS]; // GPU computation data
+            cacheChunk2 chunks2[NUM_CACHE_CHUNKS]; // GPU computation data
         };
     };
 
@@ -41,16 +85,40 @@ public:
             "const uint PARTICLES_PER_CHUNK = " + to_string(PARTICLES_PER_CHUNK) + "u;",
             "const uint NUM_CACHE_CHUNKS = uint(" + to_string(NUM_CACHE_CHUNKS) + ");\n",
             "const uint COUNT = " + to_string(COUNT) + "u;\n",
-            "struct Particle {\n",
+            "struct ParticleInfo {\n",
             "    vec3 position;\n",
             "    vec3 velocity;\n",
+            "    int cellParticleId;\n",
+            "};\n",
+            "struct fCell {\n",
+            "    vec3 uvw;       // Combined velocity field\n",
+            "    vec3 duvw;      // Combined velocity change\n",
+            "    vec3 prevUVW;   // Combined previous velocity\n",
+            "    float p;\n",
+            "    float s;\n",
+            "    int cellType;\n",
+            "    float particleDensity;\n",
+            "};\n",
+            "struct pCell {\n",
+            "    int numCellParticles; // Max = 6\n",
+            "    int firstCellParticle;\n",
             "};\n",
             "struct cacheChunk {\n",
-            "    Particle stars[" + to_string(PARTICLES_PER_CHUNK) + "];\n",
+            "    ParticleInfo stars[" + to_string(PARTICLES_PER_CHUNK) + "];\n",
             "    float padding[" + to_string((int)sizeof(cacheChunk::padding) / sizeof(float)) + "];\n",
+            "};\n",
+            "struct cacheChunk1 {\n",
+            "    fCell stars[" + to_string(PARTICLES_PER_CHUNK) + "];\n",
+            "    float padding[" + to_string((int)sizeof(cacheChunk1::padding) / sizeof(float)) + "];\n",
+            "};\n",
+            "struct cacheChunk2 {\n",
+            "    pCell stars[" + to_string(PARTICLES_PER_CHUNK) + "];\n",
+            "    float padding[" + to_string((int)sizeof(cacheChunk2::padding) / sizeof(float)) + "];\n",
             "};\n",
             "layout(packed, binding = " + to_string(DEFAULT_INDEX_BUFFER_BINDING) + ") buffer destBuffer {\n",
             "	  cacheChunk chunks[" + to_string(NUM_CACHE_CHUNKS) + "];\n",
+            "	  cacheChunk1 chunks1[" + to_string(NUM_CACHE_CHUNKS) + "];\n",
+            "	  cacheChunk2 chunks2[" + to_string(NUM_CACHE_CHUNKS) + "];\n",
             "} outBuffer;\n",
             "uniform float t;\n",
             "layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;\n",

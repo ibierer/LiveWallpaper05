@@ -48,8 +48,8 @@ void FlipFluidSimulationView::render(){
     glVertexAttribDivisor(FlipFluidSimulation::OFFSET_ATTRIBUTE_LOCATION, 1);
     glVertexAttribDivisor(FlipFluidSimulation::VELOCITY_ATTRIBUTE_LOCATION, 1);
     for(int i = 0; i < FlipFluidSimulation::PARTICLES_PER_CHUNK; i++){
-        glVertexAttribPointer(FlipFluidSimulation::OFFSET_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(FlipFluidSimulation::cacheChunk), (const GLvoid*)(offsetof(Simulation::Particle, position) + sizeof(Simulation::Particle) * i));
-        glVertexAttribPointer(FlipFluidSimulation::VELOCITY_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(FlipFluidSimulation::cacheChunk), (const GLvoid*)(offsetof(Simulation::Particle, velocity) + sizeof(Simulation::Particle) * i));
+        glVertexAttribPointer(FlipFluidSimulation::OFFSET_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(FlipFluidSimulation::cacheChunk), (const GLvoid*)(offsetof(FlipFluidSimulation::ParticleInfo, position) + sizeof(FlipFluidSimulation::ParticleInfo) * i));
+        glVertexAttribPointer(FlipFluidSimulation::VELOCITY_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(FlipFluidSimulation::cacheChunk), (const GLvoid*)(offsetof(FlipFluidSimulation::ParticleInfo, velocity) + sizeof(FlipFluidSimulation::ParticleInfo) * i));
         glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, cubeVAO.getNumVertices(), FlipFluidSimulation::NUM_CACHE_CHUNKS);
     }
     glBindBuffer(GL_ARRAY_BUFFER, 0);
