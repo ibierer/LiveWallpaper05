@@ -28,55 +28,49 @@ public:
 
     int fNumCells;
 
-    /*fCells = (fCell*)calloc(fNumCells, sizeof(fCell));
-    particles = (ParticleInfo*)calloc(maxParticles, sizeof(ParticleInfo));
-    cellParticles = (cellParticle*)calloc(pNumCells + 1, sizeof(int));*/
-
     struct ParticleInfo : Particle {
-
-        vec3 position;
-
-        vec3 velocity;
 
         int cellParticleId;
 
     };
 
-    ParticleInfo* particles;
-
     struct fCell {
 
-        vec3 uvw;       // Velocity field
+        vec3 uvw;       // Combined velocity field
 
-        vec3 duvw;      // Velocity change
+        vec3 duvw;      // Combined velocity change
 
-        vec3 prevUVW;   // Previous velocity
+        vec3 prevUVW;   // Combined previous velocity
 
         float p;
 
         float s;
 
-        float particleDensity;
-
         int cellType;
 
-        int numCellParticles;
+        float particleDensity;
+
+    };
+
+    struct pCell {
+
+        int numCellParticles; // Max = 6
 
         int firstCellParticle;
 
     };
 
-    fCell* fCells;
+    struct Data {
 
-    struct cellParticle {
+        ParticleInfo* particles;
 
-        int num;
+        fCell* fCells;
 
-        int first;
+        pCell* pCells;
 
     };
 
-    cellParticle* cellParticles;
+    Data data;
 
     int maxParticles;
 
