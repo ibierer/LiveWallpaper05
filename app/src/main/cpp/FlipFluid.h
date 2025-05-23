@@ -108,7 +108,7 @@ public:
 
     FlipFluid();
 
-    void simulate(const vec3 &_gravity);
+    void simulate(const vec3 &gravity);
 
 private:
 
@@ -118,17 +118,17 @@ private:
 
     static const int SOLID_CELL = 2;
 
-    void integrateParticles(const float &_dt, const vec3 &_gravity);
+    void integrateParticles(const float &dt, const vec3 &gravity);
 
-    void pushParticlesApart(const float& _numIters);
+    void pushParticlesApart(const float& numIters);
 
     void handleParticleCollisions();
 
     void updateParticleDensity();
 
-    void transferVelocities(const bool& _toGrid, const float& _flipRatio);
+    void transferVelocities(const bool& toGrid, const float& flipRatio);
 
-    void solveIncompressibility(const int& _numIters, const float& _dt, const float& _overRelaxation, const bool& _compensateDrift);
+    void solveIncompressibility(const int& numIters, const float& dt, const float& overRelaxation, const bool& compensateDrift);
 
 };
 
