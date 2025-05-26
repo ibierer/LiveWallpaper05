@@ -47,7 +47,7 @@ void FlipFluid::integrateParticles(const float &dt, const vec3 &gravity)
     }
 }
 // Thrashing issue: reading and writing from and to pCells and particles. Non-parallelizable issue
-void FlipFluid::pushParticlesApart(const float& numIters)
+void FlipFluid::pushParticlesApart(const int& numIters)
 {
     float colorDiffusionCoeff = 0.001;
 
@@ -143,31 +143,30 @@ void FlipFluid::handleParticleCollisions()
     float maxZ = (fNumZ - 1) * h - r;
 
     for (int i = 0; i < numParticles; i++) {
-        ParticleInfo& p = data->particles[i];
 
         // Clamp position and zero velocity on collision
-        if (p.position.x < minX) {
-            p.position.x = minX;
-            p.velocity.x = 0.0f;
-        } else if (p.position.x > maxX) {
-            p.position.x = maxX;
-            p.velocity.x = 0.0f;
+        if (data->particles[i].position.x < minX) {
+            data->particles[i].position.x = minX;
+            data->particles[i].velocity.x = 0.0f;
+        } else if (data->particles[i].position.x > maxX) {
+            data->particles[i].position.x = maxX;
+            data->particles[i].velocity.x = 0.0f;
         }
 
-        if (p.position.y < minY) {
-            p.position.y = minY;
-            p.velocity.y = 0.0f;
-        } else if (p.position.y > maxY) {
-            p.position.y = maxY;
-            p.velocity.y = 0.0f;
+        if (data->particles[i].position.y < minY) {
+            data->particles[i].position.y = minY;
+            data->particles[i].velocity.y = 0.0f;
+        } else if (data->particles[i].position.y > maxY) {
+            data->particles[i].position.y = maxY;
+            data->particles[i].velocity.y = 0.0f;
         }
 
-        if (p.position.z < minZ) {
-            p.position.z = minZ;
-            p.velocity.z = 0.0f;
-        } else if (p.position.z > maxZ) {
-            p.position.z = maxZ;
-            p.velocity.z = 0.0f;
+        if (data->particles[i].position.z < minZ) {
+            data->particles[i].position.z = minZ;
+            data->particles[i].velocity.z = 0.0f;
+        } else if (data->particles[i].position.z > maxZ) {
+            data->particles[i].position.z = maxZ;
+            data->particles[i].velocity.z = 0.0f;
         }
     }
 
@@ -304,7 +303,7 @@ void FlipFluid::transferVelocities(const bool& toGrid, const float& flipRatio)
             int nr7 = (x0 * n + y1) * fNumZ + z1;
 
             if (toGrid) {
-                float pv = data->particles[i].velocity.v[component];
+                float pv = data->particles[i].velocity[component];
                 data->fCells[nr0].uvw[component] += pv * d0; data->fCells[nr0].duvw[component] += d0;
                 data->fCells[nr1].uvw[component] += pv * d1; data->fCells[nr1].duvw[component] += d1;
                 data->fCells[nr2].uvw[component] += pv * d2; data->fCells[nr2].duvw[component] += d2;
@@ -326,7 +325,7 @@ void FlipFluid::transferVelocities(const bool& toGrid, const float& flipRatio)
                 float valid6 = (data->fCells[nr6].cellType != AIR_CELL || data->fCells[nr6 - offset].cellType != AIR_CELL) ? 1.0 : 0.0;
                 float valid7 = (data->fCells[nr7].cellType != AIR_CELL || data->fCells[nr7 - offset].cellType != AIR_CELL) ? 1.0 : 0.0;
 
-                float _v = data->particles[i].velocity.v[component];
+                float _v = data->particles[i].velocity[component];
                 float _d = valid0 * d0 + valid1 * d1 + valid2 * d2 + valid3 * d3 +
                            valid4 * d4 + valid5 * d5 + valid6 * d6 + valid7 * d7;
 
@@ -347,7 +346,7 @@ void FlipFluid::transferVelocities(const bool& toGrid, const float& flipRatio)
 
                     float flipV = _v + corr;
 
-                    data->particles[i].velocity.v[component] = (1.0 - flipRatio) * picV + flipRatio * flipV;
+                    data->particles[i].velocity[component] = (1.0 - flipRatio) * picV + flipRatio * flipV;
                 }
             }
         }
@@ -363,7 +362,7 @@ void FlipFluid::transferVelocities(const bool& toGrid, const float& flipRatio)
                 for (int j = 0; j < fNumY; j++) {
                     for (int k = 0; k < fNumZ; k++) {
                         int cellIndex = (i * n + j) * fNumZ + k;
-                        int solid = data->fCells[cellIndex].cellType == SOLID_CELL;
+                        bool solid = data->fCells[cellIndex].cellType == SOLID_CELL;
 
                         if (component == 0) {
                             if (solid || (i > 0 && data->fCells[((i - 1) * n + j) * fNumZ + k].cellType == SOLID_CELL))
@@ -384,7 +383,7 @@ void FlipFluid::transferVelocities(const bool& toGrid, const float& flipRatio)
     }
 }
 // Iterate over fCells
-void FlipFluid::solveIncompressibility(const int& numIters, const float& dt, const float& overRelaxation, const bool& compensateDrift = true) {
+void FlipFluid::solveIncompressibility(const int& numIters, const float& dt, const float& overRelaxation, const bool& compensateDrift) {
     for (int i = 0; i < fNumCells; i++) {
         data->fCells[i].p = 0.0;
         data->fCells[i].prevUVW = data->fCells[i].uvw;

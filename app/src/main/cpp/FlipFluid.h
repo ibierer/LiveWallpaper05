@@ -131,7 +131,7 @@ private:
 
     void integrateParticles(const float &dt, const vec3 &gravity);
 
-    void pushParticlesApart(const float& numIters);
+    void pushParticlesApart(const int& numIters);
 
     void handleParticleCollisions();
 
