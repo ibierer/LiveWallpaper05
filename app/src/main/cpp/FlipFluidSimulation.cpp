@@ -4,6 +4,9 @@
 
 #include "FlipFluidSimulation.h"
 
+using std::min;
+using std::max;
+
 void FlipFluidSimulation::initialize(const ComputationOptions& computationOption) {
     this->computationOption = computationOption;
     data = (FlipFluidSimulationData*)malloc(sizeof(FlipFluidSimulationData));
@@ -18,29 +21,29 @@ void FlipFluidSimulation::simulateOnCPU(){
     if(t <= 0.0f) {
         return;
     }
-    vec3 gravitySum[NUM_CACHE_CHUNKS][PARTICLES_PER_CHUNK];
-    for (uint task = 0u; task < NUM_CACHE_CHUNKS; task++) {
-        for (uint i = 0u; i < PARTICLES_PER_CHUNK; i++) {
-            gravitySum[task][i] = vec3(0.0f, 0.0f, 0.0f);
-            for (uint j = 0u; j < NUM_CACHE_CHUNKS; j++) {
-                for (uint k = 0u; k < PARTICLES_PER_CHUNK; k++) {
-                    if (PARTICLES_PER_CHUNK * j + k == PARTICLES_PER_CHUNK * task + i)
-                        continue;
-                    vec3 difference = data->chunks[j].particles[k].position -
-                                      data->chunks[task].particles[i].position;
-                    float differenceSquared = dot(difference, difference);
-                    float distance = sqrt(differenceSquared);
-                    gravitySum[task][i] += difference / distance / differenceSquared;
-                }
-            }
-        }
-    }
-    for (uint task = 0; task < NUM_CACHE_CHUNKS; task++) {
-        for (uint i = 0u; i < PARTICLES_PER_CHUNK; i++) {
-            data->chunks[task].particles[i].velocity += gravitySum[task][i];
-            data->chunks[task].particles[i].position += data->chunks[task].particles[i].velocity;
-        }
-    }
+    //vec3 gravitySum[NUM_CACHE_CHUNKS][PARTICLES_PER_CHUNK];
+    //for (uint task = 0u; task < NUM_CACHE_CHUNKS; task++) {
+    //    for (uint i = 0u; i < PARTICLES_PER_CHUNK; i++) {
+    //        gravitySum[task][i] = vec3(0.0f, 0.0f, 0.0f);
+    //        for (uint j = 0u; j < NUM_CACHE_CHUNKS; j++) {
+    //            for (uint k = 0u; k < PARTICLES_PER_CHUNK; k++) {
+    //                if (PARTICLES_PER_CHUNK * j + k == PARTICLES_PER_CHUNK * task + i)
+    //                    continue;
+    //                vec3 difference = data->chunks[j].particles[k].position -
+    //                                  data->chunks[task].particles[i].position;
+    //                float differenceSquared = dot(difference, difference);
+    //                float distance = sqrt(differenceSquared);
+    //                gravitySum[task][i] += difference / distance / differenceSquared;
+    //            }
+    //        }
+    //    }
+    //}
+    //for (uint task = 0; task < NUM_CACHE_CHUNKS; task++) {
+    //    for (uint i = 0u; i < PARTICLES_PER_CHUNK; i++) {
+    //        data->chunks[task].particles[i].velocity += gravitySum[task][i];
+    //        data->chunks[task].particles[i].position += data->chunks[task].particles[i].velocity;
+    //    }
+    //}
 }
 
 void FlipFluidSimulation::simulate(const int &iterations, bool pushDataToGPU, bool retrieveDataFromGPU) {
@@ -97,28 +100,28 @@ float FlipFluidSimulation::getRandomFloat(float x) {
 }
 
 bool FlipFluidSimulation::seed() {
-    switch(computationOption){
-        case CPU:
-            /*for(int i = 0; i < COUNT; i++){
-                data->stars[i].position = vec3(getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f);
-                data->stars[i].velocity = vec3(0.0f);
-            }*/
-            for(int i = 0; i < NUM_CACHE_CHUNKS; i++){
-                for(int j = 0; j < PARTICLES_PER_CHUNK && PARTICLES_PER_CHUNK * i + j < COUNT; j++){
-                    data->chunks[i].particles[j].position = vec3(getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f);
-                    data->chunks[i].particles[j].velocity = vec3(0.0f);
-                }
-            }
-            break;
-        case GPU:
-            for(int i = 0; i < NUM_CACHE_CHUNKS; i++){
-                for(int j = 0; j < PARTICLES_PER_CHUNK && PARTICLES_PER_CHUNK * i + j < COUNT; j++){
-                    data->chunks[i].particles[j].position = vec3(getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f);
-                    data->chunks[i].particles[j].velocity = vec3(0.0f);
-                }
-            }
-            break;
-    }
+    //switch(computationOption){
+    //    case CPU:
+    //        /*for(int i = 0; i < COUNT; i++){
+    //            data->stars[i].position = vec3(getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f);
+    //            data->stars[i].velocity = vec3(0.0f);
+    //        }*/
+    //        for(int i = 0; i < NUM_CACHE_CHUNKS; i++){
+    //            for(int j = 0; j < PARTICLES_PER_CHUNK && PARTICLES_PER_CHUNK * i + j < COUNT; j++){
+    //                data->chunks[i].particles[j].position = vec3(getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f);
+    //                data->chunks[i].particles[j].velocity = vec3(0.0f);
+    //            }
+    //        }
+    //        break;
+    //    case GPU:
+    //        for(int i = 0; i < NUM_CACHE_CHUNKS; i++){
+    //            for(int j = 0; j < PARTICLES_PER_CHUNK && PARTICLES_PER_CHUNK * i + j < COUNT; j++){
+    //                data->chunks[i].particles[j].position = vec3(getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f);
+    //                data->chunks[i].particles[j].velocity = vec3(0.0f);
+    //            }
+    //        }
+    //        break;
+    //}
     return true;
 }
 

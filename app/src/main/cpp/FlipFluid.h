@@ -14,19 +14,64 @@ using std::max;
 class FlipFluid : Simulation {
 public:
 
-    float density;
+    float density = 1000.0f;
+    static const int width = 1000;
+    static const int height = 1000;
+    constexpr static float simHeight = 3.0;
+    constexpr static float cScale = height / simHeight;
+    constexpr static float simWidth = width / cScale;
+    constexpr static float simDepth = simHeight;  // Assuming the depth is the same as the height;
+    constexpr static int res = 15;
+    constexpr static float spacing = simHeight / res;
+    constexpr static float relWaterHeight = 1.0f;
+    constexpr static float relWaterWidth = 0.6f;
+    constexpr static float relWaterDepth = 1.0f;
 
-    int fNumX;
+    // compute number of particles
+    constexpr static float particleRadius = 0.3 * simHeight / res;    // particle radius w.r.t. cell size;
+    constexpr static float dx = 2.0 * particleRadius;
+    constexpr static float dy = 1.7320508075688772935274463415059 / 2.0 * dx;
+    constexpr static float dz = 2.0 * particleRadius;
 
-    int fNumY;
+    constexpr static int numX = (relWaterWidth * simWidth - 2.0 * spacing - 2.0 * particleRadius) / dx;
+    constexpr static int numY = (relWaterHeight * simHeight - 2.0 * spacing - 2.0 * particleRadius) / dy;
+    constexpr static int numZ = (relWaterDepth * simDepth - 2.0 * spacing - 2.0 * particleRadius) / dz;
 
-    int fNumZ;
+    // fluid properties
 
-    float h;
+    constexpr static int fNumX = simWidth / spacing + 1;
+    constexpr static int fNumY = simHeight / spacing + 1;
+    constexpr static int fNumZ = simDepth / spacing + 1;
+    constexpr static float h = simWidth / fNumX;
+    constexpr static const float fInvSpacing = 1.0 / h;
+    constexpr static int fNumCells = fNumX * fNumY * fNumZ;
+    float particleRestDensity = 0.0;                                            // Set the rest density of the particles
 
-    float fInvSpacing;
+    constexpr static float pInvSpacing = 1.0 / (2.2 * particleRadius);
+    constexpr static int pNumX = simWidth * pInvSpacing + 1;
+    constexpr static int pNumY = simHeight * pInvSpacing + 1;
+    constexpr static int pNumZ = simDepth * pInvSpacing + 1;
+    constexpr static int pNumCells = pNumX * pNumY * pNumZ;
 
-    int fNumCells;
+    static const int maxParticles = numX * numY * numZ;
+
+    int numParticles = numX * numY * numZ;;
+
+    float dt = 1.0 / 60.0;
+
+    float flipRatio = 0.9f;
+
+    int numPressureIters = 50;
+
+    int numParticleIters = 2;
+
+    int frameNr = 0;
+
+    float overRelaxation = 1.9f;
+
+    bool compensateDrift = true;
+
+    bool separateParticles = true;
 
     struct ParticleInfo : Particle {
 
@@ -62,49 +107,15 @@ public:
 
     struct Data {
 
-        ParticleInfo* particles;
+        ParticleInfo particles[maxParticles]; // per-particle data
 
-        fCell* fCells;
+        fCell fCells[fNumCells]; // velocity field cells
 
-        pCell* pCells;
+        pCell pCells[pNumCells + 1]; // per-cell information
 
     };
 
-    Data data;
-
-    int maxParticles;
-
-    float particleRestDensity;
-
-    float particleRadius;
-
-    float pInvSpacing;
-
-    int pNumX;
-
-    int pNumY;
-
-    int pNumZ;
-
-    int pNumCells;
-
-    int numParticles;
-
-    float dt = 1.0 / 60.0;
-
-    float flipRatio = 0.9f;
-
-    int numPressureIters = 50;
-
-    int numParticleIters = 2;
-
-    int frameNr = 0;
-
-    float overRelaxation = 1.9f;
-
-    bool compensateDrift = true;
-
-    bool separateParticles = true;
+    Data* data;
 
     FlipFluid();
 

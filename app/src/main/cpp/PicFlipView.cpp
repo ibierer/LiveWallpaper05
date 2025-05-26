@@ -55,7 +55,7 @@ void PicFlipView::render() {
     Matrix4<float> projection = referenceFrameRotates ? perspective : orientationAdjustedPerspective;
     Matrix4<float> inverseViewProjection = (orientationAdjustedPerspective * rotation).GetInverse();
     for (int i = 0; i < fluid->numParticles; i++) {
-        translation2 = translation2.Translation(10.0f * Vec3<float>(fluid->data.particles[i].position.x, fluid->data.particles[i].position.y, fluid->data.particles[i].position.z) - Vec3<float>(15.0f));
+        translation2 = translation2.Translation(10.0f * Vec3<float>(fluid->data->particles[i].position.x, fluid->data->particles[i].position.y, fluid->data->particles[i].position.z) - Vec3<float>(15.0f));
         Matrix4<float> model = translation2;
         Matrix4<float> mvp = projection * view * model;
         glUniformMatrix4fv(
@@ -64,9 +64,9 @@ void PicFlipView::render() {
                 GL_FALSE,
                 (GLfloat *) &mvp);
         vec4 color = vec4(
-                0.5f * fluid->data.particles[i].velocity.x + 0.5f,
-                -0.5f * fluid->data.particles[i].velocity.y + 0.5f,
-                -0.5f * fluid->data.particles[i].velocity.z + 0.5f,
+                0.5f * fluid->data->particles[i].velocity.x + 0.5f,
+                -0.5f * fluid->data->particles[i].velocity.y + 0.5f,
+                -0.5f * fluid->data->particles[i].velocity.z + 0.5f,
                 1.0f
         );
         glUniform4fv(glGetUniformLocation(mProgram, "color"), 1, color.v);
