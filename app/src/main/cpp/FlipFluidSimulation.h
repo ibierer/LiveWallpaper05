@@ -72,11 +72,11 @@ public:
 
     bool separateParticles = true;
 
-    static const int NUM_CACHE_CHUNKS = 65536 / 64;
+    static const int COUNT = 4600;
 
-    static const int PARTICLES_PER_CHUNK = 64;
+    static const int PARTICLES_PER_CHUNK = COUNT / 1024 + (COUNT % 1024 > 0); // Round up after division
 
-    static const int COUNT = NUM_CACHE_CHUNKS * PARTICLES_PER_CHUNK;
+    static const int NUM_CACHE_CHUNKS = 1024;
 
     static const int DEFAULT_INDEX_BUFFER_BINDING = 0;
 
@@ -120,14 +120,19 @@ public:
 
     };
 
-    struct __attribute__((aligned(128))) cacheChunk {
-        ParticleInfo particles[PARTICLES_PER_CHUNK];
+    struct __attribute__((aligned(128))) cacheLine { // 128 bytes
+        union {
+            ParticleInfo particles[4]; // per-particle data
+            fCell fCells[2]; // velocity field cells
+            pCell pCells[16]; // per-cell information
+        };
     };
 
     struct __attribute__((aligned(128))) FlipFluidSimulationData {
         union {
-            ParticleInfo stars[COUNT]; // CPU computation data
-            //cacheChunk chunks[NUM_CACHE_CHUNKS]; // GPU computation data
+            ParticleInfo particles[maxParticles]; // per-particle data
+            fCell fCells[fNumCells]; // velocity field cells
+            pCell pCells[pNumCells + 1]; // per-cell information
         };
     };
 
@@ -153,6 +158,7 @@ public:
             "    float s;\n",
             "    int cellType;\n",
             "    float particleDensity;\n",
+            "    float padding[3];\n",
             "};\n",
             "struct pCell {\n",
             "    int numCellParticles; // Max = 6\n",
@@ -163,16 +169,22 @@ public:
             "};\n",
             "layout(packed, binding = " + to_string(DEFAULT_INDEX_BUFFER_BINDING) + ") buffer destBuffer {\n",
             "	  ParticleInfo particles[" + to_string(COUNT) + "];\n",
+            "	  fCell fCells[" + to_string(fNumCells) + "];\n",
+            "	  pCell pCells[" + to_string(pNumCells + 1) + "];\n",
             "} outBuffer;\n",
             "uniform float t;\n",
             "layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;\n",
             "void main(){\n",
             "    uint task = gl_WorkGroupSize.x * gl_LocalInvocationID.x + gl_LocalInvocationID.y;\n",
             "    for(uint i = 0u; i < PARTICLES_PER_CHUNK; i++){\n",
-            "        uint index = task * PARTICLES_PER_CHUNK + i;\n",
+            "        uint offset = 1024u * i;\n",
+            "        uint index = offset + task;\n",
+            "        if(index > COUNT) {\n",
+            "            break;\n",
+            "        }\n",
             "        float theta = 0.001f * float(index + i) * t;\n",
             "        float theta2 = theta + 3.14159265 / 4.0;\n",
-            "        outBuffer.particles[index].position = 10.0f * vec3(sin(theta), cos(theta), 0.001f * float(task * PARTICLES_PER_CHUNK + i));\n",
+            "        outBuffer.particles[index].position += vec3(sin(theta), cos(theta), 0.001f * float(task * PARTICLES_PER_CHUNK + i));\n",
             "        outBuffer.particles[index].velocity = 10.0f * vec3(sin(theta2), cos(theta2), 0.0f);\n",
             "    }\n",
             "}\n",

@@ -100,28 +100,34 @@ float FlipFluidSimulation::getRandomFloat(float x) {
 }
 
 bool FlipFluidSimulation::seed() {
-    //switch(computationOption){
-    //    case CPU:
-    //        /*for(int i = 0; i < COUNT; i++){
-    //            data->stars[i].position = vec3(getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f);
-    //            data->stars[i].velocity = vec3(0.0f);
-    //        }*/
-    //        for(int i = 0; i < NUM_CACHE_CHUNKS; i++){
-    //            for(int j = 0; j < PARTICLES_PER_CHUNK && PARTICLES_PER_CHUNK * i + j < COUNT; j++){
-    //                data->chunks[i].particles[j].position = vec3(getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f);
-    //                data->chunks[i].particles[j].velocity = vec3(0.0f);
-    //            }
-    //        }
-    //        break;
-    //    case GPU:
-    //        for(int i = 0; i < NUM_CACHE_CHUNKS; i++){
-    //            for(int j = 0; j < PARTICLES_PER_CHUNK && PARTICLES_PER_CHUNK * i + j < COUNT; j++){
-    //                data->chunks[i].particles[j].position = vec3(getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f, getRandomFloat(100.0f) - 50.0f);
-    //                data->chunks[i].particles[j].velocity = vec3(0.0f);
-    //            }
-    //        }
-    //        break;
-    //}
+    ALOGI("fNumCells = %d\n", fNumCells);
+    ALOGI("sizeof(data->fCells) = %d\n", fNumCells * sizeof(fCell));
+    ALOGI("pNumCells = %d\n", pNumCells);
+    ALOGI("sizeof(data->pCells) = %d\n", (pNumCells + 1) * sizeof(pCell));
+    ALOGI("maxParticles = %d\n", maxParticles);
+    ALOGI("sizeof(data->particles) = %d\n", maxParticles * sizeof(ParticleInfo));
+    for (int i = 0; i < numX; i++) {
+        for (int j = 0; j < numY; j++) {
+            for (int k = 0; k < numZ; k++) {
+                data->particles[(i * numY + j) * numZ + k].position = vec3(
+                        spacing + particleRadius + dx * i + (j % 2 == 0 ? 0.0 : particleRadius),
+                        spacing + particleRadius + dy * j,
+                        spacing + dz * k
+                );
+            }
+        }
+    }
+    // setup grid cells for tank
+    for (int i = 0; i < fNumX; i++) {
+        for (int j = 0; j < fNumY; j++) {
+            for (int k = 0; k < fNumZ; k++) {
+                float cellDensity = 1.0;    // fluid
+                if (i == 0 || i == fNumX - 1 || j == 0 || j == fNumY - 1 || k == 0 || k == fNumZ - 1)
+                    cellDensity = 0.0;    // solid
+                data->fCells[(i * fNumY + j) * fNumZ + k].s = cellDensity;
+            }
+        }
+    }
     return true;
 }
 
