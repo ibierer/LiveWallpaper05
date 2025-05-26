@@ -32,6 +32,8 @@ public:
 
     float gravity;
 
+    bool referenceFrameRotates;
+
     float efficiency;
 
     int orientation;

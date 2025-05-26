@@ -11,9 +11,11 @@ void FlipFluidSimulation::initialize(const ComputationOptions& computationOption
     this->computationOption = computationOption;
     data = (FlipFluidSimulationData*)malloc(sizeof(FlipFluidSimulationData));
     t = 0.0;
-    dt = 1.0f;
     seed();
     computeShader.gComputeProgram = View::createComputeShaderProgram(View::stringArrayToString(computeShaderCode, 1000).c_str());
+    for(int i = 0; i < 1000; i++){
+        ALOGI("shader code = %s\n", computeShaderCode[i].c_str());
+    }
     glGenBuffers(1, &computeShader.gVBO);
 }
 
@@ -46,7 +48,7 @@ void FlipFluidSimulation::simulateOnCPU(){
     //}
 }
 
-void FlipFluidSimulation::simulate(const int &iterations, bool pushDataToGPU, bool retrieveDataFromGPU) {
+void FlipFluidSimulation::simulate(const int &iterations, bool pushDataToGPU, bool retrieveDataFromGPU, const vec3& forceVector) {
     switch(computationOption){
         case CPU:
             for(int i = 0; i < iterations; i++) {
@@ -54,21 +56,22 @@ void FlipFluidSimulation::simulate(const int &iterations, bool pushDataToGPU, bo
             }
             break;
         case GPU:
-            simulateOnGPU(iterations, pushDataToGPU, retrieveDataFromGPU);
+            simulateOnGPU(iterations, pushDataToGPU, retrieveDataFromGPU, forceVector);
             break;
     }
     t += dt;
 }
 
-void FlipFluidSimulation::simulateOnGPU(const int &iterations, bool pushDataToGPU, bool retrieveDataFromGPU) {
+void FlipFluidSimulation::simulateOnGPU(const int &iterations, bool pushDataToGPU, bool retrieveDataFromGPU, const vec3& forceVector) {
     if(pushDataToGPU || !pushed){
         pushData2GPU();
         pushed = true;
     }
     // Bind the compute program
     glUseProgram(computeShader.gComputeProgram);
-    // Push uniform and SSBO data to GPU
+    // Push uniforms and SSBO data to GPU
     glUniform1f(glGetUniformLocation(computeShader.gComputeProgram, "t"), t);
+    glUniform3fv(glGetUniformLocation(computeShader.gComputeProgram, "acceleration"), 1, forceVector.v);
     for(int i = 0; i < iterations && t > 0.0; i++) {
         // Launch work group
         glDispatchCompute(1, 1, 1);

@@ -13,9 +13,9 @@ public:
 
     double t;
 
-    float density = 1000.0f;
-    static const int width = 1000;
-    static const int height = 1000;
+    constexpr static float density = 1000.0f;
+    constexpr static const int width = 1000;
+    constexpr static const int height = 1000;
     constexpr static float simHeight = 3.0;
     constexpr static float cScale = height / simHeight;
     constexpr static float simWidth = width / cScale;
@@ -44,7 +44,7 @@ public:
     constexpr static float h = simWidth / fNumX;
     constexpr static const float fInvSpacing = 1.0 / h;
     constexpr static int fNumCells = fNumX * fNumY * fNumZ;
-    float particleRestDensity = 0.0;                                            // Set the rest density of the particles
+    constexpr static float particleRestDensity = 0.0;                                            // Set the rest density of the particles
 
     constexpr static float pInvSpacing = 1.0 / (2.2 * particleRadius);
     constexpr static int pNumX = simWidth * pInvSpacing + 1;
@@ -52,31 +52,31 @@ public:
     constexpr static int pNumZ = simDepth * pInvSpacing + 1;
     constexpr static int pNumCells = pNumX * pNumY * pNumZ;
 
-    static const int maxParticles = numX * numY * numZ;
+    constexpr static const int maxParticles = numX * numY * numZ;
 
-    int numParticles = numX * numY * numZ;
+    constexpr static int numParticles = numX * numY * numZ;
 
-    float dt = 1.0 / 60.0;
+    constexpr static float dt = 1.0 / 60.0;
 
-    float flipRatio = 0.9f;
+    constexpr static float flipRatio = 0.9f;
 
-    int numPressureIters = 50;
+    constexpr static int numPressureIters = 50;
 
-    int numParticleIters = 2;
+    constexpr static int numParticleIters = 2;
 
-    int frameNr = 0;
+    constexpr static int frameNr = 0;
 
-    float overRelaxation = 1.9f;
+    constexpr static float overRelaxation = 1.9f;
 
-    bool compensateDrift = true;
+    constexpr static bool compensateDrift = true;
 
-    bool separateParticles = true;
+    constexpr static bool separateParticles = true;
 
-    static const int FLUID_CELL = 0;
+    constexpr static const int FLUID_CELL = 0;
 
-    static const int AIR_CELL = 1;
+    constexpr static const int AIR_CELL = 1;
 
-    static const int SOLID_CELL = 2;
+    constexpr static const int SOLID_CELL = 2;
 
     static const int COUNT = 4600;
 
@@ -139,6 +139,7 @@ public:
             ParticleInfo particles[maxParticles]; // per-particle data
             fCell fCells[fNumCells]; // velocity field cells
             pCell pCells[pNumCells + 1]; // per-cell information
+            uint logValues[256];
         };
     };
 
@@ -148,7 +149,7 @@ public:
     string computeShaderCode[1000] = {
             View::ES_VERSION,
             "const uint PARTICLES_PER_CHUNK = " + to_string(PARTICLES_PER_CHUNK) + "u;",
-            "const uint NUM_CACHE_CHUNKS = uint(" + to_string(NUM_CACHE_CHUNKS) + ");\n",
+            "const uint NUM_CACHE_CHUNKS = " + to_string(NUM_CACHE_CHUNKS) + "u;\n",
             "const uint numParticles = " + to_string(COUNT) + "u;\n",
             "const uint fNumCells = " + to_string(fNumCells) + "u;\n",
             "const uint pNumCells = " + to_string(pNumCells) + "u;\n",
@@ -175,6 +176,7 @@ public:
             "bool separateParticles = bool(" + to_string(separateParticles) + ");\n",
             "bool compensateDrift = bool(" + to_string(compensateDrift) + ");\n",
             "uniform float t;\n",
+            "uniform vec3 acceleration;\n",
             "struct ParticleInfo {\n",
             "    vec3 position;\n",
             "    vec3 velocity;\n",
@@ -202,6 +204,7 @@ public:
             "	  ParticleInfo particles[numParticles];\n",
             "	  fCell fCells[" + to_string(fNumCells) + "];\n",
             "	  pCell pCells[" + to_string(pNumCells + 1) + "];\n",
+            "	  uint logValues[256];\n",
             "} outBuffer;\n",
             "layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;\n",
             "// Iterate over particles\n",
@@ -255,7 +258,7 @@ public:
             "    float minDist2 = minDist * minDist;\n",
             "    \n",
             "    for (int iter = 0; iter < numIters; iter++) {\n",
-            "    \n",
+            "        \n",
             "        for (uint i = 0u; i < numParticles; i++) {\n",
             "            vec3 pxyz = outBuffer.particles[i].position;\n",
             "            uint pxi = uint(floor(outBuffer.particles[i].position.x * pInvSpacing));\n",
@@ -612,32 +615,36 @@ public:
             "        integrateParticles(sdt, gravity);\n",
             "        barrier();\n",
             "        if (separateParticles)\n",
-            "            pushParticlesApart(numParticleIters);\n",
-            "        barrier();\n",
-            "        handleParticleCollisions();\n",
-            "        barrier();\n",
-            "        transferVelocities(true, flipRatio);\n",
-            "        barrier();\n",
-            "        updateParticleDensity();\n",
-            "        barrier();\n",
-            "        solveIncompressibility(numPressureIters, sdt, overRelaxation, compensateDrift);\n",
-            "        barrier();\n",
-            "        transferVelocities(false, flipRatio);\n",
+            //"            pushParticlesApart(numParticleIters);\n",
+            //"        barrier();\n",
+            //"        handleParticleCollisions();\n",
+            //"        barrier();\n",
+            //"        transferVelocities(true, flipRatio);\n",
+            //"        barrier();\n",
+            //"        updateParticleDensity();\n",
+            //"        barrier();\n",
+            //"        solveIncompressibility(numPressureIters, sdt, overRelaxation, compensateDrift);\n",
+            //"        barrier();\n",
+            //"        transferVelocities(false, flipRatio);\n",
             "    }\n",
             "}\n",
             "void main(){\n",
             "    uint task = gl_WorkGroupSize.x * gl_LocalInvocationID.x + gl_LocalInvocationID.y;\n",
-            "    for(uint i = 0u; i < PARTICLES_PER_CHUNK; i++){\n",
-            "        uint offset = 1024u * i;\n",
-            "        uint index = offset + task;\n",
-            "        if(index > numParticles) {\n",
-            "            break;\n",
-            "        }\n",
-            "        float theta = 0.001f * float(index) * t;\n",
-            "        float theta2 = theta + 3.14159265 / 4.0;\n",
-            "        outBuffer.particles[index].position += vec3(sin(theta), cos(theta), sin(t * 0.01f * float(index)));\n",
-            "        outBuffer.particles[index].velocity = 10.0f * vec3(sin(theta2), cos(theta2), 0.0f);\n",
+            "    if(task != 0u) {\n",
+            "        return;\n",
             "    }\n",
+            //"    for(uint i = 0u; i < PARTICLES_PER_CHUNK; i++){\n",
+            //"        uint offset = 1024u * i;\n",
+            //"        uint index = offset + task;\n",
+            //"        if(index > numParticles) {\n",
+            //"            break;\n",
+            //"        }\n",
+            //"        float theta = 0.001f * float(index) * t;\n",
+            //"        float theta2 = theta + 3.14159265 / 4.0;\n",
+            //"        outBuffer.particles[index].position += vec3(sin(theta), cos(theta), sin(t * 0.01f * float(index)));\n",
+            //"        outBuffer.particles[index].velocity = 10.0f * vec3(sin(theta2), cos(theta2), 0.0f);\n",
+            //"    }\n",
+            "    simulate(acceleration);\n",
             "}\n",
     };
 
@@ -651,7 +658,7 @@ public:
 
     void initialize(const ComputationOptions& computationOption);
 
-    void simulate(const int &iterations, bool pushDataToGPU, bool retrieveDataFromGPU);
+    void simulate(const int &iterations, bool pushDataToGPU, bool retrieveDataFromGPU, const vec3& forceVector);
 
     ComputationOptions getComputationOption();
 
@@ -661,7 +668,7 @@ private:
 
     void simulateOnCPU();
 
-    void simulateOnGPU(const int &iterations, bool pushDataToGPU, bool retrieveDataFromGPU);
+    void simulateOnGPU(const int &iterations, bool pushDataToGPU, bool retrieveDataFromGPU, const vec3& forceVector);
 
     float getRandomFloat(float x);
 
