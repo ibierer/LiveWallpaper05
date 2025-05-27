@@ -13,7 +13,7 @@ FlipFluidSimulationView::FlipFluidSimulationView() : View() {
     simulation.initialize(Computation::ComputationOptions::GPU);
     simulation.computeShader.gIndexBufferBinding = FlipFluidSimulation::DEFAULT_INDEX_BUFFER_BINDING;
 
-    cubeVAO = VertexArrayObject(Cube(1.0f, Cube::ColorOption::SOLID));
+    cubeVAO = VertexArrayObject(Cube(0.1f, Cube::ColorOption::SOLID));
 }
 
 FlipFluidSimulationView::~FlipFluidSimulationView(){
@@ -26,7 +26,7 @@ void FlipFluidSimulationView::render(){
     glEnable(GL_DEPTH_TEST);
 
     Matrix4<float> translation;
-    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, -120.0f * distanceToOrigin));
+    translation = translation.Translation(Vec3<float>(0.0f, 0.0f, -20.0f * distanceToOrigin));
     Matrix4<float> rotation;
     rotation = Matrix4<float>(quaternionTo3x3(Vec4<float>(rotationVector.x, rotationVector.y, rotationVector.z, rotationVector.w)));
     Matrix4<float> mvp = orientationAdjustedPerspective * translation * rotation;
@@ -47,10 +47,10 @@ void FlipFluidSimulationView::render(){
     glEnableVertexAttribArray(FlipFluidSimulation::VELOCITY_ATTRIBUTE_LOCATION);
     glVertexAttribDivisor(FlipFluidSimulation::OFFSET_ATTRIBUTE_LOCATION, 1);
     glVertexAttribDivisor(FlipFluidSimulation::VELOCITY_ATTRIBUTE_LOCATION, 1);
-    for(int i = 0; i < FlipFluidSimulation::PARTICLES_PER_CHUNK; i++){
+    for(int i = 0; i < 1; i++){
         glVertexAttribPointer(FlipFluidSimulation::OFFSET_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(FlipFluidSimulation::ParticleInfo), (const GLvoid*)(offsetof(FlipFluidSimulation::ParticleInfo, position) + sizeof(FlipFluidSimulation::ParticleInfo) * i));
         glVertexAttribPointer(FlipFluidSimulation::VELOCITY_ATTRIBUTE_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(FlipFluidSimulation::ParticleInfo), (const GLvoid*)(offsetof(FlipFluidSimulation::ParticleInfo, velocity) + sizeof(FlipFluidSimulation::ParticleInfo) * i));
-        glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, cubeVAO.getNumVertices(), FlipFluidSimulation::NUM_CACHE_CHUNKS);
+        glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, cubeVAO.getNumVertices(), FlipFluidSimulation::numParticles);
     }
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glDisableVertexAttribArray(FlipFluidSimulation::OFFSET_ATTRIBUTE_LOCATION);

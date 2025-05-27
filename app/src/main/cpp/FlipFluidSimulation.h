@@ -78,7 +78,7 @@ public:
 
     constexpr static const int SOLID_CELL = 2;
 
-    static const int COUNT = 4600;
+    static const int COUNT = numParticles;
 
     static const int PARTICLES_PER_CHUNK = COUNT / 1024 + (COUNT % 1024 > 0); // Round up after division
 
@@ -135,12 +135,10 @@ public:
     };
 
     struct __attribute__((aligned(128))) FlipFluidSimulationData {
-        union {
-            ParticleInfo particles[maxParticles]; // per-particle data
-            fCell fCells[fNumCells]; // velocity field cells
-            pCell pCells[pNumCells + 1]; // per-cell information
-            uint logValues[256];
-        };
+        ParticleInfo particles[maxParticles]; // per-particle data
+        fCell fCells[fNumCells]; // velocity field cells
+        pCell pCells[pNumCells + 1]; // per-cell information
+        uint logValues[256];
     };
 
     FlipFluidSimulationData* data;
@@ -629,21 +627,7 @@ public:
             "    }\n",
             "}\n",
             "void main(){\n",
-            "    uint task = gl_WorkGroupSize.x * gl_LocalInvocationID.x + gl_LocalInvocationID.y;\n",
-            //"    if(task != 0u) {\n",
-            //"        return;\n",
-            //"    }\n",
-            //"    for(uint i = 0u; i < PARTICLES_PER_CHUNK; i++){\n",
-            //"        uint offset = 1024u * i;\n",
-            //"        uint index = offset + task;\n",
-            //"        if(index > numParticles) {\n",
-            //"            break;\n",
-            //"        }\n",
-            //"        float theta = 0.001f * float(index) * t;\n",
-            //"        float theta2 = theta + 3.14159265 / 4.0;\n",
-            //"        outBuffer.particles[index].position += vec3(sin(theta), cos(theta), sin(t * 0.01f * float(index)));\n",
-            //"        outBuffer.particles[index].velocity = 10.0f * vec3(sin(theta2), cos(theta2), 0.0f);\n",
-            //"    }\n",
+            //"    uint task = gl_WorkGroupSize.x * gl_LocalInvocationID.x + gl_LocalInvocationID.y;\n",
             "    simulate(acceleration);\n",
             "}\n",
     };
