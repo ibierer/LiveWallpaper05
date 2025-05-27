@@ -13,9 +13,6 @@ void FlipFluidSimulation::initialize(const ComputationOptions& computationOption
     t = 0.0;
     seed();
     computeShader.gComputeProgram = View::createComputeShaderProgram(View::stringArrayToString(computeShaderCode, 1000).c_str());
-    for(int i = 0; i < 1000; i++){
-        ALOGI("shader code = %s\n", computeShaderCode[i].c_str());
-    }
     glGenBuffers(1, &computeShader.gVBO);
 }
 
@@ -74,7 +71,7 @@ void FlipFluidSimulation::simulateOnGPU(const int &iterations, bool pushDataToGP
     glUniform3fv(glGetUniformLocation(computeShader.gComputeProgram, "acceleration"), 1, forceVector.v);
     for(int i = 0; i < iterations && t > 0.0; i++) {
         // Launch work group
-        glDispatchCompute(1, 1, 1);
+        glDispatchCompute(8, 8, 16);
         // Define the end of the ongoing GPU computation as the barrier after which the CPU code may continue to execute
         glMemoryBarrier(GL_ALL_BARRIER_BITS);
     }

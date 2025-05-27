@@ -57,6 +57,6 @@ void FlipFluidSimulationView::render(){
     glDisableVertexAttribArray(FlipFluidSimulation::VELOCITY_ATTRIBUTE_LOCATION);
     glBindVertexArray(0);
 
-    vec3 forceVector = computeForce(gravity, referenceFrameRotates, rotation);
+    vec3 forceVector = 2.0f * computeForce(gravity, referenceFrameRotates, rotation);
     simulation.simulate(1, NO, NO, forceVector);
 }

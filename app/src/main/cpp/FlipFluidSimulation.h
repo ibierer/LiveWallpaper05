@@ -126,19 +126,11 @@ public:
 
     };
 
-    struct __attribute__((aligned(128))) cacheLine { // 128 bytes
-        union {
-            ParticleInfo particles[4]; // per-particle data
-            fCell fCells[2]; // velocity field cells
-            pCell pCells[16]; // per-cell information
-        };
-    };
-
     struct __attribute__((aligned(128))) FlipFluidSimulationData {
         ParticleInfo particles[maxParticles]; // per-particle data
         fCell fCells[fNumCells]; // velocity field cells
         pCell pCells[pNumCells + 1]; // per-cell information
-        uint logValues[256];
+        uint logValues[1024];
     };
 
     FlipFluidSimulationData* data;
@@ -195,16 +187,12 @@ public:
             "    uint numCellParticles; // Max = 6\n",
             "    uint firstCellParticle;\n",
             "};\n",
-            "struct cacheChunk {\n",
-            "    ParticleInfo particles[" + to_string(PARTICLES_PER_CHUNK) + "];\n",
-            "};\n",
             "layout(packed, binding = " + to_string(DEFAULT_INDEX_BUFFER_BINDING) + ") buffer destBuffer {\n",
             "	  ParticleInfo particles[numParticles];\n",
-            "	  fCell fCells[" + to_string(fNumCells) + "];\n",
-            "	  pCell pCells[" + to_string(pNumCells + 1) + "];\n",
-            "	  uint logValues[256];\n",
+            "	  fCell fCells[fNumCells];\n",
+            "	  pCell pCells[pNumCells + 1u];\n",
+            "	  uint logValues[1024];\n",
             "} outBuffer;\n",
-            "layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;\n",
             "// Iterate over particles\n",
             "void integrateParticles(const float dt, const vec3 gravity){\n",
             "    for (uint i = 0u; i < numParticles; i++) {\n",
@@ -624,11 +612,13 @@ public:
             "        solveIncompressibility(numPressureIters, sdt, overRelaxation, compensateDrift);\n",
             "        barrier();\n",
             "        transferVelocities(false, flipRatio);\n",
+            "        barrier();\n",
             "    }\n",
             "}\n",
+            "layout(local_size_x = 4, local_size_y = 4, local_size_z = 4) in;\n",
             "void main(){\n",
-            //"    uint task = gl_WorkGroupSize.x * gl_LocalInvocationID.x + gl_LocalInvocationID.y;\n",
-            "    simulate(acceleration);\n",
+            "    uint task = (gl_LocalInvocationID.x * gl_WorkGroupSize.y + gl_LocalInvocationID.y) * gl_WorkGroupSize.z + gl_LocalInvocationID.z;\n",
+            "    if(gl_LocalInvocationID.x == 0u && gl_LocalInvocationID.y == 0u && gl_LocalInvocationID.z == 0u && gl_WorkGroupID.x == 0u && gl_WorkGroupID.y == 0u && gl_WorkGroupID.z == 0u) simulate(acceleration);\n",
             "}\n",
     };
 
