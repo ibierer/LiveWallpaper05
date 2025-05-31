@@ -71,7 +71,7 @@ void FlipFluidSimulation::simulateOnGPU(const int &iterations, bool pushDataToGP
     glUniform3fv(glGetUniformLocation(computeShader.gComputeProgram, "acceleration"), 1, forceVector.v);
     for(int i = 0; i < iterations && t > 0.0; i++) {
         // Launch work group
-        glDispatchCompute(2, 2, 2);
+        glDispatchCompute(8, 8, 16);
         // Define the end of the ongoing GPU computation as the barrier after which the CPU code may continue to execute
         glMemoryBarrier(GL_ALL_BARRIER_BITS);
     }
@@ -83,7 +83,7 @@ void FlipFluidSimulation::simulateOnGPU(const int &iterations, bool pushDataToGP
         // Unmap buffer object simulation.computeShader.gVBO's data store
         glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
         for(int i = 0; i < 64; i++) {
-            ALOGI("logValues[%d] = (%d, %d, %d), (%d, %d, %d), %d", i, data->logValues[i][0], data->logValues[i][1], data->logValues[i][2], data->logValues[i][3], data->logValues[i][4], data->logValues[i][5], data->logValues[i][6], data->logValues[i][7]);
+            //ALOGI("logValues[%d] = (%d, %d, %d), (%d, %d, %d), %d", i, data->logValues[i][0], data->logValues[i][1], data->logValues[i][2], data->logValues[i][3], data->logValues[i][4], data->logValues[i][5], data->logValues[i][6], data->logValues[i][7]);
         }
     }
 
