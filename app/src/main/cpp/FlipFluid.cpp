@@ -13,6 +13,23 @@ FlipFluid::FlipFluid() {
     ALOGI("sizeof(data->pCells) = %d\n", (pNumCells + 1) * sizeof(pCell));
     ALOGI("maxParticles = %d\n", maxParticles);
     ALOGI("sizeof(data->particles) = %d\n", maxParticles * sizeof(ParticleInfo));
+    GLint maxWorkGroupSize[3];
+    glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 0, &maxWorkGroupSize[0]); // X
+    glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 1, &maxWorkGroupSize[1]); // Y
+    glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 2, &maxWorkGroupSize[2]); // Z
+
+    ALOGI("Max local workgroup size: X=%d, Y=%d, Z=%d\n", maxWorkGroupSize[0], maxWorkGroupSize[1], maxWorkGroupSize[2]);
+
+    GLint maxInvocations;
+    glGetIntegerv(GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, &maxInvocations);
+    ALOGI("Max total workgroup invocations: %d\n", maxInvocations);
+
+    GLint maxWorkGroupCount[3];
+    glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 0, &maxWorkGroupCount[0]); // X
+    glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 1, &maxWorkGroupCount[1]); // Y
+    glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 2, &maxWorkGroupCount[2]); // Z
+
+    ALOGI("Max number of workgroups: X=%d, Y=%d, Z=%d\n", maxWorkGroupCount[0], maxWorkGroupCount[1], maxWorkGroupCount[2]);
     for (int i = 0; i < numX; i++) {
         for (int j = 0; j < numY; j++) {
             for (int k = 0; k < numZ; k++) {
