@@ -30,6 +30,10 @@ FlipFluid::FlipFluid() {
     glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 2, &maxWorkGroupCount[2]); // Z
 
     ALOGI("Max number of workgroups: X=%d, Y=%d, Z=%d\n", maxWorkGroupCount[0], maxWorkGroupCount[1], maxWorkGroupCount[2]);
+
+    ALOGI("pInvSpacing: =%f\n", pInvSpacing);
+    ALOGI("2.0 * particleRadius: =%f\n", 2.0 * particleRadius);
+
     for (int i = 0; i < numX; i++) {
         for (int j = 0; j < numY; j++) {
             for (int k = 0; k < numZ; k++) {
@@ -66,8 +70,6 @@ void FlipFluid::integrateParticles(const float &dt, const vec3 &gravity)
 // Thrashing issue: reading and writing from and to pCells and particles. Non-parallelizable issue
 void FlipFluid::pushParticlesApart(const int& numIters)
 {
-    float colorDiffusionCoeff = 0.001;
-
     // particleCount particles per cell
 
     for (int i = 0; i < pNumCells; i++)
