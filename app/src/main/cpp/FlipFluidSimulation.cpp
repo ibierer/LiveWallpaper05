@@ -82,7 +82,7 @@ void FlipFluidSimulation::simulateOnGPU(const int &iterations, bool pushDataToGP
         data = (FlipFluidSimulationData*)glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, sizeof(FlipFluidSimulationData), GL_MAP_READ_BIT);
         // Unmap buffer object simulation.computeShader.gVBO's data store
         glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-        for(int i = 0; i < 64; i++) {
+        for(int i = 0; i < 4096; i++) {
             //ALOGI("logValues[%d] = (%d, %d, %d), (%d, %d, %d), %d", i, data->logValues[i][0], data->logValues[i][1], data->logValues[i][2], data->logValues[i][3], data->logValues[i][4], data->logValues[i][5], data->logValues[i][6], data->logValues[i][7]);
         }
     }
