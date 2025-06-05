@@ -84,6 +84,14 @@ public:
 
     static const int NUM_CACHE_CHUNKS = 1024;
 
+    const uint NUM_GROUPS_X = 8u;
+    const uint NUM_GROUPS_Y = 8u;
+    const uint NUM_GROUPS_Z = 16u;
+
+    const uint LOCAL_SIZE_X = 2u;
+    const uint LOCAL_SIZE_Y = 2u;
+    const uint LOCAL_SIZE_Z = 3u;
+
     static const int DEFAULT_INDEX_BUFFER_BINDING = 0;
 
     static const int OFFSET_ATTRIBUTE_LOCATION = 2;
@@ -193,19 +201,16 @@ public:
             "	  pCell pCells[pNumCells + 1u];\n",
             "	  uint logValues[4096][7];\n",
             "} outBuffer;\n",
-            "layout(local_size_x = 2, local_size_y = 2, local_size_z = 3) in;\n",
+            "const uvec3 num_groups = uvec3(" + to_string(NUM_GROUPS_X) + ", " + to_string(NUM_GROUPS_Y) + ", " + to_string(NUM_GROUPS_Z) + ");\n",
+            "layout(local_size_x = " + to_string(LOCAL_SIZE_X) + ", local_size_y = " + to_string(LOCAL_SIZE_Y) + ", local_size_z = " + to_string(LOCAL_SIZE_Z) + ") in;\n",
             "const uint invocationsPerWorkGroup = gl_WorkGroupSize.x * gl_WorkGroupSize.y * gl_WorkGroupSize.z;\n",
-            "uint numWorkGroups() {\n",
-            "    return gl_NumWorkGroups.x * gl_NumWorkGroups.y * gl_NumWorkGroups.z;\n",
-            "}\n",
-            "uint numGlobalInvocations() {\n",
-            "    return numWorkGroups() * invocationsPerWorkGroup;\n",
-            "}\n",
+            "const uint numWorkGroups = num_groups.x * num_groups.y * num_groups.z;\n",
+            "const uint numGlobalInvocations = numWorkGroups * invocationsPerWorkGroup;\n",
             "uint getLocalInvocationIndex() {\n",
             "    return (gl_LocalInvocationID.x * gl_WorkGroupSize.y + gl_LocalInvocationID.y) * gl_WorkGroupSize.z + gl_LocalInvocationID.z;\n",
             "}\n",
             "uint getWorkGroupIndex() {\n",
-            "    return (gl_WorkGroupID.x * gl_NumWorkGroups.y + gl_WorkGroupID.y) * gl_NumWorkGroups.z + gl_WorkGroupID.z;\n",
+            "    return (gl_WorkGroupID.x * num_groups.y + gl_WorkGroupID.y) * num_groups.z + gl_WorkGroupID.z;\n",
             "}\n",
             "uint getTask(){\n",
             "    return getWorkGroupIndex() * invocationsPerWorkGroup + getLocalInvocationIndex();\n",
@@ -213,7 +218,7 @@ public:
             "uint task = getTask();\n",
             "// Iterate over particles\n",
             "void integrateParticles(const float dt, const vec3 gravity){\n",
-            "    for (uint i = task; i < numParticles; i += numGlobalInvocations()) {\n",
+            "    for (uint i = task; i < numParticles; i += numGlobalInvocations) {\n",
             "        outBuffer.particles[i].velocity += dt * gravity;\n",
             "        outBuffer.particles[i].position += outBuffer.particles[i].velocity * dt;\n",
             "    }\n",
@@ -222,8 +227,9 @@ public:
             "void pushParticlesApart(const int numIters){\n",
             "    // particleCount particles per cell\n",
             "    \n",
-            "    if(task < 60u)\n",
-            "        for (uint i = task; i < pNumCells; i += 60u)\n",
+            "    uint someNum = numGlobalInvocations / 128u + 1u;\n",
+            "    if(task < 128u)\n",
+            "        for (uint i = someNum * task; i < someNum * (task + 1u) && i < pNumCells; i += 1u)\n",
             "            outBuffer.pCells[i].numCellParticles = 0u;\n",
             "    barrier();\n",
             "    \n",

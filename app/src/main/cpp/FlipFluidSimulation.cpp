@@ -71,7 +71,7 @@ void FlipFluidSimulation::simulateOnGPU(const int &iterations, bool pushDataToGP
     glUniform3fv(glGetUniformLocation(computeShader.gComputeProgram, "acceleration"), 1, forceVector.v);
     for(int i = 0; i < iterations && t > 0.0; i++) {
         // Launch work group
-        glDispatchCompute(8, 8, 16);
+        glDispatchCompute(NUM_GROUPS_X, NUM_GROUPS_Y, NUM_GROUPS_Z);
         // Define the end of the ongoing GPU computation as the barrier after which the CPU code may continue to execute
         glMemoryBarrier(GL_ALL_BARRIER_BITS);
     }
