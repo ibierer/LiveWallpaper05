@@ -84,13 +84,13 @@ public:
 
     static const int NUM_CACHE_CHUNKS = 1024;
 
-    const uint NUM_GROUPS_X = 8u;
-    const uint NUM_GROUPS_Y = 8u;
-    const uint NUM_GROUPS_Z = 16u;
+    const uint NUM_GROUPS_X = 4u;
+    const uint NUM_GROUPS_Y = 4u;
+    const uint NUM_GROUPS_Z = 4u;
 
     const uint LOCAL_SIZE_X = 2u;
     const uint LOCAL_SIZE_Y = 2u;
-    const uint LOCAL_SIZE_Z = 3u;
+    const uint LOCAL_SIZE_Z = 4u;
 
     static const int DEFAULT_INDEX_BUFFER_BINDING = 0;
 
@@ -209,6 +209,8 @@ public:
             "const uint invocationsPerWorkGroup = gl_WorkGroupSize.x * gl_WorkGroupSize.y * gl_WorkGroupSize.z;\n",
             "const uint numWorkGroups = num_groups.x * num_groups.y * num_groups.z;\n",
             "const uint numGlobalInvocations = numWorkGroups * invocationsPerWorkGroup;\n",
+            "const uint ceilOfParticlesPerInvocation = (numParticles + numGlobalInvocations - 1u) / numGlobalInvocations;\n",
+            "const uint ceilOfCellsPerInvocation = (pNumCells + numGlobalInvocations - 1u) / numGlobalInvocations;\n",
             "uint getLocalInvocationIndex() {\n",
             "    return (gl_LocalInvocationID.x * gl_WorkGroupSize.y + gl_LocalInvocationID.y) * gl_WorkGroupSize.z + gl_LocalInvocationID.z;\n",
             "}\n",
@@ -222,6 +224,7 @@ public:
             "// Iterate over particles\n",
             "void integrateParticles(const float dt, const vec3 gravity){\n",
             "    for (uint i = task; i < numParticles; i += numGlobalInvocations) {\n",
+            //"    for (uint i = ceilOfParticlesPerInvocation * task; i < ceilOfParticlesPerInvocation * (task + 1u) && i < numParticles; i++) {\n",
             "        outBuffer.particles[i].velocity += dt * gravity;\n",
             "        outBuffer.particles[i].position += outBuffer.particles[i].velocity * dt;\n",
             "    }\n",
@@ -230,13 +233,11 @@ public:
             "void pushParticlesApart(const int numIters){\n",
             "    // particleCount particles per cell\n",
             "    \n",
-            "    uint someNum = numGlobalInvocations / 128u + 1u;\n",
-            "    if(task < 128u)\n",
-            "        for (uint i = someNum * task; i < someNum * (task + 1u) && i < pNumCells; i += 1u)\n",
-            "            outBuffer.pCells[i].numCellParticles = 0u;\n",
+            "    for (uint i = ceilOfCellsPerInvocation * task; i < ceilOfCellsPerInvocation * (task + 1u) && i < pNumCells; i++)\n",
+            "        outBuffer.pCells[i].numCellParticles = 0u;\n",
             "    barrier();\n",
             "    \n",
-            "    if(task == 0u)\n",
+            "    if(task == 0u) {\n",
             "        for (uint i = 0u; i < numParticles; i++) {\n",
             "            uint xi = uint(clamp(floor(outBuffer.particles[i].position.x * pInvSpacing), 0.0f, float(pNumX - 1u)));\n",
             "            uint yi = uint(clamp(floor(outBuffer.particles[i].position.y * pInvSpacing), 0.0f, float(pNumY - 1u)));\n",
@@ -244,6 +245,7 @@ public:
             "            uint cellNr = (xi * pNumY + yi) * pNumZ + zi;\n",
             "            outBuffer.pCells[cellNr].numCellParticles++;\n",
             "        }\n",
+            "    }\n",
             "    \n",
             "    // partial sums\n",
             "    \n",
@@ -274,7 +276,7 @@ public:
             "    float minDist = 2.0 * particleRadius;\n",
             "    float minDist2 = minDist * minDist;\n",
             "    \n",
-            "    if(task == 0u)\n",
+            "    if(task == 0u) {\n",
             "        for (int iter = 0; iter < numIters; iter++) {\n",
             "            \n",
             "            for (uint i = 0u; i < numParticles; i++) {\n",
@@ -314,6 +316,7 @@ public:
             "                }\n",
             "            }\n",
             "        }\n",
+            "    }\n",
             "}\n",
             "// Iterate over particles\n",
             "void handleParticleCollisions(){\n",
@@ -326,7 +329,8 @@ public:
             "    float minZ = h + r;\n",
             "    float maxZ = float(fNumZ - 1u) * h - r;\n",
             "    \n",
-            "    for (uint i = task; i < numParticles; i += 4096u) {\n",
+            "    for (uint i = task; i < numParticles; i += numGlobalInvocations) {\n",
+            //"    for (uint i = ceilOfParticlesPerInvocation * task; i < ceilOfParticlesPerInvocation * (task + 1u) && i < numParticles; i++) {\n",
             "        \n",
             "        // Clamp position and zero velocity on collision\n",
             "        if (outBuffer.particles[i].position.x < minX) {\n",
