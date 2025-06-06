@@ -126,7 +126,9 @@ public:
 
     };
 
-    struct pCell { // 8 bytes
+    struct pCell { // 128 bytes
+
+        vec3 positions[10];
 
         uint numCellParticles; // Max = 6
 
@@ -192,6 +194,7 @@ public:
             "    float padding[3];\n",
             "};\n",
             "struct pCell {\n",
+            "    vec3 positions[10];\n",
             "    uint numCellParticles; // Max = 6\n",
             "    uint firstCellParticle;\n",
             "};\n",
