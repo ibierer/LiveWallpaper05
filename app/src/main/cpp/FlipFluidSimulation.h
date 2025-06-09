@@ -84,13 +84,13 @@ public:
 
     static const int NUM_CACHE_CHUNKS = 1024;
 
-    const uint NUM_GROUPS_X = 4u;
-    const uint NUM_GROUPS_Y = 4u;
-    const uint NUM_GROUPS_Z = 4u;
+    const uint NUM_GROUPS_X = 1u;
+    const uint NUM_GROUPS_Y = 1u;
+    const uint NUM_GROUPS_Z = 1u;
 
-    const uint LOCAL_SIZE_X = 2u;
-    const uint LOCAL_SIZE_Y = 2u;
-    const uint LOCAL_SIZE_Z = 4u;
+    const uint LOCAL_SIZE_X = 6u;
+    const uint LOCAL_SIZE_Y = 6u;
+    const uint LOCAL_SIZE_Z = 6u;
 
     static const int DEFAULT_INDEX_BUFFER_BINDING = 0;
 
@@ -128,11 +128,15 @@ public:
 
     struct pCell { // 128 bytes
 
-        vec3 positions[10];
+        vec3 positions[7];
+
+        uint indices[7];
 
         uint numCellParticles; // Max = 6
 
         uint firstCellParticle;
+
+        uint padding[2];
 
     };
 
@@ -194,9 +198,11 @@ public:
             "    float padding[3];\n",
             "};\n",
             "struct pCell {\n",
-            "    vec3 positions[10];\n",
+            "    vec3 positions[7];\n",
+            "    uint indices[7];\n",
             "    uint numCellParticles; // Max = 6\n",
             "    uint firstCellParticle;\n",
+            "    uint padding[2];\n",
             "};\n",
             "layout(packed, binding = " + to_string(DEFAULT_INDEX_BUFFER_BINDING) + ") buffer destBuffer {\n",
             "	  ParticleInfo particles[numParticles];\n",
@@ -223,8 +229,8 @@ public:
             "uint task = getTask();\n",
             "// Iterate over particles\n",
             "void integrateParticles(const float dt, const vec3 gravity){\n",
-            "    for (uint i = task; i < numParticles; i += numGlobalInvocations) {\n",
-            //"    for (uint i = ceilOfParticlesPerInvocation * task; i < ceilOfParticlesPerInvocation * (task + 1u) && i < numParticles; i++) {\n",
+            //"    for (uint i = task; i < numParticles; i += numGlobalInvocations) {\n",
+            "    for (uint i = ceilOfParticlesPerInvocation * task; i < ceilOfParticlesPerInvocation * (task + 1u) && i < numParticles; i++) {\n",
             "        outBuffer.particles[i].velocity += dt * gravity;\n",
             "        outBuffer.particles[i].position += outBuffer.particles[i].velocity * dt;\n",
             "    }\n",
@@ -233,8 +239,8 @@ public:
             "void pushParticlesApart(const int numIters){\n",
             "    // particleCount particles per cell\n",
             "    \n",
-            "    for (uint i = task; i < pNumCells; i += numGlobalInvocations) {\n",
-            //"    for (uint i = ceilOfCellsPerInvocation * task; i < ceilOfCellsPerInvocation * (task + 1u) && i < pNumCells; i++) {\n",
+            //"    for (uint i = task; i < pNumCells; i += numGlobalInvocations) {\n",
+            "    for (uint i = ceilOfCellsPerInvocation * task; i < ceilOfCellsPerInvocation * (task + 1u) && i < pNumCells; i++) {\n",
             "        outBuffer.pCells[i].numCellParticles = 0u;\n",
             "    }\n",
             "    barrier();\n",
@@ -331,8 +337,8 @@ public:
             "    float minZ = h + r;\n",
             "    float maxZ = float(fNumZ - 1u) * h - r;\n",
             "    \n",
-            "    for (uint i = task; i < numParticles; i += numGlobalInvocations) {\n",
-            //"    for (uint i = ceilOfParticlesPerInvocation * task; i < ceilOfParticlesPerInvocation * (task + 1u) && i < numParticles; i++) {\n",
+            //"    for (uint i = task; i < numParticles; i += numGlobalInvocations) {\n",
+            "    for (uint i = ceilOfParticlesPerInvocation * task; i < ceilOfParticlesPerInvocation * (task + 1u) && i < numParticles; i++) {\n",
             "        \n",
             "        // Clamp position and zero velocity on collision\n",
             "        if (outBuffer.particles[i].position.x < minX) {\n",
