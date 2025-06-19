@@ -106,7 +106,7 @@ public:
 
     };
 
-    struct fCell { // 128 bytes
+    struct fCell { // 256 bytes
 
         vec3 uvw;       // Combined velocity field
 
@@ -124,7 +124,7 @@ public:
 
         uint densityContributionsCounter;
 
-        float densityContributions[18];
+        float densityContributions[50];
 
     };
 
@@ -198,7 +198,7 @@ public:
             "    int cellType;\n",
             "    float particleDensity;\n",
             "    uint densityContributionsCounter;\n",
-            "    float densityContributions[18];\n",
+            "    float densityContributions[50];\n",
             "};\n",
             "struct pCell {\n",
             "    vec3 positions[7];\n",
@@ -472,51 +472,8 @@ public:
             "    float h1 = fInvSpacing;\n",
             "    float h2 = 0.5 * h;\n",
             "    \n",
-
-            // Stable version
             //"    for (uint i = task; i < fNumCells; i += numGlobalInvocations) {\n",
             "    for (uint i = ceilOfFCellsPerInvocation * task; i < ceilOfFCellsPerInvocation * (task + 1u) && i < fNumCells; i++) {\n",
-            "        outBuffer.fCells[i].particleDensity = 0.0;\n",
-            "    }\n",
-            "    barrier();\n",
-            "    if (task == 0u) {\n",
-            "        for (uint i = 0u; i < numParticles; i++) {\n",
-            "            vec3 position = outBuffer.particles[i].position;\n",
-            "            float x = clamp(position.x, h, float(fNumX - 1u) * h);\n",
-            "            float y = clamp(position.y, h, float(fNumY - 1u) * h);\n",
-            "            float z = clamp(position.z, h, float(fNumZ - 1u) * h);\n",
-            "            \n",
-            "            uint x0 = uint(floor((x - h2) * h1));\n",
-            "            float tx = ((x - h2) - float(x0) * h) * h1;\n",
-            "            uint x1 = min(x0 + 1u, fNumX - 2u);\n",
-            "            \n",
-            "            uint y0 = uint(floor((y - h2) * h1));\n",
-            "            float ty = ((y - h2) - float(y0) * h) * h1;\n",
-            "            uint y1 = min(y0 + 1u, fNumY - 2u);\n",
-            "            \n",
-            "            uint z0 = uint(floor((z - h2) * h1));\n",
-            "            float tz = ((z - h2) - float(z0) * h) * h1;\n",
-            "            uint z1 = min(z0 + 1u, fNumZ - 2u);\n",
-            "            \n",
-            "            float sx = 1.0 - tx;\n",
-            "            float sy = 1.0 - ty;\n",
-            "            float sz = 1.0 - tz;\n",
-            "            \n",
-            "            if (x0 < fNumX && y0 < fNumY && z0 < fNumZ) outBuffer.fCells[(x0 * n + y0) * fNumZ + z0].particleDensity += sx * sy * sz;\n",
-            "            if (x1 < fNumX && y0 < fNumY && z0 < fNumZ) outBuffer.fCells[(x1 * n + y0) * fNumZ + z0].particleDensity += tx * sy * sz;\n",
-            "            if (x1 < fNumX && y1 < fNumY && z0 < fNumZ) outBuffer.fCells[(x1 * n + y1) * fNumZ + z0].particleDensity += tx * ty * sz;\n",
-            "            if (x0 < fNumX && y1 < fNumY && z0 < fNumZ) outBuffer.fCells[(x0 * n + y1) * fNumZ + z0].particleDensity += sx * ty * sz;\n",
-            "            if (x0 < fNumX && y0 < fNumY && z1 < fNumZ) outBuffer.fCells[(x0 * n + y0) * fNumZ + z1].particleDensity += sx * sy * tz;\n",
-            "            if (x1 < fNumX && y0 < fNumY && z1 < fNumZ) outBuffer.fCells[(x1 * n + y0) * fNumZ + z1].particleDensity += tx * sy * tz;\n",
-            "            if (x1 < fNumX && y1 < fNumY && z1 < fNumZ) outBuffer.fCells[(x1 * n + y1) * fNumZ + z1].particleDensity += tx * ty * tz;\n",
-            "            if (x0 < fNumX && y1 < fNumY && z1 < fNumZ) outBuffer.fCells[(x0 * n + y1) * fNumZ + z1].particleDensity += sx * ty * tz;\n",
-            "        }\n",
-            "    }\n",
-            "    barrier();\n",
-
-            // Unstable version
-            //"    for (uint i = task; i < fNumCells; i += numGlobalInvocations) {\n",
-            /*"    for (uint i = ceilOfFCellsPerInvocation * task; i < ceilOfFCellsPerInvocation * (task + 1u) && i < fNumCells; i++) {\n",
             "        outBuffer.fCells[i].particleDensity = 0.0;\n",
             "        outBuffer.fCells[i].densityContributionsCounter = 0u;\n",
             "    }\n",
@@ -548,49 +505,41 @@ public:
             "            uint j = (x0 * n + y0) * fNumZ + z0;\n",
             "            uint index = atomicAdd(outBuffer.fCells[j].densityContributionsCounter, 1u);\n",
             "            outBuffer.fCells[j].densityContributions[index] = sx * sy * sz;\n",
-            //"            outBuffer.fCells[j].particleDensity += sx * sy * sz;\n",
             "        }\n",
             "        if (x1 < fNumX && y0 < fNumY && z0 < fNumZ) {\n",
             "            uint j = (x1 * n + y0) * fNumZ + z0;\n",
             "            uint index = atomicAdd(outBuffer.fCells[j].densityContributionsCounter, 1u);\n",
             "            outBuffer.fCells[j].densityContributions[index] = tx * sy * sz;\n",
-            //"            outBuffer.fCells[j].particleDensity += tx * sy * sz;\n",
             "        }\n",
             "        if (x1 < fNumX && y1 < fNumY && z0 < fNumZ) {\n",
             "            uint j = (x1 * n + y1) * fNumZ + z0;\n",
             "            uint index = atomicAdd(outBuffer.fCells[j].densityContributionsCounter, 1u);\n",
             "            outBuffer.fCells[j].densityContributions[index] = tx * ty * sz;\n",
-            //"            outBuffer.fCells[j].particleDensity += tx * ty * sz;\n",
             "        }\n",
             "        if (x0 < fNumX && y1 < fNumY && z0 < fNumZ) {\n",
             "            uint j = (x0 * n + y1) * fNumZ + z0;\n",
             "            uint index = atomicAdd(outBuffer.fCells[j].densityContributionsCounter, 1u);\n",
             "            outBuffer.fCells[j].densityContributions[index] = sx * ty * sz;\n",
-            //"            outBuffer.fCells[j].particleDensity += sx * ty * sz;\n",
             "        }\n",
             "        if (x0 < fNumX && y0 < fNumY && z1 < fNumZ) {\n",
             "            uint j = (x0 * n + y0) * fNumZ + z1;\n",
             "            uint index = atomicAdd(outBuffer.fCells[j].densityContributionsCounter, 1u);\n",
             "            outBuffer.fCells[j].densityContributions[index] = sx * sy * tz;\n",
-            //"            outBuffer.fCells[j].particleDensity += sx * sy * tz;\n",
             "        }\n",
             "        if (x1 < fNumX && y0 < fNumY && z1 < fNumZ) {\n",
             "            uint j = (x1 * n + y0) * fNumZ + z1;\n",
             "            uint index = atomicAdd(outBuffer.fCells[j].densityContributionsCounter, 1u);\n",
             "            outBuffer.fCells[j].densityContributions[index] = tx * sy * tz;\n",
-            //"            outBuffer.fCells[j].particleDensity += tx * sy * tz;\n",
             "        }\n",
             "        if (x1 < fNumX && y1 < fNumY && z1 < fNumZ) {\n",
             "            uint j = (x1 * n + y1) * fNumZ + z1;\n",
             "            uint index = atomicAdd(outBuffer.fCells[j].densityContributionsCounter, 1u);\n",
             "            outBuffer.fCells[j].densityContributions[index] = tx * ty * tz;\n",
-            //"            outBuffer.fCells[j].particleDensity += tx * ty * tz;\n",
             "        }\n",
             "        if (x0 < fNumX && y1 < fNumY && z1 < fNumZ) {\n",
             "            uint j = (x0 * n + y1) * fNumZ + z1;\n",
             "            uint index = atomicAdd(outBuffer.fCells[j].densityContributionsCounter, 1u);\n",
             "            outBuffer.fCells[j].densityContributions[index] = sx * ty * tz;\n",
-            //"            outBuffer.fCells[j].particleDensity += sx * ty * tz;\n",
             "        }\n",
             "    }\n",
             "    barrier();\n",
@@ -600,7 +549,7 @@ public:
             "            outBuffer.fCells[i].particleDensity += outBuffer.fCells[i].densityContributions[j];\n",
             "        }\n",
             "    }\n",
-            "    barrier();\n",*/
+            "    barrier();\n",
 
             "    if (task == 0u) {\n",
             "        if (particleRestDensity == 0.0) {\n",
