@@ -106,7 +106,7 @@ public:
 
     };
 
-    struct fCell { // 256 bytes
+    struct fCell { // 1536 bytes
 
         vec3 uvw;       // Combined velocity field
 
@@ -125,6 +125,14 @@ public:
         uint densityContributionsCounter;
 
         float densityContributions[50];
+
+        uint velocityContributionsCounter;
+
+        float velocityContributions[63];
+
+        float accelerationContributions[63];
+
+        uint padding;
 
     };
 
@@ -199,6 +207,10 @@ public:
             "    float particleDensity;\n",
             "    uint densityContributionsCounter;\n",
             "    float densityContributions[50];\n",
+            "    uint velocityContributionsCounter;\n",
+            "    float velocityContributions[63];\n",
+            "    float accelerationContributions[63];\n",
+            "    uint padding;\n",
             "};\n",
             "struct pCell {\n",
             "    vec3 positions[7];\n",
@@ -519,6 +531,9 @@ public:
             "            float dx = (component == 0) ? 0.0 : h2;\n",
             "            float dy = (component == 1) ? 0.0 : h2;\n",
             "            float dz = (component == 2) ? 0.0 : h2;\n",
+            "            for (uint i = 0u; i < fNumCells; i++) {\n",
+            "               outBuffer.fCells[i].velocityContributionsCounter = 0u;\n",
+            "            }\n",
             "            \n",
             "            for (uint i = 0u; i < numParticles; i++) {\n",
             "                float x = clamp(outBuffer.particles[i].position.x, h, float(fNumX - 1u) * h);\n",
@@ -559,16 +574,33 @@ public:
             "                uint nr6 = (x1 * n + y1) * fNumZ + z1;\n",
             "                uint nr7 = (x0 * n + y1) * fNumZ + z1;\n",
             "                \n",
+            "                uint index;\n",
             "                if (toGrid) {\n",
             "                    float pv = outBuffer.particles[i].velocity[component];\n",
-            "                    outBuffer.fCells[nr0].uvw[component] += pv * d0; outBuffer.fCells[nr0].duvw[component] += d0;\n",
-            "                    outBuffer.fCells[nr1].uvw[component] += pv * d1; outBuffer.fCells[nr1].duvw[component] += d1;\n",
-            "                    outBuffer.fCells[nr2].uvw[component] += pv * d2; outBuffer.fCells[nr2].duvw[component] += d2;\n",
-            "                    outBuffer.fCells[nr3].uvw[component] += pv * d3; outBuffer.fCells[nr3].duvw[component] += d3;\n",
-            "                    outBuffer.fCells[nr4].uvw[component] += pv * d4; outBuffer.fCells[nr4].duvw[component] += d4;\n",
-            "                    outBuffer.fCells[nr5].uvw[component] += pv * d5; outBuffer.fCells[nr5].duvw[component] += d5;\n",
-            "                    outBuffer.fCells[nr6].uvw[component] += pv * d6; outBuffer.fCells[nr6].duvw[component] += d6;\n",
-            "                    outBuffer.fCells[nr7].uvw[component] += pv * d7; outBuffer.fCells[nr7].duvw[component] += d7;\n",
+            "                    index = atomicAdd(outBuffer.fCells[nr0].velocityContributionsCounter, 1u);\n",
+            //"                    outBuffer.fCells[nr0].uvw[component] += pv * d0; outBuffer.fCells[nr0].duvw[component] += d0;\n",
+            "                    outBuffer.fCells[nr0].velocityContributions[index] = pv * d0; outBuffer.fCells[nr0].accelerationContributions[index] = d0;\n",
+            "                    index = atomicAdd(outBuffer.fCells[nr1].velocityContributionsCounter, 1u);\n",
+            //"                    outBuffer.fCells[nr1].uvw[component] += pv * d1; outBuffer.fCells[nr1].duvw[component] += d1;\n",
+            "                    outBuffer.fCells[nr1].velocityContributions[index] = pv * d1; outBuffer.fCells[nr1].accelerationContributions[index] = d1;\n",
+            "                    index = atomicAdd(outBuffer.fCells[nr2].velocityContributionsCounter, 1u);\n",
+            //"                    outBuffer.fCells[nr2].uvw[component] += pv * d2; outBuffer.fCells[nr2].duvw[component] += d2;\n",
+            "                    outBuffer.fCells[nr2].velocityContributions[index] = pv * d2; outBuffer.fCells[nr2].accelerationContributions[index] = d2;\n",
+            "                    index = atomicAdd(outBuffer.fCells[nr3].velocityContributionsCounter, 1u);\n",
+            //"                    outBuffer.fCells[nr3].uvw[component] += pv * d3; outBuffer.fCells[nr3].duvw[component] += d3;\n",
+            "                    outBuffer.fCells[nr3].velocityContributions[index] = pv * d3; outBuffer.fCells[nr3].accelerationContributions[index] = d3;\n",
+            "                    index = atomicAdd(outBuffer.fCells[nr4].velocityContributionsCounter, 1u);\n",
+            //"                    outBuffer.fCells[nr4].uvw[component] += pv * d4; outBuffer.fCells[nr4].duvw[component] += d4;\n",
+            "                    outBuffer.fCells[nr4].velocityContributions[index] = pv * d4; outBuffer.fCells[nr4].accelerationContributions[index] = d4;\n",
+            "                    index = atomicAdd(outBuffer.fCells[nr5].velocityContributionsCounter, 1u);\n",
+            //"                    outBuffer.fCells[nr5].uvw[component] += pv * d5; outBuffer.fCells[nr5].duvw[component] += d5;\n",
+            "                    outBuffer.fCells[nr5].velocityContributions[index] = pv * d5; outBuffer.fCells[nr5].accelerationContributions[index] = d5;\n",
+            "                    index = atomicAdd(outBuffer.fCells[nr6].velocityContributionsCounter, 1u);\n",
+            //"                    outBuffer.fCells[nr6].uvw[component] += pv * d6; outBuffer.fCells[nr6].duvw[component] += d6;\n",
+            "                    outBuffer.fCells[nr6].velocityContributions[index] = pv * d6; outBuffer.fCells[nr6].accelerationContributions[index] = d6;\n",
+            "                    index = atomicAdd(outBuffer.fCells[nr7].velocityContributionsCounter, 1u);\n",
+            //"                    outBuffer.fCells[nr7].uvw[component] += pv * d7; outBuffer.fCells[nr7].duvw[component] += d7;\n",
+            "                    outBuffer.fCells[nr7].velocityContributions[index] = pv * d7; outBuffer.fCells[nr7].accelerationContributions[index] = d7;\n",
             "                }\n",
             "                else {\n",
             "                    uint offset = (component == 0) ? (n * fNumZ) : ((component == 1) ? fNumZ : 1u);\n",
@@ -610,6 +642,14 @@ public:
             "            \n",
             "            if (toGrid) {\n",
             "                for (uint i = 0u; i < fNumCells; i++) {\n",
+            "                    float value1 = 0.0f;\n",
+            "                    float value2 = 0.0f;\n",
+            "                    for (uint j = 0u; j < outBuffer.fCells[i].velocityContributionsCounter; j++) {\n",
+            "                        value1 += outBuffer.fCells[i].velocityContributions[j];\n",
+            "                        value2 += outBuffer.fCells[i].accelerationContributions[j];\n",
+            "                    }\n",
+            "                    outBuffer.fCells[i].uvw[component] += value1;\n",
+            "                    outBuffer.fCells[i].duvw[component] += value2;\n",
             "                    if (outBuffer.fCells[i].duvw[component] > 0.0)\n",
             "                        outBuffer.fCells[i].uvw[component] /= outBuffer.fCells[i].duvw[component];\n",
             "                }\n",
